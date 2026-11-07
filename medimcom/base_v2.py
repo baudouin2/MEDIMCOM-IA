@@ -228,6 +228,8 @@ class LexiqueBaseV2(LexiquePictogrammes):
         for cle, nid in self.formes.items():
             self.alias[nid].append(cle)
         self._recherche = None
+        self.langue_saisie = "fr"        # « en » : le médecin écrit en anglais (voir _traduire_en)
+        self._formes_en = None
         self.rapprochement = True        # rapprochement automatique et sûr des mots inconnus (voir _rapprocher)
 
     @property
@@ -333,6 +335,13 @@ class LexiqueBaseV2(LexiquePictogrammes):
             sortie.append(motif.sub(remplacer, ph))
         return "".join(sortie)
 
+    def _choix_ou(self) -> str | None:
+        """Image du « ou » de choix, si la base en a une (libellé exact « ou », sans accent), jamais celle du lieu."""
+        if not hasattr(self, "_ou_choix"):
+            self._ou_choix = next((n["id"] for n in self.notions.values() if n.get("fr", "").strip().lower() == "ou"
+                                   and n["id"] != "OU" and self._disponible(n["id"])), None)
+        return self._ou_choix
+
     def _mot_connu(self, m: str, brut: str) -> bool:
         if m in MOTS or m in MOTS_OUTILS or m in self.AUXILIAIRES or m in self.MOTS_IGNORES or m in self.IRREGULIERS \
                 or m in MEDICAMENTS or m in self.MOTS_DANGEREUX or m.isdigit() or m == "?":
@@ -359,17 +368,124 @@ class LexiqueBaseV2(LexiquePictogrammes):
             lus = trouver_medicaments(m, {n: {} for n in MEDICAMENTS})
             if len(lus) == 1 and lus[0]["nom"] in MEDICAMENTS:
                 return lus[0]["nom"]
+        if len(m) >= 7:                    # faute sur un mot long : même prononciation, ou une lettre près, sans ambiguïté
+            from .lecture import cle_phonetique, distance
+            idx = self._index_fautes()
+            cands = set(idx["cles"].get(cle_phonetique(m), set()))
+            if len(cands) != 1:
+                cands = {w for w in idx["par_debut"].get(m[:2], ()) if abs(len(w) - len(m)) <= 1 and distance(m, w, 1) <= 1}
+            cands = {w for w in cands if not (m.endswith(("er", "ir", "re")) and m.startswith(w[:-1]))}   # « droguer » n'est pas « drogue »
+            if len(cands) == 1:
+                return next(iter(cands))
         return None
 
+    def _index_fautes(self) -> dict:
+        """Mots connus d'au moins 6 lettres (formes d'une seule notion) : clé de prononciation et deux premières lettres."""
+        if getattr(self, "_idx_fautes", None) is None:
+            from .lecture import cle_phonetique
+            cles, debut = {}, {}
+            for c in self.formes:
+                if len(c) == 1 and len(c[0]) >= 6 and c not in self._accents:
+                    cles.setdefault(cle_phonetique(c[0]), set()).add(c[0])
+                    debut.setdefault(c[0][:2], set()).add(c[0])
+            self._idx_fautes = {"cles": cles, "par_debut": debut}
+        return self._idx_fautes
+
+    PREFIXES_COLLES = ("en", "au", "aux", "du", "de", "des", "le", "la", "les", "un", "une", "et", "a", "ma", "mon", "mes",
+                       "ta", "ton", "sa", "son", "ce", "par", "pour", "sur", "dans", "avec", "sans", "chez", "tres", "pas",
+                       "plus", "trop", "votre", "vos", "mal", "bien")
+
+    def _decoller(self, texte: str) -> tuple[str, dict]:
+        """Mots collés par erreur de frappe ou de dictée : « enpharmacie » -> « en pharmacie », « malau ventre » ->
+        « mal au ventre ». Seulement si le mot entier est inconnu et que ses deux morceaux sont connus."""
+        corrections = {}
+
+        def separer(mt):
+            w = mt.group(0)
+            if mt.end() < len(mt.string) and mt.string[mt.end()] in "'’":
+                return w                          # élision (« jusqu'à », « qu'avez ») : pas un mot collé
+            n = _norm(w)
+            if len(n) < 5 or self._mot_connu(n, w) or n in MEDICAMENTS:
+                return w
+            for k in range(min(len(n) - 2, 8), 1, -1):
+                a, b = n[:k], n[k:]
+                connu_a, connu_b = len(a) >= 3 and self._mot_connu(a, a), len(b) >= 3 and self._mot_connu(b, b)
+                outil_b = b in self.PREFIXES_COLLES or b in MOTS_OUTILS
+                if (a in self.PREFIXES_COLLES and connu_b and not outil_b) or (connu_a and outil_b and a not in MOTS_OUTILS) \
+                        or (len(a) >= 4 and len(b) >= 4 and connu_a and connu_b):
+                    corrections[w] = f"{a} {b}"
+                    return f"{w[:k]} {w[k:]}"
+            return w
+        return re.sub(r"[A-Za-zÀ-ÿ]+", separer, texte), corrections
+
+    MOTS_EN = {"not": "NE_PAS", "no": "NE_PAS", "don't": "NE_PAS", "dont": "NE_PAS", "never": "NE_PAS", "stop": "STOP",
+               "emergency": "URGENCE", "maximum": "MAXIMUM", "max": "MAXIMUM", "you": "VOUS", "your": "VOUS", "i": "MOI", "me": "MOI",
+               "my": "MOI", "yes": "OUI", "pain": "DOULEUR", "hurt": "DOULEUR", "hurts": "DOULEUR", "ache": "DOULEUR"}
+    VIDES_EN = {"the", "a", "an", "of", "to", "is", "are", "am", "do", "does", "did", "be", "it", "this", "that", "and", "or",
+                "in", "on", "at", "for", "with", "have", "has", "had", "will", "would", "please", "some", "any"}
+    MEDICAMENTS_EN = {"acetaminophen": "paracetamol", "paracetamol": "paracetamol", "tylenol": "paracetamol", "ibuprofen": "ibuprofene",
+                      "advil": "ibuprofene", "aspirin": "aspirine", "amoxicillin": "amoxicilline", "metformin": "metformine",
+                      "tramadol": "tramadol", "misoprostol": "misoprostol"}
+
+    def _traduire_en(self, texte: str) -> dict:
+        """Le médecin écrit en ANGLAIS : libellés anglais des notions et des images ARASAAC (plus longue expression
+        d'abord), mêmes règles de sûreté (négation, chiffres, doses, médicaments jamais perdus)."""
+        if self._formes_en is None:
+            self._formes_en = {}
+            for nid, n in self.notions.items():
+                if not n.get("en") or not self._disponible(nid) or n.get("sensible") \
+                        or str(n.get("categorie_vocabulaire", "")).startswith(("91", "98")):
+                    continue
+                if nid.startswith("IMG_") and not nid.startswith("IMG_ARASAAC_"):
+                    continue
+                cle = tuple(re.findall(r"[a-z0-9']+", n["en"].lower()))
+                if cle and not (nid.startswith("IMG_") and cle in self._formes_en):
+                    self._formes_en.setdefault(cle, nid)
+        jetons = re.findall(r"[a-z0-9']+|\?", (texte or "").lower().replace("’", "'"))
+        pictos, manquants, i = [], [], 0
+        while i < len(jetons):
+            m = jetons[i]
+            if m == "?":
+                pictos.append("QUESTION"); i += 1; continue
+            if m.isdigit():
+                pictos.append(f"CHIFFRE:{m}"); i += 1; continue
+            if re.fullmatch(r"\d+(?:[.,]\d+)?(mg|g|ml|ui)", m):
+                pictos.append(f"DOSE:{m}"); i += 1; continue
+            if m in self.MEDICAMENTS_EN:
+                pictos.append(f"MEDICAMENT:{self.MEDICAMENTS_EN[m]}"); i += 1; continue
+            if m in self.MOTS_EN and self._disponible(self.MOTS_EN[m]) and self.MOTS_EN[m] in ("NE_PAS", "STOP", "URGENCE", "MAXIMUM"):
+                pictos.append(self.MOTS_EN[m]); i += 1; continue
+            trouve = None
+            for L in range(min(5, len(jetons) - i), 0, -1):
+                nid = self._formes_en.get(tuple(jetons[i:i + L]))
+                if nid:
+                    trouve = (nid, L)
+                    break
+            if trouve:
+                pictos.append(trouve[0]); i += trouve[1]; continue
+            if m in self.MOTS_EN and self._disponible(self.MOTS_EN[m]):
+                pictos.append(self.MOTS_EN[m])
+            elif m not in self.VIDES_EN:
+                manquants.append(m)
+            i += 1
+        pictos = [p for k, p in enumerate(pictos) if k == 0 or p != pictos[k - 1] or p.startswith("CHIFFRE:")]
+        pictos = combiner_pictogrammes(pictos, self.notions)
+        compte = len(pictos) + len(manquants)
+        return {"pictogrammes": pictos, "non_traduits": manquants, "rapproches": {}, "corrections": {},
+                "couverture": round(len(pictos) / compte, 2) if compte else 0.0}
+
     def traduire(self, texte: str) -> dict:
+        if self.langue_saisie == "en":
+            return self._traduire_en(texte)
         texte = self._inversions(texte)
+        texte, colles = self._decoller(texte)
         # Doses et rythmes écrits vite : « 1kg », « 7fois parjours », « 3x/j » -> « 1kg », « 7 fois par jour »
         texte = re.sub(r"(\d+(?:[.,]\d+)?)\s*(mg|g|kg|ml|l|mcg|µg|ui)\b", r"\1\2", texte, flags=re.IGNORECASE)
         texte = re.sub(r"(\d)\s*(?:fois|x)\b", r"\1 fois", texte, flags=re.IGNORECASE)
         texte = re.sub(r"\bpar\s*jours?\b|/\s*j(?:our)?\b", " par jour", texte, flags=re.IGNORECASE)
         bruts = re.findall(r"[\w'’]+|\?", texte)
         mots = [re.sub(r"^(d|l|qu|j|s|n|c|m|t)'", "", _norm(b).replace("’", "'")) for b in bruts]
-        corrections = {}
+        corrections = dict(colles)
         for k, (m, b) in enumerate(zip(mots, bruts)):        # fautes de frappe et de dictée, corrigées et montrées
             c = self._corriger(m, b)
             if c:
@@ -394,6 +510,15 @@ class LexiqueBaseV2(LexiquePictogrammes):
                 pictos.append(MOTS[m]); i += 1; continue
             # « où » (lieu) n'est pas « ou » (choix) : sans accent, on le reconnaît en tête de question. Perdre « où » change
             # la question (« où avez-vous mal ? » devenait « vous douleur ? »).
+            # « où » (accent) ou « ou » en tête de question suivi d'un verbe (« ou avez-vous mal ? ») = le LIEU ;
+            # sinon c'est le CHOIX (« la tête ou le ventre ? »), illustré si la base a une image « ou » (choix)
+            verbe_suit = i + 1 < len(mots) and (mots[i + 1] in self.AUXILIAIRES or mots[i + 1] in ("vous", "tu", "est", "sont", "etes",
+                                                                                                   "avez", "as", "habitez", "allez", "travaillez"))
+            if m == "ou" and not (brut.lower().replace("ù", "u") != brut.lower() or (i == 0 and verbe_suit)):
+                choix = self._choix_ou()
+                if choix:
+                    pictos.append(choix)
+                i += 1; continue
             if m == "ou" and (brut.lower().replace("ù", "u") != brut.lower() or ("?" in texte and (i == 0 or mots[i - 1] in ("?", ".")))):
                 if self._disponible("OU"):
                     pictos.append("OU")

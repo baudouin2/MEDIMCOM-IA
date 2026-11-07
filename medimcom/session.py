@@ -91,10 +91,16 @@ def est_en_ligne(url: str) -> bool:
 REGLES_PAR_PAYS = {"AE": RACINE / "kb" / "regles_uae.json", "CM": RACINE / "kb" / "regles_cm.json"}
 
 
+# Copie PERSONNELLE des clés, hors du projet : elle survit aux nouvelles versions décompressées et n'est jamais publiée.
+ENV_PERSONNEL = Path.home() / ".config" / "medimcom" / "env"
+
+
 def charger_env(chemin: Path | None = None) -> int:
-    """Lit les clés d'API dans le fichier `.env` à la racine du projet (lignes NOM=valeur), sans écraser une variable
-    déjà définie. Le fichier est exclu du dépôt par .gitignore : les clés ne doivent jamais être publiées."""
-    chemin = chemin or RACINE / ".env"
+    """Lit les clés d'API dans le fichier `.env` à la racine du projet (lignes NOM=valeur), puis dans la copie
+    personnelle ~/.config/medimcom/env, sans écraser une variable déjà définie. Ni l'un ni l'autre n'est publié :
+    `.env` est exclu du dépôt par .gitignore, et la copie personnelle est hors du projet."""
+    if chemin is None:
+        return charger_env(RACINE / ".env") + charger_env(ENV_PERSONNEL)
     n = 0
     if chemin.exists():
         for ligne in chemin.read_text(encoding="utf-8").splitlines():
@@ -126,7 +132,7 @@ def preparer(cfg: Config) -> Config:
             cfg.modele = f["modele"]
         cfg.cle = cfg.cle or os.environ.get(f["variable_cle"]) or os.environ.get("MEDIMCOM_CLE")
         if not cfg.cle:
-            raise SystemExit(f"Clé d'API manquante pour {f['nom']}. Le plus simple : créer le fichier {RACINE / '.env'}\n"
+            raise SystemExit(f"Clé d'API manquante pour {f['nom']}. Le plus simple : créer le fichier {ENV_PERSONNEL} (gardé d'une version à l'autre) ou {RACINE / '.env'}\n"
                              f"contenant la ligne {f['variable_cle']}=votre_clé (modèle : .env.exemple). Sinon :\n"
                              f"  export {f['variable_cle']}=...      (Windows PowerShell : $env:{f['variable_cle']}=\"...\")")
     for s in cfg.secours:
@@ -267,6 +273,9 @@ def construire(cfg: Config):
     for modele, cerveau in cerveaux.items():
         if hasattr(cerveau, "verifier"):
             ok, message = cerveau.verifier()
+            if ok and message != "ok":            # modèle remplacé automatiquement (absent pour cette clé) : on le dit
+                print(f"ℹ {message}", file=sys.stderr)
+                journal.ajouter("coordinateur", "modele_remplace", {"demande": modele, "utilise": cerveau.modele, "message": message})
             if not ok:
                 journal.ajouter("coordinateur", "modele_indisponible", {"modele": modele, "message": message})
                 print(f"⚠ {message}", file=sys.stderr)

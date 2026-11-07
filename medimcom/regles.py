@@ -528,6 +528,8 @@ class MoteurRegles:
                     if c["niveau"] in ("BLOQUE", "A_REVOIR") and not c.get("potentiel"):
                         constats.append({**c, "detail": ("For this patient: " if self.langue == "en" else "Pour ce patient : ") + c["detail"]})
                 alternatives += risques["alternatives"]
+        for e in analyse.get("ethique") or []:
+            constats.append(self.garde_fou_ethique(e))
         constats += self._lecture_contexte(analyse, message)
         r = self._resultat("envoi_au_patient", constats, {"message": message.get("texte", "")})
         if r["verdict"] != "CONFORME":   # « peut être envoyé » ne doit jamais accompagner un blocage
@@ -582,6 +584,20 @@ class MoteurRegles:
                 "detail": f"Quantité imprécise de {nom} (« {analyse.get('expression') or 'beaucoup'} ») : risque de surdosage{limite}.",
                 "lacune": None, "juridiction": None,
                 "piste": f"Prescrivez {nom} dans l'onglet Ordonnance avec une dose en mg et un rythme précis : le juriste et l'assistant la vérifient."}
+
+    def garde_fou_ethique(self, e: dict) -> dict:
+        """Message contraire à l'éthique médicale : il ne part pas. Base : la loi quand le pays en a un texte lu
+        (avortement aux Émirats : loi 4/2016, art. 16), sinon le garde-fou de sûreté du système, présenté comme tel."""
+        if e["categorie"] == "avortement" and self.pays == "AE" and "ML16-A16" in self.base.fiches:
+            fiches, base, ref = ["ML16-A16"], "LOI", self.base.citer_court("ML16-A16")
+        else:
+            fiches = (["ML16-A3"] if self.pays == "AE" else [f for f in ("CM-DEONTO",) if f in self.base.fiches]) or []
+            base = "SURETE"
+            ref = "Garde-fou éthique de MEDIMCOM IA" + (" ; " + " ; ".join(self.base.citer_court(f) for f in fiches) if fiches else "")
+        return {"regle": f"ETHIQUE-{e['categorie'].upper()}", "niveau": "BLOQUE", "base": base, "fiches": fiches,
+                "source": " ; ".join(self.base.citer(f, self.langue) for f in fiches) or "-", "reference_courte": ref,
+                "detail": f"Message contraire à l'éthique médicale : {e['motif']}. Il ne partira pas.",
+                "lacune": None, "juridiction": None, "piste": e["piste"]}
 
     def garde_fou_surete(self, analyse: dict) -> dict:
         """Garde-fou de SÛRETÉ du système, indépendant du droit : un message qui incite le patient à se faire du mal

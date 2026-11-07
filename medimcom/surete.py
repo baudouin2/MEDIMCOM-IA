@@ -115,8 +115,10 @@ def analyser_message(texte: str, medicaments: dict | None = None) -> dict:
               "evocation": None, "a_confirmer": None}
     jetons = mots(corrige)
     morts = [w for w in jetons if w in MOTS_DE_MORT]
-    # 1. Atteinte à soi, violence, injure : selon le contexte
-    injure = INJURES.search(t)
+    # 1. Atteinte à soi, violence, injure : selon le contexte (injure reconnue même mal écrite : « imbecil »)
+    from .ethique import _injure, analyser as analyser_ethique
+    mot_injure = _injure(" " + t + " ")
+    injure = re.search(re.escape(mot_injure), t) if mot_injure else None
     if intention in ("incitation", "menace"):
         sortie.update(incitation_au_mal=True, motif="propos violents" if intention == "menace" else "incitation à se faire du mal",
                       expression=" ".join(morts) or None)
@@ -128,6 +130,8 @@ def analyser_message(texte: str, medicaments: dict | None = None) -> dict:
                                      "c'est une incitation, une question ou un récit")
         else:
             sortie["evocation"] = f"« {' '.join(morts) or injure.group(0)} » cité dans {INTENTIONS[intention]}"
+    # 1 bis. Éthique : conseil nuisible (drogue, alcool), trafic d'enfant ou d'organe, propos sexuels, avortement
+    sortie["ethique"] = [e for e in analyser_ethique(corrige, intention) if e["categorie"] != "injure"]
     # 2. Médicaments : consigne ou simple évocation ?
     if noms:
         vides = {"et", "ou", "du", "de", "des", "le", "la", "les", "un", "une", "aussi", "encore", "puis", "avec", "vous", "pour"}

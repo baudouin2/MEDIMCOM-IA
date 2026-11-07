@@ -1,6 +1,6 @@
 # Rapport de vérification formelle — MEDIMCOM IA
 
-Généré par `outils/verifier_formel.py` le 2026-11-07 en 175 s. Méthodes, sémantique et références : [`METHODES_FORMELLES.md`](METHODES_FORMELLES.md).
+Généré par `outils/verifier_formel.py` le 2026-11-07 en 171 s. Méthodes, sémantique et références : [`METHODES_FORMELLES.md`](METHODES_FORMELLES.md).
 
 **Résultat : toutes les propriétés sont vérifiées.**
 

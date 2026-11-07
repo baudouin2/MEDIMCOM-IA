@@ -161,6 +161,18 @@ class CerveauSecours:
         raise RuntimeError("tous les fournisseurs ont échoué — " + " | ".join(erreurs))
 
 
+def choisir_modele(donnees: list[dict], demande: str) -> str | None:
+    """Modèle demandé absent pour cette clé : on prend un modèle de la même famille (préfixe « grok », « gemini »…),
+    de préférence rapide (« non-reasoning », « fast », « mini ») pour une consultation en direct, le plus récent d'abord."""
+    famille = re.split(r"[-_.]", demande)[0].lower()
+    ids = [m["id"] for m in donnees if m["id"].lower().startswith(famille)
+           and not any(x in m["id"].lower() for x in ("image", "vision", "imagine", "video", "embed", "tts", "audio"))]
+    if not ids:
+        return None
+    rapides = [i for i in ids if any(x in i.lower() for x in ("non-reasoning", "fast", "mini"))]
+    return sorted(rapides or ids, key=lambda i: [int(n) for n in re.findall(r"\d+", i)][:3], reverse=True)[0]
+
+
 def lire_erreur(e) -> str:
     """Message d'erreur renvoyé par le fournisseur (corps JSON de la réponse HTTP), sans jamais citer la clé."""
     try:
@@ -260,10 +272,15 @@ class CerveauOpenAI:
         except Exception as e:
             return False, f"Le serveur {self.base} ne répond pas ({e.__class__.__name__}) : le lancer ou vérifier --url."
         try:
-            noms = sorted({m.get("id") for m in json.loads(brut).get("data", []) if isinstance(m, dict) and m.get("id")})
+            donnees = [m for m in json.loads(brut).get("data", []) if isinstance(m, dict) and m.get("id")]
         except (ValueError, AttributeError):
-            noms = []
+            donnees = []
+        noms = sorted({m["id"] for m in donnees} | {a for m in donnees for a in (m.get("aliases") or [])})   # alias compris
         if noms and self.modele not in noms and f"models/{self.modele}" not in noms:
+            remplacant = choisir_modele(donnees, self.modele)
+            if remplacant:
+                demande, self.modele = self.modele, remplacant
+                return True, f"Modèle « {demande} » indisponible pour cette clé : « {remplacant} » utilisé à la place."
             return False, f"Modèle « {self.modele} » introuvable chez {self.base}. Disponibles : {', '.join(noms[:20])}"
         return True, "ok"
 

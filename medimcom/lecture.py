@@ -190,7 +190,7 @@ _VERBES_QUESTION = (r"avez|as|a|etes|es|est|sont|ont|pouvez|peux|voulez|veux|pre
                     r"travaillez|comprenez|entendez|voyez|vivez|utilisez|aviez|etiez|prenait|prenez")
 QUESTION = re.compile(r"\?|\best[- ]ce\b|\b(?:" + _VERBES_QUESTION + r")-(?:t-)?(?:vous|tu|il|elle|ils|elles)\b|"
                       r"^\s*(?:qu|quel|quelle|quels|quelles|comment|pourquoi|quand|ou|combien|avez|as|etes)\b")
-NEGATION = re.compile(r"\bne\b[^.?!]{0,40}\b(?:pas|jamais|plus|aucun|aucune)\b|\bn'[a-z]+ (?:pas|jamais|plus)\b|\bpas de\b|"
+NEGATION = re.compile(r"\bne\b[^.?!]{0,40}\b(?:pas|jamais|plus|aucun|aucune)\b|\bn'[a-z]+ (?:pas|jamais|plus)\b|\bpas de\b|\bpas d'|\bsans\b|"
                       r"\bjamais\b|\b(?:arrete[sz]?|arretez|evite[sz]?|evitez|stop|stoppez|interdit|dangereux|attention|"
                       r"don't|do not|never|avoid)\b")
 CONSIGNE = re.compile(
@@ -216,7 +216,7 @@ DEPISTAGE = re.compile(r"\b(?:idees?|envie|pense[sz]?|pensez|penser|songe[sz]?|s
 PASSE = re.compile(r"\b(?:ai|as|a|avons|avez|ont|avait|avais|avaient|aviez|avions|etait|etais|etaient|est|es|sont|"
                    r"s'est|se sont|m'a|t'a|l'a|lui a|leur a)\s+(?:deja\s+|voulu\s+|essaye\s+de\s+|tente\s+de\s+)?"
                    r"(?:pris|bu|mis|avale|voulu|essaye|tente|dit|fait|eu|ete|mort|morte|pendu|pendue|suicide|suicidee|tue|tuee|"
-                   r"\w+(?:e|i|u|is|it)s?)\b|"
+                   r"(?!\w*(?:er|re|ir)\b)\w+(?:e|i|u|is|it)s?)\b|"      # participe, pas un infinitif (« à vendre », « à manger »)
                    r"\b(?:hier|avant-hier|la semaine derniere|le mois dernier|l'an dernier|l'annee derniere|il y a|autrefois|"
                    r"jadis|quand j'etais|quand il etait|quand elle etait|en \d{4})\b|\b\w{3,}(?:ait|aient)\b")
 TIERS = re.compile(r"\b(?:il|elle|ils|elles)\b|\b(?:mon|ma|mes|ton|ta|tes|son|sa|ses|votre|vos|leur|leurs|notre|nos|un|une|le|la)\s+"

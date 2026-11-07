@@ -112,6 +112,10 @@ class Orchestrateur:
             cible = props[0] if props else None
         if not cible or cible.get("type") != "envoi_patient" or cible["statut"] != "attente_validation":
             return "Refusé : aucune proposition en attente de validation."
+        if not [p for p in cible.get("pictogrammes") or [] if p]:
+            d._changer(evt["auteur"], "validation_refusee", {"id": cible["id"], "raison": "aucun pictogramme"})
+            return ("Refusé : ce message n'a aucun pictogramme, le patient ne verrait rien. Ajoutez-en (Modifier les "
+                    "pictogrammes) ou reformulez.")
         pc = cible.get("precontrole") or {}
         if pc.get("verdict") == "BLOQUE" and pc.get("texte") == cible.get("texte"):
             motif = next((c["detail"] for c in pc.get("constats", []) if c["niveau"] == "BLOQUE"), "contenu interdit")

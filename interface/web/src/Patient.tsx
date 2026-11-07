@@ -50,6 +50,7 @@ export default function EcranPatient() {
   const [mots, setMots] = useState("");
   const [sansImage, setSansImage] = useState<string[]>([]);
   const [guide, setGuide] = useState(false);
+  const [ordonnance, setOrdonnance] = useState(false);
   const session = useRef<string | null>(null);
 
   const setLangue = (l: Langue) => { setLangueEtat(l); try { localStorage.setItem("medimcom-langue", l); } catch { /* stockage indisponible */ } };
@@ -111,7 +112,16 @@ export default function EcranPatient() {
   return (
     <div className="min-h-dvh bg-[#F6F7F9] pb-48 sm:pb-40">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-4 pt-4 sm:px-6">
-        <Marque taille={28} texte={false} />
+        <div className="flex items-center gap-2">
+          <Marque taille={28} texte={false} />
+          {(vue?.ordonnances?.length ?? 0) > 0 && (
+            <button id="monOrdonnance" onClick={() => setOrdonnance(true)} dir={dir}
+              className="flex items-center gap-2 rounded-xl bg-ok-50 py-1 pl-1 pr-3 text-sm font-semibold text-ok ring-1 ring-ok/30">
+              <img src={urlPicto("MEDICAMENT")} alt="" width={30} height={30} className="rounded-md bg-surface" />
+              {{ "": "", fr: "Mon ordonnance", en: "My prescription", ar: "وصفتي الطبية" }[langue]}
+            </button>
+          )}
+        </div>
         <div role="group" aria-label="Langue des étiquettes" className="flex rounded-xl bg-surface p-1 shadow-panel">
           {([["", "Images seules"], ["fr", "FR"], ["en", "EN"], ["ar", "عربي"]] as [Langue, string][]).map(([l, t]) => (
             <button key={l || "img"} data-lg={l} aria-pressed={langue === l} onClick={() => setLangue(l)}
@@ -212,7 +222,41 @@ export default function EcranPatient() {
           {dernierEnvoi.map((id, i) => <img key={i} src={urlPicto(id)} alt={etiquette(id) || id} width={34} height={34} className="rounded-md bg-surface shadow-panel" />)}
         </div>
       )}
-      {guide && <GuideDouleur palette={palette} etiquette={etiquette} dir={dir} langue={langue}
+      {ordonnance && vue?.ordonnances && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-3 sm:items-center" onMouseDown={() => setOrdonnance(false)}>
+          <div role="dialog" aria-modal="true" aria-label="ordonnance" onMouseDown={(e) => e.stopPropagation()} dir={dir}
+            className="flex max-h-[92dvh] w-full max-w-3xl flex-col gap-4 overflow-y-auto rounded-3xl bg-surface p-5 shadow-pop">
+            <div className="flex items-center justify-between">
+              <h2 className="flex items-center gap-2 text-[22px] font-semibold text-ink">
+                <img src={urlPicto("MEDICAMENT")} alt="" width={40} height={40} />
+                {{ "": "", fr: "Mon ordonnance", en: "My prescription", ar: "وصفتي الطبية" }[langue]}
+              </h2>
+              <button onClick={() => setOrdonnance(false)} aria-label="Fermer" className="rounded-xl px-3 py-1 text-2xl leading-none text-ink-muted hover:bg-canvas">×</button>
+            </div>
+            {vue.ordonnances.map((o) => (
+              <article key={o.id} className="rounded-2xl p-3 ring-1 ring-line" data-ordonnance={o.id}>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {o.pictogrammes.map((id, i) => (
+                    <figure key={i} className="flex w-[84px] flex-col items-center gap-1">
+                      <img src={urlPicto(id)} alt={etiquette(id) || id} width={84} height={84} />
+                      <figcaption className="text-center text-xs text-ink-soft">{etiquette(id)}</figcaption>
+                    </figure>
+                  ))}
+                </div>
+                {langue === "fr" && <p className="mt-2 text-center text-[17px] text-ink" lang="fr">{o.medicament} {o.dose} — {o.posologie}</p>}
+                <p className="mt-1 text-center text-xs text-ink-muted">{o.prescripteur} · {o.date}</p>
+              </article>
+            ))}
+            <a id="telechargerOrdonnance" href="/api/patient/ordonnance.pdf" download
+              className="flex items-center justify-center gap-2 rounded-2xl bg-brand px-5 py-3 text-[16px] font-semibold text-white">
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 19h16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              {{ "": "PDF", fr: "Télécharger (PDF)", en: "Download (PDF)", ar: "تنزيل (PDF)" }[langue]}
+            </a>
+          </div>
+        </div>
+      )}
+      {guide && <GuideDouleur palette={palette} etiquette={etiquette} dir={dir} langue={langue} medicaments={vue?.medicaments ?? []}
+        libelleFr={(id: string) => libelleDe(id, "fr")}
         onFermer={() => setGuide(false)} onAjouter={(ids) => { setChoix((c) => [...c, ...ids].slice(0, MAX)); setGuide(false); }} />}
 
       {/* plateau de réponse */}
@@ -313,7 +357,7 @@ function MessageRecu({ vue, etiquette, dir, nomMedecin, incompris, langue }:
                 </figure>
               ))}
             </div>
-            {etiquette("OUI") && dernier.texte && (
+            {langue === "fr" && dernier.texte && (
               <p className="mx-auto mt-4 max-w-2xl rounded-xl bg-canvas px-4 py-2 text-center text-[17px] leading-snug text-ink" lang="fr">{dernier.texte}</p>
             )}
             <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
@@ -355,26 +399,52 @@ function MessageRecu({ vue, etiquette, dir, nomMedecin, incompris, langue }:
 
 // ------------------------------------------------------------------ guide « Décrire ma douleur »
 // Quatre questions simples, une à la fois : où, comment, combien, depuis quand. Chaque étape peut être passée.
-function GuideDouleur({ palette, etiquette, dir, langue, onFermer, onAjouter }: {
-  palette: Record<string, string[]>; etiquette: (id: string) => string; dir?: "rtl"; langue: Langue;
-  onFermer: () => void; onAjouter: (ids: string[]) => void;
+// Libellés (français) recherchés dans toute la base du patient : les identifiants changent d'une base à l'autre
+const UNITES = [["heure", "heures"], ["jour", "jours"], ["semaine", "semaines"], ["mois"], ["an", "ans", "année", "années", "an (année)"]];
+const SYMPTOMES = ["vomir", "vomissement", "nausée", "nausées", "diarrhée", "vertige", "vertiges", "fièvre", "fatigue", "frissons",
+  "toux", "selles", "caca", "selles molles", "selles pâteuses", "constipation", "sang", "mal de tête", "essoufflement",
+  "démangeaison", "brûlure", "gonflé", "ventre gonflé", "faiblesse", "transpiration", "perte d'appétit"];
+const SOINS = ["médicament", "comprimé", "gélule", "sirop", "piqûre", "injection", "pommade", "gouttes", "plante", "tisane", "inhalateur"];
+
+function GuideDouleur({ palette, etiquette, dir, langue, medicaments, libelleFr, onFermer, onAjouter }: {
+  palette: Record<string, string[]>; etiquette: (id: string) => string; dir?: "rtl"; langue: Langue; medicaments: string[];
+  libelleFr: (id: string) => string; onFermer: () => void; onAjouter: (ids: string[]) => void;
 }) {
   const T = (fr: string, en: string, ar: string) => ({ "": "", fr, en, ar }[langue]);
+  const tous = useMemo(() => Array.from(new Set(Object.values(palette).flat())), [palette]);
+  const parLibelle = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const id of tous) { const l = sansAccents(libelleFr(id) || ""); if (l && !m.has(l)) m.set(l, id); }
+    return m;
+  }, [tous, libelleFr]);
+  const trouver = (libelles: string[]) => libelles.map((l) => parLibelle.get(sansAccents(l))).filter((x): x is string => Boolean(x));
+  const unites = UNITES.map((u) => trouver(u)[0]).filter(Boolean) as string[];
+  const moments = (palette.temps ?? []).filter((id) => !unites.includes(id));
+  const symptomes = Array.from(new Set([...trouver(SYMPTOMES), ...(palette.symptomes ?? []), ...(palette.sensations ?? [])]));
+  const soins = Array.from(new Set([...medicaments.map((m) => `MEDICAMENT:${m}`), ...trouver(SOINS),
+    ...(palette.soins ?? []).filter((id) => id.startsWith("MEDICAMENT:"))]));
+  const NOMBRES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 30];
   const etapes = [
-    { cle: "ou", titre: T("Où avez-vous mal ?", "Where does it hurt?", "أين تشعر بالألم؟"), ids: [...(palette.corps ?? []), ...(palette.localisation ?? [])] },
-    { cle: "comment", titre: T("Comment est la douleur ?", "What is the pain like?", "كيف هو الألم؟"), ids: palette.douleur ?? [] },
-    { cle: "combien", titre: T("Combien avez-vous mal ? (0 = pas du tout, 10 = le pire)", "How much does it hurt? (0 = none, 10 = worst)", "ما شدة الألم؟ (0 لا شيء، 10 الأسوأ)"), ids: Array.from({ length: 11 }, (_, i) => `CHIFFRE:${i}`) },
-    { cle: "quand", titre: T("Depuis quand ?", "Since when?", "منذ متى؟"), ids: palette.temps ?? [] },
+    { cle: "ou", titre: T("Où avez-vous mal ?", "Where does it hurt?", "أين تشعر بالألم؟"), ids: [...(palette.corps ?? []), ...(palette.localisation ?? [])], max: 2 },
+    { cle: "comment", titre: T("Comment est la douleur ?", "What is the pain like?", "كيف هو الألم؟"), ids: palette.douleur ?? [], max: 1 },
+    { cle: "combien", titre: T("Combien avez-vous mal ? (0 = pas du tout, 10 = le pire)", "How much does it hurt? (0 = none, 10 = worst)", "ما شدة الألم؟ (0 لا شيء، 10 الأسوأ)"), ids: Array.from({ length: 11 }, (_, i) => `CHIFFRE:${i}`), max: 1 },
+    { cle: "duree", titre: T("Depuis combien de temps ? Choisissez un nombre, puis jours, semaines, mois…", "For how long? Pick a number, then days, weeks, months…", "منذ متى؟ اختر رقمًا ثم أيام أو أسابيع أو أشهر…"), ids: [], max: 1 },
+    { cle: "symptomes", titre: T("Avez-vous aussi… ? (plusieurs choix possibles)", "Do you also have…? (several choices)", "هل لديك أيضًا…؟ (عدة اختيارات)"), ids: symptomes, max: 6 },
+    { cle: "traitement", titre: T("Prenez-vous déjà un médicament ? (plusieurs choix possibles)", "Are you already taking a medicine? (several choices)", "هل تتناول دواءً بالفعل؟ (عدة اختيارات)"), ids: soins, max: 4 },
   ];
   const [n, setN] = useState(0);
   const [choix, setChoix] = useState<Record<string, string[]>>({});
+  const [nombre, setNombre] = useState<number | null>(null);
+  const [unite, setUnite] = useState<string | null>(null);
+  const [moment, setMoment] = useState<string | null>(null);
   const etape = etapes[n];
   const basculer = (id: string) => setChoix((c) => {
     const actuels = c[etape.cle] ?? [];
-    const multiple = etape.cle === "ou";
-    const suivant = actuels.includes(id) ? actuels.filter((x) => x !== id) : multiple ? [...actuels, id].slice(-2) : [id];
+    const suivant = actuels.includes(id) ? actuels.filter((x) => x !== id) : etape.max > 1 ? [...actuels, id].slice(-etape.max) : [id];
     return { ...c, [etape.cle]: suivant };
   });
+  const dureeChoisie = (nombre !== null && unite) || moment;
+  const termine = (cle: string) => (cle === "duree" ? Boolean(dureeChoisie) : (choix[cle] ?? []).length > 0);
   const terminer = () => {
     const ou = choix.ou ?? [], comment = choix.comment ?? [];
     const corps = ou.filter((x) => (palette.corps ?? []).includes(x));
@@ -385,42 +455,76 @@ function GuideDouleur({ palette, etiquette, dir, langue, onFermer, onAjouter }: 
       const image = cote[0] && combinable(`${corps[0]}+${douleur}`, cote[0]) ? `${corps[0]}+${douleur}+${cote[0]}` : `${corps[0]}+${douleur}`;
       ids.push(image, ...corps.slice(1));
       if (cote[0] && !image.includes(cote[0])) ids.push(cote[0]);
-    } else {
+    } else if (ou.length || comment.length || choix.combien?.length) {
       ids.push(...corps, douleur, ...cote.slice(0, 1));
     }
     if (choix.combien?.[0]) ids.push(choix.combien[0]);
-    if (choix.quand?.[0]) ids.push(choix.quand[0]);
+    // durée : « 3 » puis « semaine » (le traducteur lit « depuis 3 semaines ») ; ou un moment (hier, ce matin…)
+    if (nombre !== null && unite) {
+      const depuis = parLibelle.get("depuis");
+      if (depuis) ids.push(depuis);
+      ids.push(`CHIFFRE:${nombre}`, unite);
+    } else if (moment) ids.push(moment);
+    ids.push(...(choix.symptomes ?? []), ...(choix.traitement ?? []));
     onAjouter(ids);
   };
   const couleur = (i: number) => `hsl(${120 - i * 12} 70% 45%)`;
+  const tuile = (id: string, actif: boolean, onClick: () => void, cle?: string) => {
+    const chiffre = id.startsWith("CHIFFRE:") ? Number(id.slice(8)) : null;
+    return (
+      <button key={cle ?? id} data-guide={id} onClick={onClick}
+        className={cx("flex flex-col items-center gap-1.5 rounded-2xl px-2 pb-3 pt-3 shadow-panel transition", actif ? "bg-brand-50 ring-4 ring-brand" : "bg-surface ring-1 ring-line")}>
+        {chiffre !== null
+          ? <span className="grid h-[72px] w-[72px] place-items-center rounded-2xl text-3xl font-bold text-white sm:h-[84px] sm:w-[84px] sm:text-4xl"
+              style={{ background: etape.cle === "combien" ? couleur(chiffre) : "#334155" }}>{chiffre}</span>
+          : <img src={urlPicto(id)} alt="" width={84} height={84} className="h-[72px] w-[72px] sm:h-[84px] sm:w-[84px]" />}
+        <span dir={dir} className="text-center text-sm leading-tight text-ink-soft">{chiffre === null ? etiquette(id) : ""}</span>
+      </button>
+    );
+  };
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-3 sm:items-center" onMouseDown={onFermer}>
       <div role="dialog" aria-modal="true" aria-label="Décrire ma douleur" onMouseDown={(e) => e.stopPropagation()}
         className="flex max-h-[92dvh] w-full max-w-4xl flex-col rounded-3xl bg-surface p-5 shadow-pop">
         <div className="flex items-center justify-between gap-3">
-          <div className="flex gap-1.5">{etapes.map((e, i) => <span key={e.cle} className={cx("h-2.5 w-10 rounded-full", i <= n ? "bg-brand" : "bg-line")} />)}</div>
+          <div className="flex gap-1.5">{etapes.map((e, i) => (
+            <button key={e.cle} onClick={() => setN(i)} aria-label={`étape ${i + 1}`}
+              className={cx("h-2.5 w-8 rounded-full sm:w-10", i === n ? "bg-brand" : termine(e.cle) ? "bg-brand/50" : "bg-line")} />
+          ))}</div>
           <button onClick={onFermer} aria-label="Fermer" className="rounded-xl px-3 py-1 text-2xl leading-none text-ink-muted hover:bg-canvas">×</button>
         </div>
-        <h2 dir={dir} className="mt-3 text-[22px] font-semibold text-ink">{etape.titre}</h2>
-        <div className="mt-3 grid flex-1 grid-cols-[repeat(auto-fill,minmax(112px,1fr))] gap-3 overflow-y-auto pb-2">
-          {etape.ids.map((id) => {
-            const actif = (choix[etape.cle] ?? []).includes(id);
-            const chiffre = id.startsWith("CHIFFRE:") ? Number(id.slice(8)) : null;
-            return (
-              <button key={id} data-guide={id} onClick={() => basculer(id)}
-                className={cx("flex flex-col items-center gap-1.5 rounded-2xl px-2 pb-3 pt-3 shadow-panel transition", actif ? "bg-brand-50 ring-4 ring-brand" : "bg-surface ring-1 ring-line")}>
-                {chiffre !== null
-                  ? <span className="grid h-[84px] w-[84px] place-items-center rounded-2xl text-4xl font-bold text-white" style={{ background: couleur(chiffre) }}>{chiffre}</span>
-                  : <img src={urlPicto(id)} alt="" width={84} height={84} />}
-                <span dir={dir} className="text-center text-sm leading-tight text-ink-soft">{chiffre === null ? etiquette(id) : ""}</span>
-              </button>
-            );
-          })}
+        <h2 dir={dir} className="mt-3 text-[20px] font-semibold text-ink sm:text-[22px]">{etape.titre}</h2>
+        <div className="mt-3 flex-1 overflow-y-auto pb-2">
+          {etape.cle === "duree" ? (
+            <div className="flex flex-col gap-4">
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(88px,1fr))] gap-3" data-guide-nombres>
+                {NOMBRES.map((k) => tuile(`CHIFFRE:${k}`, nombre === k, () => { setNombre(nombre === k ? null : k); setMoment(null); }, `n${k}`))}
+              </div>
+              {unites.length > 0 ? (
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(112px,1fr))] gap-3" data-guide-unites>
+                  {unites.map((id) => tuile(id, unite === id, () => { setUnite(unite === id ? null : id); setMoment(null); }))}
+                </div>
+              ) : null}
+              {moments.length > 0 && (
+                <>
+                  <p dir={dir} className="text-sm text-ink-muted">{T("Ou bien :", "Or:", "أو:")}</p>
+                  <div className="grid grid-cols-[repeat(auto-fill,minmax(112px,1fr))] gap-3">
+                    {moments.map((id) => tuile(id, moment === id, () => { setMoment(moment === id ? null : id); setNombre(null); setUnite(null); }))}
+                  </div>
+                </>
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-3">
+              {etape.ids.map((id) => tuile(id, (choix[etape.cle] ?? []).includes(id), () => basculer(id)))}
+              {etape.ids.length === 0 && <p className="text-sm text-ink-muted">{T("Rien à choisir ici : passez.", "Nothing to choose here: skip.", "لا شيء هنا: تخطَّ.")}</p>}
+            </div>
+          )}
         </div>
         <div className="mt-3 flex items-center justify-between gap-3">
           <button onClick={() => (n ? setN(n - 1) : onFermer())} className="rounded-2xl px-5 py-3 text-[16px] font-medium text-ink-soft ring-1 ring-line">{n ? T("Retour", "Back", "رجوع") : T("Annuler", "Cancel", "إلغاء")}</button>
           {n < etapes.length - 1
-            ? <button id="guideSuivant" onClick={() => setN(n + 1)} className="rounded-2xl bg-brand px-6 py-3 text-[16px] font-semibold text-white">{(choix[etape.cle] ?? []).length ? T("Suivant", "Next", "التالي") : T("Passer", "Skip", "تخطَّ")}</button>
+            ? <button id="guideSuivant" onClick={() => setN(n + 1)} className="rounded-2xl bg-brand px-6 py-3 text-[16px] font-semibold text-white">{termine(etape.cle) ? T("Suivant", "Next", "التالي") : T("Passer", "Skip", "تخطَّ")}</button>
             : <button id="guideTerminer" onClick={terminer} className="rounded-2xl bg-ok px-6 py-3 text-[16px] font-semibold text-white">{T("Ajouter à ma réponse", "Add to my answer", "أضف إلى ردي")}</button>}
         </div>
       </div>

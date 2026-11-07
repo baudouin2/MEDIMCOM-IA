@@ -104,6 +104,11 @@ def test_recit_permis_et_agents_informes():
     # sens incertain : part seulement avec la confirmation signée du médecin
     d = _dire(app, "pendre")
     assert "Refusé" in app.evenement({"type": "validation", "auteur": "medecin", "medecin": "DR-001", "decision_id": d["id"]})
+    # « pendre » n'a (volontairement) aucun pictogramme : même confirmé, un message vide ne part jamais
+    assert "aucun pictogramme" in app.evenement({"type": "validation", "auteur": "medecin", "medecin": "DR-001",
+                                                  "decision_id": d["id"], "confirme_contexte": True})
+    app.evenement({"type": "modification_pictogrammes", "auteur": "medecin", "medecin": "DR-001", "decision_id": d["id"],
+                   "pictogrammes": ["QUESTION"]})
     app.evenement({"type": "validation", "auteur": "medecin", "medecin": "DR-001", "decision_id": d["id"], "confirme_contexte": True})
     assert d["statut"] == "envoye" and d["contexte_confirme_par"] == "DR-001"
     assert any(l["type"] == "contexte_confirme" for l in app.ctx.journal.lignes)

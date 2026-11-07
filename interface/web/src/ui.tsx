@@ -86,9 +86,12 @@ export function useLibelle() {
   }, [l]);
 }
 
+// Langue d'affichage des légendes (écran médecin : choisie par le médecin)
+export const ContexteLangue = createContext<"fr" | "en" | "ar">("fr");
 export function Picto({ id, taille = 56, legende, className }: { id: string; taille?: number; legende?: boolean; className?: string }) {
   const libelle = useLibelle();
-  const texte = libelle(id) || id;
+  const langue = useContext(ContexteLangue);
+  const texte = libelle(id, langue) || libelle(id) || id;
   return (
     <figure className={cx("flex flex-col items-center gap-1", className)} style={{ width: legende ? Math.max(taille, 64) : taille }}>
       <img src={urlPicto(id)} alt={texte} title={texte} width={taille} height={taille} className="select-none" draggable={false} />

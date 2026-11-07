@@ -56,7 +56,7 @@ PALETTE_DEMO = {
                   "DIARRHEE", "CONSTIPATION", "DEMANGEAISON", "BRULURE", "GONFLEMENT", "RHUME", "EVANOUISSEMENT"],
     "ressenti": ["PEUR", "INQUIET", "TRISTE", "CONTENT", "COLERE"],
     "intensite": [f"CHIFFRE:{i}" for i in range(0, 11)],
-    "temps": ["MATIN", "MIDI", "SOIR", "NUIT", "JOUR", "SEMAINE", "AVANT", "APRES", "PLUS", "MOINS"],
+    "temps": ["MATIN", "MIDI", "SOIR", "NUIT", "HEURE", "JOUR", "SEMAINE", "MOIS", "AN", "AVANT", "APRES", "PLUS", "MOINS"],
 }
 
 
@@ -311,6 +311,8 @@ class Application:
                 # nom du modèle en ligne s'il y en a un (le traducteur, premier agent, reste en politique écrite)
                 "mode": next((a.cerveau.nom for a in self.agents if not isinstance(a.cerveau, CerveauSimule)), self.agents[0].cerveau.nom),
                 "modele": self._etat_modele(),
+                "langue": getattr(self.ctx, "langue_medecin", "fr"),
+                "ordonnances": self._ordonnances(),
                 "dictee": "xai" if __import__("os").environ.get("XAI_API_KEY") else "navigateur",
                 "journal": c.journal.verifier(), "lignes": len(c.journal.lignes),
                 "etat": d.etat, "fil": d.fil[-40:],
@@ -329,6 +331,10 @@ class Application:
                          "etape": self.demo_index, "total": len(self.demo["evenements"]) if self.demo else 0,
                          "prochaine": prochaine},
             }
+
+    def _ordonnances(self) -> list[dict]:
+        from medimcom.ordonnance import ordonnances
+        return ordonnances(self.ctx)
 
     def _etat_modele(self) -> dict | None:
         """Le modèle en ligne répond-il ? (l'écran ne doit pas afficher « en ligne » quand Grok refuse la clé)"""
@@ -357,7 +363,39 @@ class Application:
                     "urgence": ("signalee" if urgence and urgence["valeur"] is True else
                                 "prise_en_charge" if urgences and urgences[-1]["donnees"]["urgence"] is False
                                 and any(e["donnees"].get("urgence") is True for e in urgences) else None),
-                    "attend_reponse": attend, "palette": palette(getattr(self.ctx.pictogrammeur, "notions", None))}
+                    "attend_reponse": attend, "palette": palette(getattr(self.ctx.pictogrammeur, "notions", None)),
+                    "medicaments": sorted(self.ctx.regles.kb["medicaments"]),     # « mes médicaments » dans le guide
+                    "ordonnances": self._ordonnances()}
+
+
+def fiche_lisible(ctx, q: str) -> dict | None:
+    """Fiche de la base de connaissances retrouvée par son identifiant ou par la référence courte affichée
+    (« UAE Federal Decree-Law 4/2016 (Medical Liability), Art. 3 ») : titre, texte, citation exacte, source officielle,
+    niveau de vérification, et extraits du texte complet s'il a été téléchargé (base_v2)."""
+    base = ctx.regles.base
+    norm = lambda t: re.sub(r"\W+", " ", (t or "").lower()).strip()  # noqa: E731
+    fid = q if q in base.fiches else next((i for i in base.fiches if norm(base.citer_court(i)) == norm(q)), None)
+    if fid is None:
+        fid = next((i for i in base.fiches if norm(q) and norm(q) in norm(base.citer_court(i))), None)
+    if fid is None:
+        return None
+    f = base.fiches[fid]
+    s = base.sources.get(f["source"], {})
+    extraits = []
+    if getattr(ctx, "corpus", None):
+        try:
+            # extraits du texte COMPLET de la même source seulement (même lien, ou titre qui partage ses mots), jamais un autre texte
+            mots_source = {w for w in re.findall(r"\w{5,}", (s.get("title") or "").lower())}
+            extraits = [{"citation": f"{x.get('citation')} : {x.get('texte', '')[:600]}", "lien": x.get("lien")}
+                        for x in ctx.corpus.chercher(f"{s.get('title', '')} {f.get('ref', '')} {f.get('title', '')}", k=6, type_="texte_officiel")
+                        if (x.get("lien") and x.get("lien") == s.get("url"))
+                        or len(mots_source & set(re.findall(r"\w{5,}", (x.get("titre") or "").lower()))) >= 2][:2]
+        except Exception:  # noqa: BLE001
+            extraits = []
+    return {"id": fid, "titre": f.get("title"), "ref": f.get("ref"), "texte": f.get("text"), "citation": f.get("quote"),
+            "base": f.get("basis"), "themes": f.get("themes", []), "source": s.get("title"), "lien": s.get("url"),
+            "verification": base.NIVEAUX[ctx.regles.langue if ctx.regles.langue in base.NIVEAUX else "fr"].get(s.get("verification"), s.get("verification")),
+            "reference": base.citer_court(fid), "extraits": extraits}
 
 
 def _libelles(ids, langue):
@@ -441,6 +479,24 @@ class Gestionnaire(BaseHTTPRequestHandler):
             return self._repondre(200, svg(ident), "image/svg+xml; charset=utf-8", cache=True)
         if chemin == "/api/patient":
             return self._repondre(200, self.app.vue_patient())
+        if chemin == "/api/patient/ordonnance.pdf":         # l'ordonnance remise au patient, téléchargeable
+            from medimcom.ordonnance import ordonnances, pdf
+            with self.app.verrou:
+                ords = ordonnances(self.app.ctx)
+                e = self.app.ctx.dossier.etat
+                patient = {"sexe": (e.get("sexe") or {}).get("valeur"), "âge": (e.get("age") or {}).get("valeur"),
+                           "poids (kg)": (e.get("poids") or {}).get("valeur"), "allergies": (e.get("allergies") or {}).get("valeur")}
+            if not ords:
+                return self._repondre(404, {"erreur": "aucune ordonnance remise au patient pour l'instant"})
+            donnees = pdf(ords, patient, self.app.session, self.app.ctx.regles.pays)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/pdf")
+            self.send_header("Content-Disposition", f'attachment; filename="ordonnance_{self.app.session}.pdf"')
+            self.send_header("Content-Length", str(len(donnees)))
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            self.wfile.write(donnees)
+            return None
         if chemin == "/credits":
             lignes = "".join(f"<tr><td>{html.escape(c['pictogramme'])}</td><td>{html.escape(c['attribution'])}</td>"
                              f"<td><a href=\"{html.escape(c['source'])}\" rel=\"noopener\">{html.escape(c['source'])}</a></td></tr>"
@@ -468,6 +524,11 @@ class Gestionnaire(BaseHTTPRequestHandler):
             return self._page("medecin")
         if chemin == "/api/medecin":
             return self._repondre(200, self.app.vue_medecin())
+        if chemin == "/api/fiche":                  # lire le texte de loi (ou la référence) cité par le juriste
+            q = parse_qs(urlparse(self.path).query).get("q", [""])[0].strip()
+            with self.app.verrou:
+                f = fiche_lisible(self.app.ctx, q)
+            return self._repondre(200 if f else 404, f or {"erreur": f"référence introuvable : {q}"})
         if chemin == "/journal":
             import exporter_journal
             with self.app.verrou, tempfile.TemporaryDirectory() as tmp:
@@ -559,6 +620,17 @@ class Gestionnaire(BaseHTTPRequestHandler):
             return {"retour": app.evenement({"type": "modification_pictogrammes", "auteur": "medecin", "medecin": medecin,
                                              "decision_id": int(c["decision_id"]),
                                              "pictogrammes": [str(p) for p in c.get("pictogrammes", [])][:12]})}
+        if chemin == "/api/medecin/langue":          # langue d'expression du médecin : agents, juriste, traduction
+            langue = str(c.get("langue", "fr"))[:2]
+            if langue not in ("fr", "en", "ar"):
+                raise ValueError("langue : fr, en ou ar")
+            with app.verrou:
+                app.ctx.langue_medecin = langue
+                app.ctx.regles.langue = "fr" if langue == "fr" else "en"      # textes des règles : français ou anglais
+                if hasattr(app.ctx.pictogrammeur, "langue_saisie"):
+                    app.ctx.pictogrammeur.langue_saisie = "en" if langue == "en" else "fr"
+                app.ctx.journal.ajouter("medecin", "langue", {"langue": langue})
+            return {"retour": {"fr": "Langue : français.", "en": "Language: English.", "ar": "اللغة: العربية."}[langue]}
         if chemin == "/api/medecin/accueil":         # informer le patient de l'aide de l'IA et de son droit de refuser
             if app.doublon(("accueil",)):
                 return {"retour": "Déjà transmis : la traduction arrive."}

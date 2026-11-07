@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import {
   AlertTriangle, BookOpen, Bot, Building2, Check, ChevronDown, ClipboardList, FileText, Gavel, Hand, Info,
@@ -10,8 +10,63 @@ import {
   combinable, envoyer, ErreurApi, jetonMedecin, lire, urlPicto,
   type Decision, type Echange, type MessageAgent, type Verdict, type VueMedecin,
 } from "./api";
-import { Bouton, Case, Champ, champ, cx, Dialogue, Panneau, Pastille, Picto, Statut, useLibelle, useRechercheSens, useNotifier, useSondage, Vide } from "./ui";
+import { Bouton, Case, Champ, champ, ContexteLangue, cx, Dialogue, Panneau, Pastille, Picto, Statut, useLibelle, useRechercheSens, useNotifier, useSondage, Vide } from "./ui";
 import { Marque } from "./Marque";
+
+
+// Langue d'expression du médecin : interface, légendes, juriste et agents (voir /api/medecin/langue)
+let LANGUE_UI: "fr" | "en" | "ar" = "fr";
+const TRAD: Record<string, [string, string]> = {
+  'Écran patient': ['Patient screen', 'شاشة المريض'],
+  'Journal': ['Log', 'السجل'],
+  'Crédits': ['Credits', 'الاعتمادات'],
+  'Nouvelle consultation': ['New consultation', 'استشارة جديدة'],
+  'Données fictives': ['Fictitious data', 'بيانات وهمية'],
+  'Conversation': ['Conversation', 'المحادثة'],
+  'Vos messages sont traduits en pictogrammes. Rien ne part sans votre validation.': ['Your messages are translated into pictograms. Nothing is sent without your approval.', 'تُترجم رسائلك إلى رموز مصورة. لا يُرسل شيء دون موافقتك.'],
+  "Informer le patient de l'IA": ['Tell the patient about the AI', 'إبلاغ المريض بالذكاء الاصطناعي'],
+  'Traduction en pictogrammes': ['Pictogram translation', 'الترجمة إلى رموز'],
+  'Annuler': ['Cancel', 'إلغاء'],
+  'Reformuler': ['Rephrase', 'إعادة الصياغة'],
+  'Modifier les pictogrammes': ['Edit pictograms', 'تعديل الرموز'],
+  'Valider et envoyer': ['Approve and send', 'اعتماد وإرسال'],
+  "Retirer de l'écran du patient": ['Remove from patient screen', 'إزالة من شاشة المريض'],
+  'Masquer': ['Hide', 'إخفاء'],
+  "C'est une question": ['It is a question', 'إنه سؤال'],
+  'Faire traduire': ['Translate', 'ترجمة'],
+  'Agents': ['Agents', 'الوكلاء'],
+  'Assistant': ['Assistant', 'المساعد'],
+  'Ordonnance': ['Prescription', 'الوصفة'],
+  'Droit': ['Law', 'القانون'],
+  'Crise': ['Crisis', 'أزمة'],
+  'Suggestions': ['Suggestions', 'اقتراحات'],
+  'Questions à poser': ['Questions to ask', 'أسئلة للطرح'],
+  'Ignorer': ['Dismiss', 'تجاهل'],
+  'Médicament': ['Medicine', 'الدواء'],
+  'Dose': ['Dose', 'الجرعة'],
+  "Mode d'emploi": ['Directions', 'طريقة الاستعمال'],
+  'Consultation': ['Consultation', 'الاستشارة'],
+  'Remplace': ['Replaces', 'يستبدل'],
+  'Prescrire': ['Prescribe', 'وصف'],
+  'Décisions': ['Decisions', 'القرارات'],
+  'Patient': ['Patient', 'المريض'],
+  'Informations cliniques': ['Clinical information', 'معلومات سريرية'],
+  'Fiche patient': ['Patient record', 'ملف المريض'],
+  'Enregistrer la fiche': ['Save record', 'حفظ الملف'],
+  'Demander au juriste': ['Ask the legal agent', 'اسأل الوكيل القانوني'],
+  'Envoyer la question': ['Send question', 'إرسال السؤال'],
+  'Votre message': ['Your message', 'رسالتك'],
+  'Pris en charge': ['Taken care of', 'تمت المعالجة'],
+  "Message d'accueil (IA, droit de refuser)": ['Welcome message (AI, right to refuse)', 'رسالة ترحيب (الذكاء الاصطناعي، حق الرفض)'],
+  'Demander au patient': ['Ask the patient', 'اسأل المريض'],
+  'Ordonnance du patient (PDF)': ['Patient prescription (PDF)', 'وصفة المريض (PDF)'],
+  'Texte cité par le juriste': ['Text cited by the legal agent', 'النص الذي استشهد به الوكيل القانوني'],
+  'Ouvrir la source officielle': ['Open the official source', 'فتح المصدر الرسمي'],
+  'Extrait exact': ['Exact quote', 'الاقتباس الحرفي'],
+  'Résumé': ['Summary', 'ملخص'],
+  'Langue': ['Language', 'اللغة'],
+};
+const tr = (fr: string) => (LANGUE_UI === "fr" ? fr : (TRAD[fr]?.[LANGUE_UI === "en" ? 0 : 1] ?? fr));
 
 // ------------------------------------------------------------------ vocabulaire affiché
 const FAITS: Record<string, string> = {
@@ -22,7 +77,7 @@ const FAITS: Record<string, string> = {
   antecedents: "Antécédents (texte libre)", maladies_connues: "Maladies repérées", autres_informations: "Autres informations",
   poids: "Poids", maladie_renale: "Maladie rénale", maladie_hepatique: "Maladie du foie", ulcere_digestif: "Ulcère digestif",
   anticoagulant: "Sous anticoagulant", maladie_cardiaque: "Maladie cardiaque", allaitement: "Allaitement",
-  medicaments_declares: "Médicaments déclarés par le patient",
+  medicaments_declares: "Médicaments déclarés par le patient", duree_symptomes: "Depuis",
 };
 const ORDRE_FAITS = Object.keys(FAITS);
 // Informations manquantes avant une prescription : réponse directe du médecin, ou question au patient (traduite, validée)
@@ -100,20 +155,25 @@ export default function EcranMedecin() {
     }
   }, [jeton, notifier, rafraichir]);
 
+  const [loi, setLoi] = useState<string | null>(null);
   if (erreur instanceof ErreurApi && erreur.statut === 403) return <AccesRefuse />;
   if (!vue) return <Chargement erreur={!!erreur} />;
+  LANGUE_UI = (vue.langue as "fr" | "en" | "ar") || "fr";
 
   const urgence = vue.etat.urgence?.valeur === true;
   return (
-    <div className="flex min-h-dvh flex-col xl:h-dvh">
-      <BarreHaute vue={vue} jeton={jeton} medecin={medecin} setMedecin={setMedecin} onReinit={() => setDialogue({ type: "reinit" })} />
+    <ContexteLangue.Provider value={LANGUE_UI}>
+    <ContexteLoi.Provider value={setLoi}>
+    <div className="flex min-h-dvh flex-col xl:h-dvh" dir={LANGUE_UI === "ar" ? "rtl" : undefined}>
+      <BarreHaute vue={vue} jeton={jeton} medecin={medecin} setMedecin={setMedecin} onReinit={() => setDialogue({ type: "reinit" })}
+        onLangue={(l) => poster("/api/medecin/langue", { langue: l })} />
       {urgence && (
         <div id="urgence" role="alert" className="flex items-center gap-3 bg-danger px-4 py-2.5 text-white sm:px-6">
           <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/15"><Siren size={18} /></span>
           <p className="flex-1 text-sm"><b className="font-semibold">Urgence signalée par le patient.</b> Il a appuyé sur le bouton d'urgence : prenez-le en charge en priorité.
             Son écran lui indique que vous êtes prévenu.</p>
           <Bouton id="urgencePriseEnCharge" taille="sm" variante="secondary" disabled={occupe} icone={<Check size={14} />}
-            onClick={() => poster("/api/medecin/urgence_prise_en_charge", { medecin })}>Pris en charge</Bouton>
+            onClick={() => poster("/api/medecin/urgence_prise_en_charge", { medecin })}>{tr('Pris en charge')}</Bouton>
         </div>
       )}
       {vue.demo.actif && <BarreDemo vue={vue} occupe={occupe} onSuivant={() => poster("/api/demo/suivant")} />}
@@ -147,19 +207,71 @@ export default function EcranMedecin() {
         description="Le dossier, la conversation et le journal actuels sont remplacés. L'écran patient repart de zéro."
         onFermer={() => setDialogue(null)}
         actions={<>
-          <Bouton onClick={() => setDialogue(null)}>Annuler</Bouton>
+          <Bouton onClick={() => setDialogue(null)}>{tr('Annuler')}</Bouton>
           <Bouton id="confirmerReinit" data-defaut variante="primary" icone={<RotateCcw size={15} />}
-            onClick={() => { setDialogue(null); poster("/api/reinitialiser"); }}>Nouvelle consultation</Bouton>
+            onClick={() => { setDialogue(null); poster("/api/reinitialiser"); }}>{tr('Nouvelle consultation')}</Bouton>
         </>} />
+      {loi && <TexteLoi q={loi} jeton={jeton} onFermer={() => setLoi(null)} />}
     </div>
+    </ContexteLoi.Provider>
+    </ContexteLangue.Provider>
+  );
+}
+
+// ------------------------------------------------------------------ textes de loi cités par le juriste
+const ContexteLoi = createContext<(q: string) => void>(() => {});
+
+/** Références (« A ; B ») cliquables : le médecin lit le texte cité. */
+function Refs({ texte, className }: { texte: string; className?: string }) {
+  const ouvrir = useContext(ContexteLoi);
+  const parts = [...new Set((texte || "").split(" ; ").map((x) => x.trim()).filter(Boolean))];
+  return (
+    <span className={className}>
+      {parts.map((r, i) => {
+        const lisible = !/^(Garde-fou|Lecture|MEDIMCOM|Sûreté)/.test(r) && r !== "-";
+        return (
+          <span key={i}>
+            {i > 0 && " ; "}
+            {lisible ? <button type="button" data-ref={r} onClick={() => ouvrir(r)} className="text-left underline decoration-dotted underline-offset-2 hover:text-action">{r}</button> : r}
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
+type Fiche = { id: string; titre: string; ref: string; texte: string; citation?: string; base?: string; source?: string; lien?: string;
+  verification?: string; reference: string; extraits: { citation: string; lien?: string }[] };
+
+function TexteLoi({ q, jeton, onFermer }: { q: string; jeton: string; onFermer: () => void }) {
+  const [f, setF] = useState<Fiche | null>(null);
+  const [erreur, setErreur] = useState(false);
+  useEffect(() => { lire<Fiche>(`/api/fiche?q=${encodeURIComponent(q)}`, jeton).then(setF).catch(() => setErreur(true)); }, [q, jeton]);
+  return (
+    <Dialogue ouvert titre={tr("Texte cité par le juriste")} description={f?.reference ?? q} onFermer={onFermer}
+      actions={<>
+        {f?.lien && <a href={f.lien} target="_blank" rel="noopener noreferrer" className="inline-flex h-9 items-center rounded-lg px-3.5 text-sm font-medium text-action hover:bg-action-50">{tr("Ouvrir la source officielle")}</a>}
+        <Bouton onClick={onFermer}>OK</Bouton>
+      </>}>
+      {erreur ? <p className="text-sm text-ink-muted">Référence introuvable dans la base.</p> : !f ? <p className="text-sm text-ink-muted">…</p> : (
+        <div className="flex flex-col gap-3 text-sm" data-fiche={f.id}>
+          <p className="font-semibold text-ink">{f.titre} <span className="font-normal text-ink-muted">({f.ref})</span></p>
+          <div><p className="text-xs font-medium text-ink-muted">{tr("Résumé")}</p><p className="text-ink-soft" lang="en">{f.texte}</p></div>
+          {f.citation && <div><p className="text-xs font-medium text-ink-muted">{tr("Extrait exact")}</p>
+            <blockquote className="border-l-4 border-action/40 pl-3 italic text-ink" lang="en">« {f.citation} »</blockquote></div>}
+          {f.extraits.map((x, i) => <blockquote key={i} className="border-l-4 border-line pl-3 text-xs text-ink-soft">{x.citation}</blockquote>)}
+          <p className="text-xs text-ink-muted">{f.source} · {f.verification} · {f.base}</p>
+        </div>
+      )}
+    </Dialogue>
   );
 }
 
 type Poster = (url: string, corps?: object) => Promise<unknown>;
 
 // ------------------------------------------------------------------ barre haute
-function BarreHaute({ vue, jeton, medecin, setMedecin, onReinit }:
-  { vue: VueMedecin; jeton: string; medecin: string; setMedecin: (m: string) => void; onReinit: () => void }) {
+function BarreHaute({ vue, jeton, medecin, setMedecin, onReinit, onLangue }:
+  { vue: VueMedecin; jeton: string; medecin: string; setMedecin: (m: string) => void; onReinit: () => void; onLangue: (l: string) => void }) {
   const intact = vue.journal === "Journal intact";
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-surface/95 backdrop-blur">
@@ -168,7 +280,7 @@ function BarreHaute({ vue, jeton, medecin, setMedecin, onReinit }:
           <Marque />
           <span className="hidden h-5 w-px bg-line xl:block" />
           <div className="hidden xl:block">
-            <p className="text-sm font-semibold leading-tight text-ink">Consultation</p>
+            <p className="text-sm font-semibold leading-tight text-ink">{tr('Consultation')}</p>
             <p className="text-2xs text-ink-muted tabulaire">Session {vue.session}</p>
           </div>
         </div>
@@ -194,18 +306,26 @@ function BarreHaute({ vue, jeton, medecin, setMedecin, onReinit }:
               </span>
             </Pastille>
           ) : null}
-          <Pastille ton="warn" icone={<Lock size={12} />}>Données fictives</Pastille>
+          <Pastille ton="warn" icone={<Lock size={12} />}>{tr('Données fictives')}</Pastille>
         </div>
         <div className="ml-auto flex flex-wrap items-center gap-1">
           <a href="/patient" target="_blank" rel="noopener" title="Ouvrir l'écran patient" className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-ink-soft hover:bg-canvas hover:text-ink">
-            <MonitorSmartphone size={16} /><span className="hidden 2xl:inline">Écran patient</span>
+            <MonitorSmartphone size={16} /><span className="hidden 2xl:inline">{tr('Écran patient')}</span>
           </a>
           <a href={`/journal?jeton=${encodeURIComponent(jeton)}`} target="_blank" rel="noopener" title="Journal lisible" className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-ink-soft hover:bg-canvas hover:text-ink">
-            <ScrollText size={16} /><span className="hidden 2xl:inline">Journal</span>
+            <ScrollText size={16} /><span className="hidden 2xl:inline">{tr('Journal')}</span>
           </a>
           <a href="/credits" target="_blank" rel="noopener" title="Crédits des pictogrammes" className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-ink-soft hover:bg-canvas hover:text-ink">
-            <FileText size={16} /><span className="hidden 2xl:inline">Crédits</span>
+            <FileText size={16} /><span className="hidden 2xl:inline">{tr('Crédits')}</span>
           </a>
+          <div role="group" aria-label={tr("Langue")} className="flex rounded-lg bg-canvas p-0.5 ring-1 ring-line" id="langueMedecin">
+            {(["fr", "en", "ar"] as const).map((l) => (
+              <button key={l} data-langue={l} aria-pressed={LANGUE_UI === l} onClick={() => onLangue(l)}
+                className={cx("h-8 rounded-md px-2.5 text-xs font-semibold", LANGUE_UI === l ? "bg-brand text-white" : "text-ink-soft hover:bg-surface")}>
+                {l === "ar" ? "عربي" : l.toUpperCase()}
+              </button>
+            ))}
+          </div>
           <span className="mx-1 hidden h-5 w-px bg-line md:block" />
           <label className="relative flex items-center">
             <span className="sr-only">Médecin connecté</span>
@@ -216,7 +336,7 @@ function BarreHaute({ vue, jeton, medecin, setMedecin, onReinit }:
             </select>
             <ChevronDown size={15} className="pointer-events-none absolute right-2.5 text-ink-muted" />
           </label>
-          <Bouton id="reinit" onClick={onReinit} icone={<RotateCcw size={15} />}>Nouvelle consultation</Bouton>
+          <Bouton id="reinit" onClick={onReinit} icone={<RotateCcw size={15} />}>{tr('Nouvelle consultation')}</Bouton>
         </div>
       </div>
     </header>
@@ -254,7 +374,7 @@ function DossierPatient({ vue, occupe, poster }: { vue: VueMedecin; occupe: bool
         <div className="flex items-center gap-3 px-4 pb-3 pt-4">
           <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand-50 text-brand"><UserRound size={22} /></div>
           <div className="min-w-0">
-            <h2 className="text-[15px] font-semibold text-ink">Patient</h2>
+            <h2 className="text-[15px] font-semibold text-ink">{tr('Patient')}</h2>
             <p className="text-sm text-ink-muted">{identite || "Identité non renseignée"}</p>
           </div>
         </div>
@@ -266,7 +386,7 @@ function DossierPatient({ vue, occupe, poster }: { vue: VueMedecin; occupe: bool
         </div>
         <div className="border-t border-line">
           <div className="flex items-center justify-between px-4 pb-1 pt-3">
-            <h3 className="text-[13px] font-semibold text-ink">Informations cliniques</h3>
+            <h3 className="text-[13px] font-semibold text-ink">{tr('Informations cliniques')}</h3>
             {aConfirmer > 0 && <span className="text-xs text-warn">{aConfirmer} à confirmer</span>}
           </div>
           {faits.length ? (
@@ -354,7 +474,7 @@ function FichePatient({ occupe, poster }: { occupe: boolean; poster: Poster }) {
           <Case id="pictos" coche={f.pictos} onChange={maj("pictos")}>Communique en pictogrammes</Case>
           <Case id="ia" coche={f.ia} onChange={maj("ia")}>Informé qu'une IA aide le médecin</Case>
         </div>
-        <Bouton id="faits" variante="secondary" disabled={occupe} className="mt-1 w-full" onClick={enregistrer}>Enregistrer la fiche</Bouton>
+        <Bouton id="faits" variante="secondary" disabled={occupe} className="mt-1 w-full" onClick={enregistrer}>{tr('Enregistrer la fiche')}</Bouton>
       </div>
     </Panneau>
   );
@@ -386,8 +506,8 @@ function Conversation({ vue, occupe, poster, medecin, brouillon, onReformuler, o
     <section className="flex min-h-[560px] flex-col rounded-xl bg-surface shadow-panel xl:min-h-0">
       <header className="flex items-center justify-between gap-3 border-b border-line px-5 py-3">
         <div>
-          <h2 className="text-[15px] font-semibold text-ink">Conversation</h2>
-          <p className="text-xs text-ink-muted">Vos messages sont traduits en pictogrammes. Rien ne part sans votre validation.</p>
+          <h2 className="text-[15px] font-semibold text-ink">{tr('Conversation')}</h2>
+          <p className="text-xs text-ink-muted">{tr('Vos messages sont traduits en pictogrammes. Rien ne part sans votre validation.')}</p>
         </div>
         <div className="flex items-center gap-2">
           {vue.etat.informe_usage_ia?.valeur === false ? (
@@ -395,7 +515,7 @@ function Conversation({ vue, occupe, poster, medecin, brouillon, onReformuler, o
           ) : vue.etat.informe_usage_ia?.valeur !== true && !vue.questions.some((q) => q.cle === "informe_usage_ia" && ["en_attente", "posee"].includes(q.statut)) && (
             <Bouton id="informerIA" taille="sm" variante="ghost" disabled={occupe} icone={<Info size={14} />}
               title="Message d'accueil en pictogrammes : un ordinateur aide à traduire, le médecin décide, le patient peut refuser. Sa réponse est enregistrée."
-              onClick={() => poster("/api/medecin/accueil")}>Informer le patient de l'IA</Bouton>
+              onClick={() => poster("/api/medecin/accueil")}>{tr("Informer le patient de l'IA")}</Bouton>
           )}
           {masques > 0 && (
             <button className="text-xs text-ink-muted underline-offset-2 hover:text-ink hover:underline" onClick={() => setVoirMasques((x) => !x)}>
@@ -444,7 +564,7 @@ function ElementEchange({ e }: { e: Echange }) {
       <div className="flex max-w-[92%] gap-3 self-start">
         <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-canvas text-ink-soft ring-1 ring-line"><Hand size={15} /></div>
         <div className="min-w-0">
-          <p className="mb-1 text-xs text-ink-muted"><span className="font-medium text-ink-soft">Patient</span>{e.en_reponse_a ? ` répond à « ${e.en_reponse_a} »` : ""}</p>
+          <p className="mb-1 text-xs text-ink-muted"><span className="font-medium text-ink-soft">{tr('Patient')}</span>{e.en_reponse_a ? ` répond à « ${e.en_reponse_a} »` : ""}</p>
           <div className="rounded-2xl rounded-tl-md border border-line bg-surface p-3 shadow-tile">
             <div className="flex flex-wrap gap-2">{e.pictogrammes.map((p, i) => <Picto key={i} id={p} taille={60} legende />)}</div>
           </div>
@@ -491,11 +611,11 @@ function ElementDecision({ d, occupe, nomMedecin, parAssistant, onValider, onAnn
   }
   const attente = d.statut === "attente_validation";
   const aConfirmer = attente ? d.precontrole?.constats.find((c) => c.regle === "CONTEXTE-A-CONFIRMER" && c.niveau === "A_REVOIR") : undefined;
-  const origine = parAssistant ? "Question proposée par l'assistant (à valider ou annuler)" : d.contenu_type === "traitement" ? "Consignes de traitement" : "Votre message";
+  const origine = parAssistant ? "Question proposée par l'assistant (à valider ou annuler)" : d.contenu_type === "traitement" ? "Consignes de traitement" : tr("Votre message");
   const actionsFin = (avecReformuler: boolean) => (
     <div className="flex flex-wrap gap-1.5">
-      {avecReformuler && d.texte && <Bouton taille="sm" variante="ghost" data-reformuler={d.id} disabled={occupe} onClick={onReformuler} icone={<PencilLine size={14} />}>Reformuler</Bouton>}
-      <Bouton taille="sm" variante="ghost" data-masquer={d.id} disabled={occupe} onClick={onMasquer} icone={<EyeOff size={14} />}>Masquer</Bouton>
+      {avecReformuler && d.texte && <Bouton taille="sm" variante="ghost" data-reformuler={d.id} disabled={occupe} onClick={onReformuler} icone={<PencilLine size={14} />}>{tr('Reformuler')}</Bouton>}
+      <Bouton taille="sm" variante="ghost" data-masquer={d.id} disabled={occupe} onClick={onMasquer} icone={<EyeOff size={14} />}>{tr('Masquer')}</Bouton>
     </div>
   );
   const combinee = (d.pictogrammes ?? []).some((x) => x.includes("+"));
@@ -505,7 +625,7 @@ function ElementDecision({ d, occupe, nomMedecin, parAssistant, onValider, onAnn
       {d.texte && <div className="rounded-2xl rounded-tr-md bg-brand px-3.5 py-2 text-sm text-white">{d.texte}</div>}
       <div className={cx("w-full rounded-2xl border bg-surface p-3", attente ? "border-action ring-4 ring-action/10" : "border-line shadow-tile")}>
         <div className="mb-2 flex items-center justify-between gap-2">
-          <p className="flex items-center gap-1.5 text-xs text-ink-muted"><Languages size={13} />Traduction en pictogrammes</p>
+          <p className="flex items-center gap-1.5 text-xs text-ink-muted"><Languages size={13} />{tr('Traduction en pictogrammes')}</p>
           <Statut statut={d.statut} />
         </div>
         <div className="flex flex-wrap gap-2">{(d.pictogrammes ?? []).map((p, i) => <Picto key={i} id={p} taille={56} legende />)}</div>
@@ -542,15 +662,15 @@ function ElementDecision({ d, occupe, nomMedecin, parAssistant, onValider, onAnn
             </p>
             <div className="flex flex-wrap gap-2">
               <Bouton taille="sm" variante="ghost" data-rejeter={d.id} disabled={occupe} onClick={onAnnuler} icone={<X size={14} />}
-                title="Annuler : ce message ne partira pas">Annuler</Bouton>
+                title="Annuler : ce message ne partira pas">{tr('Annuler')}</Bouton>
               <Bouton taille="sm" variante="ghost" data-reformuler={d.id} disabled={occupe} onClick={onReformuler} icone={<PencilLine size={14} />}
-                title="Annuler et remettre le texte dans la zone de saisie pour le corriger">Reformuler</Bouton>
-              <Bouton taille="sm" variante="secondary" data-modifier={d.id} disabled={occupe} onClick={onModifier} icone={<Languages size={14} />}>Modifier les pictogrammes</Bouton>
+                title="Annuler et remettre le texte dans la zone de saisie pour le corriger">{tr('Reformuler')}</Bouton>
+              <Bouton taille="sm" variante="secondary" data-modifier={d.id} disabled={occupe} onClick={onModifier} icone={<Languages size={14} />}>{tr('Modifier les pictogrammes')}</Bouton>
               {aConfirmer ? (
                 <Bouton taille="sm" variante="success" data-valider={d.id} data-confirmer={d.id} disabled={occupe} onClick={() => onValider(true)} icone={<Send size={14} />}
                   title="Votre confirmation et votre nom sont enregistrés au journal">Je confirme : ni consigne ni incitation, envoyer</Bouton>
               ) : (
-                <Bouton taille="sm" variante="success" data-valider={d.id} disabled={occupe} onClick={() => onValider()} icone={<Send size={14} />}>Valider et envoyer</Bouton>
+                <Bouton taille="sm" variante="success" data-valider={d.id} disabled={occupe} onClick={() => onValider()} icone={<Send size={14} />}>{tr('Valider et envoyer')}</Bouton>
               )}
             </div>
           </div>
@@ -560,7 +680,7 @@ function ElementDecision({ d, occupe, nomMedecin, parAssistant, onValider, onAnn
             <ul className="mt-1.5 flex flex-col gap-1">
               {d.precontrole.constats.filter((c) => c.niveau === "BLOQUE" || (c.niveau === "A_REVOIR" && c.detail.startsWith("Pour ce patient"))).map((c, i) => (
                 <li key={i} className="text-[13px] leading-snug text-ink">{c.detail}
-                  <span className="mt-0.5 flex items-start gap-1 text-2xs text-ink-muted"><BookOpen size={11} className="mt-px shrink-0" />{c.base === "SURETE" ? "Sûreté du système" : c.base === "LOI" ? "Loi" : c.base === "NORME" ? "Norme" : "Recommandation clinique"} · {c.reference_courte}</span>
+                  <span className="mt-0.5 flex items-start gap-1 text-2xs text-ink-muted"><BookOpen size={11} className="mt-px shrink-0" />{c.base === "SURETE" ? "Sûreté du système" : c.base === "LOI" ? "Loi" : c.base === "NORME" ? "Norme" : "Recommandation clinique"} · <Refs texte={c.reference_courte} /></span>
                 </li>
               ))}
             </ul>
@@ -582,7 +702,7 @@ function ElementDecision({ d, occupe, nomMedecin, parAssistant, onValider, onAnn
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
             <p className="flex items-center gap-1 text-xs text-ok"><Check size={13} />Envoyé au patient, validé par {nomMedecin(d.valide_par)}</p>
             <Bouton taille="sm" variante="ghost" data-retirer={d.id} disabled={occupe} onClick={onRetirer} icone={<Undo2 size={14} />}
-              title="Le patient ne verra plus ce message (le journal le garde)">Retirer de l'écran du patient</Bouton>
+              title="Le patient ne verra plus ce message (le journal le garde)">{tr("Retirer de l'écran du patient")}</Bouton>
           </div>
         )}
       </div>
@@ -746,7 +866,7 @@ function Compositeur({ vue, occupe, poster, brouillon, onEnvoye }:
         <label htmlFor="message" className="sr-only">Message au patient</label>
         <textarea id="message" rows={2} value={texte} onChange={(e) => setTexte(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) envoyerTexte(); }}
-          placeholder="Écrire, ou cliquer sur le micro et parler, par exemple : Avez-vous mal au ventre ?"
+          placeholder={LANGUE_UI === "en" ? "Write, or click the microphone and speak, e.g.: Do you have stomach pain?" : "Écrire, ou cliquer sur le micro et parler, par exemple : Avez-vous mal au ventre ?"}
           className="block w-full resize-none rounded-t-xl border-0 bg-transparent px-3.5 pt-3 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:ring-0" />
         {(navigateur.provisoire || erreur) && (
           <p className={cx("px-3.5 pb-1 text-xs", erreur ? "text-danger" : "italic text-ink-muted")}>{erreur || navigateur.provisoire}</p>
@@ -765,7 +885,7 @@ function Compositeur({ vue, occupe, poster, brouillon, onEnvoye }:
               </select>
             </div>
           ) : <span className="text-xs text-ink-faint">Dictée : ajoutez la clé xAI ou utilisez Chrome</span>}
-          <Case id="estQuestion" coche={question} onChange={setQuestion}>C'est une question</Case>
+          <Case id="estQuestion" coche={question} onChange={setQuestion}>{tr("C'est une question")}</Case>
           <label className="flex items-center gap-2 whitespace-nowrap text-[13px] text-ink-muted">
             Enregistrer la réponse comme
             <select id="cle" value={cle} onChange={(e) => setCle(e.target.value)} className={cx(champ, "h-8 w-auto py-0 pr-7 text-[13px]")}>
@@ -774,7 +894,7 @@ function Compositeur({ vue, occupe, poster, brouillon, onEnvoye }:
             </select>
           </label>
           <Bouton id="envoyerMessage" variante="primary" className="ml-auto" disabled={occupe || !texte.trim() || texte.trim() === envoye} onClick={envoyerTexte} icone={<Languages size={15} />}>
-            Faire traduire
+            {tr("Faire traduire")}
           </Bouton>
         </div>
       </div>
@@ -791,11 +911,11 @@ function Inspecteur({ vue, occupe, poster, medecin, onMaintenir }:
   const alertes = vue.messages.filter((m) => m.type === "alerte").length;
   const crise = vue.mesures.length + vue.incidents.length > 0;
   const onglets: { cle: Onglet; nom: string; icone: ReactNode; nombre?: number; ton?: "danger" }[] = [
-    { cle: "agents", nom: "Agents", icone: <Bot size={15} />, nombre: alertes || undefined, ton: "danger" },
-    { cle: "assistant", nom: "Assistant", icone: <Sparkles size={15} />, nombre: suggestions.length || undefined },
-    { cle: "ordonnance", nom: "Ordonnance", icone: <Pill size={15} /> },
-    { cle: "droit", nom: "Droit", icone: <Gavel size={15} />, nombre: vue.lacunes.length || undefined },
-    ...(crise ? [{ cle: "crise" as Onglet, nom: "Crise", icone: <Siren size={15} /> }] : []),
+    { cle: "agents", nom: tr("Agents"), icone: <Bot size={15} />, nombre: alertes || undefined, ton: "danger" },
+    { cle: "assistant", nom: tr("Assistant"), icone: <Sparkles size={15} />, nombre: suggestions.length || undefined },
+    { cle: "ordonnance", nom: tr("Ordonnance"), icone: <Pill size={15} /> },
+    { cle: "droit", nom: tr("Droit"), icone: <Gavel size={15} />, nombre: vue.lacunes.length || undefined },
+    ...(crise ? [{ cle: "crise" as Onglet, nom: tr("Crise"), icone: <Siren size={15} /> }] : []),
   ];
   const [onglet, setOnglet] = useState<Onglet>("agents");
   return (
@@ -869,7 +989,7 @@ function CarteMessage({ m }: { m: MessageAgent }) {
       {refs.length > 0 && (
         <ul className="mt-2 flex flex-col gap-1">
           {[...new Set(refs.flatMap((r) => r.split(" ; ")))].map((r, i) => (
-            <li key={i} className="flex items-start gap-1.5 text-xs text-ink-muted"><BookOpen size={12} className="mt-0.5 shrink-0" /><span>{r}</span></li>
+            <li key={i} className="flex items-start gap-1.5 text-xs text-ink-muted"><BookOpen size={12} className="mt-0.5 shrink-0" /><Refs texte={r} /></li>
           ))}
         </ul>
       )}
@@ -887,13 +1007,13 @@ function OngletAgents({ vue, occupe, poster }: { vue: VueMedecin; occupe: boolea
           : <Vide icone={<Bot size={20} />} titre="Aucun message des agents" texte="Le juriste, l'assistant et le traducteur vous écrivent ici quand une décision les concerne." />}
       </div>
       <div className="sticky bottom-0 border-t border-line bg-surface p-4">
-        <Champ libelle="Demander au juriste" htmlFor="questionJuriste">
+        <Champ libelle={tr("Demander au juriste")} htmlFor="questionJuriste">
           <textarea id="questionJuriste" rows={2} value={q} onChange={(e) => setQ(e.target.value)}
             placeholder="Par exemple : un consentement donné en pictogrammes est-il valable ?" className={cx(champ, "resize-none py-2")} />
         </Champ>
         <div className="mt-2 flex justify-end">
           <Bouton id="demanderJuriste" variante="secondary" taille="sm" icone={<Scale size={14} />} disabled={occupe || !q.trim()}
-            onClick={async () => { if (await poster("/api/medecin/juriste", { texte: q.trim() })) setQ(""); }}>Envoyer la question</Bouton>
+            onClick={async () => { if (await poster("/api/medecin/juriste", { texte: q.trim() })) setQ(""); }}>{tr('Envoyer la question')}</Bouton>
         </div>
       </div>
     </div>
@@ -921,7 +1041,7 @@ function OngletAssistant({ vue, occupe, poster }: { vue: VueMedecin; occupe: boo
           : <>L'assistant suit la consultation en temps réel : chaque message, prescription et réponse du patient est confronté à sa fiche.</>}</span>
       </p>
       <div>
-        <h3 className="mb-2 text-[13px] font-semibold text-ink">Suggestions</h3>
+        <h3 className="mb-2 text-[13px] font-semibold text-ink">{tr('Suggestions')}</h3>
         <p className="mb-3 text-xs text-ink-muted">L'assistant propose, vous décidez. Ignorer une suggestion est enregistré.</p>
         <div id="suggestions" className="flex flex-col gap-2.5">
           {suggestions.length ? suggestions.map((s) => {
@@ -932,7 +1052,7 @@ function OngletAssistant({ vue, occupe, poster }: { vue: VueMedecin; occupe: boo
                 <p className="mt-1 text-[13px] text-ink-muted">{s.raison}</p>
                 <div className="mt-2.5 flex items-end justify-between gap-3">
                   <p className="flex items-start gap-1.5 text-xs text-ink-muted"><BookOpen size={13} className="mt-px shrink-0" />{source}</p>
-                  <Bouton taille="sm" variante="ghost" data-ignorer={s.id} disabled={occupe} onClick={() => poster("/api/medecin/ignorer", { suggestion_id: s.id })}>Ignorer</Bouton>
+                  <Bouton taille="sm" variante="ghost" data-ignorer={s.id} disabled={occupe} onClick={() => poster("/api/medecin/ignorer", { suggestion_id: s.id })}>{tr('Ignorer')}</Bouton>
                 </div>
               </article>
             );
@@ -940,7 +1060,7 @@ function OngletAssistant({ vue, occupe, poster }: { vue: VueMedecin; occupe: boo
         </div>
       </div>
       <div>
-        <h3 className="mb-2 text-[13px] font-semibold text-ink">Questions à poser</h3>
+        <h3 className="mb-2 text-[13px] font-semibold text-ink">{tr('Questions à poser')}</h3>
         {questions.length ? (
           <ul className="flex flex-col divide-y divide-line rounded-xl border border-line">
             {questions.map((q) => (
@@ -971,7 +1091,7 @@ function DetailVerdict({ v }: { v?: Verdict }) {
             <div className="flex items-center gap-2"><Statut statut={c.niveau} /><span className="text-2xs text-ink-muted">{c.base === "LOI" ? "Loi" : c.base === "NORME" ? "Norme" : c.base === "SURETE" ? "Sûreté du système" : "Recommandation"}</span></div>
             <p className="mt-1 text-[13px] text-ink-soft">{c.detail}</p>
             {c.piste && <p className="mt-1 text-xs text-ink"><span className="font-medium">Que faire : </span>{c.piste}</p>}
-            <p className="mt-1 flex items-start gap-1.5 text-2xs text-ink-muted"><BookOpen size={12} className="mt-px shrink-0" />{c.reference_courte}</p>
+            <p className="mt-1 flex items-start gap-1.5 text-2xs text-ink-muted"><BookOpen size={12} className="mt-px shrink-0" /><Refs texte={c.reference_courte} /></p>
           </li>
         ))}
       </ul>
@@ -991,22 +1111,22 @@ function OngletOrdonnance({ vue, occupe, poster, medecin, onMaintenir }:
       <div className="rounded-xl border border-line p-3.5">
         <div className="flex flex-col gap-3">
           <div className="grid grid-cols-[1fr_120px] gap-3">
-            <Champ libelle="Médicament" htmlFor="medicament">
+            <Champ libelle={tr("Médicament")} htmlFor="medicament">
               <input id="medicament" list="listeMedicaments" value={f.medicament} onChange={(e) => maj("medicament")(e.target.value)} className={cx(champ, "h-9")} placeholder="Rechercher" />
               <datalist id="listeMedicaments">{vue.medicaments.map((m) => <option key={m} value={m}>{nomMedicament(m)}</option>)}</datalist>
             </Champ>
-            <Champ libelle="Dose" htmlFor="dose"><input id="dose" value={f.dose} onChange={(e) => maj("dose")(e.target.value)} className={cx(champ, "h-9")} placeholder="500 mg" /></Champ>
+            <Champ libelle={tr("Dose")} htmlFor="dose"><input id="dose" value={f.dose} onChange={(e) => maj("dose")(e.target.value)} className={cx(champ, "h-9")} placeholder="500 mg" /></Champ>
           </div>
-          <Champ libelle="Mode d'emploi" htmlFor="posologie">
+          <Champ libelle={tr("Mode d'emploi")} htmlFor="posologie">
             <input id="posologie" value={f.posologie} onChange={(e) => maj("posologie")(e.target.value)} className={cx(champ, "h-9")} placeholder="3 fois par jour pendant 3 jours" />
           </Champ>
           <div className="grid grid-cols-2 gap-3">
-            <Champ libelle="Consultation" htmlFor="modeConsult">
+            <Champ libelle={tr("Consultation")} htmlFor="modeConsult">
               <select id="modeConsult" value={f.mode} onChange={(e) => maj("mode")(e.target.value)} className={cx(champ, "h-9")}>
                 <option value="presentiel">En présentiel</option><option value="distance">Téléconsultation</option>
               </select>
             </Champ>
-            <Champ libelle="Remplace" htmlFor="remplace">
+            <Champ libelle={tr("Remplace")} htmlFor="remplace">
               <select id="remplace" value={f.remplace} onChange={(e) => maj("remplace")(e.target.value)} className={cx(champ, "h-9")}>
                 <option value="">Aucune</option>
                 {actives.map((d) => <option key={d.id} value={d.medicament ?? ""}>{nomMedicament(d.medicament)}</option>)}
@@ -1019,12 +1139,17 @@ function OngletOrdonnance({ vue, occupe, poster, medecin, onMaintenir }:
               const r = await poster("/api/medecin/prescription", { medicament: f.medicament, dose: f.dose, posologie: f.posologie, mode: f.mode,
                 remplace_medicament: f.remplace, issue_de_suggestion: f.suggestion, medecin });
               if (r) setF((x) => ({ ...x, medicament: "", dose: "", posologie: "", remplace: "", suggestion: false }));
-            }}>Prescrire</Bouton>
+            }}>{tr('Prescrire')}</Bouton>
           <p className="-mt-1 text-center text-xs text-ink-muted">Chaque prescription est vérifiée par le juriste avant d'être transmise.</p>
         </div>
       </div>
       <div>
-        <h3 className="mb-2 text-[13px] font-semibold text-ink">Décisions</h3>
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <h3 className="text-[13px] font-semibold text-ink">{tr('Décisions')}</h3>
+          {(vue.ordonnances?.length ?? 0) > 0 && (
+            <a id="ordonnancePdf" href="/api/patient/ordonnance.pdf" download className="text-xs font-medium text-action hover:underline">{tr("Ordonnance du patient (PDF)")}</a>
+          )}
+        </div>
         <div id="decisions" className="flex flex-col gap-2.5">
           {prescriptions.length ? prescriptions.map((d) => (
             <article key={d.id} className="rounded-xl border border-line p-3.5">
@@ -1050,7 +1175,7 @@ function OngletOrdonnance({ vue, occupe, poster, medecin, onMaintenir }:
                               onClick={() => poster("/api/medecin/faits", { donnees: { [m]: val } })}>{lib}</Bouton>
                           ))}
                           {r?.question && <Bouton taille="sm" variante="ghost" disabled={occupe} data-demander={m}
-                            onClick={() => poster("/api/medecin/message", { texte: r.question, question: true, cle: m })}>Demander au patient</Bouton>}
+                            onClick={() => poster("/api/medecin/message", { texte: r.question, question: true, cle: m })}>{tr('Demander au patient')}</Bouton>}
                         </li>
                       );
                     })}
@@ -1145,7 +1270,7 @@ function DialogueTexteOuvert({ titre, description, libelle, defaut, action, vari
   const [t, setT] = useState(defaut);
   return (
     <Dialogue ouvert titre={titre} description={description} onFermer={onFermer}
-      actions={<><Bouton onClick={onFermer}>Annuler</Bouton><Bouton id="confirmerDialogue" variante={variante} disabled={!t.trim()} onClick={() => onValider(t.trim())}>{action}</Bouton></>}>
+      actions={<><Bouton onClick={onFermer}>{tr('Annuler')}</Bouton><Bouton id="confirmerDialogue" variante={variante} disabled={!t.trim()} onClick={() => onValider(t.trim())}>{action}</Bouton></>}>
       <Champ libelle={libelle} htmlFor="texteDialogue">
         <textarea id="texteDialogue" rows={3} value={t} onChange={(e) => setT(e.target.value)} className={cx(champ, "resize-none py-2")} />
       </Champ>
@@ -1244,7 +1369,7 @@ function EditeurPictos({ initial, onFermer, onEnregistrer }: { initial: string[]
         className="flex max-h-[90dvh] w-full max-w-4xl flex-col rounded-2xl bg-surface shadow-pop">
         <div className="flex items-start justify-between gap-4 px-5 pt-5">
           <div>
-            <h3 className="text-base font-semibold text-ink">Modifier les pictogrammes</h3>
+            <h3 className="text-base font-semibold text-ink">{tr('Modifier les pictogrammes')}</h3>
             <p className="mt-1 text-sm text-ink-muted">
               Cliquez un pictogramme pour le sélectionner, puis choisissez-en un dans la base pour le <b>remplacer</b>.
               Sans sélection, le pictogramme choisi s'ajoute à la fin. La proposition reste à valider.
@@ -1303,7 +1428,7 @@ function EditeurPictos({ initial, onFermer, onEnregistrer }: { initial: string[]
           ))}
         </div>
         <div className="mt-2 flex justify-end gap-2 rounded-b-2xl border-t border-line bg-canvas/60 px-5 py-3">
-          <Bouton onClick={onFermer}>Annuler</Bouton>
+          <Bouton onClick={onFermer}>{tr('Annuler')}</Bouton>
           <Bouton id="enregistrerPictos" variante="primary" disabled={!pictos.length} onClick={() => onEnregistrer(pictos)}>Enregistrer la modification</Bouton>
         </div>
       </div>

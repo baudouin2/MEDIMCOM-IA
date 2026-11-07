@@ -58,7 +58,8 @@ def test_pas_d_image_a_tout_prix():
             # ce qui doit continuer à marcher
             assert "IMG_ARASAAC_500" in lx.traduire("la voiture")["pictogrammes"], "libellé principal du catalogue : gardé"
             assert "IMG_ARASAAC_500" not in lx.traduire("une auto")["pictogrammes"], "mot-clé secondaire : pas d'office"
-            assert lx.traduire("J'ai une doulleur")["rapproches"].get("doulleur") == "DOULEUR", "faute évidente sur un mot long"
+            r = lx.traduire("J'ai une doulleur")
+            assert "DOULEUR" in r["pictogrammes"] and ("doulleur" in r["rapproches"] or "doulleur" in r["corrections"]), "faute évidente"
             # la recherche du médecin (manuelle) trouve toujours tout, y compris les images écartées de la traduction d'office
             assert any(x["id"] == "IMG_ARASAAC_28691" for x in lx.chercher("pendre", 10))
     finally:
@@ -77,6 +78,25 @@ def test_ou_question_jamais_perdu():
                 r = lx.traduire(texte)
                 assert "OU" in r["pictogrammes"] or any(m.lower() in ("où", "ou") for m in r["non_traduits"]), (texte, r)
             assert "OU" not in lx.traduire("Du thé ou du café")["pictogrammes"], "« ou » de choix : pas « où »"
+    finally:
+        B.VOCABULAIRE.clear(); B.VOCABULAIRE.update(sauve_v)
+        B.EXTERNES.clear(); B.EXTERNES.update(sauve_e)
+
+
+def test_mots_colles_fautes_et_anglais():
+    from medimcom import bibliotheque as B
+    from medimcom.base_v2 import LexiqueBaseV2, charger_pictogrammes
+    sauve_v, sauve_e = dict(B.VOCABULAIRE), dict(B.EXTERNES)
+    try:
+        with tempfile.TemporaryDirectory() as t:
+            lx = LexiqueBaseV2(*(lambda b: (b, charger_pictogrammes(b)))(_base(Path(t))))
+            r = lx.traduire("j'ai malau ventre")
+            assert r["corrections"].get("malau") == "mal au" and any("VENTRE" in p for p in r["pictogrammes"]), r
+            r = lx.traduire("Prenez 2 comprimés jusqu'à 3 jours")
+            assert "MAXIMUM" in r["pictogrammes"] and not r["corrections"], "« jusqu'à » n'est pas un mot collé"
+            lx.langue_saisie = "en"
+            r = lx.traduire("Do not take 2 tablets ?")
+            assert "NE_PAS" in r["pictogrammes"] and "CHIFFRE:2" in r["pictogrammes"] and "QUESTION" in r["pictogrammes"], r
     finally:
         B.VOCABULAIRE.clear(); B.VOCABULAIRE.update(sauve_v)
         B.EXTERNES.clear(); B.EXTERNES.update(sauve_e)

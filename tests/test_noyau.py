@@ -708,7 +708,7 @@ def test_validation_seulement_par_le_medecin_et_sans_ambiguite():
     o = Orchestrateur(ctx, [])
     for q in ("Q1 ?", "Q2 ?"):
         ctx.dossier.ajouter_decision("traducteur", {"type": "envoi_patient", "texte": q, "contenu_type": "question",
-                                                    "valide_par": None, "statut": "attente_validation"})
+                                                    "valide_par": None, "statut": "attente_validation", "pictogrammes": ["QUESTION"]})
     assert o._valider({"auteur": "assistant", "medecin": "DR-001"}).startswith("Refusé")
     assert o._valider({"auteur": "medecin", "medecin": "DR-001", "contenu_type": "question"}).startswith("Refusé")
     assert o._valider({"auteur": "medecin", "medecin": "DR-001", "decision_id": 1}).startswith("Proposition #1")

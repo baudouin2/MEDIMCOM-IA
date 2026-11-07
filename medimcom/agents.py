@@ -41,6 +41,7 @@ class Contexte:
     disjoncteur_depuis: dict = field(default_factory=dict)   # modèle -> heure de la mise hors service
     reessai_s: float = 90.0             # un modèle hors service est réessayé après ce délai (clé corrigée, réseau revenu)
     etat_modele: dict = field(default_factory=dict)          # modèle -> {"disponible": bool, "message": str}
+    langue_medecin: str = "fr"          # langue d'expression choisie par le médecin (fr, en, ar)
     pictogrammeur: object = field(default_factory=LexiquePictogrammes)
     corpus: object = None               # textes officiels complets et fiches OMS de base_v2 (medimcom.base_v2.Corpus), si présents
     interrompre: object = None          # fonction : vrai si un humain attend (l'agent en ligne cède alors la place)
@@ -278,7 +279,11 @@ class Agent:
                                                      "SOIS RAPIDE : le dossier actuel t'est déjà donné (inutile de le relire) ; "
                                                      "fais tous tes appels dans UNE SEULE réponse et ajoutes-y « terminer » si "
                                                      "tu n'as pas besoin de lire leurs résultats ; s'il n'y a rien d'utile à "
-                                                     "faire, appelle seulement « terminer »."},
+                                                     "faire, appelle seulement « terminer »."
+                                                     + ({"en": "\nLANGUE : le médecin lit en ANGLAIS : écris tous tes messages, "
+                                                               "suggestions et questions pour lui en anglais.",
+                                                         "ar": "\nLANGUE : le médecin lit en ARABE : écris tous tes messages, "
+                                                               "suggestions et questions pour lui en arabe."}.get(self.ctx.langue_medecin, ""))},
             {"role": "user", "content": f"NOUVEAUX MESSAGES POUR TOI :\n{nouveaux}\n\n{self._contexte_llm(chg)}\n\n"
                                         "Décide toi-même quoi faire avec tes outils. Explique brièvement ton raisonnement, "
                                         "puis appelle les outils utiles. Appelle « terminer » quand tu as fini."},
@@ -350,6 +355,15 @@ class Agent:
     def val(self, cle):
         v = self.ctx.dossier.etat.get(cle)
         return None if v is None else v["valeur"]
+
+
+UNITES_TEMPS = {"heure": ("heure", "heures"), "heures": ("heure", "heures"), "jour": ("jour", "jours"), "jours": ("jour", "jours"),
+                "semaine": ("semaine", "semaines"), "semaines": ("semaine", "semaines"), "mois": ("mois", "mois"),
+                "an": ("an", "ans"), "ans": ("an", "ans"), "annee": ("an", "ans"), "annees": ("an", "ans"), "an (annee)": ("an", "ans")}
+
+
+def _norm_libelle(t: str) -> str:
+    return normaliser_simple(t or "")
 
 
 CHAMPS_LISIBLES = {"allergies": "allergies", "traitements_en_cours": "traitements en cours", "grossesse": "grossesse",
@@ -483,6 +497,20 @@ est utile cliniquement. Numéro d'urgence : 998 (ambulance) aux Émirats ; dans 
             yield (f"Le message #{dec['id']} conseille {', '.join(meds)} : risqué pour ce patient. Je dis au médecin pourquoi et quoi faire.",
                    "suggerer_au_medecin", {"type": "traitement_alternatif", "texte": texte, "raison": self._raison_fiche(),
                                            "source": " ; ".join(dict.fromkeys(c["reference_courte"] for c in cliniques if c.get("reference_courte"))) or "analyse du juriste"})
+        # 2 bis. Message contraire à l'éthique : le juriste le bloque ; je dis au médecin la pratique attendue
+        for dec in list(d.decisions.values()):
+            pc = dec.get("precontrole") or {}
+            eth = [c for c in pc.get("constats", []) if str(c.get("regle", "")).startswith("ETHIQUE-")]
+            if dec.get("type") != "envoi_patient" or not eth or ("ethique", dec["id"], pc.get("texte")) in self._veilles:
+                continue
+            self._veilles.add(("ethique", dec["id"], pc.get("texte")))
+            texte = (f"Message #{dec['id']} : je ne peux pas vous suivre sur ce point.\nPourquoi :\n• "
+                     + "\n• ".join(dict.fromkeys(c["detail"].replace("Message contraire à l'éthique médicale : ", "").split(". Il ne")[0] for c in eth))
+                     + ".\nCe qui est possible :\n• " + "\n• ".join(dict.fromkeys(c["piste"] for c in eth if c.get("piste"))))
+            yield (f"Le message #{dec['id']} est contraire à l'éthique médicale : je le dis au médecin, avec la pratique attendue.",
+                   "suggerer_au_medecin", {"type": "alerte_urgence", "texte": texte,
+                                           "raison": "Lecture du message par le juriste et l'assistant.",
+                                           "source": " ; ".join(dict.fromkeys(c["reference_courte"] for c in eth))})
         # 3. Médicaments que le patient déclare prendre
         declares = str(self.val("medicaments_declares") or "")
         for brut in [m.strip() for m in declares.split(",") if m.strip()]:
@@ -1153,20 +1181,32 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
 
     @staticmethod
     def _faits_douleur(pictos):
-        """Lecture structurée d'une douleur signalée par le patient : TETE+DOULEUR (ou TETE puis DOULEUR) et
-        éventuellement un chiffre de 0 à 10 -> douleur, localisation, intensité. Rien n'est déduit si la réponse
-        contient NON ou NE_PAS (sens ambigu : le médecin lit alors la réponse telle quelle)."""
+        """Lecture structurée d'une douleur ou de symptômes signalés par le patient : TETE+DOULEUR (ou TETE puis DOULEUR),
+        un chiffre de 0 à 10 (intensité) et une DURÉE (« 3 » suivi de « semaine » = depuis 3 semaines) -> douleur,
+        localisation, intensité, durée. Rien n'est déduit si la réponse contient NON ou NE_PAS (sens ambigu : le médecin
+        lit alors la réponse telle quelle)."""
         elements = [x for p in pictos for x in p.split("+")]
-        if "DOULEUR" not in elements or {"NON", "NE_PAS"} & set(elements):
+        if {"NON", "NE_PAS"} & set(elements):
             return {}
-        faits = {"douleur": True}
+        duree, intensites = None, []
+        for k, x in enumerate(elements):
+            if x.startswith("CHIFFRE:") and x.split(":", 1)[1].isdigit():
+                unite = UNITES_TEMPS.get(_norm_libelle(picto_libelle(elements[k + 1]))) if k + 1 < len(elements) else None
+                if unite:
+                    n = int(x.split(":", 1)[1])
+                    duree = f"{n} {unite[1] if n > 1 else unite[0]}"
+                else:
+                    intensites.append(int(x.split(":", 1)[1]))
+        faits = {"duree_symptomes": duree} if duree else {}
+        if "DOULEUR" not in elements:
+            return faits
+        faits["douleur"] = True
         lieux = [x for p in combiner_automatiquement(pictos) if "+" in p and "DOULEUR" in p.split("+")
                  for x in p.split("+") if x in PARTIES_DU_CORPS]
         if len(lieux) == 1 and sum(x in PARTIES_DU_CORPS for x in elements) == 1:   # plusieurs parties du corps : ambigu
             faits["localisation_douleur"] = picto_libelle(lieux[0])
-        chiffres = [int(x.split(":", 1)[1]) for x in elements if x.startswith("CHIFFRE:") and x.split(":", 1)[1].isdigit()]
-        if len(chiffres) == 1 and 0 <= chiffres[0] <= 10:
-            faits["intensite_douleur"] = chiffres[0]
+        if len(intensites) == 1 and 0 <= intensites[0] <= 10:
+            faits["intensite_douleur"] = intensites[0]
         return faits
 
     def _retirer_proposition(self, decision_id, raison):

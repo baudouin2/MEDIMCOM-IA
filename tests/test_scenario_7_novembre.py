@@ -106,3 +106,31 @@ def test_grok_indisponible_message_clair():
         b'{"code":"Client specified an invalid argument","error":"Incorrect API key provided: xai-abcdefghijklmnop. You can obtain an API key from https://console.x.ai."}'))
     m = lire_erreur(e)
     assert "Incorrect API key" in m and "abcdefghijklmnop" not in m, m
+
+
+def test_modele_absent_remplace_et_alias_acceptes():
+    import json as _json
+    import threading
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+
+    from medimcom.cerveaux import CerveauOpenAI
+
+    class H(BaseHTTPRequestHandler):
+        def do_GET(self):
+            b = _json.dumps({"data": [{"id": "grok-4.20-0309-non-reasoning", "aliases": ["grok-4.20-non-reasoning"]},
+                                      {"id": "grok-4.20-0309-reasoning"}, {"id": "grok-2-image-1212"}]}).encode()
+            self.send_response(200); self.send_header("Content-Length", str(len(b))); self.end_headers(); self.wfile.write(b)
+
+        def log_message(self, *a):
+            pass
+    srv = HTTPServer(("127.0.0.1", 0), H)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    try:
+        url = f"http://127.0.0.1:{srv.server_address[1]}/v1"
+        c = CerveauOpenAI(url, "grok-4.20-non-reasoning", cle="x")
+        assert c.verifier() == (True, "ok"), "un alias est un nom valide"
+        c = CerveauOpenAI(url, "grok-4.7", cle="x")
+        ok, msg = c.verifier()
+        assert ok and c.modele == "grok-4.20-0309-non-reasoning" and "à la place" in msg
+    finally:
+        srv.shutdown()

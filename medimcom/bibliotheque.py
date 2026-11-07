@@ -234,6 +234,16 @@ CATALOGUE = {
              calendrier(24, 26, 72, 72, f'<rect x="48" y="52" width="24" height="30" rx="4" fill="{VIOLET}"/>')),
     "SEMAINE": ("temps", "semaine", "week", "أسبوع",
                 calendrier(14, 26, 92, 72, "".join(f'<rect x="{20 + i * 12.4:.1f}" y="58" width="9" height="22" rx="2" fill="{VIOLET}"/>' for i in range(7)))),
+    # Durées : « depuis 3 mois » (guide de la douleur du patient) ; dessinées ici pour que toutes les bases les aient
+    "HEURE": ("temps", "heure", "hour", "ساعة",
+              _d(f'<circle cx="60" cy="60" r="38" fill="#fff" {T}/>', f'<path d="M60 60 V34 M60 60 L78 70" fill="none" {T}/>',
+                 f'<circle cx="60" cy="60" r="4" fill="{VIOLET}"/>')),
+    "MOIS": ("temps", "mois", "month", "شهر",
+             calendrier(14, 26, 92, 72, "".join(f'<rect x="{20 + (i % 7) * 12.4:.1f}" y="{50 + (i // 7) * 9}" width="9" height="6" rx="1.5" fill="{VIOLET}"/>'
+                                                for i in range(30)))),
+    "AN": ("temps", "an (année)", "year", "سنة",
+           calendrier(14, 26, 92, 72, "".join(f'<rect x="{22 + (i % 4) * 20}" y="{50 + (i // 4) * 11}" width="15" height="8" rx="2" fill="{VIOLET}"/>'
+                                              for i in range(12)))),
     "FOIS": ("nombre", "fois (répéter)", "times (repeat)", "مرة",
              _d(f'<path d="M30 52 Q32 28 60 28 Q82 28 88 46" fill="none" {T}/>', f'<path d="M78 44 L90 48 L92 34" fill="none" {T}/>',
                 f'<path d="M90 68 Q88 92 60 92 Q38 92 32 74" fill="none" {T}/>', f'<path d="M42 76 L30 72 L28 86" fill="none" {T}/>')),

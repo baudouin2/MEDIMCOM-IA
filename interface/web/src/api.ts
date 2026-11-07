@@ -35,6 +35,8 @@ export type VueMedecin = {
   reflexion_en_cours?: boolean;
   duree_modele?: number | null;
   modele?: { disponible: boolean; message: string; modele: string } | null;
+  langue?: string;
+  ordonnances?: { id: number; medicament: string }[];
   session: string; mode: string; journal: string; lignes: number;
   etat: Record<string, Fait>; fil: Echange[]; questions: Question[]; decisions: Decision[];
   suggestions: Suggestion[]; verdicts: Verdict[]; messages: MessageAgent[]; lacunes: Lacune[];
@@ -45,6 +47,9 @@ export type VueMedecin = {
 };
 export type VuePatient = {
   session: string; attend_reponse: boolean; palette: Record<string, string[]>; urgence?: "signalee" | "prise_en_charge" | null;
+  medicaments?: string[];
+  ordonnances?: { id: number; medicament: string; dose: string; posologie: string; prescripteur: string; valide_par: string;
+    date: string; statut: string; pictogrammes: string[]; en_images: string; empreinte: string }[];
   messages: { id: number; pictogrammes: string[]; contenu_type?: string | null; texte?: string }[];
 };
 export type Libelles = Record<"fr" | "en" | "ar", Record<string, string>>;

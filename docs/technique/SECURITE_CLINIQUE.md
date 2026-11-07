@@ -120,6 +120,38 @@ La sécurité vaut pour tous les profils, pas seulement la grossesse : âge (asp
 | Filtres du journal bloqués par la politique de sécurité | Traçabilité difficile à lire | Script autorisé par son empreinte (et lui seul) |
 | Libellés techniques (« traitements_en_cours », « MEDICAMENT:… ») | Lisibilité | Libellés en clair |
 
+## Garde-fous éthiques (medimcom/ethique.py)
+
+Un message conforme à la forme peut être contraire à l'éthique. Le juriste le bloque et l'assistant rappelle la
+pratique attendue, sauf si le contexte en fait une question, une mise en garde ou un récit :
+
+| Exemple | Catégorie | Base |
+|---|---|---|
+| « une femme enceinte doit se droguer », « vous pouvez fumer » | conseil nuisible (drogue, alcool, tabac) | garde-fou éthique |
+| « je vais vous aider à vendre votre bébé » | trafic d'enfant ou d'organe | garde-fou éthique |
+| « vous me plaisez », « je veux vous enceinter » | propos sexuels envers le patient | garde-fou éthique |
+| « vous pouvez avorter » | avortement par message | loi (Émirats : loi 4/2016, art. 16) |
+| « imbecil », « vote cul » | injure, même mal écrite | loi (art. 3) et garde-fou |
+
+Un message sans aucun pictogramme ne part jamais (le patient ne verrait rien).
+
+## Côté patient
+
+- Guide « Décrire ma douleur » : où, comment, intensité, **durée** (nombre + heure, jour, semaine, mois, an), **autres
+  symptômes** (vomir, diarrhée, vertige, sang…), **médicaments déjà pris** (enregistrés et vérifiés par l'assistant).
+- « Mon ordonnance » : les prescriptions conformes dont l'explication a été validée et envoyée ; affichage en
+  pictogrammes et **PDF téléchargeable** (empreinte du journal pour l'authenticité).
+- Le texte français accompagnant les pictogrammes n'est montré que si le patient a choisi le français.
+
+## Côté médecin
+
+- Chaque référence citée par le juriste est cliquable : titre, résumé, **extrait exact** et lien vers le texte officiel.
+- Langue d'expression (FR, EN, عربي) : interface principale, légendes des pictogrammes, textes des règles du juriste
+  (anglais pour EN et AR), consignes données à Grok, traduction en pictogrammes d'un message écrit en anglais.
+  Limite : les messages déjà écrits et une partie des libellés secondaires restent en français.
+- Traduction : mots collés (« enpharmacie »), fautes sur les mots longs (« erghotherapeute »), « ou » de choix
+  distingué de « où » de lieu.
+
 ## Limites (à dire au jury)
 
 - **Références étrangères** : ce sont des notices américaines. Un déploiement aux Émirats doit les remplacer par les notices
