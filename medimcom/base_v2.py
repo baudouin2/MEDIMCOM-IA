@@ -153,6 +153,21 @@ class LexiqueBaseV2(LexiquePictogrammes):
                   "lisez": "lire", "ecrivez": "ecrire", "attendez": "attendre", "repondez": "repondre", "courez": "courir",
                   "tenez": "tenir", "souriez": "sourire", "choisissez": "choisir", "evitez": "eviter", "reposez": "se reposer"}
     AUXILIAIRES = {"ai", "as", "a", "avez", "avons", "ont", "suis", "es", "est", "sommes", "etes", "sont", "me", "te", "nous", "ca"}
+    # Mots qui ne portent pas de sens à illustrer : « je VAIS vous prescrire » (futur proche), « COMME médicament ».
+    # Leur donner une image à tout prix dégrade le message (« vais » -> « ça va », « comme » -> un drapeau).
+    MOTS_IGNORES = {"vais", "vas", "vont", "allons", "comme", "donc", "alors", "puis", "aussi", "tres", "vraiment", "deja"}
+    # Participes et formes irrégulières fréquents -> infinitif (« qu'avez-vous PRIS » = prendre, jamais « bris » = casser)
+    IRREGULIERS = {"pris": "prendre", "prise": "prendre", "prises": "prendre", "prends": "prendre", "prend": "prendre",
+                   "bu": "boire", "bois": "boire", "boit": "boire", "mis": "mettre", "mise": "mettre", "mets": "mettre",
+                   "dormi": "dormir", "dors": "dormir", "dort": "dormir", "vomi": "vomir", "vomis": "vomir", "vomit": "vomir",
+                   "mange": "manger", "manges": "manger", "senti": "sentir", "sens": "sentir",
+                   "sent": "sentir", "sentez": "sentir", "toussez": "tousser", "tousse": "tousser", "saigne": "saigner",
+                   "saignez": "saigner", "respirez": "respirer", "respire": "respirer", "marche": "marcher"}
+    # Mots de violence ou d'atteinte à soi : JAMAIS traduits d'office (« pendre » ne doit pas devenir « accrocher », ni
+    # « tuer » une image quelconque). Le médecin les voit « sans pictogramme » ; le juriste juge le message.
+    MOTS_DANGEREUX = {"pendre", "pends", "pend", "pendez", "pendu", "pendue", "pendaison", "suicide", "suicider", "suicidez",
+                      "suicidaire", "tuer", "tue", "tuez", "tuera", "tuerai", "mourir", "meurs", "mourez", "crever", "creve",
+                      "crevez", "egorger", "poignarder", "empoisonner", "noyer", "noyez", "etrangler", "buter", "massacrer"}
 
     def __init__(self, base: Path | None = None, notions: dict | None = None):
         from .bibliotheque import connu
@@ -175,6 +190,8 @@ class LexiqueBaseV2(LexiquePictogrammes):
                 if cle and cle not in self.formes:
                     self.formes[cle] = nid
         for nid, n in self.notions.items():             # libellé français de la base (notions historiques comprises)
+            if nid.startswith("IMG_"):                  # images du catalogue : règles plus strictes, plus bas
+                continue
             cle = tuple(self._mots(n["fr"]))
             if cle:
                 self.formes.setdefault(cle, nid)
@@ -183,17 +200,27 @@ class LexiqueBaseV2(LexiquePictogrammes):
         # Mots-clés FRANÇAIS des autres images (catalogue complet compris) : utilisés seulement quand aucune notion du
         # vocabulaire de consultation ne correspond (« voiture », « école ») ; jamais un contenu sensible ; jamais un
         # mot-clé anglais (« car » est aussi un mot français) ; à mot égal, l'image la plus utilisée l'emporte.
-        generales = sorted((n for n in self.notions.values() if n["id"].startswith("IMG_") and not n.get("sensible")
-                            and not n.get("libelle_anglais") and not n.get("variante_de") and self._disponible(n["id"])),
+        # Prudence (retour d'usage : « pendre » -> « accrocher », « comme » -> un drapeau, « male » -> « mâle ») :
+        #  - seul le LIBELLÉ PRINCIPAL de l'image compte, jamais ses mots-clés secondaires (« pendre » est un mot-clé
+        #    secondaire de l'image « accrocher ») ;
+        #  - seulement les images ARASAAC, dont les libellés français sont écrits par des orthophonistes ; les libellés
+        #    français de Mulberry et d'OpenMoji sont déduits de l'anglais (« as » -> « comme ») : recherche manuelle seulement ;
+        #  - l'accent doit correspondre exactement (« male » n'est pas « mâle ») : voir self._accents.
+        self._accents: dict[tuple, str] = {}
+        generales = sorted((n for n in self.notions.values() if n["id"].startswith("IMG_ARASAAC_") and not n.get("sensible")
+                            and not n.get("libelle_anglais") and not n.get("variante_de") and self._disponible(n["id"])
+                            and not str(n.get("categorie_vocabulaire", "")).startswith(("91", "98"))),
                            key=lambda n: -n.get("popularite", 0))
         for n in generales:
-            for m in dict.fromkeys([n["fr"]] + n.get("mots_fr", [])):
-                cle = tuple(self._mots(m))
-                existante = self.formes.get(cle)
-                if cle and len(cle) <= 4 and (existante is None or not self._disponible(existante)) \
-                        and not (len(cle) == 1 and (cle[0] in MOTS_OUTILS or cle[0] in self.AUXILIAIRES or len(cle[0]) < 3)) \
-                        and not any(w in MEDICAMENTS for w in cle) and not (existante and existante.startswith("IMG_")):
-                    self.formes[cle] = n["id"]      # aussi quand la notion du vocabulaire n'a pas d'image dans cette base
+            m = n["fr"]
+            cle = tuple(self._mots(m))
+            existante = self.formes.get(cle)
+            if cle and len(cle) <= 4 and (existante is None or not self._disponible(existante)) \
+                    and not (len(cle) == 1 and (cle[0] in MOTS_OUTILS or cle[0] in self.AUXILIAIRES or len(cle[0]) < 3)) \
+                    and not any(w in MEDICAMENTS or w in self.MOTS_DANGEREUX or w in self.MOTS_IGNORES for w in cle) \
+                    and not (existante and existante.startswith("IMG_")):
+                self.formes[cle] = n["id"]      # aussi quand la notion du vocabulaire n'a pas d'image dans cette base
+                self._accents[cle] = " ".join(self._mots_accents(m))
         for cle, nid in self.FORMES_ORALES.items():
             if nid in self.notions or self._connu(nid):
                 self.formes[cle] = nid
@@ -226,6 +253,12 @@ class LexiqueBaseV2(LexiquePictogrammes):
         return sortie
 
     @staticmethod
+    def _mots_accents(texte: str) -> list[str]:
+        """Comme _mots, mais en gardant les accents (« mâle » ≠ « male »)."""
+        t = (texte or "").lower().replace("’", "'")
+        return [re.sub(r"^(d|l|qu|j|s|n|c|m|t)'", "", m) for m in re.findall(r"[\w']+|\?", t) if m]
+
+    @staticmethod
     def _mots(texte: str) -> list[str]:
         t = _norm(texte.replace("’", "'"))
         return [re.sub(r"^(d|l|qu|j|s|n|c|m|t)'", "", m) for m in re.findall(r"[\w']+|\?", t) if m]
@@ -244,37 +277,104 @@ class LexiqueBaseV2(LexiquePictogrammes):
     CATEGORIES_RAPPROCHABLES = ("03", "04", "05", "06", "07", "08", "09", "11", "12", "14")
 
     def _rapprocher(self, mot: str) -> str | None:
-        """Mot inconnu -> une notion, en arrière-plan, seulement quand c'est SÛR : faute de frappe (« comemnt » ->
-        comment), forme conjuguée (« sentez » -> sentir), ou sens très proche si la base est vectorisée. Le
-        rapprochement est noté sur la proposition : le médecin le voit avant de valider."""
+        """Mot inconnu -> une notion, en arrière-plan, seulement quand c'est SÛR : forme conjuguée (« sentez » -> sentir)
+        ou faute de frappe évidente sur un mot long (« doulleur » -> douleur). JAMAIS par le sens seul, ni par une
+        ressemblance sur un mot court : un mot français valide ressemble souvent à un autre qui n'a rien à voir
+        (« pris » / « bris » -> casser, « vais » -> « ça va »). Mieux vaut un mot « sans pictogramme », que le médecin
+        voit et corrige, qu'une image fausse. Le rapprochement est noté sur la proposition : le médecin le voit."""
         m = _norm(mot)
-        if len(m) < 4 or m.isdigit() or m in MOTS_OUTILS or m in MEDICAMENTS or re.search(r"\d", m):
+        if len(m) < 4 or m.isdigit() or m in MOTS_OUTILS or m in MEDICAMENTS or re.search(r"\d", m) \
+                or m in self.MOTS_DANGEREUX or m in self.MOTS_IGNORES or m in self.AUXILIAIRES:
             return None
+        if m in self.IRREGULIERS:
+            nid = self.formes.get(tuple(self._mots(self.IRREGULIERS[m])))
+            return nid if nid and self._disponible(nid) else None
         for cand in ([m[:-2] + "er", m[:-2] + "ir", m[:-2] + "re", m[:-1] + "r"] if m.endswith(("ez", "es")) else []) + \
                 ([m[:-3] + "er"] if m.endswith("ons") else []) + ([m[:-1] + "r"] if m.endswith("e") else []):
             nid = self.formes.get(tuple(self._mots(cand)))
             if nid and self._disponible(nid):
                 return nid
+        if len(m) < 6:                       # faute de frappe : seulement sur un mot assez long pour être sans ambiguïté
+            return None
         try:
-            res = self.recherche.chercher(mot, 3)
+            res = self.recherche.chercher(mot, 5)
         except Exception:  # noqa: BLE001
             return None
         for r in res:
             n = self.notions.get(r["id"], {})
             if not str(n.get("categorie_vocabulaire", "")).startswith(self.CATEGORIES_RAPPROCHABLES):
                 continue
-            w = r["pourquoi"]
-            if w.get("exact") or w.get("ecriture") or (w.get("sens") and (w.get("cosinus") or 0) >= self.recherche.seuil_sens + 0.05):
-                return r["id"]
+            for forme in self.alias.get(r["id"], []):
+                if len(forme) == 1 and forme[0][:2] == m[:2] and len(forme[0]) >= 5 \
+                        and RecherchePictogrammes._distance(m, forme[0], 1) <= 1:
+                    return r["id"]
+        return None
+
+    @staticmethod
+    def _inversions(texte: str) -> str:
+        """Questions à inversion : « avez-vous mal ? » -> « vous avez mal ? », « comment vous sentez-vous » -> « comment
+        vous sentez ». Un seul pictogramme VOUS par question, au lieu de « vous vous vous » ; la forme orale
+        « avez mal » reste reconnue (DOULEUR)."""
+        motif = re.compile(r"\b(\w+)-(?:t-)?(vous|tu)\b", flags=re.IGNORECASE)
+        phrases = re.split(r"(?<=[?.!])", texte)
+        sortie = []
+        for ph in phrases:
+            if not motif.search(ph):
+                sortie.append(ph)
+                continue
+            deja = re.search(r"(?<![-\w])(vous|tu)\b(?!-)", motif.sub("", ph), flags=re.IGNORECASE)
+            premier = [True]
+
+            def remplacer(m):
+                if premier[0] and not deja:
+                    premier[0] = False
+                    return f"{m.group(2)} {m.group(1)}"
+                return m.group(1)
+            sortie.append(motif.sub(remplacer, ph))
+        return "".join(sortie)
+
+    def _mot_connu(self, m: str, brut: str) -> bool:
+        if m in MOTS or m in MOTS_OUTILS or m in self.AUXILIAIRES or m in self.MOTS_IGNORES or m in self.IRREGULIERS \
+                or m in MEDICAMENTS or m in self.MOTS_DANGEREUX or m.isdigit() or m == "?":
+            return True
+        cle = (m,)
+        if cle in self.formes:
+            return not (cle in self._accents and " ".join(self._mots_accents(brut)) != self._accents[cle])
+        return any(c[0] == m for c in self.formes if len(c) > 1)      # début d'une expression (« pas plus de »)
+
+    def _corriger(self, m: str, brut: str) -> str | None:
+        """Faute de frappe ou de dictée sur un mot inconnu -> forme connue, seulement quand c'est sûr :
+        clavier QWERTY d'un habitué de l'AZERTY (« sentew » -> sentez), e final en trop (« male » -> mal),
+        nom de médicament mal écrit (« tramadole », « paracetamole », « ibuprophene »)."""
+        if len(m) < 3 or self._mot_connu(m, brut) or re.search(r"\d", m):
+            return None
+        from .lecture import trouver_medicaments, variantes
+        if "w" in m or re.search(r"q(?!u)", m):
+            for v in variantes(m):
+                if ("w" not in v and not re.search(r"q(?!u)", v)) and self._mot_connu(v, v):
+                    return v
+        if m.endswith("e") and m[:-1] in MOTS:
+            return m[:-1]
+        if len(m) >= 6:
+            lus = trouver_medicaments(m, {n: {} for n in MEDICAMENTS})
+            if len(lus) == 1 and lus[0]["nom"] in MEDICAMENTS:
+                return lus[0]["nom"]
         return None
 
     def traduire(self, texte: str) -> dict:
+        texte = self._inversions(texte)
         # Doses et rythmes écrits vite : « 1kg », « 7fois parjours », « 3x/j » -> « 1kg », « 7 fois par jour »
         texte = re.sub(r"(\d+(?:[.,]\d+)?)\s*(mg|g|kg|ml|l|mcg|µg|ui)\b", r"\1\2", texte, flags=re.IGNORECASE)
         texte = re.sub(r"(\d)\s*(?:fois|x)\b", r"\1 fois", texte, flags=re.IGNORECASE)
         texte = re.sub(r"\bpar\s*jours?\b|/\s*j(?:our)?\b", " par jour", texte, flags=re.IGNORECASE)
         bruts = re.findall(r"[\w'’]+|\?", texte)
         mots = [re.sub(r"^(d|l|qu|j|s|n|c|m|t)'", "", _norm(b).replace("’", "'")) for b in bruts]
+        corrections = {}
+        for k, (m, b) in enumerate(zip(mots, bruts)):        # fautes de frappe et de dictée, corrigées et montrées
+            c = self._corriger(m, b)
+            if c:
+                mots[k] = c
+                corrections[b] = c
         pictos, manquants, rapproches, i = [], [], {}, 0
         while i < len(mots):
             m, brut = mots[i], bruts[i]
@@ -292,10 +392,24 @@ class LexiqueBaseV2(LexiquePictogrammes):
                 pictos.append(f"MEDICAMENT:{m}"); i += 1; continue
             if MOTS.get(m) in ("NE_PAS", "MAXIMUM", "STOP", "URGENCE"):   # mots de sûreté : jamais absorbés par une expression
                 pictos.append(MOTS[m]); i += 1; continue
+            # « où » (lieu) n'est pas « ou » (choix) : sans accent, on le reconnaît en tête de question. Perdre « où » change
+            # la question (« où avez-vous mal ? » devenait « vous douleur ? »).
+            if m == "ou" and (brut.lower().replace("ù", "u") != brut.lower() or ("?" in texte and (i == 0 or mots[i - 1] in ("?", ".")))):
+                if self._disponible("OU"):
+                    pictos.append("OU")
+                else:
+                    manquants.append(brut)        # jamais perdu en silence : le médecin le voit « sans pictogramme »
+                i += 1; continue
+            if m in self.MOTS_DANGEREUX:          # jamais d'image d'office : le médecin et le juriste voient le mot tel quel
+                manquants.append(brut); i += 1; continue
+            if m in self.MOTS_IGNORES:
+                i += 1; continue
             trouve = None
             for L in range(min(self.LONGUEUR_MAX, len(mots) - i), 0, -1):
                 cle = tuple(mots[i:i + L])
                 nid = self.formes.get(cle)
+                if nid and cle in self._accents and " ".join(self._mots_accents(" ".join(bruts[i:i + L]))) != self._accents[cle]:
+                    nid = None                    # image du catalogue général : l'accent doit correspondre (« male » ≠ « mâle »)
                 if nid is None and L == 1 and len(m) > 3 and m[-1] in "sx":
                     nid = self.formes.get((m[:-1],))
                 if nid is None and L == 1 and m.endswith("ez") and len(m) > 4:    # impératif : « mangez » -> manger
@@ -333,7 +447,7 @@ class LexiqueBaseV2(LexiquePictogrammes):
         dedoublonne = [p for k, p in enumerate(pictos) if k == 0 or p != pictos[k - 1] or p.startswith("CHIFFRE:")]
         pictos = combiner_pictogrammes(dedoublonne, self.notions)
         compte = len(pictos) + len(manquants)
-        return {"pictogrammes": pictos, "non_traduits": manquants, "rapproches": rapproches,
+        return {"pictogrammes": pictos, "non_traduits": manquants, "rapproches": rapproches, "corrections": corrections,
                 "couverture": round(len(pictos) / compte, 2) if compte else 0.0}
 
     def interpreter(self, pictogrammes: list[str]) -> str:

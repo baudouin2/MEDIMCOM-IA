@@ -1,0 +1,108 @@
+"""Rejeu du journal du 7 novembre (patiente fictive de 22 ans, enceinte, diabétique, Grok indisponible) : ce qui est
+passé ce jour-là ne doit plus passer, et l'assistant doit être présent même sans modèle en ligne."""
+import sys
+from pathlib import Path
+
+RACINE = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(RACINE))
+sys.path.insert(0, str(RACINE / "interface"))
+from serveur import Application  # noqa: E402
+
+from medimcom.session import Config  # noqa: E402
+
+
+def _app():
+    app = Application(Config(verbeux=False, base="aucune"), asynchrone=False)
+    app.evenement({"type": "echange", "auteur": "medecin", "confirme": True, "texte": "Renseignements saisis par le médecin.",
+                   "donnees": {"sexe": "F", "age": 22, "poids": 55, "allergies": "non", "grossesse": True,
+                               "traitements_en_cours": "contre le diabethe", "antecedents": "diabete"}})
+    return app
+
+
+def _dire(app, texte):
+    app.evenement({"type": "texte_medecin", "auteur": "medecin", "texte": texte, "contenu_type": "question"})
+    return [d for d in app.ctx.dossier.decisions.values() if d.get("type") == "envoi_patient"][-1]
+
+
+def _suggestions(app):
+    return [s["texte"] for s in app.ctx.dossier.suggestions.values() if s["statut"] == "proposee_au_medecin"]
+
+
+def test_medicaments_dans_les_messages_et_fiche_du_patient():
+    app = _app()
+    d = _dire(app, "et du tramadol")
+    assert d["statut"] == "BLOQUE", d["precontrole"]
+    regles = {c["regle"] for c in d["precontrole"]["constats"]}
+    assert "contre_indication:tramadol:grossesse" in regles and "ENVOI-PRODUIT-CONTROLE" in regles, regles
+    assert not any(c["niveau"] == "CONFORME" for c in d["precontrole"]["constats"]), "« peut être envoyé » à côté d'un blocage"
+    s = _suggestions(app)
+    assert any("ne pas conseiller tramadol" in x and "grossesse" in x.lower() and "paracetamol" in x for x in s), s
+
+    d = _dire(app, "je vais vous prescrire beaucoup de paracetamol")
+    assert d["statut"] == "BLOQUE" and "SURETE-DOSE-IMPRECISE" in {c["regle"] for c in d["precontrole"]["constats"]}
+    assert any("préciser la dose de paracetamol" in x and "4000" in x for x in _suggestions(app)), _suggestions(app)
+
+    for texte in ("et vous pendre", "je vais vous tuer"):
+        d = _dire(app, texte)
+        assert d["statut"] == "BLOQUE", texte
+        assert "Refusé" in app.evenement({"type": "validation", "auteur": "medecin", "medecin": "DR-001", "decision_id": d["id"]})
+    # « pendre » seul : sens inconnu -> ne part pas sans confirmation nominative du médecin
+    d = _dire(app, "pendre")
+    assert d["statut"] == "attente_validation" and d["precontrole"]["verdict"] == "A_REVOIR"
+    assert "Refusé" in app.evenement({"type": "validation", "auteur": "medecin", "medecin": "DR-001", "decision_id": d["id"]})
+    assert app.vue_patient()["messages"] == [], "rien de tout cela ne doit arriver au patient"
+    # une vraie question de dépistage, elle, part
+    d = _dire(app, "Avez-vous des idées de vous tuer ?")
+    assert d["statut"] == "attente_validation", d.get("precontrole")
+    # traitement en cours sans nom de médicament : l'assistant demande de préciser
+    assert any("Préciser le traitement en cours" in x for x in _suggestions(app))
+
+
+def test_medicament_declare_par_le_patient_et_questions():
+    app = _app()
+    d = _dire(app, "Qu'avez-vous pris comme médicament ?")
+    app.evenement({"type": "validation", "auteur": "medecin", "medecin": "DR-001", "decision_id": d["id"]})
+    assert d["statut"] == "envoye"
+    q = next(q for q in app.ctx.dossier.questions_a_poser if q["id"] == d["source_question"])
+    assert q["statut"] == "posee", "une question envoyée n'est plus « à poser »"
+    app.evenement({"type": "reponse_patient", "pictogrammes": ["MEDICAMENT:tramadol"]})
+    assert app.ctx.dossier.etat["medicaments_declares"]["valeur"] == "tramadol"
+    assert q["statut"] == "repondue"
+    assert any("Le patient dit prendre tramadol" in x and "grossesse" in x.lower() for x in _suggestions(app)), _suggestions(app)
+
+    # annuler une proposition : elle n'est PAS reproposée d'office (le médecin reformule s'il veut)
+    d = _dire(app, "ou avez vous mal")
+    app.evenement({"type": "rejet", "auteur": "medecin", "decision_id": d["id"], "raison": "à reformuler"})
+    envois = [x for x in app.ctx.dossier.decisions.values() if x.get("type") == "envoi_patient" and x.get("texte") == "ou avez vous mal"]
+    assert len(envois) == 1 and envois[0]["statut"] == "rejete", "la proposition annulée a été refaite"
+
+    # retirer un message envoyé de l'écran du patient, puis le masquer de la conversation
+    envoye = next(x for x in app.ctx.dossier.decisions.values() if x.get("statut") == "envoye")
+    app.evenement({"type": "retrait_message", "auteur": "medecin", "medecin": "DR-001", "decision_id": envoye["id"]})
+    assert envoye["statut"] == "retire" and app.vue_patient()["messages"] == []
+    app.evenement({"type": "masquage_message", "auteur": "medecin", "decision_id": envoye["id"]})
+    assert envoye["masque"] is True
+    from medimcom.surveillance import surveiller
+    viol = surveiller(app.ctx.journal, app.ctx.regles)
+    assert not any(viol.values()), viol
+
+
+def test_fiche_completee_apres_coup_recontrole():
+    """Le message est proposé AVANT que le médecin saisisse la grossesse : le juriste le recontrôle avec la nouvelle fiche."""
+    app = Application(Config(verbeux=False, base="aucune"), asynchrone=False)
+    d = _dire(app, "Prenez-vous de l'ibuprofène ?")        # question : permise
+    assert d["statut"] == "attente_validation"
+    v0 = d["precontrole"]["etat_version"]
+    app.evenement({"type": "echange", "auteur": "medecin", "confirme": True, "texte": "fiche", "donnees": {"grossesse": True, "sexe": "F", "age": 30}})
+    assert d["precontrole"]["etat_version"] != v0, "le pré-contrôle n'a pas été refait après la mise à jour de la fiche"
+
+
+def test_grok_indisponible_message_clair():
+    import io
+    import urllib.error
+
+    from medimcom.cerveaux import lire_erreur
+    e = urllib.error.HTTPError("u", 400, "Bad Request", {}, io.BytesIO(
+        b'{"code":"Client specified an invalid argument","error":"Incorrect API key provided: xai-abcdefghijklmnop. You can obtain an API key from https://console.x.ai."}'))
+    m = lire_erreur(e)
+    assert "Incorrect API key" in m and "abcdefghijklmnop" not in m, m

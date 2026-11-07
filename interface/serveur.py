@@ -24,6 +24,7 @@ import io
 import queue
 import ipaddress
 import json
+import re
 import secrets
 import sys
 import tempfile
@@ -70,7 +71,12 @@ def palette(notions: dict | None = None) -> dict:
         ordre = list(ONGLETS_PATIENT) + [k for k in p if k not in ONGLETS_PATIENT]   # ordre de l'écran : réponses, corps, douleur…
         p = {k: p[k] for k in ordre if k in p}
     return {k: v for k, v in p.items() if v}
-CLES_FERMEES = ["grossesse", "fievre", "douleur", "nausees", "consentement_traitement"]
+CLES_FERMEES = ["grossesse", "fievre", "douleur", "nausees", "consentement_traitement", "allergies", "traitements_en_cours",
+                "informe_usage_ia"]
+# Message d'accueil : le patient sait qu'une IA aide le médecin, que le médecin décide, et qu'il peut refuser (DHA 2021,
+# obligation IA-INFORMER). Sa réponse OUI / NON est enregistrée (informe_usage_ia).
+MESSAGE_ACCUEIL = ("Bonjour. Je suis votre médecin. Un ordinateur m'aide à traduire. C'est moi qui décide. "
+                   "Vous pouvez dire non. Vous êtes d'accord ?")
 
 
 class _SortieParFil(io.TextIOBase):
@@ -271,6 +277,7 @@ class Application:
         x["maintien"] = d.get("maintien")
         x["precontrole"] = d.get("precontrole")
         x["rapproches"] = d.get("rapproches") or {}
+        x["masque"] = bool(d.get("masque"))
         return x
 
     def _lire(self, construire_vue, photo):
@@ -303,6 +310,7 @@ class Application:
                 "session": self.session,
                 # nom du modèle en ligne s'il y en a un (le traducteur, premier agent, reste en politique écrite)
                 "mode": next((a.cerveau.nom for a in self.agents if not isinstance(a.cerveau, CerveauSimule)), self.agents[0].cerveau.nom),
+                "modele": self._etat_modele(),
                 "dictee": "xai" if __import__("os").environ.get("XAI_API_KEY") else "navigateur",
                 "journal": c.journal.verifier(), "lignes": len(c.journal.lignes),
                 "etat": d.etat, "fil": d.fil[-40:],
@@ -322,15 +330,33 @@ class Application:
                          "prochaine": prochaine},
             }
 
+    def _etat_modele(self) -> dict | None:
+        """Le modèle en ligne répond-il ? (l'écran ne doit pas afficher « en ligne » quand Grok refuse la clé)"""
+        a = next((a for a in self.agents if not isinstance(a.cerveau, CerveauSimule)), None)
+        if a is None:
+            return None
+        cle = getattr(a.cerveau, "modele", a.cerveau.nom)
+        etat = dict(self.ctx.etat_modele.get(cle) or {"disponible": True, "message": "en ligne"})
+        if self.ctx.echecs_modele.get(cle, 0) >= self.ctx.seuil_echecs:
+            etat["disponible"] = False
+        etat["modele"] = cle
+        return etat
+
     def _vue_patient(self) -> dict:
         with self.verrou:
             d = self.ctx.dossier
             envoyes = [x for x in d.decisions.values() if x.get("type") == "envoi_patient" and x["statut"] == "envoye"]
             trad = next((a for a in self.agents if a.nom == "traducteur"), None)
             attend = bool(trad and trad._question_ouverte()[0])
+            urgence = d.etat.get("urgence")
+            urgences = [e for e in d.fil if "urgence" in (e.get("donnees") or {})]
             return {"session": self.session, "messages": [{"id": x["id"], "pictogrammes": x.get("pictogrammes") or [], "contenu_type": x.get("contenu_type"),
                                   "texte": x.get("texte") or ""}
                                  for x in envoyes][-10:],
+                    # le patient qui a signalé une urgence voit que le médecin est prévenu, puis qu'il le prend en charge
+                    "urgence": ("signalee" if urgence and urgence["valeur"] is True else
+                                "prise_en_charge" if urgences and urgences[-1]["donnees"]["urgence"] is False
+                                and any(e["donnees"].get("urgence") is True for e in urgences) else None),
                     "attend_reponse": attend, "palette": palette(getattr(self.ctx.pictogrammeur, "notions", None))}
 
 
@@ -344,13 +370,13 @@ class Gestionnaire(BaseHTTPRequestHandler):
     def log_message(self, *a):
         pass
 
-    def _repondre(self, code, corps, type_="application/json; charset=utf-8", cache=False):
+    def _repondre(self, code, corps, type_="application/json; charset=utf-8", cache=False, csp=None):
         try:
-            return self._ecrire(code, corps, type_, cache)
+            return self._ecrire(code, corps, type_, cache, csp)
         except (BrokenPipeError, ConnectionResetError):
             return None                     # le navigateur a fermé la connexion (page rechargée) : rien de grave
 
-    def _ecrire(self, code, corps, type_, cache):
+    def _ecrire(self, code, corps, type_, cache, csp=None):
         donnees = corps if isinstance(corps, bytes) else (json.dumps(corps, ensure_ascii=False, default=str).encode("utf-8")
                                                            if not isinstance(corps, str) else corps.encode("utf-8"))
         self.send_response(code)
@@ -363,8 +389,8 @@ class Gestionnaire(BaseHTTPRequestHandler):
         if type_.startswith("text/html"):
             self.send_header("Referrer-Policy", "no-referrer")       # le jeton du médecin ne fuit jamais dans un lien
             self.send_header("X-Frame-Options", "DENY")
-            if self.app.react:
-                self.send_header("Content-Security-Policy", CSP_PAGE)
+            if csp or self.app.react:
+                self.send_header("Content-Security-Policy", csp or CSP_PAGE)
         self.end_headers()
         self.wfile.write(donnees)
 
@@ -449,7 +475,14 @@ class Gestionnaire(BaseHTTPRequestHandler):
                 self.app.ctx.journal.sauver(src)
                 exporter_journal.exporter(src, Path(tmp) / "journal.html")
                 page = (Path(tmp) / "journal.html").read_text(encoding="utf-8")
-            return self._repondre(200, page, "text/html; charset=utf-8")
+            # Le script des filtres du journal est autorisé par son empreinte (et seulement lui) : sans cela, la politique
+            # de sécurité de l'interface le bloquait et les filtres « Vue résumée / Tout afficher » ne répondaient pas.
+            import base64
+            import hashlib
+            empreintes = " ".join("'sha256-" + base64.b64encode(hashlib.sha256(x.encode("utf-8")).digest()).decode() + "'"
+                                  for x in re.findall(r"<script>(.*?)</script>", page, flags=re.S))
+            csp = CSP_PAGE.replace("script-src 'self'", f"script-src 'self' {empreintes}")
+            return self._repondre(200, page, "text/html; charset=utf-8", csp=csp)
         if chemin == "/journal.json":
             with self.app.verrou:
                 return self._repondre(200, self.app.ctx.journal.lignes)
@@ -520,11 +553,26 @@ class Gestionnaire(BaseHTTPRequestHandler):
                 evt["remplace_medicament"] = texte("remplace_medicament")
             return {"retour": app.evenement(evt)}
         if chemin == "/api/medecin/valider":
-            return {"retour": app.evenement({"type": "validation", "auteur": "medecin", "medecin": medecin, "decision_id": int(c["decision_id"])})}
+            return {"retour": app.evenement({"type": "validation", "auteur": "medecin", "medecin": medecin, "decision_id": int(c["decision_id"]),
+                                             "confirme_contexte": bool(c.get("confirme_contexte"))})}
         if chemin == "/api/medecin/pictogrammes":
             return {"retour": app.evenement({"type": "modification_pictogrammes", "auteur": "medecin", "medecin": medecin,
                                              "decision_id": int(c["decision_id"]),
                                              "pictogrammes": [str(p) for p in c.get("pictogrammes", [])][:12]})}
+        if chemin == "/api/medecin/accueil":         # informer le patient de l'aide de l'IA et de son droit de refuser
+            if app.doublon(("accueil",)):
+                return {"retour": "Déjà transmis : la traduction arrive."}
+            return {"retour": app.evenement({"type": "texte_medecin", "auteur": "medecin", "texte": MESSAGE_ACCUEIL,
+                                             "contenu_type": "question", "cle": "informe_usage_ia"})}
+        if chemin == "/api/medecin/urgence_prise_en_charge":
+            return {"retour": app.evenement({"type": "echange", "auteur": "medecin", "confirme": True,
+                                             "texte": f"Urgence prise en charge par {app.ctx.regles.kb['prescripteurs'].get(medecin, {}).get('nom', medecin)}.",
+                                             "donnees": {"urgence": False}})}
+        if chemin == "/api/medecin/retirer":
+            return {"retour": app.evenement({"type": "retrait_message", "auteur": "medecin", "medecin": medecin,
+                                             "decision_id": int(c["decision_id"]), "raison": texte("raison")})}
+        if chemin == "/api/medecin/masquer":
+            return {"retour": app.evenement({"type": "masquage_message", "auteur": "medecin", "decision_id": int(c["decision_id"])})}
         if chemin == "/api/medecin/rejeter":
             return {"retour": app.evenement({"type": "rejet", "auteur": "medecin", "decision_id": int(c["decision_id"]), "raison": texte("raison")})}
         if chemin == "/api/medecin/maintenir":

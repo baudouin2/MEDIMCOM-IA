@@ -62,7 +62,8 @@ export const STATUTS: Record<string, { texte: string; ton: Ton }> = {
   attente_validation: { texte: "À valider", ton: "action" },
   a_verifier: { texte: "Vérification en cours", ton: "neutre" },
   annulee: { texte: "Remplacée", ton: "neutre" },
-  rejete: { texte: "Rejeté", ton: "neutre" },
+  rejete: { texte: "Annulé", ton: "neutre" },
+  retire: { texte: "Retiré", ton: "neutre" },
 };
 export function Statut({ statut }: { statut: string }) {
   const s = STATUTS[statut] ?? { texte: statut, ton: "neutre" as Ton };
@@ -79,8 +80,9 @@ export function FournisseurLibelles({ children }: { children: ReactNode }) {
 export function useLibelle() {
   const l = useContext(ContexteLibelles);
   return useCallback((id: string, langue: "fr" | "en" | "ar" = "fr"): string => {
-    if (id.includes("+")) return id.split("+").map((x) => (l?.[langue]?.[x] ?? x)).join(" + ");
-    return l?.[langue]?.[id] ?? (id.includes(":") ? id.slice(id.indexOf(":") + 1).replace(/_/g, " ") : "");
+    const un = (x: string) => l?.[langue]?.[x] ?? (x.includes(":") ? x.slice(x.indexOf(":") + 1).replace(/_/g, " ").toLowerCase() : "");
+    if (id.includes("+")) return id.split("+").map((x) => un(x) || x).join(" + ");   // « paracetamol + 1g », pas « MEDICAMENT:… »
+    return un(id);
   }, [l]);
 }
 

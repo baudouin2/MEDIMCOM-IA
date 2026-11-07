@@ -46,7 +46,7 @@ class Dossier:
                                        "ancienne_valeur": ancien["valeur"] if ancien else None})
         if confirme:
             for q in self.questions_a_poser:
-                if q.get("cle") == cle and q["statut"] == "en_attente":
+                if q.get("cle") == cle and q["statut"] in ("en_attente", "posee"):
                     q["statut"] = "repondue"
         return f"État mis à jour : {cle} = {valeur!r} ({'confirmé' if confirme else 'non confirmé'})."
 
@@ -59,6 +59,13 @@ class Dossier:
         self.questions_a_poser.append(q)
         self._changer(auteur, "question", q)
         return f"Question {q['id']} transmise au traducteur (à valider par le médecin) : {question}"
+
+    def statut_question(self, auteur: str, qid: int | None, statut: str, raison: str = "") -> None:
+        """en_attente -> posee (message envoyé) -> repondue ; ou rejetee / annulee (le médecin ne la pose pas)."""
+        q = next((q for q in self.questions_a_poser if q["id"] == qid), None)
+        if q and q["statut"] != statut and q["statut"] != "repondue":
+            q["statut"] = statut
+            self._changer(auteur, "question_statut", {"id": q["id"], "statut": statut, "raison": raison})
 
     def ajouter_suggestion(self, auteur: str, type_s: str, texte: str, raison: str, source: str) -> str:
         s = {"id": next(self._ids), "type": type_s, "texte": texte, "raison": raison, "source": source,

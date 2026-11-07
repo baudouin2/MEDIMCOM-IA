@@ -109,7 +109,7 @@ export default function EcranPatient() {
   const dir = langue === "ar" ? "rtl" : undefined;
 
   return (
-    <div className="min-h-dvh bg-[#F6F7F9] pb-40">
+    <div className="min-h-dvh bg-[#F6F7F9] pb-48 sm:pb-40">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-4 pt-4 sm:px-6">
         <Marque taille={28} texte={false} />
         <div role="group" aria-label="Langue des étiquettes" className="flex rounded-xl bg-surface p-1 shadow-panel">
@@ -124,7 +124,21 @@ export default function EcranPatient() {
       </header>
 
       <main className="mx-auto flex max-w-6xl flex-col gap-5 px-4 pt-4 sm:px-6">
-        <MessageRecu vue={vue} etiquette={etiquette} dir={dir} nomMedecin={langue ? { fr: "Médecin", en: "Doctor", ar: "الطبيب" }[langue] : ""} />
+        {vue?.urgence && (
+          <div id="urgencePatient" role="status" aria-live="assertive" dir={dir}
+            className={cx("sticky top-2 z-30 flex items-center gap-3 rounded-3xl p-3 shadow-panel ring-2", vue.urgence === "signalee" ? "bg-danger-50 ring-danger/40" : "bg-ok-50 ring-ok/40")}>
+            <img src={urlPicto("URGENCE")} alt="" width={64} height={64} />
+            <img src={urlPicto("MEDECIN")} alt="" width={64} height={64} />
+            <img src={urlPicto("OUI")} alt="" width={52} height={52} />
+            <p className="text-[17px] font-semibold text-ink">
+              {vue.urgence === "signalee"
+                ? { "": "", fr: "Le médecin est prévenu.", en: "The doctor has been alerted.", ar: "تم إبلاغ الطبيب." }[langue]
+                : { "": "", fr: "Le médecin s'occupe de vous.", en: "The doctor is taking care of you.", ar: "الطبيب يعتني بك." }[langue]}
+            </p>
+          </div>
+        )}
+        <MessageRecu vue={vue} etiquette={etiquette} dir={dir} nomMedecin={langue ? { fr: "Médecin", en: "Doctor", ar: "الطبيب" }[langue] : ""}
+          incompris={() => envoyerReponse(["NE_PAS", "COMPRENDRE"])} langue={langue} />
 
         <div className="grid gap-3 sm:grid-cols-[auto_1fr]">
           <button id="guideDouleur" onClick={() => setGuide(true)}
@@ -190,7 +204,7 @@ export default function EcranPatient() {
       </main>
 
       {dernierEnvoi.length > 0 && (
-        <div id="dernierEnvoi" className="fixed inset-x-0 bottom-[112px] z-10 mx-auto flex max-w-6xl items-center gap-2 px-4 sm:px-6">
+        <div id="dernierEnvoi" className="fixed inset-x-0 bottom-[160px] z-10 sm:bottom-[112px] mx-auto flex max-w-6xl items-center gap-2 px-4 sm:px-6">
           <span className="flex items-center gap-2 rounded-full bg-ok px-3 py-1.5 text-sm font-medium text-white shadow-panel" dir={dir}>
             <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 8l3 3 7-7" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" /></svg>
             {{ "": "", fr: "Envoyé au médecin", en: "Sent to the doctor", ar: "أُرسل إلى الطبيب" }[langue]}
@@ -203,9 +217,9 @@ export default function EcranPatient() {
 
       {/* plateau de réponse */}
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface/95 shadow-[0_-8px_24px_-12px_rgba(16,24,40,.18)] backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6" style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}>
-          <div id="choisis" dir={dir} aria-label="Ma réponse" className="flex min-h-[84px] flex-1 items-center gap-2 overflow-x-auto rounded-2xl bg-canvas px-2.5 py-2 ring-1 ring-inset ring-line barre-fine">
-            {choix.length === 0 && [0, 1, 2].map((i) => <span key={i} className="h-[64px] w-[64px] shrink-0 rounded-xl border-2 border-dashed border-line-strong/70" />)}
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2 px-3 py-2.5 sm:flex-nowrap sm:gap-3 sm:px-6 sm:py-3" style={{ paddingBottom: "max(10px, env(safe-area-inset-bottom))" }}>
+          <div id="choisis" dir={dir} aria-label="Ma réponse" className="flex min-h-[64px] w-full items-center gap-2 overflow-x-auto rounded-2xl bg-canvas px-2.5 py-2 ring-1 ring-inset ring-line barre-fine sm:min-h-[84px] sm:w-auto sm:flex-1">
+            {choix.length === 0 && [0, 1, 2].map((i) => <span key={i} className="h-12 w-12 shrink-0 rounded-xl border-2 border-dashed border-line-strong/70 sm:h-[64px] sm:w-[64px]" />)}
             {choix.map((id, i) => (
               <button key={`${id}-${i}`} data-retirer={i} onClick={() => setChoix((c) => c.filter((_, j) => j !== i))}
                 aria-label={`retirer ${etiquette(id) || id}`} className="relative shrink-0 rounded-xl bg-surface p-1 shadow-panel animate-entree">
@@ -226,10 +240,10 @@ export default function EcranPatient() {
           <BoutonPlateau id="effacer" label="retirer le dernier pictogramme" disabled={!choix.length} onClick={() => setChoix((c) => c.slice(0, -1))} className="bg-canvas text-ink-soft">
             <Delete size={34} strokeWidth={1.75} />
           </BoutonPlateau>
-          <BoutonPlateau id="envoyer" label="envoyer" disabled={!choix.length || envoi === "en_cours"} onClick={() => choix.length && envoyerReponse(choix.slice())} className="w-[104px] bg-ok text-white shadow-sm">
+          <BoutonPlateau id="envoyer" label="envoyer" disabled={!choix.length || envoi === "en_cours"} onClick={() => choix.length && envoyerReponse(choix.slice())} className="bg-ok text-white shadow-sm sm:w-[104px]">
             {envoi === "en_cours" ? <span className="h-9 w-9 animate-spin rounded-full border-4 border-white border-t-transparent" /> : <SendHorizontal size={36} strokeWidth={2} />}
           </BoutonPlateau>
-          <span className="h-14 w-px bg-line" />
+          <span className="hidden h-14 w-px bg-line sm:block" />
           <BoutonPlateau id="urgence" label="urgence" onClick={() => setUrgence(true)} className="bg-danger shadow-sm">
             <img src={urlPicto("URGENCE")} alt="" width={50} height={50} className="rounded-lg" />
           </BoutonPlateau>
@@ -265,13 +279,14 @@ function BoutonPlateau({ id, label, disabled, onClick, className, children }:
   { id: string; label: string; disabled?: boolean; onClick: () => void; className?: string; children: React.ReactNode }) {
   return (
     <button id={id} aria-label={label} title={label} disabled={disabled} onClick={onClick}
-      className={cx("grid h-[84px] w-[84px] shrink-0 place-items-center rounded-2xl transition-transform active:scale-95 disabled:opacity-35 disabled:active:scale-100", className)}>
+      className={cx("grid h-16 flex-1 shrink-0 place-items-center rounded-2xl transition-transform active:scale-95 disabled:opacity-35 disabled:active:scale-100 sm:h-[84px] sm:w-[84px] sm:flex-none", className)}>
       {children}
     </button>
   );
 }
 
-function MessageRecu({ vue, etiquette, dir, nomMedecin }: { vue: VuePatient | null; etiquette: (id: string) => string; dir?: "rtl"; nomMedecin: string }) {
+function MessageRecu({ vue, etiquette, dir, nomMedecin, incompris, langue }:
+  { vue: VuePatient | null; etiquette: (id: string) => string; dir?: "rtl"; nomMedecin: string; incompris: () => void; langue: Langue }) {
   const msgs = vue?.messages ?? [];
   const dernier = msgs[msgs.length - 1];
   const anciens = msgs.slice(0, -1).reverse().slice(0, 4);
@@ -292,8 +307,8 @@ function MessageRecu({ vue, etiquette, dir, nomMedecin }: { vue: VuePatient | nu
           <>
             <div dir={dir} className="bande flex flex-wrap justify-center gap-3 sm:gap-4">
               {dernier.pictogrammes.map((id, i) => (
-                <figure key={i} className="flex w-[112px] flex-col items-center gap-1.5">
-                  <img src={urlPicto(id)} alt={etiquette(id) || id} width={112} height={112} draggable={false} />
+                <figure key={i} className="flex w-[88px] flex-col items-center gap-1.5 sm:w-[112px]">
+                  <img src={urlPicto(id)} alt={etiquette(id) || id} width={112} height={112} draggable={false} className="h-[88px] w-[88px] sm:h-[112px] sm:w-[112px]" />
                   <figcaption dir={dir} className="min-h-[1.25rem] text-center text-[15px] leading-tight text-ink-soft">{etiquette(id)}</figcaption>
                 </figure>
               ))}
@@ -301,13 +316,21 @@ function MessageRecu({ vue, etiquette, dir, nomMedecin }: { vue: VuePatient | nu
             {etiquette("OUI") && dernier.texte && (
               <p className="mx-auto mt-4 max-w-2xl rounded-xl bg-canvas px-4 py-2 text-center text-[17px] leading-snug text-ink" lang="fr">{dernier.texte}</p>
             )}
-            {vue?.attend_reponse && (
-              <div className="mt-4 flex justify-center">
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+              {vue?.attend_reponse && (
                 <span className="flex items-center gap-2 rounded-full bg-action-50 p-1.5 ring-1 ring-action/20">
                   <img src={urlPicto("QUESTION")} alt="à vous de répondre" width={44} height={44} className="animate-battement" />
                 </span>
-              </div>
-            )}
+              )}
+              {/* « Je ne comprends pas » : un geste, sans avoir à chercher les pictogrammes ; le médecin est conseillé */}
+              <button id="incompris" onClick={incompris} dir={dir}
+                className="flex items-center gap-2 rounded-2xl bg-warn-50 py-1.5 pl-1.5 pr-3 ring-1 ring-warn/30 active:scale-[.97]"
+                aria-label={{ "": "je ne comprends pas", fr: "je ne comprends pas", en: "I don't understand", ar: "لا أفهم" }[langue]}>
+                <img src={urlPicto("NE_PAS")} alt="" width={40} height={40} />
+                <img src={urlPicto("COMPRENDRE")} alt="" width={40} height={40} />
+                {langue && <span className="text-[15px] font-medium text-ink">{{ fr: "Je ne comprends pas", en: "I don't understand", ar: "لا أفهم" }[langue]}</span>}
+              </button>
+            </div>
           </>
         ) : (
           <div className="attente flex flex-col items-center gap-2 py-6 text-center">

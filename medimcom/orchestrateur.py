@@ -7,6 +7,8 @@ plus aucun agent n'agit (le système est stable) ou après `max_rounds`.
 import json
 import random
 
+from .agents import precontrole_a_jour
+
 
 class Orchestrateur:
     def __init__(self, ctx, agents: list, max_rounds: int = 8, ordre: str = "fixe", graine: int = 0):
@@ -66,6 +68,12 @@ class Orchestrateur:
             print(f"  {'✖' if r.startswith('Refusé') else '✔'} {r}")
         elif t == "rejet":
             print(f"  ✖ {self._rejeter(evt)}")
+        elif t == "retrait_message":
+            r = self._retirer(evt)
+            print(f"  {'✖' if r.startswith('Refusé') else '✔'} {r}")
+        elif t == "masquage_message":
+            r = self._masquer(evt)
+            print(f"  {'✖' if r.startswith('Refusé') else '✔'} {r}")
         elif t == "modification_pictogrammes":
             r = self._modifier_pictogrammes(evt)
             print(f"  {'✖' if r.startswith('Refusé') else '✔'} {r}")
@@ -109,6 +117,13 @@ class Orchestrateur:
             motif = next((c["detail"] for c in pc.get("constats", []) if c["niveau"] == "BLOQUE"), "contenu interdit")
             d._changer(evt["auteur"], "validation_refusee", {"id": cible["id"], "raison": motif})
             return f"Refusé : le juriste a bloqué ce message, il ne peut pas être envoyé. {motif}"
+        if pc.get("texte") == cible.get("texte") and any(c["regle"] == "CONTEXTE-A-CONFIRMER" and c["niveau"] == "A_REVOIR"
+                                                         for c in pc.get("constats", [])):
+            if not evt.get("confirme_contexte"):
+                return ("Refusé : le sens de ce message est à confirmer (ni consigne ni incitation ?). "
+                        "Confirmez-le en le validant, ou reformulez.")
+            cible["contexte_confirme_par"] = evt["medecin"]
+            d._changer(evt["auteur"], "contexte_confirme", {"id": cible["id"], "par": evt["medecin"], "texte": cible.get("texte")})
         cible["valide_par"] = evt["medecin"]
         cible["statut"] = "a_verifier"
         d._changer(evt["auteur"], "validation", {"id": cible["id"], "valide_par": evt["medecin"]})
@@ -155,7 +170,30 @@ class Orchestrateur:
             return "Refusé : aucune proposition en attente à rejeter."
         cible["statut"] = "rejete"
         d._changer(evt["auteur"], "rejet", {"id": cible["id"], "raison": evt.get("raison", "")})
-        return f"Proposition #{cible['id']} rejetée : {evt.get('raison', '')}"
+        if cible.get("source_question"):        # le traducteur ne la repropose pas : le médecin reformule s'il le souhaite
+            d.statut_question(evt["auteur"], cible["source_question"], "rejetee", evt.get("raison", ""))
+        return f"Proposition #{cible['id']} annulée : {evt.get('raison', '') or 'elle ne partira pas'}"
+
+    def _retirer(self, evt: dict) -> str:
+        """Le médecin retire de l'écran du patient un message déjà envoyé (erreur, message devenu faux). Le journal garde
+        le message et son retrait : rien n'est effacé de la trace."""
+        d = self.ctx.dossier
+        cible = d.decisions.get(int(evt.get("decision_id") or -1))
+        if evt.get("auteur") != "medecin" or not cible or cible.get("type") != "envoi_patient" or cible["statut"] != "envoye":
+            return "Refusé : seul un message déjà envoyé au patient peut être retiré de son écran."
+        cible["statut"] = "retire"
+        d._changer("medecin", "message_retire", {"id": cible["id"], "par": evt.get("medecin"), "raison": evt.get("raison", "")})
+        return f"Message #{cible['id']} retiré de l'écran du patient (le journal le garde)."
+
+    def _masquer(self, evt: dict) -> str:
+        """Masquer de la conversation du médecin un message qui n'est pas parti (annulé, bloqué) ou retiré."""
+        d = self.ctx.dossier
+        cible = d.decisions.get(int(evt.get("decision_id") or -1))
+        if not cible or cible.get("type") != "envoi_patient" or cible["statut"] in ("attente_validation", "a_verifier", "CONFORME", "envoye"):
+            return "Refusé : annulez ou retirez d'abord ce message."
+        cible["masque"] = True
+        d._changer("medecin", "message_masque", {"id": cible["id"]})
+        return f"Message #{cible['id']} masqué de la conversation (le journal le garde)."
 
     def stabiliser(self, exclure=frozenset()) -> int:
         """`exclure` : agents qui ne jouent pas maintenant (l'interface fait d'abord passer les agents rapides,
@@ -185,8 +223,7 @@ class Orchestrateur:
         d, n = self.ctx.dossier, 0
         # Contenu de chaque proposition au patient contrôlé AVANT la validation, même si le juriste (modèle) l'a oublié
         for dec in list(d.decisions.values()):
-            if dec.get("type") == "envoi_patient" and dec["statut"] == "attente_validation" \
-                    and (dec.get("precontrole") or {}).get("texte") != dec.get("texte"):
+            if dec.get("type") == "envoi_patient" and dec["statut"] == "attente_validation" and not precontrole_a_jour(dec, d):
                 self.ctx.journal.ajouter("coordinateur", "filet_de_securite",
                                          {"decision": dec["id"], "raison": "contenu non contrôlé avant validation"})
                 juriste.executer("precontroler_envoi_patient", {"decision_id": dec["id"]})

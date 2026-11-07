@@ -15,6 +15,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from .cerveaux import CerveauSimule, appels_dans_le_texte, separer_reflexion
+from .surete import normaliser as _normaliser_texte
 from .dossier import Dossier
 from .journal import Journal
 from .messagerie import Messagerie, TYPES
@@ -37,6 +38,9 @@ class Contexte:
     repli_sans_ia: bool = True          # dégradation gracieuse : si le modèle tombe, politique écrite à la main
     echecs_modele: dict = field(default_factory=dict)   # échecs consécutifs, par modèle
     seuil_echecs: int = 3               # au-delà : ce modèle est déclaré hors service (les autres continuent)
+    disjoncteur_depuis: dict = field(default_factory=dict)   # modèle -> heure de la mise hors service
+    reessai_s: float = 90.0             # un modèle hors service est réessayé après ce délai (clé corrigée, réseau revenu)
+    etat_modele: dict = field(default_factory=dict)          # modèle -> {"disponible": bool, "message": str}
     pictogrammeur: object = field(default_factory=LexiquePictogrammes)
     corpus: object = None               # textes officiels complets et fiches OMS de base_v2 (medimcom.base_v2.Corpus), si présents
     interrompre: object = None          # fonction : vrai si un humain attend (l'agent en ligne cède alors la place)
@@ -218,19 +222,35 @@ class Agent:
         if isinstance(self.cerveau, CerveauSimule):
             return self._politique(msgs, changements)
         cle = getattr(self.cerveau, "modele", self.cerveau.nom)
-        if self.ctx.echecs_modele.get(cle, 0) >= self.ctx.seuil_echecs:      # disjoncteur : on n'insiste pas
+        if self.ctx.echecs_modele.get(cle, 0) >= self.ctx.seuil_echecs:      # disjoncteur : on n'insiste pas…
             if not self.ctx.repli_sans_ia:
                 raise ModeleHorsService(f"modèle {cle} hors service ({self.ctx.echecs_modele[cle]} échecs)")
-            self.ctx.journal.ajouter(self.nom, "degradation", {"erreur": "modèle déclaré hors service", "repli": "politique écrite à la main"})
-            return self._politique(msgs, changements)
+            depuis = self.ctx.disjoncteur_depuis.setdefault(cle, time.time())
+            if time.time() - depuis < self.ctx.reessai_s:                    # … sauf de temps en temps (demi-ouvert)
+                if not getattr(self, "_repli_signale", False):
+                    self.ctx.journal.ajouter(self.nom, "degradation", {"erreur": "modèle déclaré hors service",
+                                                                      "message": (self.ctx.etat_modele.get(cle) or {}).get("message"),
+                                                                      "repli": "politique écrite à la main (veille clinique active)"})
+                    self._repli_signale = True     # une seule ligne au journal, pas une par tour
+                return self._politique(msgs, changements)
+            self.ctx.journal.ajouter(self.nom, "nouvel_essai_modele", {"modele": cle})
+            self.ctx.echecs_modele[cle] = self.ctx.seuil_echecs - 1         # un échec de plus le referme aussitôt
         try:
             agi = self._boucle_llm(msgs, changements)
+            if self.ctx.echecs_modele.get(cle):
+                self.ctx.journal.ajouter(self.nom, "modele_retabli", {"modele": cle})
             self.ctx.echecs_modele[cle] = 0
+            self.ctx.disjoncteur_depuis.pop(cle, None)
+            self.ctx.etat_modele[cle] = {"disponible": True, "message": "en ligne"}
+            self._repli_signale = False
             return agi
         except Interrompu:
             raise
         except Exception as e:  # serveur arrêté, délai dépassé, réponse illisible…
             self.ctx.echecs_modele[cle] = self.ctx.echecs_modele.get(cle, 0) + 1
+            if self.ctx.echecs_modele[cle] >= self.ctx.seuil_echecs:
+                self.ctx.disjoncteur_depuis[cle] = time.time()
+                self.ctx.etat_modele[cle] = {"disponible": False, "message": str(e)[:300]}
             if not self.ctx.repli_sans_ia:
                 raise
             self.ctx.journal.ajouter(self.nom, "degradation", {"erreur": repr(e)[:300], "repli": "politique écrite à la main"})
@@ -332,6 +352,22 @@ class Agent:
         return None if v is None else v["valeur"]
 
 
+CHAMPS_LISIBLES = {"allergies": "allergies", "traitements_en_cours": "traitements en cours", "grossesse": "grossesse",
+                   "age": "âge", "sexe": "sexe", "poids": "poids", "consentement_traitement": "accord du patient",
+                   "mode_consultation": "mode de consultation", "antecedents": "antécédents"}
+QUESTIONS_CHAMPS = {"allergies": "Êtes-vous allergique à un médicament ?", "traitements_en_cours": "Prenez-vous des médicaments en ce moment ?",
+                    "grossesse": "Êtes-vous enceinte ?"}
+
+
+def normaliser_simple(t: str) -> str:
+    return _normaliser_texte(t).strip()
+
+
+def analyser_medicaments(texte: str, medicaments: dict) -> list[str]:
+    from .surete import analyser_message
+    return analyser_message(texte, medicaments).get("medicaments") or []
+
+
 def _court(x, n=110):
     s = str(x).replace("\n", " ")
     return s if len(s) <= n else s[: n - 1] + "…"
@@ -383,9 +419,14 @@ est utile cliniquement. Numéro d'urgence : 998 (ambulance) aux Émirats ; dans 
         }
 
     def veille_clinique(self):
-        """Veille DÉTERMINISTE (sans modèle, instantanée), indépendante de Grok : dès que le juriste juge une
-        prescription risquée, l'assistant dit au médecin, en clair, pourquoi ne pas la donner en l'état et quelle
-        alternative sourcée discuter. Le modèle (s'il est branché) peut ensuite compléter, jamais retarder."""
+        """Veille DÉTERMINISTE (sans modèle, instantanée), indépendante de Grok : l'assistant suit TOUT ce qui passe et
+        prévient le médecin, en clair, avec une alternative sourcée et contrôlée par le moteur du juriste :
+          1. une prescription jugée risquée par le juriste ;
+          2. un message au patient qui conseille un médicament risqué pour CE patient, ou en quantité imprécise ;
+          3. un médicament que le patient déclare prendre (réponse en pictogrammes) et qui est risqué pour lui ;
+          4. un traitement en cours décrit sans nom de médicament (« contre le diabète ») : impossible de vérifier
+             les interactions.
+        Le modèle (s'il est branché) peut compléter, jamais retarder."""
         if not hasattr(self, "_veilles"):
             self._veilles = set()
         d = self.ctx.dossier
@@ -401,39 +442,184 @@ est utile cliniquement. Numéro d'urgence : 998 (ambulance) aux Émirats ; dans 
             self._veilles.add(cle)
             med = dec.get("medicament", "?")
             if v["verdict"] == "PREUVES_INSUFFISANTES":
-                manque = ", ".join(v.get("informations_manquantes") or []) or "des informations"
-                texte = f"Avant de prescrire {med}, renseignez : {manque}. Je reverrai la prescription dès que la fiche est complétée."
-                raison = "Le juriste ne peut pas conclure sans ces informations."
+                manquants = v.get("informations_manquantes") or []
+                manque = ", ".join(CHAMPS_LISIBLES.get(m, m.replace("_", " ")) for m in manquants) or "des informations"
+                a_demander = [m for m in manquants if m in QUESTIONS_CHAMPS]
+                texte = (f"Avant de prescrire {med}, il manque : {manque}.\n"
+                         + ("Je fais poser la question au patient (à valider dans la conversation) ; vous pouvez aussi remplir la fiche."
+                            if a_demander else "Complétez la fiche ; je revérifie aussitôt."))
+                raison = f"Le juriste ne peut pas conclure sans ces informations (prescription #{did})."
+                for m in a_demander:          # l'assistant obtient l'information lui-même, auprès du patient
+                    yield (f"Information manquante ({CHAMPS_LISIBLES.get(m, m)}) : je fais poser la question au patient.",
+                           "demander_question_patient", {"question": QUESTIONS_CHAMPS[m], "raison": f"Nécessaire avant de prescrire {med}.", "cle": m})
             else:
                 motifs = [c for c in v.get("constats", []) if c["niveau"] in ("BLOQUE", "A_REVOIR")]
-                pourquoi = " ; ".join(dict.fromkeys(c["detail"].split(". ")[0].rstrip(".") for c in motifs))
-                alt = (v.get("alternatives") or [None])[0]
                 tete = f"Ne pas prescrire {med} en l'état" if v["verdict"] == "BLOQUE" else f"{med} : à revoir avant toute prescription"
-                texte = f"{tete}.\nPourquoi :\n• " + pourquoi.replace(" ; ", "\n• ") + "."
-                if alt:
-                    # L'alternative est d'abord soumise au moteur de règles du juriste, pour CE patient (contre-indications,
-                    # allergies) : on ne propose jamais une alternative qui serait elle-même à revoir sans le dire.
-                    avis = self.ctx.regles.verifier_prescription(
-                        {"medicament": alt["medicament"], "prescripteur": dec.get("prescripteur"), "auteur": "medecin",
-                         "mode": dec.get("mode")}, d.etat)
-                    risques = [c for c in avis["constats"] if c["niveau"] in ("BLOQUE", "A_REVOIR")
-                               and c["regle"].startswith(("contre_indication", "allergie"))]
-                    self.ctx.journal.ajouter(self.nom, "avis_juriste_alternative",
-                                             {"prescription": did, "alternative": alt["medicament"],
-                                              "risques": [c["regle"] for c in risques] or "aucune contre-indication connue"})
-                    if risques:
-                        texte += (f"\nL'alternative {alt['medicament']} est elle aussi à vérifier : "
-                                  + " ; ".join(c["detail"].split(". ")[0] for c in risques) + ".")
-                    else:
-                        texte += (f"\nAlternative à discuter : {alt['medicament']} (source : {alt['source']}) ; contrôlée par le "
-                                  "moteur du juriste : aucune contre-indication connue pour ce patient. Dose à adapter à l'âge et au poids.")
-                raison = "Analyse du juriste rapprochée de la fiche du patient : " + ", ".join(
-                    f"{k} = {x['valeur']}" for k, x in d.etat.items() if k in ("age", "sexe", "grossesse", "poids", "allergies"))
+                texte = self._conseil(tete, motifs, (v.get("alternatives") or [None])[0], dec.get("prescripteur"), dec.get("mode"), did)
+                raison = self._raison_fiche()
             sources = " ; ".join(dict.fromkeys(c["reference_courte"] for c in v.get("constats", [])
                                                if c["niveau"] in ("BLOQUE", "A_REVOIR", "PREUVES_INSUFFISANTES") and c["reference_courte"] != "-")) or "analyse du juriste"
+            if any(s["statut"] == "proposee_au_medecin" and s["texte"] == texte for s in d.suggestions.values()):
+                continue                       # même conseil déjà affiché : pas de doublon
             yield (f"Prescription #{did} ({med}) jugée « {v['verdict']} » : je préviens le médecin tout de suite et je propose une alternative sourcée.",
                    "suggerer_au_medecin", {"type": "traitement_alternatif" if v["verdict"] != "PREUVES_INSUFFISANTES" else "question_manquante",
                                            "texte": texte, "raison": raison, "source": sources})
+        # 2. Messages au patient qui conseillent un médicament (bloqués par le juriste : l'assistant dit QUOI faire à la place)
+        for dec in list(d.decisions.values()):
+            pc = dec.get("precontrole") or {}
+            if dec.get("type") != "envoi_patient" or not pc.get("constats"):
+                continue
+            cliniques = [c for c in pc["constats"] if str(c.get("regle", "")).startswith(("contre_indication", "allergie", "SURETE-DOSE"))]
+            cle = ("message", dec["id"], pc.get("etat_version"))
+            if not cliniques or cle in self._veilles:
+                continue
+            self._veilles.add(cle)
+            meds = (pc.get("analyse") or {}).get("medicaments") or ["ce médicament"]
+            tete = (f"Message #{dec['id']} : ne pas conseiller {', '.join(meds)} à ce patient"
+                    if any(c["regle"].startswith(("contre_indication", "allergie")) for c in cliniques)
+                    else f"Message #{dec['id']} : préciser la dose de {', '.join(meds)}")
+            texte = self._conseil(tete, cliniques, (pc.get("alternatives") or [None])[0], None, None, dec["id"])
+            texte += "\nPour traiter : onglet Ordonnance (médicament, dose en mg, rythme) ; le juriste et moi la vérifions avant le patient."
+            yield (f"Le message #{dec['id']} conseille {', '.join(meds)} : risqué pour ce patient. Je dis au médecin pourquoi et quoi faire.",
+                   "suggerer_au_medecin", {"type": "traitement_alternatif", "texte": texte, "raison": self._raison_fiche(),
+                                           "source": " ; ".join(dict.fromkeys(c["reference_courte"] for c in cliniques if c.get("reference_courte"))) or "analyse du juriste"})
+        # 3. Médicaments que le patient déclare prendre
+        declares = str(self.val("medicaments_declares") or "")
+        for brut in [m.strip() for m in declares.split(",") if m.strip()]:
+            r = self.ctx.regles.risques_medicament(brut, d.etat)
+            motifs = [c for c in r["constats"] if c["niveau"] in ("BLOQUE", "A_REVOIR")]
+            cle = ("declare", r["medicament"], d.etat_version)
+            if not motifs or cle in self._veilles:
+                continue
+            self._veilles.add(cle)
+            texte = self._conseil(f"Le patient dit prendre {brut} : risqué pour lui", motifs, (r["alternatives"] or [None])[0], None, None, None)
+            texte += "\nÀ vérifier avec lui : dose, depuis quand, qui l'a prescrit."
+            yield (f"Le patient déclare prendre {brut}, risqué au vu de sa fiche : j'alerte le médecin.", "suggerer_au_medecin",
+                   {"type": "alerte_urgence" if any(c["niveau"] == "BLOQUE" for c in motifs) else "traitement_alternatif",
+                    "texte": texte, "raison": self._raison_fiche(),
+                    "source": " ; ".join(dict.fromkeys(c["reference_courte"] for c in motifs if c.get("reference_courte"))) or "-"})
+        # 0. Conseils périmés : urgence prise en charge, prescription corrigée, fiche complétée -> je retire mes suggestions
+        if self.val("urgence") is False:
+            for sg in list(d.suggestions.values()):
+                if sg["auteur"] == self.nom and sg["statut"] == "proposee_au_medecin" and sg["type"] == "alerte_urgence" \
+                        and sg["raison"].startswith("urgence = vrai"):
+                    yield ("L'urgence est prise en charge par le médecin : je retire mon alerte.", "retirer_suggestion",
+                           {"id": sg["id"], "raison": "urgence prise en charge"})
+        for sg in list(d.suggestions.values()):
+            m = re.search(r"\(prescription #(\d+)\)", sg.get("raison", ""))
+            if sg["auteur"] == self.nom and sg["statut"] == "proposee_au_medecin" and m:
+                dec = d.decisions.get(int(m.group(1))) or {}
+                if dec.get("statut") not in ("PREUVES_INSUFFISANTES",):
+                    yield (f"La prescription #{dec.get('id')} n'attend plus d'information : je retire ma suggestion.",
+                           "retirer_suggestion", {"id": sg["id"], "raison": "information obtenue ou prescription modifiée"})
+        # 7. Le patient ne comprend pas un message : je conseille le médecin
+        for i, e in enumerate(d.fil):
+            if e.get("incompris") and ("incompris", i) not in self._veilles:
+                self._veilles.add(("incompris", i))
+                sujet = f"« {e.get('en_reponse_a')} »" if e.get("en_reponse_a") else "votre dernier message"
+                yield ("Le patient signale qu'il ne comprend pas : je propose au médecin des façons de reformuler.",
+                       "suggerer_au_medecin", {"type": "question_manquante",
+                                               "texte": f"Le patient ne comprend pas {sujet}.\nReformulez : une seule idée par message, des mots "
+                                                        "simples et concrets (« ventre », « mal », « oui / non ») ; montrez du doigt ; "
+                                                        "si cela ne suffit pas, faites appel à un interprète en langue des signes.",
+                                               "raison": "Réponse du patient : « je ne comprends pas ».",
+                                               "source": f"DHATH-12.4 — {self.ctx.regles.base.citer_court('DHATH-12.4')}" if self.ctx.regles.pays == "AE" else "-"})
+        # 8. Le patient refuse l'aide de l'IA : son choix est respecté
+        if self.val("informe_usage_ia") is False and ("refus_ia",) not in self._veilles:
+            self._veilles.add(("refus_ia",))
+            yield ("Le patient refuse que l'IA aide à la consultation : je le dis au médecin.", "suggerer_au_medecin",
+                   {"type": "alerte_urgence",
+                    "texte": "Le patient a répondu NON à l'aide de l'IA.\nRespectez son choix : poursuivez avec un interprète en langue des "
+                             "signes ou un autre moyen qu'il accepte. Ce refus est enregistré au journal.",
+                    "raison": "Réponse du patient au message d'accueil.",
+                    "source": f"DHA21-4.4 — {self.ctx.regles.base.citer_court('DHA21-4.4')}" if self.ctx.regles.pays == "AE" else "-"})
+        # 9. Le patient dit OUI (allergies, traitements) sans dire lesquels : le médecin précise
+        for cle, nom in (("allergies", "des allergies"), ("traitements_en_cours", "des traitements en cours")):
+            if "préciser" in str(self.val(cle) or "") and ("preciser", cle) not in self._veilles:
+                self._veilles.add(("preciser", cle))
+                yield (f"Le patient a {nom} sans dire lesquels : le médecin doit préciser.", "suggerer_au_medecin",
+                       {"type": "question_manquante",
+                        "texte": f"Le patient dit avoir {nom}. Demandez lesquels (montrez-lui les pictogrammes de médicaments, ou "
+                                 "son ordonnance, sa boîte) et écrivez-les dans la fiche.",
+                        "raison": "Réponse OUI à la question, sans détail.", "source": "-"})
+        # 5. Le patient exprime une idée de mort POUR LUI-MÊME (pas un récit sur un tiers) : alerte immédiate
+        from .lecture import risque_suicidaire
+        for i, e in enumerate(d.fil):
+            texte_patient = e.get("interpretation") if e.get("pictogrammes") else None
+            r = risque_suicidaire(texte_patient) if texte_patient else None
+            if r and r["niveau"] == "alerte" and ("suicide", i) not in self._veilles:
+                self._veilles.add(("suicide", i))
+                urgence = "998 (ambulance)" if self.ctx.regles.pays == "AE" else "les secours"
+                yield ("Le patient semble exprimer une idée de mort pour lui-même : j'alerte le médecin en priorité.",
+                       "suggerer_au_medecin", {"type": "alerte_urgence",
+                                               "texte": f"Le patient semble parler de mourir (« {texte_patient} »). Évaluez le risque suicidaire maintenant.\n"
+                                                        f"Restez avec lui, demandez-lui directement s'il pense à se faire du mal ; si le danger est immédiat : {urgence}.",
+                                               "raison": "Lecture de la réponse du patient : " + ", ".join(r["indices"]) + ".",
+                                               "source": "Lecture du contexte par MEDIMCOM IA"})
+        # 6. Un message évoque (récit) un médicament pris par le patient lui-même, risqué pour lui : à vérifier
+        for dec in list(d.decisions.values()):
+            a = ((dec.get("precontrole") or {}).get("analyse") or {}) if dec.get("type") == "envoi_patient" else {}
+            ctx_lu = a.get("contexte") or {}
+            if not a.get("evocation") or ctx_lu.get("intention") != "recit" or "il s'agit d'une autre personne" in ctx_lu.get("indices", []):
+                continue
+            for brut in a.get("medicaments") or []:
+                r = self.ctx.regles.risques_medicament(brut, d.etat)
+                motifs = [c for c in r["constats"] if c["niveau"] in ("BLOQUE", "A_REVOIR")]
+                cle = ("recit", dec["id"], r["medicament"], d.etat_version)
+                if motifs and cle not in self._veilles:
+                    self._veilles.add(cle)
+                    texte = self._conseil(f"Votre message #{dec['id']} évoque une prise de {r['medicament']} par le patient : à vérifier",
+                                          motifs, (r["alternatives"] or [None])[0], None, None, dec["id"])
+                    yield (f"Le message #{dec['id']} est un récit (pas une consigne), mais il dit que le patient a pris {r['medicament']}, "
+                           "risqué pour lui : je le signale.", "suggerer_au_medecin",
+                           {"type": "traitement_alternatif", "texte": texte, "raison": self._raison_fiche(),
+                            "source": " ; ".join(dict.fromkeys(c["reference_courte"] for c in motifs)) or "-"})
+        # 4. Traitement en cours sans nom de médicament : impossible de vérifier les interactions
+        tt = self.val("traitements_en_cours")
+        if isinstance(tt, str) and tt.strip() and normaliser_simple(tt) not in ("aucun", "non", "rien", "neant", "none"):
+            connus = analyser_medicaments(tt, self.ctx.regles.kb.get("medicaments", {}))
+            cle = ("traitement_vague", tt)
+            if not connus and cle not in self._veilles:
+                self._veilles.add(cle)
+                yield (f"Traitement en cours « {tt} » : aucun médicament nommé. Je demande au médecin de préciser.",
+                       "suggerer_au_medecin", {"type": "question_manquante",
+                                               "texte": f"Préciser le traitement en cours (« {tt} ») : nom du médicament et dose.\n"
+                                                        "Sans le nom, je ne peux pas vérifier les interactions ni les contre-indications.",
+                                               "raison": "Traitement en cours renseigné sans nom de médicament.",
+                                               "source": f"ML16-A4-2 — {self.ctx.regles.base.citer_court('ML16-A4-2')}" if self.ctx.regles.pays == "AE" else "-"})
+
+    def _raison_fiche(self) -> str:
+        d = self.ctx.dossier
+        noms = {"age": "âge", "sexe": "sexe", "grossesse": "enceinte", "poids": "poids (kg)", "allergies": "allergies",
+                "antecedents": "antécédents", "medicaments_declares": "médicaments déclarés"}
+        lisible = lambda v: "oui" if v is True else "non" if v is False else v  # noqa: E731
+        return "Fiche du patient prise en compte : " + ", ".join(
+            f"{noms[k]} : {lisible(x['valeur'])}" for k, x in d.etat.items() if k in noms) + "."
+
+    def _conseil(self, tete, motifs, alt, prescripteur, mode, ref) -> str:
+        """Message clair : quoi (1re ligne), pourquoi (puces), alternative contrôlée par le moteur du juriste."""
+        d = self.ctx.dossier
+        pourquoi = list(dict.fromkeys(c["detail"].replace("Pour ce patient : ", "").split(". ")[0].rstrip(".") for c in motifs))
+        texte = f"{tete}.\nPourquoi :\n• " + "\n• ".join(pourquoi) + "."
+        if alt:
+            # L'alternative est d'abord soumise au moteur de règles du juriste, pour CE patient (contre-indications,
+            # allergies) : on ne propose jamais une alternative qui serait elle-même à revoir sans le dire.
+            avis = self.ctx.regles.verifier_prescription(
+                {"medicament": alt["medicament"], "prescripteur": prescripteur, "auteur": "medecin", "mode": mode}, d.etat)
+            risques = [c for c in avis["constats"] if c["niveau"] in ("BLOQUE", "A_REVOIR")
+                       and c["regle"].startswith(("contre_indication", "allergie"))]
+            self.ctx.journal.ajouter(self.nom, "avis_juriste_alternative",
+                                     {"pour": ref, "alternative": alt["medicament"],
+                                      "risques": [c["regle"] for c in risques] or "aucune contre-indication connue"})
+            if risques:
+                texte += (f"\nL'alternative {alt['medicament']} est elle aussi à vérifier : "
+                          + " ; ".join(c["detail"].split(". ")[0] for c in risques) + ".")
+            else:
+                maxi = self.ctx.regles.risques_medicament(alt["medicament"], d.etat).get("dose_max_mg")
+                texte += (f"\nAlternative à discuter : {alt['medicament']} (source : {alt['source']}) ; contrôlée par le "
+                          "moteur du juriste : aucune contre-indication connue pour ce patient. Dose à adapter à l'âge et au poids"
+                          + (f" (maximum {maxi} mg par jour chez l'adulte)." if maxi else "."))
+        return texte
 
     def _maj_etat(self, cle, valeur, source, confirme=False):
         """Garde-fou : l'assistant ne peut pas « confirmer » lui-même un fait que personne n'a rapporté."""
@@ -494,6 +680,13 @@ est utile cliniquement. Numéro d'urgence : 998 (ambulance) aux Émirats ; dans 
                 if s["auteur"] == self.nom and s["statut"] == "proposee_au_medecin" and s["type"] == "question_manquante" and "grossesse" in s["texte"]:
                     yield ("La grossesse est maintenant renseignée : ma suggestion n'a plus lieu d'être, je la retire.",
                            "retirer_suggestion", {"id": s["id"], "raison": "Information obtenue."})
+
+
+def precontrole_a_jour(dec: dict, dossier) -> bool:
+    """Le contrôle du contenu d'une proposition vaut pour un texte ET un état du patient : si le médecin saisit
+    « enceinte » après coup, « et du tramadol » doit être recontrôlé."""
+    pc = dec.get("precontrole") or {}
+    return pc.get("texte") == dec.get("texte") and pc.get("etat_version") == dossier.etat_version
 
 
 # ====================================================================== AGENT 2
@@ -568,11 +761,16 @@ changer ; tu cites toujours la fiche et le texte ; sans texte applicable, tu le 
         if d["statut"] != "attente_validation":
             return f"Refusé : le message #{d['id']} n'est plus une proposition (statut « {d['statut']} »)."
         p = self.ctx.dossier.decisions.get(d.get("source_prescription") or -1)
-        v = self.ctx.regles.verifier_envoi_patient({**d, "statut_prescription_liee": p["statut"] if p else None}, suppose_valide=True)
+        v = self.ctx.regles.verifier_envoi_patient({**d, "statut_prescription_liee": p["statut"] if p else None}, suppose_valide=True,
+                                                   etat=self.ctx.dossier.etat)
         motifs = [c for c in v["constats"] if c["niveau"] != "CONFORME"]
+        garder = ("regle", "niveau", "base", "detail", "piste", "reference_courte")
         d["precontrole"] = {"verdict": v["verdict"], "texte": d.get("texte"), "analyse": v.get("analyse_contenu", {}),
-                            "constats": [{k: c.get(k) for k in ("regle", "niveau", "base", "detail", "piste", "reference_courte")}
-                                         for c in motifs]}
+                            "etat_version": self.ctx.dossier.etat_version, "alternatives": v.get("alternatives", []),
+                            "constats": [{k: c.get(k) for k in garder} for c in motifs],
+                            # ce que le juriste a compris du message (récit, question…) et les fautes corrigées
+                            "lecture": [{k: c.get(k) for k in garder} for c in v.get("informations", [])
+                                        if str(c.get("regle", "")).startswith(("LECTURE", "CONTEXTE"))]}
         self.ctx.dossier._changer(self.nom, "precontrole", {"id": d["id"], "verdict": v["verdict"], "motifs": [c["regle"] for c in motifs]})
         if v["verdict"] == "BLOQUE":
             # Verdict enregistré (journal, onglet Droit) : la proposition passe au statut BLOQUE et ne peut plus être validée.
@@ -593,7 +791,7 @@ changer ; tu cites toujours la fiche et le texte ; sans texte applicable, tu le 
             return f"Refusé : le message #{d['id']} est au statut « {d['statut']} » : rien à contrôler."
         p = self.ctx.dossier.decisions.get(d.get("source_prescription") or -1)
         message = {**d, "statut_prescription_liee": p["statut"] if p else None}
-        return self._enregistrer(d, self.ctx.regles.verifier_envoi_patient(message))
+        return self._enregistrer(d, self.ctx.regles.verifier_envoi_patient(message, etat=self.ctx.dossier.etat))
 
     def _verifier_partage(self, decision_id):
         d = self._decision(decision_id, "partage_donnees")
@@ -624,8 +822,10 @@ changer ; tu cites toujours la fiche et le texte ; sans texte applicable, tu le 
                         if nouvelle else f"L'état du patient a changé depuis mon contrôle de #{dec['id']} : je revérifie."),
                        "verifier_prescription", {"decision_id": dec["id"]})
                 yield from self._reagir(self.dernier_verdict, dec)
-            elif t == "envoi_patient" and statut == "attente_validation" and (dec.get("precontrole") or {}).get("texte") != dec.get("texte"):
-                yield (f"Nouvelle proposition #{dec['id']} pour le patient : je contrôle son contenu avant que le médecin la valide.",
+            elif t == "envoi_patient" and statut == "attente_validation" and not precontrole_a_jour(dec, d):
+                yield ((f"Nouvelle proposition #{dec['id']} pour le patient : je contrôle son contenu avant que le médecin la valide."
+                        if not dec.get("precontrole") else
+                        f"La fiche du patient a changé : je recontrôle la proposition #{dec['id']} avant que le médecin la valide."),
                        "precontroler_envoi_patient", {"decision_id": dec["id"]})
                 yield from self._alerter_precontrole(dec)
             elif t in ("envoi_patient", "partage_donnees") and statut == "a_verifier":
@@ -664,11 +864,32 @@ changer ; tu cites toujours la fiche et le texte ; sans texte applicable, tu le 
 
     def _alerter_precontrole(self, dec):
         pc = dec.get("precontrole") or {}
+        if not hasattr(self, "_alertes_pc"):
+            self._alertes_pc = set()
+        cle = (dec["id"], pc.get("verdict"), pc.get("texte"))
+        if cle in self._alertes_pc:
+            return
+        self._alertes_pc.add(cle)
+        analyse = pc.get("analyse") or {}
+        if analyse.get("evocation") or analyse.get("a_confirmer"):
+            # Les agents se disent ce qu'ils ont compris : l'assistant sait que ce n'est pas une consigne
+            lu = analyse.get("evocation") or analyse.get("a_confirmer")
+            yield (f"Message #{dec['id']} : {lu}. Je dis à l'assistant ce que j'ai compris : il suit la consultation.",
+                   "envoyer_message", {"destinataire": "assistant", "type": "information",
+                                       "contenu": f"Lecture du message #{dec['id']} « {dec.get('texte', '')} » : {lu}. "
+                                                  f"Indices : {', '.join((analyse.get('contexte') or {}).get('indices') or []) or 'aucun'}."})
+        if pc.get("verdict") == "A_REVOIR" and any(c["regle"] == "CONTEXTE-A-CONFIRMER" for c in pc.get("constats", [])):
+            yield ("Je ne peux pas trancher le sens de ce message : le médecin confirme ce qu'il veut dire, ou reformule.",
+                   "envoyer_message", {"destinataire": "medecin", "type": "information",
+                                       "contenu": f"Message au patient #{dec['id']} « {dec.get('texte', '')} » : sens à confirmer. "
+                                                  f"{analyse.get('a_confirmer', '')}. Il ne partira que si vous confirmez, en le validant, "
+                                                  "que ce n'est ni une consigne ni une incitation (votre nom est enregistré), ou reformulez."})
         if pc.get("verdict") != "BLOQUE":
             return
         bloquants = [c for c in pc["constats"] if c["niveau"] == "BLOQUE"]
-        detail = " ".join(dict.fromkeys(c["detail"] for c in bloquants))
-        refs = " ; ".join(dict.fromkeys(c["reference_courte"] for c in bloquants))
+        patient = [c for c in pc["constats"] if c["niveau"] == "A_REVOIR" and str(c.get("detail", "")).startswith("Pour ce patient")]
+        detail = " ".join(dict.fromkeys(c["detail"] for c in bloquants + patient))
+        refs = " ; ".join(dict.fromkeys(r for c in bloquants + patient for r in str(c["reference_courte"]).split(" ; ")))
         pistes = " ".join(dict.fromkeys(c["piste"] for c in bloquants if c.get("piste")))
         yield ("Ce contenu est interdit par une règle contraignante : je le bloque avant toute validation et je dis au médecin quoi faire.",
                "envoyer_message", {"destinataire": "medecin", "type": "alerte",
@@ -776,6 +997,9 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
                 "rapporter_reponse_patient", "Rapporter dans le dossier la réponse que le patient vient d'envoyer "
                 "(exactement les pictogrammes qu'il a choisis). Un OUI ou NON seul à une question fermée devient un fait.",
                 {"pictogrammes": {"type": "array", "items": S}}, ["pictogrammes"])),
+            "retirer_proposition": (self._retirer_proposition, _schema(
+                "retirer_proposition", "Retirer une de tes propositions encore en attente de validation, devenue inutile "
+                "(l'information est déjà obtenue).", {"decision_id": I, "raison": S}, ["decision_id", "raison"])),
             "envoyer_au_patient": (self._envoyer_patient, _schema(
                 "envoyer_au_patient", "Envoyer au patient un message validé par le médecin et jugé CONFORME par le juriste.",
                 {"decision_id": I}, ["decision_id"])),
@@ -813,18 +1037,31 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
                 continue
             if (question_id and x.get("source_question") == question_id) or (prescription_id and x.get("source_prescription") == prescription_id):
                 return f"Refusé : la proposition #{x['id']} existe déjà pour ce sujet (statut : {x['statut']})."
+        q = next((q for q in self.ctx.dossier.questions_a_poser if q["id"] == question_id), None) if question_id else None
+        if q and q["statut"] in ("rejetee", "annulee"):
+            return f"Refusé : le médecin a annulé la question #{question_id} ; il la reformulera s'il le souhaite."
         libres = [x for x in envois if x["statut"] == "attente_validation" and not (x.get("source_question") or x.get("source_prescription"))]
         if not (question_id or prescription_id) and len(libres) >= self.MAX_LIBRES:
             return (f"Refusé : déjà {self.MAX_LIBRES} messages libres attendent la validation du médecin "
                     "(les questions et explications de traitement restent possibles).")
         t = dict(self.ctx.pictogrammeur.traduire(texte))
         choisi_par = "traduction automatique"
+        q = next((q for q in self.ctx.dossier.questions_a_poser if q["id"] == question_id), None) if question_id else None
+        demande_accord = (contenu_type == "traitement" and prescription_id) or (q and q.get("cle") in ("consentement_traitement", "informe_usage_ia"))
+        if demande_accord and not any(x in self.ACCORD for p in t["pictogrammes"] for x in p.split("+")):
+            accord = next((a for a in self.ACCORD if picto_connu(a)), None)
+            if accord:          # la question d'accord doit être VUE par le patient, sinon son OUI ne vaut pas accord
+                pos = t["pictogrammes"].index("QUESTION") if "QUESTION" in t["pictogrammes"] else len(t["pictogrammes"])
+                t["pictogrammes"] = t["pictogrammes"][:pos] + [accord] + t["pictogrammes"][pos:]
+                t["non_traduits"] = [m for m in t["non_traduits"] if "accord" not in m.lower()]
         if pictogrammes:
             motif = self._verifier_choix(t["pictogrammes"], pictogrammes)
             if motif:
                 return f"Refusé : {motif}. Traduction automatique proposée : {' '.join(t['pictogrammes'])}."
             t["pictogrammes"], choisi_par = [str(x) for x in pictogrammes], "choix de l'agent traducteur"
         rapproches = t.get("rapproches") or {}      # mots inconnus rapprochés en arrière-plan (faute, conjugaison, sens)
+        for mot, corrige in (t.get("corrections") or {}).items():   # fautes de frappe ou de dictée corrigées
+            rapproches.setdefault(mot, f"lu comme « {corrige} »")
         did = self.ctx.dossier.ajouter_decision(self.nom, {
             "type": "envoi_patient", "texte": texte, "contenu_type": contenu_type, "valide_par": None,
             "statut": "attente_validation", "pictogrammes": t["pictogrammes"], "non_traduits": t["non_traduits"],
@@ -837,6 +1074,11 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
         return f"Proposition #{did} soumise au médecin : {' '.join(t['pictogrammes'])}.{manque}"
 
     FAITS_OUI_NON = {"grossesse", "urgence", "consentement_traitement", "informe_usage_ia", "nausees", "fievre", "douleur"}
+    # Questions à réponse OUI / NON qui portent sur une LISTE : NON = « aucune » ; OUI = à préciser (le juriste et
+    # l'assistant ne considèrent pas le champ comme renseigné tant que le médecin n'a pas écrit lesquelles)
+    FAITS_LISTE = {"allergies": "aucune", "traitements_en_cours": "aucun"}
+    # Un accord n'est un consentement que si la question d'accord a vraiment été MONTRÉE en pictogrammes
+    ACCORD = ("D_ACCORD", "ACCEPTER", "ACCORD", "CONSENTEMENT")
 
     def _recevoir(self, msgs):
         for m in msgs:
@@ -856,7 +1098,7 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
         dernier = envoyes[-1]
         if dernier.get("source_question"):
             q = next((q for q in d.questions_a_poser if q["id"] == dernier["source_question"]), None)
-            if q and q["statut"] == "en_attente":
+            if q and q["statut"] in ("en_attente", "posee"):
                 return dernier, q.get("cle"), q["question"]
         if dernier.get("contenu_type") == "traitement" and dernier.get("source_prescription"):
             return dernier, "consentement_traitement", dernier["texte"]
@@ -869,18 +1111,43 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
         self.reponses_patient = [r for r in self.reponses_patient if sorted(r) != sorted(pictos)]
         texte = self.ctx.pictogrammeur.interpreter(pictos)
         dec, cle, libelle = self._question_ouverte()
-        donnees = {}
-        if cle in self.FAITS_OUI_NON and len(pictos) == 1 and pictos[0] in ("OUI", "NON"):
-            donnees[cle] = pictos[0] == "OUI"
+        donnees, details = {}, {}
+        oui_non = len(pictos) == 1 and pictos[0] in ("OUI", "NON", "D_ACCORD", "PAS_D_ACCORD")
+        oui = pictos[0] in ("OUI", "D_ACCORD") if oui_non else None
+        if cle in ("consentement_traitement", "informe_usage_ia") and oui_non and dec is not None \
+                and not any(x in self.ACCORD for p in dec.get("pictogrammes") or [] for x in p.split("+")):
+            # Garde-fou éthique : « vous ? » n'est pas « êtes-vous d'accord ? ». Sans pictogramme d'accord montré, le OUI
+            # n'est pas enregistré comme consentement ; le médecin est prévenu.
+            details["accord_non_valable"] = True
+            self.ctx.messagerie.envoyer(self.nom, "medecin", "alerte",
+                                        f"Réponse « {pictos[0].lower()} » au message #{dec['id']} NON enregistrée comme accord : la question "
+                                        "d'accord n'a pas été montrée en pictogramme (aucune image « d'accord » ou « accepter »). "
+                                        "Ajoutez-la (Modifier les pictogrammes) et reposez la question.")
+        elif cle in self.FAITS_OUI_NON and oui_non:
+            donnees[cle] = oui
+        elif cle in self.FAITS_LISTE and oui_non:
+            donnees[cle] = self.FAITS_LISTE[cle] if not oui else "oui, à préciser"
+        elements_reponse = {x for p in pictos for x in p.split("+")}
+        if "COMPRENDRE" in elements_reponse and elements_reponse & {"NE_PAS", "NON"}:
+            details["incompris"] = True            # « je ne comprends pas » : l'assistant conseille le médecin
         if "URGENCE" in pictos:          # le bouton d'urgence du patient prime sur tout le reste
             donnees["urgence"] = True
         donnees.update(self._faits_douleur(pictos))
+        # Médicament montré par le patient (« qu'avez-vous pris ? » -> MEDICAMENT:TRAMADOL) : un fait que l'assistant et
+        # le juriste confrontent à sa fiche (grossesse, âge, allergies…). Rien n'est déduit d'une réponse niée.
+        elements = [x for p in pictos for x in p.split("+")]
+        meds = [x.split(":", 1)[1].lower() for x in elements if x.startswith("MEDICAMENT:")]
+        if meds and not {"NON", "NE_PAS"} & set(elements):
+            donnees["medicaments_declares"] = ", ".join(dict.fromkeys(meds))
         if dec:
             self.repondus.add(dec["id"])
+            if dec.get("source_question"):
+                self.ctx.dossier.statut_question(self.nom, dec["source_question"], "repondue")
         sujet = f" à « {libelle} »" if libelle else ""
         self.ctx.dossier.ajouter_echange(self.nom, f"Réponse du patient{sujet} en pictogrammes : [{' '.join(pictos)}] → « {texte} »",
                                          donnees, confirme=True,
-                                         details={"pictogrammes": pictos, "interpretation": texte, "en_reponse_a": libelle})
+                                         details={"pictogrammes": pictos, "interpretation": texte, "en_reponse_a": libelle,
+                                                  "message_id": dec["id"] if dec else None, **details})
         faits = " ; ".join(f"{k} = {v}" for k, v in donnees.items())
         return f"Réponse rapportée : « {texte} »" + (f" ; {faits}" if faits else " (texte seulement, aucun fait structuré)")
 
@@ -902,6 +1169,14 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
             faits["intensite_douleur"] = chiffres[0]
         return faits
 
+    def _retirer_proposition(self, decision_id, raison):
+        d = self.ctx.dossier.decisions.get(int(decision_id))
+        if not d or d.get("type") != "envoi_patient" or d["auteur"] != self.nom or d["statut"] != "attente_validation":
+            return "Refusé : seule une de mes propositions en attente de validation peut être retirée."
+        d["statut"] = "annulee"
+        self.ctx.dossier._changer(self.nom, "decision_annulee", {"id": d["id"], "raison": raison})
+        return f"Proposition #{d['id']} retirée : {raison}."
+
     def _envoyer_patient(self, decision_id):
         d = self.ctx.dossier.decisions.get(int(decision_id))
         if not d or d.get("type") != "envoi_patient":
@@ -916,6 +1191,8 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
                     "Message à refaire.")
         d["statut"] = "envoye"
         self.ctx.dossier._changer(self.nom, "envoye_au_patient", {"id": d["id"], "pictogrammes": d.get("pictogrammes"), "valide_par": d["valide_par"]})
+        if d.get("source_question"):
+            self.ctx.dossier.statut_question(self.nom, d["source_question"], "posee")
         return f"Message #{d['id']} envoyé au patient."
 
     def politique_simulee(self, msgs, changements):
@@ -946,6 +1223,12 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
                        "question d'accord (consentement), pour validation par le médecin.",
                        "proposer_au_medecin", {"texte": texte, "contenu_type": "traitement", "prescription_id": p["id"]})
                 yield from self._signaler_manques()
+        # 2 bis. Question devenue inutile (le médecin a rempli la fiche entre-temps) : je retire ma proposition
+        for x in envois:
+            q = next((q for q in d.questions_a_poser if q["id"] == x.get("source_question")), None)
+            if x["auteur"] == self.nom and x["statut"] == "attente_validation" and q and q.get("cle") and q["statut"] == "repondue":
+                yield (f"La réponse à « {q['question']} » est déjà dans la fiche : je retire la proposition #{x['id']}, devenue inutile.",
+                       "retirer_proposition", {"decision_id": x["id"], "raison": "information déjà obtenue"})
         # 3. Messages validés et jugés conformes : envoyer
         for x in envois:
             if x["auteur"] == self.nom and x["statut"] == "CONFORME" and x.get("valide_par"):

@@ -4,7 +4,7 @@ import {
   AlertTriangle, BookOpen, Bot, Building2, Check, ChevronDown, ClipboardList, FileText, Gavel, Hand, Info,
   Languages, Lock, MessageSquareText, MonitorSmartphone, Network, Pill, Play, RotateCcw, Scale, ScrollText,
   Send, Share2, ShieldAlert, ShieldCheck, Siren, Sparkles, Stethoscope, UserRound, X,
-  Loader2,
+  Loader2, ArrowLeft, ArrowRight, EyeOff, PencilLine, Split, Undo2, WifiOff,
 } from "lucide-react";
 import {
   combinable, envoyer, ErreurApi, jetonMedecin, lire, urlPicto,
@@ -22,10 +22,18 @@ const FAITS: Record<string, string> = {
   antecedents: "Antécédents (texte libre)", maladies_connues: "Maladies repérées", autres_informations: "Autres informations",
   poids: "Poids", maladie_renale: "Maladie rénale", maladie_hepatique: "Maladie du foie", ulcere_digestif: "Ulcère digestif",
   anticoagulant: "Sous anticoagulant", maladie_cardiaque: "Maladie cardiaque", allaitement: "Allaitement",
+  medicaments_declares: "Médicaments déclarés par le patient",
 };
 const ORDRE_FAITS = Object.keys(FAITS);
+// Informations manquantes avant une prescription : réponse directe du médecin, ou question au patient (traduite, validée)
+const REMPLIR: Record<string, { valeurs: [string, unknown][]; question?: string }> = {
+  allergies: { valeurs: [["Aucune", "aucune"]], question: "Êtes-vous allergique à un médicament ?" },
+  traitements_en_cours: { valeurs: [["Aucun", "aucun"]], question: "Prenez-vous des médicaments en ce moment ?" },
+  grossesse: { valeurs: [["Pas enceinte", false], ["Enceinte", true]], question: "Êtes-vous enceinte ?" },
+};
 const CLES_REPONSE: Record<string, string> = {
   grossesse: "Grossesse", fievre: "Fièvre", douleur: "Douleur", nausees: "Nausées", consentement_traitement: "Accord pour le traitement",
+  allergies: "Allergies (oui / non)", traitements_en_cours: "Traitements en cours (oui / non)", informe_usage_ia: "Accord pour l'aide de l'IA",
 };
 const AGENTS: Record<string, { nom: string; icone: ReactNode }> = {
   traducteur: { nom: "Traducteur", icone: <Languages size={15} /> },
@@ -72,8 +80,9 @@ export default function EcranMedecin() {
   const { donnees: vue, erreur, rafraichir } = useSondage(() => lire<VueMedecin>("/api/medecin", jeton));
   const [occupe, setOccupe] = useState(false);
   const [medecin, setMedecin] = useState("DR-001");
-  const [dialogue, setDialogue] = useState<null | { type: "rejeter" | "maintenir" | "reinit"; id?: number }>(null);
+  const [dialogue, setDialogue] = useState<null | { type: "retirer" | "maintenir" | "reinit"; id?: number }>(null);
   const [edition, setEdition] = useState<null | { id: number; pictos: string[] }>(null);
+  const [brouillon, setBrouillon] = useState<null | { texte: string; n: number }>(null);
 
   const poster = useCallback(async (url: string, corps: object = {}) => {
     setOccupe(true);
@@ -101,7 +110,10 @@ export default function EcranMedecin() {
       {urgence && (
         <div id="urgence" role="alert" className="flex items-center gap-3 bg-danger px-4 py-2.5 text-white sm:px-6">
           <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/15"><Siren size={18} /></span>
-          <p className="text-sm"><b className="font-semibold">Urgence signalée par le patient.</b> Il a appuyé sur le bouton d'urgence : prenez-le en charge en priorité.</p>
+          <p className="flex-1 text-sm"><b className="font-semibold">Urgence signalée par le patient.</b> Il a appuyé sur le bouton d'urgence : prenez-le en charge en priorité.
+            Son écran lui indique que vous êtes prévenu.</p>
+          <Bouton id="urgencePriseEnCharge" taille="sm" variante="secondary" disabled={occupe} icone={<Check size={14} />}
+            onClick={() => poster("/api/medecin/urgence_prise_en_charge", { medecin })}>Pris en charge</Bouton>
         </div>
       )}
       {vue.demo.actif && <BarreDemo vue={vue} occupe={occupe} onSuivant={() => poster("/api/demo/suivant")} />}
@@ -110,19 +122,20 @@ export default function EcranMedecin() {
         <div className="flex flex-col gap-4 xl:min-h-0 xl:overflow-y-auto barre-fine">
           <DossierPatient vue={vue} occupe={occupe} poster={poster} />
         </div>
-        <Conversation vue={vue} occupe={occupe} poster={poster} medecin={medecin}
-          onRejeter={(id) => setDialogue({ type: "rejeter", id })} onModifier={(id, pictos) => setEdition({ id, pictos })} />
+        <Conversation vue={vue} occupe={occupe} poster={poster} medecin={medecin} brouillon={brouillon}
+          onReformuler={(texte) => setBrouillon((b) => ({ texte, n: (b?.n ?? 0) + 1 }))}
+          onRetirer={(id) => setDialogue({ type: "retirer", id })} onModifier={(id, pictos) => setEdition({ id, pictos })} />
         <div className="lg:col-span-2 xl:col-span-1 xl:min-h-0">
           <Inspecteur vue={vue} occupe={occupe} poster={poster} medecin={medecin}
             onMaintenir={(id) => setDialogue({ type: "maintenir", id })} />
         </div>
       </main>
 
-      <DialogueTexte ouvert={dialogue?.type === "rejeter"} titre="Rejeter la traduction"
-        description="Elle ne sera pas envoyée au patient. Indiquez pourquoi : le traducteur en tiendra compte."
-        libelle="Raison" defaut="À reformuler" action="Rejeter la traduction" variante="danger"
+      <DialogueTexte ouvert={dialogue?.type === "retirer"} titre="Retirer ce message de l'écran du patient ?"
+        description="Le patient ne le verra plus. Le journal garde le message et son retrait, avec votre nom."
+        libelle="Raison (facultatif)" defaut="Message erroné" action="Retirer de l'écran du patient" variante="danger"
         onFermer={() => setDialogue(null)}
-        onValider={(raison) => { poster("/api/medecin/rejeter", { decision_id: dialogue?.id, raison }); setDialogue(null); }} />
+        onValider={(raison) => { poster("/api/medecin/retirer", { decision_id: dialogue?.id, raison, medecin }); setDialogue(null); }} />
       <DialogueTexte ouvert={dialogue?.type === "maintenir"} titre="Maintenir la prescription"
         description="Le juriste demande une révision. Vous pouvez maintenir votre décision par écrit : votre nom et votre justification sont enregistrés dans le journal."
         libelle="Justification médicale" defaut="" action="Maintenir et signer" variante="primary"
@@ -165,7 +178,15 @@ function BarreHaute({ vue, jeton, medecin, setMedecin, onReinit }:
               {intact ? `Journal intact, ${vue.lignes} entrées` : vue.journal}
             </span>
           </Pastille>
-          <Pastille ton="brand" icone={<Bot size={13} />}>{vue.mode === "simulé" ? "Agents en mode simulé" : `Agents : ${vue.mode}`}</Pastille>
+          {vue.modele && !vue.modele.disponible ? (
+            <Pastille ton="warn" icone={<WifiOff size={13} />}>
+              <span id="modeleIndisponible" title={`${vue.modele.modele} : ${vue.modele.message}. L'assistant continue en mode règles (veille clinique) et réessaie le modèle toutes les 90 s.`}>
+                {vue.modele.modele} indisponible : assistant en mode règles
+              </span>
+            </Pastille>
+          ) : (
+            <Pastille ton="brand" icone={<Bot size={13} />}>{vue.mode === "simulé" ? "Agents en mode simulé" : `Agents : ${vue.mode}`}</Pastille>
+          )}
           {vue.reflexion_en_cours ? (
             <Pastille ton="brand" icone={<Loader2 size={13} className="animate-spin" />}>
               <span id="reflexion" title="L'assistant interroge le modèle en ligne en arrière-plan. Vous pouvez continuer : vos clics passent avant lui.">
@@ -342,11 +363,14 @@ function FichePatient({ occupe, poster }: { occupe: boolean; poster: Poster }) {
 // ------------------------------------------------------------------ conversation
 type Element = { v: number; ordre: number } & ({ genre: "echange"; e: Echange } | { genre: "decision"; d: Decision });
 
-function Conversation({ vue, occupe, poster, medecin, onRejeter, onModifier }:
-  { vue: VueMedecin; occupe: boolean; poster: Poster; medecin: string; onRejeter: (id: number) => void; onModifier: (id: number, pictos: string[]) => void }) {
+function Conversation({ vue, occupe, poster, medecin, brouillon, onReformuler, onRetirer, onModifier }:
+  { vue: VueMedecin; occupe: boolean; poster: Poster; medecin: string; brouillon: null | { texte: string; n: number };
+    onReformuler: (texte: string) => void; onRetirer: (id: number) => void; onModifier: (id: number, pictos: string[]) => void }) {
+  const [voirMasques, setVoirMasques] = useState(false);
+  const masques = vue.decisions.filter((d) => d.masque).length;
   const elements: Element[] = [
     ...vue.fil.map((e, i) => ({ genre: "echange" as const, e, v: e.v ?? i, ordre: i })),
-    ...vue.decisions.map((d, i) => ({ genre: "decision" as const, d, v: d.v ?? 1e6 + d.id, ordre: 1e3 + i })),
+    ...vue.decisions.filter((d) => voirMasques || !d.masque).map((d, i) => ({ genre: "decision" as const, d, v: d.v ?? 1e6 + d.id, ordre: 1e3 + i })),
   ].sort((a, b) => a.v - b.v || a.ordre - b.ordre);
   const enAttente = vue.decisions.filter((d) => d.type === "envoi_patient" && d.statut === "attente_validation").length;
   const nomMedecin = (id?: string | null) => (id && vue.prescripteurs[id]) || id || "";
@@ -365,16 +389,42 @@ function Conversation({ vue, occupe, poster, medecin, onRejeter, onModifier }:
           <h2 className="text-[15px] font-semibold text-ink">Conversation</h2>
           <p className="text-xs text-ink-muted">Vos messages sont traduits en pictogrammes. Rien ne part sans votre validation.</p>
         </div>
-        {enAttente > 0 && <Pastille ton="action">{enAttente} à valider</Pastille>}
+        <div className="flex items-center gap-2">
+          {vue.etat.informe_usage_ia?.valeur === false ? (
+            <Pastille ton="danger" icone={<AlertTriangle size={12} />}><span id="refusIA">Le patient refuse l'aide de l'IA</span></Pastille>
+          ) : vue.etat.informe_usage_ia?.valeur !== true && !vue.questions.some((q) => q.cle === "informe_usage_ia" && ["en_attente", "posee"].includes(q.statut)) && (
+            <Bouton id="informerIA" taille="sm" variante="ghost" disabled={occupe} icone={<Info size={14} />}
+              title="Message d'accueil en pictogrammes : un ordinateur aide à traduire, le médecin décide, le patient peut refuser. Sa réponse est enregistrée."
+              onClick={() => poster("/api/medecin/accueil")}>Informer le patient de l'IA</Bouton>
+          )}
+          {masques > 0 && (
+            <button className="text-xs text-ink-muted underline-offset-2 hover:text-ink hover:underline" onClick={() => setVoirMasques((x) => !x)}>
+              {voirMasques ? "Cacher" : "Afficher"} {masques} message{masques > 1 ? "s" : ""} masqué{masques > 1 ? "s" : ""}
+            </button>
+          )}
+          {enAttente > 0 && <Pastille ton="action">{enAttente} à valider</Pastille>}
+        </div>
       </header>
       <div id="fil" ref={fil} className="flex flex-1 flex-col gap-4 overflow-y-auto px-5 py-5 barre-fine">
-        {elements.length === 0 && <Vide icone={<MessageSquareText size={20} />} titre="La consultation commence"
-          texte="Écrivez une première question au patient : elle sera traduite en pictogrammes et soumise à votre validation." />}
+        {elements.length === 0 && !vue.questions.some((q) => q.cle === "informe_usage_ia") && (
+          <div className="flex flex-col items-center gap-3">
+            <Vide icone={<MessageSquareText size={20} />} titre="La consultation commence"
+              texte="Commencez par informer le patient qu'un ordinateur vous aide à traduire et qu'il peut refuser ; puis posez votre première question." />
+            <Bouton id="accueil" variante="primary" disabled={occupe} icone={<Hand size={15} />} onClick={() => poster("/api/medecin/accueil")}>
+              Message d'accueil (IA, droit de refuser)</Bouton>
+          </div>
+        )}
         {elements.map((x) => x.genre === "echange"
           ? <ElementEchange key={`e${x.ordre}`} e={x.e} />
           : <ElementDecision key={`d${x.d.id}`} d={x.d} occupe={occupe} nomMedecin={nomMedecin}
               parAssistant={Boolean(x.d.source_question && vue.questions.find((q) => q.id === x.d.source_question)?.auteur !== "medecin")}
-              onValider={() => poster("/api/medecin/valider", { decision_id: x.d.id, medecin })} onRejeter={() => onRejeter(x.d.id)}
+              onValider={(confirme?: boolean) => poster("/api/medecin/valider", { decision_id: x.d.id, medecin, confirme_contexte: Boolean(confirme) })}
+              onAnnuler={() => poster("/api/medecin/rejeter", { decision_id: x.d.id, raison: "annulé par le médecin" })}
+              onReformuler={async () => {
+                if (x.d.statut === "attente_validation") await poster("/api/medecin/rejeter", { decision_id: x.d.id, raison: "à reformuler" });
+                onReformuler(x.d.texte ?? "");
+              }}
+              onRetirer={() => onRetirer(x.d.id)} onMasquer={() => poster("/api/medecin/masquer", { decision_id: x.d.id })}
               onModifier={() => onModifier(x.d.id, x.d.pictogrammes ?? [])} />)}
       </div>
       {attente && (
@@ -383,7 +433,7 @@ function Conversation({ vue, occupe, poster, medecin, onRejeter, onModifier }:
           « {attente.texte} » : traduction en pictogrammes en cours…
         </div>
       )}
-      <Compositeur vue={vue} occupe={occupe} poster={poster} onEnvoye={(t) => setAttente({ texte: t, n: vue.decisions.length })} />
+      <Compositeur vue={vue} occupe={occupe} poster={poster} brouillon={brouillon} onEnvoye={(t) => setAttente({ texte: t, n: vue.decisions.length })} />
     </section>
   );
 }
@@ -421,9 +471,9 @@ function ElementEchange({ e }: { e: Echange }) {
   );
 }
 
-function ElementDecision({ d, occupe, nomMedecin, parAssistant, onValider, onRejeter, onModifier }:
-  { d: Decision; occupe: boolean; nomMedecin: (id?: string | null) => string; parAssistant: boolean; onValider: () => void; onRejeter: () => void;
-    onModifier: () => void }) {
+function ElementDecision({ d, occupe, nomMedecin, parAssistant, onValider, onAnnuler, onReformuler, onRetirer, onMasquer, onModifier }:
+  { d: Decision; occupe: boolean; nomMedecin: (id?: string | null) => string; parAssistant: boolean; onValider: (confirme?: boolean) => void; onAnnuler: () => void;
+    onReformuler: () => void; onRetirer: () => void; onMasquer: () => void; onModifier: () => void }) {
   const libelle = useLibelle();
   if (d.type === "prescription" || d.type === "partage_donnees") {
     const texte = d.type === "prescription"
@@ -440,7 +490,14 @@ function ElementDecision({ d, occupe, nomMedecin, parAssistant, onValider, onRej
     );
   }
   const attente = d.statut === "attente_validation";
-  const origine = parAssistant ? "Question proposée par l'assistant (à valider ou rejeter)" : d.contenu_type === "traitement" ? "Consignes de traitement" : "Votre message";
+  const aConfirmer = attente ? d.precontrole?.constats.find((c) => c.regle === "CONTEXTE-A-CONFIRMER" && c.niveau === "A_REVOIR") : undefined;
+  const origine = parAssistant ? "Question proposée par l'assistant (à valider ou annuler)" : d.contenu_type === "traitement" ? "Consignes de traitement" : "Votre message";
+  const actionsFin = (avecReformuler: boolean) => (
+    <div className="flex flex-wrap gap-1.5">
+      {avecReformuler && d.texte && <Bouton taille="sm" variante="ghost" data-reformuler={d.id} disabled={occupe} onClick={onReformuler} icone={<PencilLine size={14} />}>Reformuler</Bouton>}
+      <Bouton taille="sm" variante="ghost" data-masquer={d.id} disabled={occupe} onClick={onMasquer} icone={<EyeOff size={14} />}>Masquer</Bouton>
+    </div>
+  );
   const combinee = (d.pictogrammes ?? []).some((x) => x.includes("+"));
   return (
     <div className="flex max-w-[92%] flex-col items-end gap-1.5 self-end">
@@ -455,8 +512,23 @@ function ElementDecision({ d, occupe, nomMedecin, parAssistant, onValider, onRej
         {Object.keys(d.rapproches ?? {}).length > 0 && (
           <p className="mt-2 text-xs text-ink-soft" data-rapproches={d.id}>
             <span className="font-medium text-ink">Rapproché automatiquement</span> (faute de frappe ou conjugaison, à vérifier) :{" "}
-            {Object.entries(d.rapproches ?? {}).map(([mot, id]) => `« ${mot} » → ${libelle(id)}`).join(" · ")}
+            {Object.entries(d.rapproches ?? {}).map(([mot, id]) => `« ${mot} » → ${id.startsWith("lu comme") ? id.replace("lu comme ", "") : libelle(id)}`).join(" · ")}
           </p>
+        )}
+        {(d.precontrole?.lecture ?? []).filter((l) => l.regle !== "CONTEXTE-A-CONFIRMER").length > 0 && (
+          <ul className="mt-2 flex flex-col gap-0.5" data-lecture={d.id}>
+            {(d.precontrole?.lecture ?? []).filter((l) => l.regle !== "CONTEXTE-A-CONFIRMER").map((l, i) => (
+              <li key={i} className="flex items-start gap-1.5 text-xs text-ink-soft"><Scale size={12} className="mt-px shrink-0 text-ink-muted" />
+                <span><span className="font-medium text-ink">Lecture du juriste : </span>{l.detail}</span></li>
+            ))}
+          </ul>
+        )}
+        {aConfirmer && (
+          <div className="mt-2 rounded-lg border border-warn/30 bg-warn-50 px-2.5 py-2 text-xs text-warn" data-a-confirmer={d.id}>
+            <p className="font-semibold">Sens à confirmer avant l'envoi</p>
+            <p className="mt-0.5 text-ink-soft">{aConfirmer.detail}</p>
+            {aConfirmer.piste && <p className="mt-0.5 text-ink-soft">{aConfirmer.piste}</p>}
+          </div>
         )}
         {d.non_traduits && d.non_traduits.length > 0 && d.statut !== "BLOQUE" && (
           <p className="mt-2 flex items-start gap-1.5 rounded-lg bg-warn-50 px-2.5 py-1.5 text-xs text-warn">
@@ -468,19 +540,27 @@ function ElementDecision({ d, occupe, nomMedecin, parAssistant, onValider, onRej
             <p className="text-xs text-ink-muted">
               {d.pictogrammes_choisis_par ? `Choisis par : ${d.pictogrammes_choisis_par}` : ""}{combinee ? ", avec une image combinée" : ""}
             </p>
-            <div className="flex gap-2">
-              <Bouton taille="sm" variante="ghost" data-rejeter={d.id} disabled={occupe} onClick={onRejeter} icone={<X size={14} />}>Rejeter</Bouton>
+            <div className="flex flex-wrap gap-2">
+              <Bouton taille="sm" variante="ghost" data-rejeter={d.id} disabled={occupe} onClick={onAnnuler} icone={<X size={14} />}
+                title="Annuler : ce message ne partira pas">Annuler</Bouton>
+              <Bouton taille="sm" variante="ghost" data-reformuler={d.id} disabled={occupe} onClick={onReformuler} icone={<PencilLine size={14} />}
+                title="Annuler et remettre le texte dans la zone de saisie pour le corriger">Reformuler</Bouton>
               <Bouton taille="sm" variante="secondary" data-modifier={d.id} disabled={occupe} onClick={onModifier} icone={<Languages size={14} />}>Modifier les pictogrammes</Bouton>
-              <Bouton taille="sm" variante="success" data-valider={d.id} disabled={occupe} onClick={onValider} icone={<Send size={14} />}>Valider et envoyer</Bouton>
+              {aConfirmer ? (
+                <Bouton taille="sm" variante="success" data-valider={d.id} data-confirmer={d.id} disabled={occupe} onClick={() => onValider(true)} icone={<Send size={14} />}
+                  title="Votre confirmation et votre nom sont enregistrés au journal">Je confirme : ni consigne ni incitation, envoyer</Bouton>
+              ) : (
+                <Bouton taille="sm" variante="success" data-valider={d.id} disabled={occupe} onClick={() => onValider()} icone={<Send size={14} />}>Valider et envoyer</Bouton>
+              )}
             </div>
           </div>
         ) : d.statut === "BLOQUE" && d.precontrole?.verdict === "BLOQUE" ? (
           <div className="mt-3 rounded-xl border border-danger/30 bg-danger-50 p-3" data-bloque={d.id}>
             <p className="flex items-center gap-1.5 text-[13px] font-semibold text-danger"><ShieldAlert size={15} />Bloqué par le juriste : ce message ne partira pas au patient</p>
             <ul className="mt-1.5 flex flex-col gap-1">
-              {d.precontrole.constats.filter((c) => c.niveau === "BLOQUE").map((c, i) => (
+              {d.precontrole.constats.filter((c) => c.niveau === "BLOQUE" || (c.niveau === "A_REVOIR" && c.detail.startsWith("Pour ce patient"))).map((c, i) => (
                 <li key={i} className="text-[13px] leading-snug text-ink">{c.detail}
-                  <span className="mt-0.5 flex items-start gap-1 text-2xs text-ink-muted"><BookOpen size={11} className="mt-px shrink-0" />{c.base === "SURETE" ? "Sûreté du système" : c.base === "LOI" ? "Loi" : "Norme"} · {c.reference_courte}</span>
+                  <span className="mt-0.5 flex items-start gap-1 text-2xs text-ink-muted"><BookOpen size={11} className="mt-px shrink-0" />{c.base === "SURETE" ? "Sûreté du système" : c.base === "LOI" ? "Loi" : c.base === "NORME" ? "Norme" : "Recommandation clinique"} · {c.reference_courte}</span>
                 </li>
               ))}
             </ul>
@@ -488,11 +568,22 @@ function ElementDecision({ d, occupe, nomMedecin, parAssistant, onValider, onRej
               <p className="mt-2 rounded-lg bg-surface px-2.5 py-1.5 text-xs text-ok"><span className="font-semibold">Que faire : </span>
                 {d.precontrole.constats.find((c) => c.niveau === "BLOQUE" && c.piste)?.piste}</p>
             )}
+            <div className="mt-2 flex justify-end">{actionsFin(true)}</div>
           </div>
-        ) : ["BLOQUE", "rejete"].includes(d.statut) ? (
-          <p className="mt-2 flex items-center gap-1 text-xs text-ink-muted"><X size={13} />{d.statut === "BLOQUE" ? "Non envoyé : bloqué par le juriste (voir l'onglet Agents)." : "Non envoyé : rejeté par le médecin."}</p>
+        ) : ["BLOQUE", "rejete", "retire"].includes(d.statut) ? (
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+            <p className="flex items-center gap-1 text-xs text-ink-muted"><X size={13} />
+              {d.statut === "BLOQUE" ? "Non envoyé : bloqué par le juriste (voir l'onglet Agents)."
+                : d.statut === "retire" ? "Retiré de l'écran du patient par le médecin."
+                  : "Non envoyé : annulé par le médecin."}</p>
+            {actionsFin(d.statut !== "retire")}
+          </div>
         ) : d.statut === "envoye" && (
-          <p className="mt-2 flex items-center gap-1 text-xs text-ok"><Check size={13} />Envoyé au patient, validé par {nomMedecin(d.valide_par)}</p>
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+            <p className="flex items-center gap-1 text-xs text-ok"><Check size={13} />Envoyé au patient, validé par {nomMedecin(d.valide_par)}</p>
+            <Bouton taille="sm" variante="ghost" data-retirer={d.id} disabled={occupe} onClick={onRetirer} icone={<Undo2 size={14} />}
+              title="Le patient ne verra plus ce message (le journal le garde)">Retirer de l'écran du patient</Bouton>
+          </div>
         )}
       </div>
     </div>
@@ -607,8 +698,17 @@ function useEnregistreur(transcrire: (audio: string) => Promise<void>) {
   return { etat, duree, niveau, erreur, demarrer, arreter };
 }
 
-function Compositeur({ vue, occupe, poster, onEnvoye }: { vue: VueMedecin; occupe: boolean; poster: Poster; onEnvoye: (t: string) => void }) {
+function Compositeur({ vue, occupe, poster, brouillon, onEnvoye }:
+  { vue: VueMedecin; occupe: boolean; poster: Poster; brouillon: null | { texte: string; n: number }; onEnvoye: (t: string) => void }) {
   const [texte, setTexte] = useState("");
+  useEffect(() => {                         // « Reformuler » : le texte revient dans la zone de saisie, prêt à corriger
+    if (!brouillon) return;
+    setTexte(brouillon.texte);
+    setEnvoye("");
+    const zone = document.getElementById("message") as HTMLTextAreaElement | null;
+    zone?.focus();
+    zone?.setSelectionRange(brouillon.texte.length, brouillon.texte.length);
+  }, [brouillon]);
   const [langueDictee, setLangueDictee] = useState("fr-FR");
   const [envoye, setEnvoye] = useState("");
   const ajouter = useCallback((t: string) => setTexte((x) => (x.trim() ? `${x.trim()} ${t}` : t)), []);
@@ -801,10 +901,25 @@ function OngletAgents({ vue, occupe, poster }: { vue: VueMedecin; occupe: boolea
 }
 
 function OngletAssistant({ vue, occupe, poster }: { vue: VueMedecin; occupe: boolean; poster: Poster }) {
-  const suggestions = vue.suggestions.filter((s) => s.statut === "proposee_au_medecin");
-  const questions = vue.questions.slice().reverse();
+  // Alertes d'abord, puis les plus récentes
+  const RANG: Record<string, number> = { alerte_urgence: 0, traitement_alternatif: 1, traitement: 2, question_manquante: 3, reponse: 4 };
+  const suggestions = vue.suggestions.filter((s) => s.statut === "proposee_au_medecin")
+    .sort((a, b) => (RANG[a.type] ?? 5) - (RANG[b.type] ?? 5) || b.id - a.id);
+  // Questions que l'ASSISTANT veut faire poser (les vôtres sont dans la conversation)
+  const questions = vue.questions.filter((q) => q.auteur !== "medecin" && !["rejetee", "annulee"].includes(q.statut)).reverse();
+  const STATUT_Q: Record<string, { texte: string; ton: "ok" | "action" | "neutre" }> = {
+    en_attente: { texte: "À poser", ton: "action" }, posee: { texte: "Posée", ton: "neutre" }, repondue: { texte: "Répondue", ton: "ok" },
+  };
+  const horsLigne = vue.modele && !vue.modele.disponible;
   return (
     <div className="flex flex-col gap-5 p-4">
+      <p id="etatAssistant" className={cx("flex items-start gap-2 rounded-lg px-3 py-2 text-xs", horsLigne ? "bg-warn-50 text-warn" : "bg-ok-50 text-ok")}>
+        {horsLigne ? <WifiOff size={14} className="mt-px shrink-0" /> : <ShieldCheck size={14} className="mt-px shrink-0" />}
+        <span>{horsLigne
+          ? <>L'assistant est actif en <b>mode règles</b> : {vue.modele?.modele} ne répond pas. Il surveille quand même chaque message, prescription et réponse du patient au regard de sa fiche ; nouvel essai du modèle toutes les 90 s.
+              <details className="mt-1"><summary className="cursor-pointer font-medium">Pourquoi le modèle ne répond pas</summary>{vue.modele?.message}</details></>
+          : <>L'assistant suit la consultation en temps réel : chaque message, prescription et réponse du patient est confronté à sa fiche.</>}</span>
+      </p>
       <div>
         <h3 className="mb-2 text-[13px] font-semibold text-ink">Suggestions</h3>
         <p className="mb-3 text-xs text-ink-muted">L'assistant propose, vous décidez. Ignorer une suggestion est enregistré.</p>
@@ -831,7 +946,7 @@ function OngletAssistant({ vue, occupe, poster }: { vue: VueMedecin; occupe: boo
             {questions.map((q) => (
               <li key={q.id} className="flex items-start justify-between gap-3 px-3.5 py-2.5">
                 <div className="min-w-0"><p className="text-[13px] font-medium text-ink">{q.question}</p><p className="text-xs text-ink-muted">{q.raison}</p></div>
-                <Pastille ton={q.statut === "repondue" ? "ok" : "action"}>{q.statut === "repondue" ? "Répondue" : "À poser"}</Pastille>
+                <Pastille ton={(STATUT_Q[q.statut] ?? STATUT_Q.en_attente).ton}>{(STATUT_Q[q.statut] ?? STATUT_Q.en_attente).texte}</Pastille>
               </li>
             ))}
           </ul>
@@ -921,6 +1036,28 @@ function OngletOrdonnance({ vue, occupe, poster, medecin, onMaintenir }:
                 <Statut statut={d.statut} />
               </div>
               {d.maintien && <p className="mt-2 rounded-lg bg-held-50 px-2.5 py-1.5 text-xs text-held">Maintenue par {vue.prescripteurs[d.maintien.par] ?? d.maintien.par} : {d.maintien.justification}</p>}
+              {d.statut === "PREUVES_INSUFFISANTES" && (verdictDe(d.id)?.informations_manquantes ?? []).length > 0 && (
+                <div className="mt-2.5 rounded-lg bg-warn-50 p-2.5" data-manquants={d.id}>
+                  <p className="text-xs font-semibold text-warn">Il manque, pour que le juriste puisse conclure :</p>
+                  <ul className="mt-1.5 flex flex-col gap-1.5">
+                    {(verdictDe(d.id)?.informations_manquantes ?? []).map((m) => {
+                      const r = REMPLIR[m];
+                      return (
+                        <li key={m} className="flex flex-wrap items-center gap-1.5 text-xs text-ink">
+                          <span className="mr-auto font-medium">{FAITS[m] ?? m.replace(/_/g, " ")}</span>
+                          {r?.valeurs.map(([lib, val]) => (
+                            <Bouton key={lib} taille="sm" variante="secondary" disabled={occupe} data-remplir={`${m}:${lib}`}
+                              onClick={() => poster("/api/medecin/faits", { donnees: { [m]: val } })}>{lib}</Bouton>
+                          ))}
+                          {r?.question && <Bouton taille="sm" variante="ghost" disabled={occupe} data-demander={m}
+                            onClick={() => poster("/api/medecin/message", { texte: r.question, question: true, cle: m })}>Demander au patient</Bouton>}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  <p className="mt-1.5 text-2xs text-ink-muted">Ou remplissez la fiche patient : la prescription est revérifiée aussitôt.</p>
+                </div>
+              )}
               <DetailVerdict v={verdictDe(d.id)} />
               {d.statut === "A_REVOIR" && (
                 <div className="mt-3 flex justify-end">
@@ -1051,6 +1188,9 @@ const debutDeMotM = (texte: string, q: string) => sansAccentsM(texte).split(/[\s
 function EditeurPictos({ initial, onFermer, onEnregistrer }: { initial: string[]; onFermer: () => void; onEnregistrer: (p: string[]) => void }) {
   const libelle = useLibelle();
   const [pictos, setPictos] = useState<string[]>(initial);
+  // Case sélectionnée : un clic dans la base la REMPLACE (ou s'insère après, en mode « insérer »). Sans sélection : ajout à la fin.
+  const [choisi, setChoisi] = useState<number | null>(null);
+  const [inserer, setInserer] = useState(false);
   const [palette, setPalette] = useState<Record<string, string[]>>({});
   const [onglet, setOnglet] = useState("");
   const [q, setQ] = useState("");
@@ -1070,7 +1210,34 @@ function EditeurPictos({ initial, onFermer, onEnregistrer }: { initial: string[]
     : null;
   const presents = useMemo(() => new Set(tous), [tous]);
   const liste = directs === null ? palette[actif] ?? [] : [...directs, ...parSens.filter((id) => presents.has(id) && !directs.includes(id))];
-  const peutCombiner = pictos.length >= 2 && combinable(pictos[pictos.length - 2], pictos[pictos.length - 1]);
+  const sel = choisi !== null && choisi < pictos.length ? choisi : null;
+  const ajouter = (id: string) => {
+    if (sel === null) { if (pictos.length < 12) setPictos((p) => [...p, id]); return; }
+    if (inserer) {
+      if (pictos.length >= 12) return;
+      setPictos((p) => [...p.slice(0, sel + 1), id, ...p.slice(sel + 1)]);
+      setChoisi(sel + 1);
+    } else {
+      setPictos((p) => p.map((x, j) => (j === sel ? id : x)));
+    }
+  };
+  const deplacer = (de: number) => {
+    if (sel === null) return;
+    const vers = sel + de;
+    if (vers < 0 || vers >= pictos.length) return;
+    setPictos((p) => { const c = [...p]; [c[sel], c[vers]] = [c[vers], c[sel]]; return c; });
+    setChoisi(vers);
+  };
+  const retirer = () => { if (sel === null) return; setPictos((p) => p.filter((_, j) => j !== sel)); setChoisi(null); };
+  const combiner = () => {
+    if (sel === null || sel + 1 >= pictos.length) return;
+    setPictos((p) => [...p.slice(0, sel), `${p[sel]}+${p[sel + 1]}`, ...p.slice(sel + 2)]);
+  };
+  const separer = () => {
+    if (sel === null || !pictos[sel].includes("+")) return;
+    setPictos((p) => [...p.slice(0, sel), ...p[sel].split("+"), ...p.slice(sel + 1)]);
+  };
+  const peutCombiner = sel !== null && sel + 1 < pictos.length && combinable(pictos[sel], pictos[sel + 1]);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4 backdrop-blur-[2px]" onMouseDown={onFermer}>
       <div role="dialog" aria-modal="true" aria-label="Modifier les pictogrammes" onMouseDown={(e) => e.stopPropagation()}
@@ -1078,32 +1245,60 @@ function EditeurPictos({ initial, onFermer, onEnregistrer }: { initial: string[]
         <div className="flex items-start justify-between gap-4 px-5 pt-5">
           <div>
             <h3 className="text-base font-semibold text-ink">Modifier les pictogrammes</h3>
-            <p className="mt-1 text-sm text-ink-muted">Cliquez un pictogramme pour le retirer, ajoutez-en depuis la base. La proposition reste à valider.</p>
+            <p className="mt-1 text-sm text-ink-muted">
+              Cliquez un pictogramme pour le sélectionner, puis choisissez-en un dans la base pour le <b>remplacer</b>.
+              Sans sélection, le pictogramme choisi s'ajoute à la fin. La proposition reste à valider.
+            </p>
           </div>
           <button onClick={onFermer} aria-label="Fermer" className="rounded-md p-1 text-ink-faint hover:bg-canvas hover:text-ink"><X size={18} /></button>
         </div>
-        <div className="mx-5 mt-4 flex min-h-[88px] flex-wrap items-center gap-2 rounded-xl bg-canvas p-2 ring-1 ring-inset ring-line">
-          {pictos.length === 0 && <span className="px-2 text-sm text-ink-muted">Aucun pictogramme : ajoutez-en ci-dessous.</span>}
-          {pictos.map((id, i) => (
-            <button key={`${id}-${i}`} data-retirer-picto={i} title="Retirer" onClick={() => setPictos((p) => p.filter((_, j) => j !== i))}
-              className="rounded-xl bg-surface p-1 shadow-panel hover:ring-2 hover:ring-danger/50"><Picto id={id} taille={60} legende /></button>
-          ))}
-          <div className="ml-auto flex gap-2">
-            <Bouton taille="sm" variante="secondary" disabled={!peutCombiner}
-              onClick={() => setPictos((p) => [...p.slice(0, -2), `${p[p.length - 2]}+${p[p.length - 1]}`])}>Combiner les deux derniers</Bouton>
-            <Bouton taille="sm" variante="ghost" disabled={!pictos.length} onClick={() => setPictos((p) => p.slice(0, -1))}>Retirer le dernier</Bouton>
+        <div className="mx-5 mt-4 rounded-xl bg-canvas p-2 ring-1 ring-inset ring-line">
+          <div className="flex min-h-[88px] flex-wrap items-center gap-2" onClick={(e) => { if (e.target === e.currentTarget) setChoisi(null); }}>
+            {pictos.length === 0 && <span className="px-2 text-sm text-ink-muted">Aucun pictogramme : ajoutez-en ci-dessous.</span>}
+            {pictos.map((id, i) => (
+              <button key={`${id}-${i}`} data-choisir-picto={i} aria-pressed={sel === i} title={sel === i ? "Sélectionné" : "Sélectionner"}
+                onClick={() => setChoisi(sel === i ? null : i)}
+                className={cx("relative rounded-xl bg-surface p-1 shadow-panel", sel === i ? "ring-2 ring-action" : "hover:ring-2 hover:ring-action/40")}>
+                <span className="absolute left-1 top-1 rounded bg-canvas px-1 text-2xs text-ink-muted tabulaire">{i + 1}</span>
+                <Picto id={id} taille={60} legende />
+              </button>
+            ))}
+          </div>
+          <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t border-line pt-2">
+            {sel === null ? (
+              <p className="px-1 text-xs text-ink-muted">Sélectionnez un pictogramme pour le remplacer, le déplacer, le retirer ou insérer à côté.</p>
+            ) : (
+              <>
+                <span className="px-1 text-xs font-medium text-ink">N° {sel + 1} « {libelle(pictos[sel].split("+")[0])} » :</span>
+                <div className="flex rounded-lg ring-1 ring-line" role="radiogroup" aria-label="Que fait un clic dans la base ?">
+                  <button role="radio" aria-checked={!inserer} onClick={() => setInserer(false)} data-mode-remplacer
+                    className={cx("rounded-l-lg px-2.5 py-1 text-xs", !inserer ? "bg-action text-white" : "text-ink-soft hover:bg-surface")}>Remplacer</button>
+                  <button role="radio" aria-checked={inserer} onClick={() => setInserer(true)} data-mode-inserer
+                    className={cx("rounded-r-lg px-2.5 py-1 text-xs", inserer ? "bg-action text-white" : "text-ink-soft hover:bg-surface")}>Insérer après</button>
+                </div>
+                <Bouton taille="sm" variante="ghost" disabled={sel === 0} onClick={() => deplacer(-1)} icone={<ArrowLeft size={14} />} aria-label="Déplacer à gauche" />
+                <Bouton taille="sm" variante="ghost" disabled={sel >= pictos.length - 1} onClick={() => deplacer(1)} icone={<ArrowRight size={14} />} aria-label="Déplacer à droite" />
+                <Bouton taille="sm" variante="ghost" disabled={!peutCombiner} onClick={combiner} title="Une seule image : celui-ci en grand, le suivant en médaillon">Combiner avec le suivant</Bouton>
+                {pictos[sel].includes("+") && <Bouton taille="sm" variante="ghost" onClick={separer} icone={<Split size={14} />}>Séparer</Bouton>}
+                <Bouton taille="sm" variante="ghost" data-retirer-picto={sel} onClick={retirer} icone={<X size={14} />} className="text-danger">Retirer</Bouton>
+                <Bouton taille="sm" variante="ghost" onClick={() => setChoisi(null)} className="ml-auto">Désélectionner</Bouton>
+              </>
+            )}
           </div>
         </div>
         <div className="mx-5 mt-3 flex flex-wrap items-center gap-2">
-          <input id="rechercheMedecin" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Chercher dans toute la base (ex. ventre, brûlure, riz)"
+          <input id="rechercheMedecin" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Chercher dans toute la base (ex. ventre, brûlure, avaler)"
             className={cx(champ, "h-9 min-w-[240px] flex-1")} />
           <select aria-label="Catégorie" value={actif ?? ""} onChange={(e) => { setOnglet(e.target.value); setQ(""); }} className={cx(champ, "h-9 w-auto")}>
             {onglets.map((k) => <option key={k} value={k}>{k} ({palette[k].length})</option>)}
           </select>
+          <span className="text-xs text-ink-muted">
+            {sel === null ? "Un clic ajoute à la fin" : inserer ? `Un clic insère après le n° ${sel + 1}` : `Un clic remplace le n° ${sel + 1}`}
+          </span>
         </div>
         <div className="mx-5 mt-3 grid flex-1 grid-cols-[repeat(auto-fill,minmax(92px,1fr))] gap-2 overflow-y-auto pb-2 barre-fine">
           {liste.slice(0, 240).map((id) => (
-            <button key={id} data-ajouter-picto={id} disabled={pictos.length >= 12} onClick={() => setPictos((p) => [...p, id])}
+            <button key={id} data-ajouter-picto={id} disabled={(sel === null || inserer) && pictos.length >= 12} onClick={() => ajouter(id)}
               className="rounded-xl bg-surface p-1.5 shadow-panel hover:ring-2 hover:ring-action/40 disabled:opacity-50"><Picto id={id} taille={64} legende /></button>
           ))}
         </div>

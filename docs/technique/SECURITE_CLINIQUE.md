@@ -44,6 +44,82 @@ Les notices DailyMed sont aussi téléchargées dans `base_v2` (dossier `B_inter
 agents puissent en citer les passages : `python outils/constituer_base_v2.py --sortie base_v2 --etapes juridique`
 (les documents déjà présents ne sont pas retéléchargés).
 
+## Messages au patient qui citent un médicament (7 novembre)
+
+Un message n'est pas une ordonnance, mais il peut en tenir lieu (« et du tramadol », « je vais vous prescrire
+beaucoup de paracétamol »). Le juriste le lit comme une consigne de traitement dès qu'un médicament est cité sans
+négation ni question : verbe de prise, dose, annonce de prescription, quantité, ou message réduit au médicament.
+Il le confronte alors à la fiche du patient, comme une prescription :
+- consigne sans ordonnance → BLOQUÉ (ENVOI-TRAITEMENT-SANS-PRESCRIPTION, ENVOI-PRODUIT-CONTROLE) ;
+- contre-indication pour ce patient (grossesse, âge, allergie, maladies) → citée dans le blocage (« Pour ce patient : … ») ;
+- quantité imprécise (« beaucoup », « à volonté ») → SURETE-DOSE-IMPRECISE, avec la dose maximale sourcée.
+Le contrôle est refait si la fiche change après la proposition (pré-contrôle lié à la version de l'état).
+« Prenez-vous du tramadol ? » (question) et « Ne prenez pas d'ibuprofène » (mise en garde) restent permis.
+
+Propos dangereux : en plus des incitations explicites, « et vous pendre », « vous tuer » et un message réduit à un
+mot de mort (« pendre ») sont bloqués. Une question de dépistage du risque suicidaire (« Avez-vous des idées de
+vous tuer ? ») reste permise.
+
+## L'assistant, même sans modèle en ligne
+
+La veille de l'assistant est déterministe (aucun appel réseau) ; elle tourne après chaque événement :
+1. prescription jugée risquée → pourquoi + alternative contrôlée par le moteur du juriste ;
+2. message au patient qui conseille un médicament risqué ou en quantité imprécise → quoi faire à la place ;
+3. médicament montré par le patient (MEDICAMENT:… dans sa réponse) → fait « médicaments déclarés » et alerte s'il est
+   risqué pour lui ;
+4. traitement en cours décrit sans nom de médicament → demande de préciser (sinon, pas de contrôle d'interactions).
+Si le modèle (Grok) ne répond pas, la raison exacte est affichée (clé refusée, modèle inconnu…), l'assistant passe
+en « mode règles » et le modèle est réessayé toutes les 90 s.
+
+## Traduction prudente
+
+Mieux vaut « sans pictogramme » qu'une image fausse. La traduction automatique n'utilise, du catalogue complet, que
+le libellé principal des images ARASAAC, avec l'accent exact ; jamais les mots-clés secondaires, Mulberry ou OpenMoji
+(libellés déduits de l'anglais). Les mots de violence ne sont jamais illustrés d'office ; les mots-outils (« vais »,
+« comme ») sont ignorés ; le rapprochement automatique se limite aux formes conjuguées connues et aux fautes de
+frappe évidentes sur des mots d'au moins 6 lettres. La recherche manuelle du médecin trouve toujours tout.
+
+## Lecture du contexte et fautes de frappe (medimcom/lecture.py)
+
+Un mot ne suffit pas à juger un message. Le juriste lit QUI parle de QUOI et POUR FAIRE QUOI (personne, temps,
+question, négation, propos rapportés) et rend une intention avec ses indices :
+
+| Message | Lecture | Effet |
+|---|---|---|
+| « Prenez du tramadol », « et du tramadol », « je vais vous prescrire… » | consigne | bloqué sans ordonnance ; risques de CE patient cités |
+| « Allez vous pendre », « et vous pendre », « je vais vous tuer » | incitation, menace | bloqué |
+| « Avez-vous des idées de vous tuer ? », « Prenez-vous du tramadol ? » | question | permis |
+| « Ne prenez pas d'ibuprofène » | mise en garde | permis |
+| « Il s'est pendu l'an dernier », « Vous m'avez dit avoir pris du tramadol hier » | récit | permis ; l'assistant vérifie si le patient lui-même est concerné |
+| « Le paracétamol peut donner des nausées » | information | permis |
+| « pendre » seul, « Il m'a dit : va te pendre », « tramadol pour votre dos » | ambigu | part seulement si le médecin confirme le sens (signé au journal), sinon il reformule |
+
+Les agents se disent ce qu'ils ont compris : le juriste écrit sa lecture à l'assistant, qui ne prend pas un récit pour
+une prescription ; une idée de mort exprimée par le patient pour lui-même déclenche une alerte de l'assistant.
+
+Fautes de frappe et de dictée, corrigées seulement quand c'est sûr, et toujours montrées (« lu comme ») :
+« tramadole », « paracetamole », « ibuprophène », « doliprane » (nom commercial), « para c'est tamol » et « trama dol »
+(dictée) ; « pandre », « suisider » (même prononciation, jamais « prendre » ni « vendre ») ; « sentew » (clavier QWERTY) ;
+« diabhete », « insufisance renale », « enseinte » dans la fiche. Valable aussi dans l'onglet Ordonnance.
+
+La sécurité vaut pour tous les profils, pas seulement la grossesse : âge (aspirine chez l'enfant), allergie
+(amoxicilline), ulcère (AINS, aspirine), maladie rénale ou hépatique (metformine), anticoagulants, cœur.
+
+## Inspection fonctionnelle (7 novembre) : ce qui a été corrigé
+
+| Lacune | Risque | Correction |
+|---|---|---|
+| Un OUI à « Vous êtes d'accord ? » valait consentement même si « d'accord » n'avait pas d'image (le patient voyait « vous ? ») | Consentement non éclairé | Le traducteur ajoute l'image « d'accord » / « accepter » ; sans elle, le OUI n'est PAS enregistré et le médecin est prévenu |
+| Aucun moyen d'informer le patient de l'usage de l'IA (obligation DHA IA-INFORMER) | Éthique, transparence | « Message d'accueil » : un ordinateur aide, le médecin décide, le patient peut refuser ; sa réponse est enregistrée ; un refus est signalé et respecté |
+| « Où avez-vous mal ? » perdait « où » | Question changée | « où » reconnu ; s'il n'a pas d'image, il est signalé au médecin, jamais perdu |
+| Prescription bloquée sur « information manquante » sans moyen direct de la compléter | Perte de temps, abandon | L'assistant fait poser la question au patient ; boutons « Aucune / Demander au patient » ; OUI sans détail = « à préciser » (pas encore renseigné) |
+| Questions devenues inutiles restées « à valider » ; conseils périmés et en double | Bruit, confusion | Retrait automatique (journalisé) ; pas de doublon |
+| Urgence : le patient ne savait pas s'il était entendu ; le médecin ne pouvait pas clore | Angoisse, alerte permanente | Écran patient : « Le médecin est prévenu », puis « s'occupe de vous » ; bouton « Pris en charge » |
+| Le patient ne pouvait pas dire simplement « je ne comprends pas » | Malentendu, faux consentement | Bouton sous chaque message ; l'assistant conseille de reformuler ou de faire appel à un interprète en langue des signes |
+| Écran patient sur téléphone : barre du bas coupée | Bouton d'urgence inaccessible | Barre sur deux lignes, images adaptées |
+| Filtres du journal bloqués par la politique de sécurité | Traçabilité difficile à lire | Script autorisé par son empreinte (et lui seul) |
+| Libellés techniques (« traitements_en_cours », « MEDICAMENT:… ») | Lisibilité | Libellés en clair |
+
 ## Limites (à dire au jury)
 
 - **Références étrangères** : ce sont des notices américaines. Un déploiement aux Émirats doit les remplacer par les notices

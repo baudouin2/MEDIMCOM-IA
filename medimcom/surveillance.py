@@ -28,14 +28,16 @@ PROPRIETES = {
 VERDICTS = {"CONFORME", "PREUVES_INSUFFISANTES", "A_REVOIR", "BLOQUE"}
 TRANSITIONS = {
     None: {"a_verifier", "attente_validation"},
-    "attente_validation": {"a_verifier", "rejete", "annulee"},          # validation par le médecin, ou rejet
+    "attente_validation": {"a_verifier", "rejete", "annulee", "BLOQUE"},  # validation, rejet, ou blocage du contenu
+                                                                          # par le pré-contrôle du juriste
     "a_verifier": VERDICTS | {"annulee"},                                 # contrôle du juriste
     **{v: VERDICTS | {"annulee"} for v in VERDICTS},                      # nouveau contrôle après un changement d'état
     "A_REVOIR": VERDICTS | {"annulee", "MAINTENUE"},                      # seul « à revoir » peut être maintenu
     "CONFORME": VERDICTS | {"annulee", "envoye", "MAINTENUE"},            # seul un message conforme part ; un maintien
                                                                           # encore valable reprend si « à revoir » revient
     "MAINTENUE": VERDICTS | {"MAINTENUE", "annulee"},
-    "envoye": set(), "rejete": set(), "annulee": set(),                   # états terminaux
+    "envoye": {"retire"},                                                 # le médecin peut retirer un message envoyé
+    "retire": set(), "rejete": set(), "annulee": set(),                   # états terminaux
 }
 
 
@@ -68,6 +70,8 @@ def surveiller(journal, regles) -> dict:
         elif t == "rejet":
             rejetees.add(c["id"])
             passer(c["id"], "rejete", n, "rejet")
+        elif t == "message_retire":
+            passer(c["id"], "retire", n, "retrait par le médecin")
         elif t == "verdict":
             niveaux = [k["niveau"] for k in c.get("constats", []) if k["niveau"] not in NON_VERDICTS]
             attendu = max(["CONFORME", *niveaux], key=lambda x: ORDRE[x])

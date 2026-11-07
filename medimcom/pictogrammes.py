@@ -71,7 +71,7 @@ MOTS_OUTILS = set("""
 le la les un une des du de d l et ou est etes sont au aux en dans pour sur avec a ce cette ces qui que quoi quel
 quelle avez avoir il elle on y ne votre vos mon ma mes ton ta tes son sa ses qu se si mais
 """.split())
-MEDICAMENTS = {"paracetamol", "ibuprofene", "misoprostol", "tramadol", "amoxicilline"}
+MEDICAMENTS = {"paracetamol", "ibuprofene", "misoprostol", "tramadol", "amoxicilline", "aspirine", "metformine"}
 
 
 class LexiquePictogrammes:

@@ -161,6 +161,23 @@ class CerveauSecours:
         raise RuntimeError("tous les fournisseurs ont échoué — " + " | ".join(erreurs))
 
 
+def lire_erreur(e) -> str:
+    """Message d'erreur renvoyé par le fournisseur (corps JSON de la réponse HTTP), sans jamais citer la clé."""
+    try:
+        brut = e.read().decode("utf-8", "replace")
+    except Exception:  # noqa: BLE001
+        return ""
+    try:
+        j = json.loads(brut)
+        msg = j.get("error") if isinstance(j, dict) else None
+        msg = (msg.get("message") if isinstance(msg, dict) else msg) or j.get("message") or j.get("detail") or brut
+    except (ValueError, AttributeError):
+        msg = brut
+    msg = re.sub(r"\b(xai|sk|gsk)-[A-Za-z0-9_\-]{6,}", "[clé masquée]", str(msg))
+    msg = re.sub(r"(provided:\s*)(?!\[)\S+", r"\1[clé masquée]", msg)
+    return " ".join(msg.split())[:300].rstrip(". ")
+
+
 class CerveauOpenAI:
     nom = "openai-compatible"
 
@@ -235,9 +252,11 @@ class CerveauOpenAI:
             with urllib.request.urlopen(req, timeout=10) as r:
                 brut = r.read()
         except urllib.error.HTTPError as e:
-            if e.code in (401, 403):
-                return False, f"{self.base} refuse la clé d'API (HTTP {e.code}) : vérifier la clé."
-            return False, f"{self.base} répond HTTP {e.code} : vérifier --url."
+            detail = lire_erreur(e)
+            if e.code in (401, 403) or "key" in detail.lower() or "clé" in detail.lower():
+                return False, (f"{self.base} refuse la clé d'API (HTTP {e.code}) : {detail or 'clé absente ou invalide'}. "
+                               "Vérifier XAI_API_KEY dans le fichier .env (clé active sur console.x.ai, crédits disponibles).")
+            return False, f"{self.base} répond HTTP {e.code} : {detail or 'vérifier --url et le nom du modèle'}."
         except Exception as e:
             return False, f"Le serveur {self.base} ne répond pas ({e.__class__.__name__}) : le lancer ou vérifier --url."
         try:
@@ -269,7 +288,7 @@ class CerveauOpenAI:
                     corps = json.dumps(demande).encode("utf-8")
                     continue
                 if e.code not in (429, 500, 502, 503) or essai == 3:
-                    raise
+                    raise RuntimeError(f"HTTP {e.code} : {lire_erreur(e) or e.reason}") from None
                 try:
                     attente = float(e.headers.get("Retry-After") or 0)
                 except (TypeError, ValueError):

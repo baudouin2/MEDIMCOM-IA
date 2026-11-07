@@ -70,7 +70,40 @@ def _maladies() -> dict:
     return sortie
 
 
+@lru_cache(maxsize=1)
+def _vocabulaire() -> frozenset:
+    mots = set()
+    for forme in list(_maladies()) + list(SYNONYMES) + ["enceinte", "grossesse", "gestante", "allergie", "allergique", "aucune", "aucun"]:
+        mots.update(w for w in re.findall(r"[a-z]+", forme) if len(w) >= 4)
+    return frozenset(mots)
+
+
+def corriger_fautes(texte: str) -> tuple[str, dict]:
+    """« diabhete » -> diabete, « insufisance » -> insuffisance, « enseinte » -> enceinte : à prononciation égale ou à
+    une lettre près sur un mot long, et seulement vers un mot médical connu ; jamais une correction ambiguë."""
+    from .lecture import cle_phonetique, distance
+    voc = _vocabulaire()
+    cles = {}
+    for w in voc:
+        cles.setdefault(cle_phonetique(w), set()).add(w)
+    corrections = {}
+
+    def corriger(m):
+        w = m.group(0)
+        if w in voc or len(w) < 5:
+            return w
+        cands = cles.get(cle_phonetique(w), set())
+        if len(cands) != 1 and len(w) >= 6:
+            cands = {v for v in voc if v[0] == w[0] and len(v) >= 6 and distance(w, v, 1) <= 1}
+        if len(cands) == 1:
+            corrections[w] = next(iter(cands))
+            return corrections[w]
+        return w
+    return re.sub(r"[a-z]+", corriger, _norm(texte)), corrections
+
+
 def extraire_faits(texte: str) -> dict:
+    texte, _ = corriger_fautes(texte)
     t = " " + _norm(texte) + " "
     trouves, faits = [], {}
     for forme, libelle in sorted(_maladies().items(), key=lambda x: -len(x[0])):

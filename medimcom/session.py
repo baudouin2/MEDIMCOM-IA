@@ -272,5 +272,9 @@ def construire(cfg: Config):
                 print(f"⚠ {message}", file=sys.stderr)
                 if not cfg.repli_sans_ia:
                     raise ModeleHorsService(message)
-                ctx.echecs_modele[modele] = ctx.seuil_echecs        # disjoncteur ouvert d'emblée : repli immédiat
+                ctx.echecs_modele[modele] = ctx.seuil_echecs        # disjoncteur ouvert d'emblée : repli immédiat…
+                ctx.disjoncteur_depuis[modele] = __import__("time").time()   # … et nouvel essai dans 90 s
+                ctx.etat_modele[modele] = {"disponible": False, "message": message}
+            else:
+                ctx.etat_modele[modele] = {"disponible": True, "message": "en ligne"}
     return ctx, agents, Orchestrateur(ctx, agents, ordre=cfg.ordre, graine=cfg.graine)

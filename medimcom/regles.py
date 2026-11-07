@@ -259,6 +259,11 @@ class MoteurRegles:
         for cle, m in meds.items():
             if nom in m.get("synonymes", []):
                 return cle, m
+        # Faute de frappe ou de dictée (« tramadole », « doliprane », « para c'est tamol ») : lecture prudente et affichée
+        from .lecture import trouver_medicaments
+        lus = [x for x in trouver_medicaments(nom.replace("_", " "), meds) if x["nom"] in meds]
+        if len(lus) == 1:
+            return lus[0]["nom"], meds[lus[0]["nom"]]
         return nom, None
 
     def _allergique(self, allergies, nom: str, med: dict) -> bool:
@@ -277,6 +282,7 @@ class MoteurRegles:
         ctx = {**self._valeurs(etat), **{k: v for k, v in decision.items() if v is not None}}
         nom, med = self._trouver_medicament(normaliser(decision["medicament"]))
         ctx["categorie"] = med.get("categorie") if med else None
+        lu_comme = med is not None and normaliser(decision["medicament"]) not in (nom, *[normaliser(x) for x in med.get("synonymes", [])])
         mode_brut = decision.get("mode") or ctx.get("mode_consultation")
         ctx["mode"] = self.MODES.get(normaliser(mode_brut)) if mode_brut else None
         mode_dossier = self.MODES.get(normaliser(ctx["mode_consultation"])) if ctx.get("mode_consultation") else None
@@ -314,7 +320,7 @@ class MoteurRegles:
             if not self._condition_applicable(ch["si"], ctx):
                 continue
             v = etat.get(ch["champ"])
-            if v is None or not v["confirme"]:
+            if v is None or not v["confirme"] or "préciser" in str(v["valeur"]):     # « oui, à préciser » : pas encore renseigné
                 manquants.append(ch["champ"])
                 constats.append(self._constat(f"champ_obligatoire:{ch['champ']}", {**ch, "niveau": "PREUVES_INSUFFISANTES"}))
 
@@ -325,23 +331,7 @@ class MoteurRegles:
 
         # 5. Contre-indications et allergies, pour tout médicament connu, autorisé ou non
         #    (avec les connaissances de fond : un homme n'est pas enceint)
-        if med:
-            ctx_ci, fermees = {**ctx, **self.axiomes(ctx)}, self.fermees("contre_indications")
-            for ci in med.get("contre_indications", []):
-                v = conjonction(ci["si"], ctx_ci, fermees)
-                rid = f"contre_indication:{nom}:{'+'.join(sorted(ci['si']))}"      # ex. contre_indication:tramadol:grossesse
-                if v is True:
-                    constats.append(self._constat(rid, ci))
-                elif v is None and ci["niveau"] in RESTRICTIFS:
-                    constats.append(self._potentiel(rid, ci, ci["si"], ctx_ci, fermees))
-            if self._allergique(ctx.get("allergies"), nom, med):
-                regle = dict(kb["regle_allergie"])
-                if med.get("allergie_fiches"):          # la notice du produit précise la contre-indication
-                    regle["fiches"] = list(dict.fromkeys(regle.get("fiches", []) + med["allergie_fiches"]))
-                constats.append(self._constat(f"allergie:{nom}", regle))
-        elif self._allergique(ctx.get("allergies"), nom, {}):
-            # médicament inconnu de la base, mais le patient a déclaré une allergie à ce nom même
-            constats.append(self._constat(f"allergie:{nom}", kb["regle_allergie"]))
+        constats += self._risques_patient(nom, med, ctx)
 
         # 5 bis. La dose est-elle plausible ? (lecture de la dose et du rythme, comparaison à la dose maximale)
         dose = lire_dose(decision.get("dose"), decision.get("posologie"))
@@ -362,6 +352,40 @@ class MoteurRegles:
         # 6. Règles générales (écrit, téléconsultation, consentement, information, IA)
         constats += self._appliquer(kb["regles_prescription"], {**ctx, **self.axiomes(ctx)}, "prescription")
 
+        if lu_comme:
+            constats.append({"regle": f"lecture:{nom}", "niveau": "INFORMATION", "base": "SURETE", "fiches": [], "source": "-",
+                             "reference_courte": "Lecture de MEDIMCOM IA",
+                             "detail": f"« {decision['medicament']} » lu comme {nom} (faute de frappe ou de dictée) : vérifiez.",
+                             "lacune": None, "juridiction": None, "piste": None})
+        alternatives = self._alternatives(med, ctx)
+        return self._resultat("prescription", constats, {
+            "medicament": decision["medicament"], "prescripteur": decision.get("prescripteur"),
+            "informations_manquantes": manquants, "dose_lue": dose, "alternatives": alternatives})
+
+    def _risques_patient(self, nom: str, med: dict | None, ctx: dict) -> list[dict]:
+        """Contre-indications et allergie de CE médicament pour CE patient (état du dossier). Sert à la prescription
+        et à tout message au patient qui cite le médicament."""
+        constats = []
+        if med:
+            ctx_ci, fermees = {**ctx, **self.axiomes(ctx)}, self.fermees("contre_indications")
+            for ci in med.get("contre_indications", []):
+                v = conjonction(ci["si"], ctx_ci, fermees)
+                rid = f"contre_indication:{nom}:{'+'.join(sorted(ci['si']))}"      # ex. contre_indication:tramadol:grossesse
+                if v is True:
+                    constats.append(self._constat(rid, ci))
+                elif v is None and ci["niveau"] in RESTRICTIFS:
+                    constats.append(self._potentiel(rid, ci, ci["si"], ctx_ci, fermees))
+            if self._allergique(ctx.get("allergies"), nom, med):
+                regle = dict(self.kb["regle_allergie"])
+                if med.get("allergie_fiches"):          # la notice du produit précise la contre-indication
+                    regle["fiches"] = list(dict.fromkeys(regle.get("fiches", []) + med["allergie_fiches"]))
+                constats.append(self._constat(f"allergie:{nom}", regle))
+        elif self._allergique(ctx.get("allergies"), nom, {}):
+            # médicament inconnu de la base, mais le patient a déclaré une allergie à ce nom même
+            constats.append(self._constat(f"allergie:{nom}", self.kb["regle_allergie"]))
+        return constats
+
+    def _alternatives(self, med: dict | None, ctx: dict) -> list[dict]:
         alternatives = []
         if med:
             ctx_ci = {**ctx, **self.axiomes(ctx)}
@@ -370,9 +394,17 @@ class MoteurRegles:
                     alternatives.append({"medicament": ci["alternative"], "fiches": ci.get("fiches_alternative", []),
                                          "source": " ; ".join(self.base.citer_court(f) for f in ci.get("fiches_alternative", [])),
                                          "raison": ci.get("detail", "")})
-        return self._resultat("prescription", constats, {
-            "medicament": decision["medicament"], "prescripteur": decision.get("prescripteur"),
-            "informations_manquantes": manquants, "dose_lue": dose, "alternatives": alternatives})
+        return alternatives
+
+    def risques_medicament(self, medicament: str, etat: dict) -> dict:
+        """Ce médicament est-il risqué pour ce patient ? (veille de l'assistant, messages au patient, médicaments
+        déclarés par le patient). Renvoie {medicament, connu, constats, alternatives, dose_max_mg}."""
+        nom, med = self._trouver_medicament(normaliser(medicament))
+        ctx = self._valeurs(etat)
+        return {"medicament": nom, "connu": med is not None, "constats": self._risques_patient(nom, med, ctx),
+                "alternatives": self._alternatives(med, ctx),
+                "dose_max_mg": ((med or {}).get("dose_max_jour_mg") or {}).get("valeur"),
+                "fiches_dose_max": ((med or {}).get("dose_max_jour_mg") or {}).get("fiches", [])}
 
     def _verifier_dose(self, nom, med: dict, dose: dict, age=None) -> list[dict]:
         """Garde-fous de dose. Une unité impossible (« 1 kg ») ou plus du double de la dose maximale par jour est
@@ -469,10 +501,12 @@ class MoteurRegles:
         return r
 
     # ------------------------------------------------------------------ envoi au patient
-    def verifier_envoi_patient(self, message: dict, suppose_valide: bool = False) -> dict:
+    def verifier_envoi_patient(self, message: dict, suppose_valide: bool = False, etat: dict | None = None) -> dict:
         """Forme (validé par un médecin autorisé ?) ET contenu (medimcom/surete.py : propos dangereux, consigne de
         médicament sans prescription). `suppose_valide` : pré-contrôle d'une proposition que le médecin n'a pas encore
-        validée (« si elle était validée, pourrait-elle partir ? ») ; un contenu interdit est ainsi bloqué AVANT."""
+        validée (« si elle était validée, pourrait-elle partir ? ») ; un contenu interdit est ainsi bloqué AVANT.
+        `etat` : état du patient ; un médicament conseillé dans le message est confronté à sa fiche (grossesse, âge,
+        allergies, maladies), comme une prescription : le médecin voit POURQUOI, pour CE patient."""
         from .surete import analyser_message
         p = self.kb["prescripteurs"].get(str(message.get("valide_par") or "").strip().upper())
         analyse = analyser_message(message.get("texte", ""), self.kb.get("medicaments", {}))
@@ -484,10 +518,70 @@ class MoteurRegles:
         constats = self._appliquer(self.kb["regles_envoi_patient"], ctx, "envoi_patient")
         if analyse["incitation_au_mal"] and not any(c["niveau"] == "BLOQUE" and c["regle"] == "ENVOI-PROPOS-DANGEREUX" for c in constats):
             constats.append(self.garde_fou_surete(analyse))
+        alternatives = []
+        if analyse["consigne_medicament"] and not message.get("statut_prescription_liee"):
+            if analyse.get("dose_imprecise"):
+                constats.append(self._garde_dose_imprecise(analyse))
+            for brut in analyse.get("medicaments") or []:
+                risques = self.risques_medicament(brut, etat or {})
+                for c in risques["constats"]:
+                    if c["niveau"] in ("BLOQUE", "A_REVOIR") and not c.get("potentiel"):
+                        constats.append({**c, "detail": ("For this patient: " if self.langue == "en" else "Pour ce patient : ") + c["detail"]})
+                alternatives += risques["alternatives"]
+        constats += self._lecture_contexte(analyse, message)
         r = self._resultat("envoi_au_patient", constats, {"message": message.get("texte", "")})
+        if r["verdict"] != "CONFORME":   # « peut être envoyé » ne doit jamais accompagner un blocage
+            r["constats"] = [c for c in r["constats"] if c["niveau"] != "CONFORME"]
+        r["alternatives"] = alternatives
         r["depassement_possible"] = False
         r["analyse_contenu"] = {k: v for k, v in analyse.items() if v}
         return r
+
+    def _lecture_contexte(self, analyse: dict, message: dict) -> list[dict]:
+        """Ce que le juriste a COMPRIS du message (récit, question, mise en garde…), et ce qu'il n'a pas pu trancher.
+        Un sens incertain (« pendre » seul, une incitation citée, un médicament cité sans verbe) n'est ni bloqué ni
+        laissé passer en silence : le médecin confirme ce qu'il veut dire, et sa confirmation est signée au journal."""
+        sortie, en = [], self.langue == "en"
+        fiches = (["DHA21-4.4", "ML16-A3"] if self.pays == "AE" else [f for f in ("CM-DEONTO",) if f in self.base.fiches]) or []
+        ref = " ; ".join(self.base.citer_court(f) for f in fiches) or "-"
+        ctx = analyse.get("contexte") or {}
+        indices = ", ".join(ctx.get("indices") or []) or "aucun indice"
+        if analyse.get("a_confirmer"):
+            confirme = message.get("contexte_confirme_par")
+            sortie.append({"regle": "CONTEXTE-A-CONFIRMER", "niveau": "INFORMATION" if confirme else "A_REVOIR", "base": "SURETE",
+                           "fiches": fiches, "source": " ; ".join(self.base.citer(f, self.langue) for f in fiches) or "-",
+                           "reference_courte": "Lecture du contexte par MEDIMCOM IA" + (f" ; {ref}" if fiches else ""),
+                           "detail": (f"Sens confirmé par {confirme} : ni consigne ni incitation ({analyse['a_confirmer']})."
+                                      if confirme else f"Sens à confirmer : {analyse['a_confirmer']}."),
+                           "lacune": None, "juridiction": None,
+                           "piste": None if confirme else ("Reformulez (qui, quoi, question ou récit), ou confirmez en validant "
+                                                           "que ce n'est ni une consigne ni une incitation : votre nom est enregistré.")})
+        if analyse.get("evocation") and not message.get("statut_prescription_liee"):
+            sortie.append({"regle": "LECTURE-CONTEXTE", "niveau": "INFORMATION", "base": "SURETE", "fiches": [], "source": "-",
+                           "reference_courte": "Lecture du contexte par MEDIMCOM IA",
+                           "detail": f"Évocation, pas une consigne ni une incitation : {analyse['evocation']} (indices : {indices}).",
+                           "lacune": None, "juridiction": None, "piste": None})
+        if analyse.get("corrections"):
+            sortie.append({"regle": "LECTURE-CORRECTIONS", "niveau": "INFORMATION", "base": "SURETE", "fiches": [], "source": "-",
+                           "reference_courte": "Lecture de MEDIMCOM IA",
+                           "detail": "Lu comme : " + " ; ".join(f"« {a} » → {b}" for a, b in analyse["corrections"].items()) + ".",
+                           "lacune": None, "juridiction": None, "piste": None})
+        return sortie
+
+    def _garde_dose_imprecise(self, analyse: dict) -> dict:
+        nom = analyse.get("medicament") or "ce médicament"
+        _, med = self._trouver_medicament(normaliser(nom))
+        maxi = ((med or {}).get("dose_max_jour_mg") or {})
+        ecrite = next((r.get("fiches", []) for r in self.kb["regles_prescription"] if r["id"] == "RX-ECRITE-DOSE"), [])
+        fiches = ecrite + maxi.get("fiches", [])
+        limite = f" (maximum : {maxi['valeur']} mg par jour chez l'adulte)" if maxi.get("valeur") else ""
+        return {"regle": "SURETE-DOSE-IMPRECISE", "niveau": "BLOQUE", "base": "SURETE", "fiches": fiches,
+                "source": " ; ".join(self.base.citer(f, self.langue) for f in fiches) or "-",
+                "reference_courte": "Garde-fou de sûreté de MEDIMCOM IA (dose)"
+                                    + (" ; " + " ; ".join(self.base.citer_court(f) for f in fiches) if fiches else ""),
+                "detail": f"Quantité imprécise de {nom} (« {analyse.get('expression') or 'beaucoup'} ») : risque de surdosage{limite}.",
+                "lacune": None, "juridiction": None,
+                "piste": f"Prescrivez {nom} dans l'onglet Ordonnance avec une dose en mg et un rythme précis : le juriste et l'assistant la vérifient."}
 
     def garde_fou_surete(self, analyse: dict) -> dict:
         """Garde-fou de SÛRETÉ du système, indépendant du droit : un message qui incite le patient à se faire du mal

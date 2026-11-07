@@ -447,7 +447,10 @@ def test_le_traducteur_ne_rapporte_que_ce_que_le_patient_a_choisi():
     ctx2, t2, _ = _avec_question_envoyee("allergies", "Avez-vous des allergies ?")
     t2._recevoir([type("M", (), {"de": "patient", "contenu": '{"pictogrammes": ["OUI"]}'})()])
     t2.executer("rapporter_reponse_patient", {"pictogrammes": ["OUI"]})
-    assert ctx2.dossier.fil[-1]["donnees"] == {}                                                       # pas de « allergies = vrai »
+    # pas de « allergies = vrai » : OUI sans détail = « à préciser », qui ne vaut pas allergies renseignées
+    assert ctx2.dossier.fil[-1]["donnees"] in ({}, {"allergies": "oui, à préciser"})
+    t2._recevoir([type("M", (), {"de": "patient", "contenu": '{"pictogrammes": ["NON"]}'})()])
+    t2.executer("rapporter_reponse_patient", {"pictogrammes": ["NON"]})
 
 
 def test_pictogrammes_combines_en_une_image():

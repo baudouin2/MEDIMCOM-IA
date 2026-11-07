@@ -12,8 +12,10 @@ export type Decision = {
   pictogrammes_choisis_par?: string | null; source_question?: number | null; source_prescription?: number | null;
   demande?: Record<string, unknown> | null; maintien?: { par: string; justification: string } | null; v?: number;
   rapproches?: Record<string, string>;
+  masque?: boolean;
   precontrole?: { verdict: string; texte?: string | null; analyse?: Record<string, unknown>;
-    constats: { regle: string; niveau: string; base: string; detail: string; piste?: string | null; reference_courte: string }[] } | null;
+    constats: { regle: string; niveau: string; base: string; detail: string; piste?: string | null; reference_courte: string }[];
+    lecture?: { regle: string; niveau: string; detail: string }[] } | null;
 };
 export type Constat = {
   regle: string; niveau: string; base: string; fiches: string[]; source: string; reference_courte: string;
@@ -21,7 +23,7 @@ export type Constat = {
 };
 export type Verdict = {
   objet: string; verdict: string; decision_id?: number; message?: string; constats: Constat[];
-  obligations: Constat[]; informations: Constat[]; depassement_possible?: boolean;
+  obligations: Constat[]; informations: Constat[]; depassement_possible?: boolean; informations_manquantes?: string[];
 };
 export type Suggestion = { id: number; type: string; texte: string; raison: string; source: string; statut: string; auteur: string };
 export type Question = { id: number; question: string; raison: string; cle?: string | null; statut: string; auteur: string };
@@ -32,6 +34,7 @@ export type VueMedecin = {
   dictee?: "xai" | "navigateur";
   reflexion_en_cours?: boolean;
   duree_modele?: number | null;
+  modele?: { disponible: boolean; message: string; modele: string } | null;
   session: string; mode: string; journal: string; lignes: number;
   etat: Record<string, Fait>; fil: Echange[]; questions: Question[]; decisions: Decision[];
   suggestions: Suggestion[]; verdicts: Verdict[]; messages: MessageAgent[]; lacunes: Lacune[];
@@ -41,7 +44,7 @@ export type VueMedecin = {
   demo: { actif: boolean; titre: string | null; etape: number; total: number; prochaine: string | null };
 };
 export type VuePatient = {
-  session: string; attend_reponse: boolean; palette: Record<string, string[]>;
+  session: string; attend_reponse: boolean; palette: Record<string, string[]>; urgence?: "signalee" | "prise_en_charge" | null;
   messages: { id: number; pictogrammes: string[]; contenu_type?: string | null; texte?: string }[];
 };
 export type Libelles = Record<"fr" | "en" | "ar", Record<string, string>>;

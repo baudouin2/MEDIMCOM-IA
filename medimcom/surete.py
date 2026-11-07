@@ -44,6 +44,17 @@ INCITATION = [
 ]
 _INCITATION = [(re.compile(m), motif) for m, motif in INCITATION]
 
+# Atteinte à soi évoquée à la 2e personne (« et vous pendre », « vous tuer ») : dangereuse, SAUF dans une question de
+# dépistage du risque suicidaire, que le médecin doit pouvoir poser (« Avez-vous des idées de vous tuer ? »).
+ATTEINTE = re.compile(r"\b(?:vous|te|t'|se|s')\s*(?:pendre|tuer|suicider|noyer|empoisonner|egorger|etrangler|"
+                      r"jeter (?:par|du|sous)|ouvrir les veines|faire du mal)\b")
+DEPISTAGE = re.compile(r"\?|\b(?:idees?|envie|pense[sz]?|pensez|penser|songe[sz]?|songez|voulu|voulez|veux|"
+                       r"essaye|essaye[sz]?|tente|deja|risque|est[- ]ce)\b")
+# Message réduit à un mot de mort ou de violence (« pendre », « suicide ») : sans contexte, il ne part pas.
+MOTS_DE_MORT = {"pendre", "pendez", "pends", "pendu", "pendaison", "suicide", "suicider", "suicidez", "tuer", "tue", "tuez",
+                "mourir", "meurs", "mourez", "crever", "creve", "crevez", "egorger", "poignarder", "empoisonner", "etrangler"}
+VIDES = {"et", "ou", "vous", "toi", "te", "se", "le", "la", "les", "de", "du", "des", "a", "au", "un", "une", "allez", "va", "aller"}
+
 # ------------------------------------------------------------------ 2. consigne de prise de médicament
 VERBES = (r"\b(?:prend|prends|prenez|prendre|prenne|bois|boit|buvez|boire|avale|avales|avalez|avaler|mets|mettez|mettre|"
           r"applique|appliquez|appliquer|injecte|injectez|injecter|utilise|utilisez|utiliser|"
@@ -54,6 +65,13 @@ DOSE = r"\b\d+(?:[.,]\d+)?\s*(?:mg|g|ml|ui|gouttes?|comprimes?|gelules?|cuillere
 NOMS = (r"\b(?:antibiotiques?|antidouleurs?|anti-inflammatoires?|antalgiques?|anxiolytiques?|somniferes?|"
         r"insuline|morphine|codeine|aspirine|amoxicilline|diclofenac|diazepam|tramadol|paracetamol|ibuprofene|"
         r"doliprane|efferalgan|dafalgan|advil|nurofen|metformine|artemether|coartem|quinine)\b")
+# Prescription annoncée au patient (« je vais vous prescrire du tramadol », « je vous donne du paracétamol »)
+ANNONCE = re.compile(r"\b(?:je|on|nous)\s+(?:vais\s+|va\s+|allons\s+)?(?:vous\s+|te\s+|t')?"
+                     r"(?:prescri\w*|donne\w*|conseill\w*|recommand\w*|mets|mettre|ajoute\w*)\b|"
+                     r"\b(?:vous|te|t')\s*(?:prescri\w*|donne\w*|conseill\w*|recommand\w*)\b")
+# Quantité imprécise pour un médicament (« beaucoup de paracétamol ») : surdosage possible, jamais une consigne valable
+QUANTITE_VAGUE = re.compile(r"\b(?:beaucoup|plein|a volonte|autant que|le plus possible|tout le flacon|toute la boite|"
+                            r"toute la plaquette|plusieurs boites|double dose|triple dose|une poignee|a fond|max|maximum)\b")
 NEGATION = re.compile(r"\bne\b[^.?!]{0,40}\b(?:pas|jamais|plus|aucun|aucune)\b|\bpas de\b|\bjamais\b|"
                       r"\b(?:arrete[sz]?|arretez|evite[sz]?|evitez|stop|stoppez|interdit|don't|do not|never|avoid)\b")
 QUESTION = re.compile(r"\?|\best[- ]ce\b|\b(?:prenez|prends|buvez|bois|avez|as|utilisez|utilises)[- ](?:vous|tu)\b|"
@@ -71,28 +89,59 @@ def _medicaments_connus(medicaments: dict) -> list[tuple[str, str, dict]]:
     return sorted(sortie, key=lambda x: -len(x[0]))
 
 
+INJURES = re.compile(r"\b(?:connard|connasse|salope|salaud|pute|putain|encule|batard|abruti|debile|imbecile|cretin|idiot|"
+                     r"idiote|nique|ta gueule|ferme ta gueule|grosse vache)\b")
+
+
 def analyser_message(texte: str, medicaments: dict | None = None) -> dict:
-    t = normaliser(texte)
+    """Lecture d'un message du médecin au patient, EN CONTEXTE (medimcom/lecture.py) :
+      - incitation, menace ou injure ADRESSÉE au patient -> incitation_au_mal (bloqué) ;
+      - mot de mort dans un récit, une question de dépistage, une mise en garde -> simple évocation (permis, signalé) ;
+      - mot de mort sans contexte (« pendre ») ou citation d'une incitation -> a_confirmer (le médecin confirme) ;
+      - médicament : consigne (bloquée sans ordonnance) / question, mise en garde, récit, information (permis) ;
+      - fautes de frappe et de dictée corrigées et montrées (« tramadole » -> tramadol, « pandre » -> pendre)."""
+    from .lecture import INTENTIONS, MOTS_DE_MORT, corriger_mots_de_mort, lire_contexte, mots, trouver_medicaments
+    corrige, corrections = corriger_mots_de_mort(texte or "")
+    t = normaliser(corrige)
+    ctx = lire_contexte(corrige)
+    intention = ctx["intention"]
+    meds = trouver_medicaments(corrige, medicaments or {})
+    corrections.update({m["lu"]: m["nom"] for m in meds if m["corrige"]})
+    noms = [m["nom"] for m in meds]
+    fiches = {n: (medicaments or {}).get(n, {}) for n in noms}
     sortie = {"incitation_au_mal": False, "motif": None, "expression": None,
-              "consigne_medicament": False, "medicament": None, "medicament_controle": False}
-    for motif_re, motif in _INCITATION:
-        m = motif_re.search(t)
-        if m:
-            sortie.update(incitation_au_mal=True, motif=motif, expression=m.group(0).strip())
-            break
-    # Médicament cité (règles du pays, puis formes et noms courants)
-    nom, fiche = None, {}
-    for forme, n, f in _medicaments_connus(medicaments or {}):
-        if re.search(r"(?<![a-z])" + re.escape(forme) + r"(?![a-z])", t):
-            nom, fiche = n, f
-            break
-    cite = re.search(NOMS, t)
-    if not nom and cite:
-        nom = cite.group(0)
-    consigne = bool(nom) and bool(re.search(VERBES, t) or re.search(DOSE, t))
-    if consigne and (NEGATION.search(t) or QUESTION.search(t)):
-        consigne = False                  # mise en garde ou question : pas une consigne de prise
-    if consigne:
-        sortie.update(consigne_medicament=True, medicament=nom,
-                      medicament_controle=fiche.get("categorie") in ("controle", "stupefiant", "psychotrope"))
+              "consigne_medicament": False, "medicament": None, "medicament_controle": False,
+              "medicaments": noms, "dose_imprecise": False, "contexte": ctx, "corrections": corrections,
+              "evocation": None, "a_confirmer": None}
+    jetons = mots(corrige)
+    morts = [w for w in jetons if w in MOTS_DE_MORT]
+    # 1. Atteinte à soi, violence, injure : selon le contexte
+    injure = INJURES.search(t)
+    if intention in ("incitation", "menace"):
+        sortie.update(incitation_au_mal=True, motif="propos violents" if intention == "menace" else "incitation à se faire du mal",
+                      expression=" ".join(morts) or None)
+    elif injure and intention not in ("recit", "question"):
+        sortie.update(incitation_au_mal=True, motif="propos injurieux", expression=injure.group(0))
+    elif morts or injure:
+        if intention == "ambigu":
+            sortie["a_confirmer"] = (f"« {' '.join(morts) or injure.group(0)} » sans contexte clair : impossible de savoir si "
+                                     "c'est une incitation, une question ou un récit")
+        else:
+            sortie["evocation"] = f"« {' '.join(morts) or injure.group(0)} » cité dans {INTENTIONS[intention]}"
+    # 2. Médicaments : consigne ou simple évocation ?
+    if noms:
+        vides = {"et", "ou", "du", "de", "des", "le", "la", "les", "un", "une", "aussi", "encore", "puis", "avec", "vous", "pour"}
+        lus = {w for m in meds for w in m["lu"].split()}
+        reste = [w for w in jetons if w not in vides and w not in lus]
+        vague = bool(QUANTITE_VAGUE.search(t))
+        consigne = intention == "consigne" or (intention == "ambigu" and (len(reste) <= 2 or vague or re.search(DOSE, t)))
+        if consigne:
+            sortie.update(consigne_medicament=True, medicament=noms[0], dose_imprecise=vague and not re.search(DOSE, t),
+                          medicament_controle=any(f.get("categorie") in ("controle", "stupefiant", "psychotrope") for f in fiches.values()))
+        elif intention == "ambigu":
+            sortie["a_confirmer"] = (sortie["a_confirmer"] or "") + (" ; " if sortie["a_confirmer"] else "") + \
+                f"{', '.join(noms)} cité sans que l'on sache si c'est une consigne de prise"
+        else:
+            sortie["evocation"] = (sortie["evocation"] + " ; " if sortie["evocation"] else "") + \
+                f"{', '.join(noms)} cité dans {INTENTIONS[intention]}"
     return sortie
