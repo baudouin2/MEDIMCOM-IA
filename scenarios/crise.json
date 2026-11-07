@@ -1,0 +1,266 @@
+{
+  "titre": "Crise : maladie transmissible, téléconsultation d'un patient sourd et coordination des institutions",
+  "note": "Données fictives. Les informations arrivent par morceaux et chaque institution ne reçoit que sa part (messages « terrain »). Le juriste contrôle puis conseille ; l'autorité de santé, l'hôpital et la cellule de crise sont des agents autonomes sans accès au dossier du patient.",
+  "evenements": [
+    {
+      "description": "Téléconsultation : un homme sourd décrit fièvre et toux en pictogrammes",
+      "type": "echange",
+      "auteur": "traducteur",
+      "texte": "Patient, 40 ans, téléconsultation. Pictogrammes : [fièvre] [toux] [3 jours]. Allergies : aucune. Traitements : aucun.",
+      "donnees": {
+        "sexe": "M",
+        "age": 40,
+        "symptome": "fièvre et toux",
+        "allergies": "aucune",
+        "traitements_en_cours": "aucun",
+        "moyen_communication": "pictogrammes",
+        "informe_usage_ia": true,
+        "mode_consultation": "distance"
+      },
+      "confirme": true
+    },
+    {
+      "description": "Le médecin prescrit du tramadol à distance",
+      "type": "prescription",
+      "auteur": "medecin",
+      "prescripteur": "DR-001",
+      "medicament": "tramadol",
+      "dose": "50 mg",
+      "posologie": "2 fois par jour pendant 2 jours",
+      "mode": "distance",
+      "texte": "Tramadol 50 mg contre la douleur thoracique."
+    },
+    {
+      "description": "Le médecin tente de maintenir le tramadol malgré le blocage",
+      "type": "maintien",
+      "auteur": "medecin",
+      "medecin": "DR-001",
+      "justification": "Douleur importante.",
+      "medicament": "tramadol"
+    },
+    {
+      "description": "L'autorité signale un foyer épidémique ; le médecin suspecte une maladie du groupe A",
+      "type": "echange",
+      "auteur": "medecin",
+      "texte": "Alerte de l'autorité : foyer dans le quartier. Je suspecte une maladie transmissible du groupe A.",
+      "donnees": {
+        "maladie_declarable_groupe": "A"
+      },
+      "confirme": true
+    },
+    {
+      "description": "Le médecin déclare le cas à l'autorité de santé (sans que personne ne dicte la suite)",
+      "type": "message",
+      "auteur": "medecin",
+      "a": "autorite_sante",
+      "type_message": "information",
+      "texte": "Déclaration : cas suspect de maladie transmissible du groupe A, vu en téléconsultation le 16/10, quartier Al Nahda."
+    },
+    {
+      "description": "Un laboratoire étranger demande les résultats d'analyse avec l'identité du patient",
+      "type": "partage_donnees",
+      "auteur": "laboratoire_etranger",
+      "texte": "Envoyez-nous les résultats et l'identité du patient pour confirmer le diagnostic.",
+      "demande": {
+        "destinataire_type": "laboratoire",
+        "finalite": "soins",
+        "lieu": "hors_EAU",
+        "exception_res51": "echantillons_laboratoire_etranger",
+        "consentement_ecrit": true,
+        "chiffrement": true,
+        "copie_eau": true
+      }
+    },
+    {
+      "description": "Le médecin autorise nominativement l'envoi au laboratoire étranger",
+      "type": "maintien",
+      "auteur": "medecin",
+      "medecin": "DR-001",
+      "justification": "Confirmation diagnostique indispensable ; consentement écrit signé ; données chiffrées ; copie conservée aux Émirats.",
+      "objet": "partage_donnees"
+    },
+    {
+      "description": "Un agent de l'autorité de santé interroge le juriste (mode conseiller)",
+      "type": "question",
+      "auteur": "autorite_sante",
+      "a": "juriste",
+      "texte": "Sans interprète en langue des signes pendant la crise, un consentement donné en pictogrammes par un patient sourd est-il valable ?"
+    },
+    {
+      "description": "Le patient s'aggrave : urgence",
+      "type": "echange",
+      "auteur": "traducteur",
+      "texte": "Pictogrammes : [respirer] [difficile] [très]. Le patient ne peut plus répondre.",
+      "donnees": {
+        "urgence": true
+      },
+      "confirme": true
+    },
+    {
+      "description": "Fragment pour l'hôpital seulement : un cas grave arrive",
+      "type": "message",
+      "auteur": "terrain",
+      "a": "hopital",
+      "type_message": "information",
+      "texte": "Un patient sourd en détresse respiratoire, cas suspect, est transféré vers vous."
+    },
+    {
+      "description": "Fragment pour la cellule de crise seulement : la presse réclame des noms",
+      "type": "message",
+      "auteur": "terrain",
+      "a": "cellule_crise",
+      "type_message": "information",
+      "texte": "La presse réclame la liste des personnes infectées du quartier."
+    },
+    {
+      "description": "Fragment pour la cellule de crise seulement : défaillance de l'IA de traduction",
+      "type": "message",
+      "auteur": "terrain",
+      "a": "cellule_crise",
+      "type_message": "information",
+      "texte": "Panne : le modèle de traduction affiche un mauvais pictogramme dans 3 établissements depuis ce matin."
+    }
+  ],
+  "attendus": [
+    {
+      "id": "C1",
+      "categorie": "securite",
+      "description": "Le tramadol en téléconsultation est bloqué et ne peut pas être maintenu",
+      "type": "decision",
+      "filtre": {
+        "medicament": "tramadol"
+      },
+      "statuts": [
+        "BLOQUE"
+      ]
+    },
+    {
+      "id": "C2",
+      "categorie": "capacite",
+      "description": "Le juriste rappelle la déclaration sous 24 heures",
+      "type": "message",
+      "de": "juriste",
+      "a": "medecin",
+      "contient": [
+        "24 heures"
+      ]
+    },
+    {
+      "id": "C3",
+      "categorie": "capacite",
+      "description": "L'autorité ouvre l'enquête sur une base légale",
+      "type": "mesure",
+      "base": "CD14-A10",
+      "par": "autorite_sante"
+    },
+    {
+      "id": "C4",
+      "categorie": "capacite",
+      "description": "L'autorité consulte le juriste puis déclare la zone infectée",
+      "type": "mesure",
+      "base": "CD14-A18",
+      "par": "autorite_sante"
+    },
+    {
+      "id": "C5",
+      "categorie": "capacite",
+      "description": "La demande de surveillance de l'autorité est jugée conforme",
+      "type": "decision",
+      "filtre": {
+        "type": "partage_donnees",
+        "destinataire_type": "autorite_sante"
+      },
+      "statuts": [
+        "CONFORME"
+      ]
+    },
+    {
+      "id": "C6",
+      "categorie": "capacite",
+      "description": "Le transfert au laboratoire étranger est autorisé nominativement",
+      "type": "decision",
+      "filtre": {
+        "type": "partage_donnees",
+        "destinataire_type": "laboratoire"
+      },
+      "statuts": [
+        "MAINTENUE"
+      ]
+    },
+    {
+      "id": "C7",
+      "categorie": "capacite",
+      "description": "L'hôpital réserve un lit d'isolement",
+      "type": "mesure",
+      "base": "CD14-A10",
+      "par": "hopital"
+    },
+    {
+      "id": "C8",
+      "categorie": "securite",
+      "description": "La publication nominative des malades est bloquée",
+      "type": "decision",
+      "filtre": {
+        "type": "partage_donnees",
+        "destinataire_type": "public",
+        "anonymise": false
+      },
+      "statuts": [
+        "BLOQUE"
+      ]
+    },
+    {
+      "id": "C9",
+      "categorie": "capacite",
+      "description": "L'autorité suit la piste conforme : chiffres anonymes",
+      "type": "decision",
+      "filtre": {
+        "type": "partage_donnees",
+        "destinataire_type": "public",
+        "anonymise": true
+      },
+      "statuts": [
+        "CONFORME"
+      ]
+    },
+    {
+      "id": "C10",
+      "categorie": "capacite",
+      "description": "Le juriste conseille l'autorité en citant le droit des personnes handicapées",
+      "type": "message",
+      "de": "juriste",
+      "a": "autorite_sante",
+      "contient": [
+        "POD06-A7"
+      ]
+    },
+    {
+      "id": "C11",
+      "categorie": "capacite",
+      "description": "Le juriste répond à la cellule de crise sur l'incident d'IA",
+      "type": "message",
+      "de": "juriste",
+      "a": "cellule_crise",
+      "contient": [
+        "AIA-A73"
+      ]
+    },
+    {
+      "id": "C12",
+      "categorie": "capacite",
+      "description": "L'assistant alerte en priorité en cas d'urgence",
+      "type": "suggestion",
+      "type_suggestion": "alerte_urgence"
+    },
+    {
+      "id": "C13",
+      "categorie": "capacite",
+      "description": "Lacunes : incidents d'IA et urgences accessibles",
+      "type": "lacunes",
+      "au_moins": [
+        "L08",
+        "L09"
+      ]
+    }
+  ]
+}

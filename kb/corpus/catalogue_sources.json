@@ -1,0 +1,1985 @@
+{
+ "description": "Catalogue des sources juridiques et de politique publique de MEDIMCOM IA, rangé selon les exigences du hackathon UIT AI for Good. Seuls des documents officiels et ouverts sont listés (lois, stratégies, traités, orientations d'organisations internationales) ; jamais de presse. « verification » : verifie_web_2026-11-02 / -11-04 = lien vu en recherche à cette date ; a_confirmer = lien officiel connu, à confirmer au premier téléchargement ; manuel = aucun lien ouvert trouvé, document à déposer dans entrees_manuelles/<ID>.pdf. Ajoutez vos propres documents en copiant une entrée.",
+ "axes": {
+  "E1": "Lois et réglementations",
+  "E2": "Stratégies IA, numérique et cybersécurité",
+  "E3": "Protection des données",
+  "E4": "Mandats institutionnels",
+  "E5": "Engagements multilatéraux",
+  "E6": "Énergie et infrastructures"
+ },
+ "dossiers": {
+  "A_cameroun": "Cameroun (pays d'application)",
+  "B_international": "International (ONU, OMS, UNESCO, OCDE, Conseil de l'Europe, normes)",
+  "C_afrique_regional": "Afrique (Union africaine)",
+  "D_emirats_pays_hote": "Émirats arabes unis (pays hôte du hackathon)"
+ },
+ "sources": [
+  {
+   "id": "CM-SANTE-1996",
+   "titre": "Loi n° 96/03 du 4 janvier 1996 portant loi-cadre dans le domaine de la santé",
+   "dossier": "A_cameroun/01_lois_reglementations_sante",
+   "axes": [
+    "E1"
+   ],
+   "autorite": "Présidence de la République du Cameroun",
+   "date": "1996-01-04",
+   "type": "loi",
+   "langue": "fr",
+   "urls": [
+    "https://extranet.who.int/cpcd/sites/default/files/public_file_repository/CMR_Cameroon_Loi-No-96-03-loi-cadre-sante_1996.pdf",
+    "https://extranet.who.int/cpcd/health-legislation/loi-ndeg9603-du-4-janvier-1996-portant-loi-cadre-dans-le-domaine-de-la-sante"
+   ],
+   "verification": "verifie_web_2026-11-04",
+   "utilite": "Cadre général du système de santé ; fonde les obligations de l'assistant médical et du coordinateur.",
+   "themes": [
+    "sante"
+   ]
+  },
+  {
+   "id": "CM-MED-1990",
+   "titre": "Loi n° 90/36 du 10 août 1990 relative à l'exercice et à l'organisation de la profession de médecin",
+   "dossier": "A_cameroun/01_lois_reglementations_sante",
+   "axes": [
+    "E1",
+    "E4"
+   ],
+   "autorite": "Présidence de la République du Cameroun",
+   "date": "1990-08-10",
+   "type": "loi",
+   "langue": "fr",
+   "urls": [
+    "https://extranet.who.int/cpcd/health-legislation/loi-no-90-36-relative-lexercice-et-lorganisation-de-la-profession-de-medecin"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Qui peut poser un diagnostic et prescrire : fonde la règle « le médecin décide ».",
+   "themes": [
+    "sante",
+    "responsabilite"
+   ]
+  },
+  {
+   "id": "CM-PHARM-1990",
+   "titre": "Loi n° 90/035 du 10 août 1990 relative à l'exercice et à l'organisation de la profession de pharmacien",
+   "dossier": "A_cameroun/01_lois_reglementations_sante",
+   "axes": [
+    "E1",
+    "E4"
+   ],
+   "autorite": "Présidence de la République du Cameroun",
+   "date": "1990-08-10",
+   "type": "loi",
+   "langue": "fr",
+   "urls": [
+    "https://extranet.who.int/cpcd/health-legislation/loi-ndeg90-035-du-10-aout-1990-relative-lexercice-et-lorganisation-de-la"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Dispensation des médicaments ; limites des conseils de l'assistant.",
+   "themes": [
+    "sante",
+    "medicament"
+   ]
+  },
+  {
+   "id": "CM-DEONTO-1983",
+   "titre": "Code de déontologie des médecins (décret n° 83/166 du 12 avril 1983), édition ONMC",
+   "dossier": "A_cameroun/01_lois_reglementations_sante",
+   "axes": [
+    "E1",
+    "E4"
+   ],
+   "autorite": "Ordre national des médecins du Cameroun",
+   "date": "1983-04-12",
+   "type": "decret",
+   "langue": "fr",
+   "urls": [
+    "https://onmc.cm/wp-content/uploads/2021/07/ONMC_code-de-deontotologie-corrigee-en-Francais.pdf",
+    "http://onmc.cm/wp-content/uploads/2021/07/ONMC_code-de-deontotologie-corrigee-en-Francais.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Secret médical, consentement, information du patient : règles du juriste en consultation.",
+   "themes": [
+    "sante",
+    "consentement",
+    "secret"
+   ]
+  },
+  {
+   "id": "CM-ARR-PAQUET-2021",
+   "titre": "Arrêté fixant le paquet minimum et complémentaire d'activités des formations sanitaires",
+   "dossier": "A_cameroun/01_lois_reglementations_sante",
+   "axes": [
+    "E1",
+    "E4"
+   ],
+   "autorite": "Ministère de la Santé publique (MINSANTE)",
+   "date": "2021",
+   "type": "arrete",
+   "langue": "fr",
+   "urls": [
+    "https://www.minsante.cm/site/sites/default/files/ARRETE%20PAQUET%20ACTIVITES%20FOSA.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Ce que chaque niveau de formation sanitaire doit offrir : oriente le coordinateur.",
+   "themes": [
+    "sante",
+    "organisation"
+   ]
+  },
+  {
+   "id": "CM-CONST-1972",
+   "titre": "Constitution de la République du Cameroun (révisée en 1996 et 2008)",
+   "dossier": "A_cameroun/01_lois_reglementations_sante",
+   "axes": [
+    "E1"
+   ],
+   "autorite": "République du Cameroun",
+   "date": "1972-06-02",
+   "type": "constitution",
+   "langue": "fr/en",
+   "urls": [
+    "https://extranet.who.int/cpcd/sites/default/files/public_file_repository/CMR_Cameroon_Constitution_1972asof2008.pdf",
+    "https://www.constituteproject.org/constitution/Cameroon_2008.pdf?lang=en"
+   ],
+   "verification": "verifie_web_2026-11-04",
+   "utilite": "Droits fondamentaux (préambule) : égalité, protection des minorités, santé.",
+   "themes": [
+    "droits"
+   ],
+   "note": "Copie hébergée par l'OMS (dépôt de la législation sanitaire, CPCD), version consolidée 2008."
+  },
+  {
+   "id": "CM-OMS-DEPOT",
+   "titre": "Instruments législatifs sanitaires du Cameroun (OMS, CPCD)",
+   "dossier": "A_cameroun/01_lois_reglementations_sante",
+   "axes": [
+    "E1"
+   ],
+   "autorite": "OMS",
+   "date": "2026",
+   "type": "repertoire",
+   "langue": "fr/en",
+   "urls": [
+    "https://extranet.who.int/cpcd/health-legislation/countries/cmr/legislative-instruments"
+   ],
+   "verification": "verifie_web_2026-11-04",
+   "utilite": "Index des textes sanitaires camerounais : point de départ pour compléter la base.",
+   "themes": [
+    "sante"
+   ],
+   "note": "Page d'index : conservée pour retrouver d'autres textes, pas découpée en articles."
+  },
+  {
+   "id": "CM-CYBER-2010",
+   "titre": "Loi n° 2010/012 du 21 décembre 2010 relative à la cybersécurité et à la cybercriminalité",
+   "dossier": "A_cameroun/02_strategies_ia_numerique_cybersecurite",
+   "axes": [
+    "E2",
+    "E3"
+   ],
+   "autorite": "Présidence de la République du Cameroun",
+   "date": "2010-12-21",
+   "type": "loi",
+   "langue": "fr",
+   "urls": [
+    "https://database.cyberpolicyportal.org/api/files/166367990584329pspck8evk.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Sécurité des systèmes, traces, confidentialité des communications : exigences techniques du système.",
+   "themes": [
+    "cybersecurite",
+    "donnees"
+   ],
+   "note": "Copie hébergée par le Cyber Policy Portal (UNIDIR) ; comparer avec le Journal officiel."
+  },
+  {
+   "id": "CM-CE-2010",
+   "titre": "Loi n° 2010/013 du 21 décembre 2010 régissant les communications électroniques",
+   "dossier": "A_cameroun/02_strategies_ia_numerique_cybersecurite",
+   "axes": [
+    "E2",
+    "E6"
+   ],
+   "autorite": "Présidence de la République du Cameroun",
+   "date": "2010-12-21",
+   "type": "loi",
+   "langue": "fr",
+   "urls": [
+    "https://database.cyberpolicyportal.org/api/files/1676835532680nuqw13bbne8.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Régime des réseaux et services électroniques utilisés par la téléconsultation.",
+   "themes": [
+    "numerique",
+    "infrastructure"
+   ]
+  },
+  {
+   "id": "CM-CE-2015",
+   "titre": "Loi n° 2015/006 du 20 avril 2015 modifiant et complétant la loi de 2010 sur les communications électroniques",
+   "dossier": "A_cameroun/02_strategies_ia_numerique_cybersecurite",
+   "axes": [
+    "E2",
+    "E6"
+   ],
+   "autorite": "Présidence de la République du Cameroun",
+   "date": "2015-04-20",
+   "type": "loi",
+   "langue": "fr",
+   "urls": [
+    "https://www.art.cm/sites/default/files/documents/LOI%20N%C2%B02015%20006%20DU%2020%20AVRIL%202015%20MODIFIANT%20ET%20COMPLETANT%20CERTAINES%20DISPOSITIONS%20DE%20LA%20LOI%20%20DE%202010%20LCE.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Mise à jour du régime des communications électroniques.",
+   "themes": [
+    "numerique"
+   ]
+  },
+  {
+   "id": "CM-COMEL-2010",
+   "titre": "Loi n° 2010/021 du 21 décembre 2010 régissant le commerce électronique",
+   "dossier": "A_cameroun/02_strategies_ia_numerique_cybersecurite",
+   "axes": [
+    "E2"
+   ],
+   "autorite": "Présidence de la République du Cameroun",
+   "date": "2010-12-21",
+   "type": "loi",
+   "langue": "fr",
+   "urls": [
+    "https://application.camgovca.cm/images/downloads/articles/Loi%20sur%20le%20commerce%20%C3%A9lectronique%20-%2021-12-2010.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Valeur des écrits et signatures électroniques (consentement numérique).",
+   "themes": [
+    "numerique",
+    "consentement"
+   ]
+  },
+  {
+   "id": "CM-ART-RECUEIL-2023",
+   "titre": "Recueil des textes du secteur des postes, télécommunications et TIC — édition 2023",
+   "dossier": "A_cameroun/02_strategies_ia_numerique_cybersecurite",
+   "axes": [
+    "E2",
+    "E4",
+    "E6"
+   ],
+   "autorite": "Agence de régulation des télécommunications (ART)",
+   "date": "2023",
+   "type": "recueil",
+   "langue": "fr",
+   "urls": [
+    "https://art.cm/sites/default/files/documents/Recueil%20des%20textes%20du%20secteur%20des%20Postes%2C%20T%C3%A9l%C3%A9communications%20et%20TIC%20-%20Edition%202023.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Tous les textes TIC en vigueur, décrets d'application compris.",
+   "themes": [
+    "numerique",
+    "infrastructure"
+   ]
+  },
+  {
+   "id": "CM-PSNSN-2020-FR",
+   "titre": "Plan stratégique national de santé numérique 2020-2024",
+   "dossier": "A_cameroun/02_strategies_ia_numerique_cybersecurite",
+   "axes": [
+    "E2"
+   ],
+   "autorite": "MINSANTE",
+   "date": "2020",
+   "type": "strategie",
+   "langue": "fr",
+   "urls": [
+    "https://files.aho.afro.who.int/afahobckpcontainer/production/files/FR_DOCUMENT_PLAN_STRATEGIQUE_NATIONAL_DE_SANTE_NUMERIQUE_R%C3%A9duit_1.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Feuille de route nationale de santé numérique : MEDIMCOM s'y inscrit.",
+   "themes": [
+    "sante",
+    "numerique"
+   ],
+   "note": "Copie hébergée par l'Observatoire africain de la santé (OMS AFRO)."
+  },
+  {
+   "id": "CM-PSNSN-2020-EN",
+   "titre": "National Digital Health Strategic Plan 2020-2024 (version anglaise)",
+   "dossier": "A_cameroun/02_strategies_ia_numerique_cybersecurite",
+   "axes": [
+    "E2"
+   ],
+   "autorite": "MINSANTE",
+   "date": "2020",
+   "type": "strategie",
+   "langue": "en",
+   "urls": [
+    "https://www.minsante.cm/site/sites/default/files/EN_DOCUMENT_PLAN%20STRATEGIQUE%20NATIONAL%20DE%20SANTE%20NUMERIQUE_R%C3%A9duit.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Même plan, version anglaise officielle (MINSANTE).",
+   "themes": [
+    "sante",
+    "numerique"
+   ]
+  },
+  {
+   "id": "CM-PSNSN-SE-2026",
+   "titre": "Plan de suivi-évaluation du plan stratégique national de santé numérique 2026-2030",
+   "dossier": "A_cameroun/02_strategies_ia_numerique_cybersecurite",
+   "axes": [
+    "E2"
+   ],
+   "autorite": "MINSANTE",
+   "date": "2026",
+   "type": "strategie",
+   "langue": "fr",
+   "urls": [
+    "https://www.minsante.cm/site/sites/default/files/S%26E_PSNSN%202026-2030_Fr.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Indicateurs de la santé numérique 2026-2030 : base des indicateurs d'impact du projet.",
+   "themes": [
+    "sante",
+    "numerique"
+   ]
+  },
+  {
+   "id": "CM-SNIA-2025",
+   "titre": "Stratégie nationale de l'intelligence artificielle du Cameroun",
+   "dossier": "A_cameroun/02_strategies_ia_numerique_cybersecurite",
+   "axes": [
+    "E2"
+   ],
+   "autorite": "MINPOSTEL",
+   "date": "2025",
+   "type": "strategie",
+   "langue": "fr",
+   "urls": [],
+   "verification": "manuel",
+   "utilite": "Cadre national de l'IA : à relier aux règles du juriste dès que le texte officiel est publié.",
+   "themes": [
+    "ia"
+   ],
+   "note": "Présentée en juillet 2025 ; aucun PDF officiel trouvé le 2 novembre 2026 (seulement la presse). Lacune documentée : déposer le texte officiel dans entrees_manuelles/CM-SNIA-2025.pdf dès qu'il est publié."
+  },
+  {
+   "id": "CM-OCTOPUS-CYBER",
+   "titre": "Profil juridique Cameroun — cybercriminalité et preuve électronique (projet Octopus)",
+   "dossier": "A_cameroun/02_strategies_ia_numerique_cybersecurite",
+   "axes": [
+    "E2",
+    "E5"
+   ],
+   "autorite": "Conseil de l'Europe",
+   "date": "2022",
+   "type": "analyse",
+   "langue": "fr",
+   "urls": [
+    "https://rm.coe.int/octocom-legal-profile-cameroun-fr/1680a713cb"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Analyse officielle de l'alignement du droit camerounais sur la Convention de Budapest.",
+   "themes": [
+    "cybersecurite"
+   ]
+  },
+  {
+   "id": "CM-DCP-2024",
+   "titre": "Loi n° 2024/017 du 23 décembre 2024 relative à la protection des données à caractère personnel",
+   "dossier": "A_cameroun/03_protection_donnees",
+   "axes": [
+    "E3"
+   ],
+   "autorite": "Présidence de la République du Cameroun",
+   "date": "2024-12-23",
+   "type": "loi",
+   "langue": "fr",
+   "urls": [],
+   "verification": "manuel",
+   "utilite": "Base légale du traitement des données de santé, droits du patient, autorité de contrôle.",
+   "themes": [
+    "donnees",
+    "sante"
+   ],
+   "note": "Texte officiel non trouvé en téléchargement ouvert le 2 novembre 2026. Le récupérer sur prc.cm (rubrique « Les actes ») ou au Journal officiel et le déposer dans entrees_manuelles/CM-DCP-2024.pdf."
+  },
+  {
+   "id": "CM-SSS-2016",
+   "titre": "Stratégie sectorielle de santé 2016-2027",
+   "dossier": "A_cameroun/04_mandats_institutionnels",
+   "axes": [
+    "E4"
+   ],
+   "autorite": "MINSANTE",
+   "date": "2016",
+   "type": "strategie",
+   "langue": "fr",
+   "urls": [
+    "https://www.minsante.cm/site/sites/default/files/SSS_french.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Priorités et organisation du secteur santé.",
+   "themes": [
+    "sante"
+   ]
+  },
+  {
+   "id": "CM-PNDS-2016",
+   "titre": "Plan national de développement sanitaire 2016-2020",
+   "dossier": "A_cameroun/04_mandats_institutionnels",
+   "axes": [
+    "E4"
+   ],
+   "autorite": "MINSANTE",
+   "date": "2016",
+   "type": "strategie",
+   "langue": "fr",
+   "urls": [
+    "https://p4h.world/app/uploads/2023/02/2-PNDS_Francais_final_.2017.x23411.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Programmes sanitaires et rôles des acteurs.",
+   "themes": [
+    "sante"
+   ],
+   "note": "Copie hébergée par P4H (OMS/partenaires)."
+  },
+  {
+   "id": "CM-CSU-STRAT",
+   "titre": "Stratégie de développement de la couverture santé universelle au Cameroun",
+   "dossier": "A_cameroun/04_mandats_institutionnels",
+   "axes": [
+    "E4"
+   ],
+   "autorite": "MINSANTE",
+   "date": "2019",
+   "type": "strategie",
+   "langue": "fr",
+   "urls": [
+    "https://extranet.who.int/uhcpartnershiplivemonitoring/system/files/doc_attachments/Strate%CC%81gie%20de%20de%CC%81veloppement%20de%20la%20Couveture%20Sante%CC%81%20Universelle%20au%20Camerou%20V3.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Accès aux soins et financement : contexte de l'orientation par le coordinateur.",
+   "themes": [
+    "sante",
+    "acces"
+   ]
+  },
+  {
+   "id": "CM-QUALITE-2024",
+   "titre": "Document stratégique qualité des soins Cameroun 2024",
+   "dossier": "A_cameroun/04_mandats_institutionnels",
+   "axes": [
+    "E4"
+   ],
+   "autorite": "MINSANTE",
+   "date": "2024",
+   "type": "strategie",
+   "langue": "fr",
+   "urls": [
+    "https://extranet.who.int/uhcpartnershiplivemonitoring/system/files/doc_attachments/Document%20Strat%C3%A9gique%20Qualit%C3%A9%20des%20Soins%20Cameroun%202024%20-%20.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Normes de qualité et de sécurité des patients.",
+   "themes": [
+    "sante",
+    "qualite"
+   ]
+  },
+  {
+   "id": "CM-AGENDA-TRANSFO",
+   "titre": "Agenda de transformation du secteur de la santé",
+   "dossier": "A_cameroun/04_mandats_institutionnels",
+   "axes": [
+    "E4"
+   ],
+   "autorite": "MINSANTE",
+   "date": "2023",
+   "type": "strategie",
+   "langue": "fr",
+   "urls": [
+    "https://www.minsante.cm/site/sites/default/files/Agenda%20de%20Transformation-compress%C3%A9.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Réformes en cours du ministère.",
+   "themes": [
+    "sante"
+   ]
+  },
+  {
+   "id": "CM-SND30-FR",
+   "titre": "Stratégie nationale de développement 2020-2030 (SND30)",
+   "dossier": "A_cameroun/04_mandats_institutionnels",
+   "axes": [
+    "E4",
+    "E5",
+    "E6"
+   ],
+   "autorite": "Ministère de l'Économie (MINEPAT)",
+   "date": "2020",
+   "type": "strategie",
+   "langue": "fr",
+   "urls": [
+    "https://faolex.fao.org/docs/pdf/cmr211554.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Cadre de développement national : santé, numérique, énergie et infrastructures.",
+   "themes": [
+    "developpement",
+    "infrastructure"
+   ]
+  },
+  {
+   "id": "CM-SND30-EN",
+   "titre": "National Development Strategy 2020-2030 (NDS30)",
+   "dossier": "A_cameroun/04_mandats_institutionnels",
+   "axes": [
+    "E4",
+    "E5",
+    "E6"
+   ],
+   "autorite": "MINEPAT",
+   "date": "2020",
+   "type": "strategie",
+   "langue": "en",
+   "urls": [
+    "https://faolex.fao.org/docs/pdf/cmr211554ENG.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Version anglaise de la SND30.",
+   "themes": [
+    "developpement",
+    "infrastructure"
+   ]
+  },
+  {
+   "id": "CM-DEC-2013-093",
+   "titre": "Décret n° 2013/093 du 3 avril 2013 portant organisation du ministère de la Santé publique",
+   "dossier": "A_cameroun/04_mandats_institutionnels",
+   "axes": [
+    "E4"
+   ],
+   "autorite": "Présidence de la République du Cameroun",
+   "date": "2013-04-03",
+   "type": "decret",
+   "langue": "fr",
+   "urls": [
+    "https://extranet.who.int/cpcd/sites/default/files/public_file_repository/CMR_Cameroon_Decret-No-2013-93-portant-organisation-du-Ministere-de-la-Sante-Publique_2013.pdf"
+   ],
+   "verification": "verifie_web_2026-11-04",
+   "utilite": "Mandat et directions du MINSANTE (dont la cellule informatique).",
+   "themes": [
+    "sante",
+    "institutions"
+   ],
+   "note": "Copie hébergée par l'OMS (dépôt CPCD)."
+  },
+  {
+   "id": "CM-DEC-2023-132",
+   "titre": "Décret n° 2023/132 du 10 février 2023 fixant les modalités d'exercice de certaines compétences transférées par l'État aux régions en matière de santé",
+   "dossier": "A_cameroun/04_mandats_institutionnels",
+   "axes": [
+    "E1",
+    "E4"
+   ],
+   "autorite": "Présidence de la République du Cameroun",
+   "date": "2023-02-10",
+   "type": "decret",
+   "langue": "fr",
+   "urls": [
+    "https://extranet.who.int/cpcd/sites/default/files/public_file_repository/CMR_Cameroon_Decret-2023-132-competences-transferres-regions-matiere-sante_2023.pdf"
+   ],
+   "verification": "verifie_web_2026-11-04",
+   "utilite": "Répartition des compétences santé État / régions : à qui le coordinateur adresse une demande.",
+   "themes": [
+    "sante",
+    "institutions"
+   ],
+   "note": "Copie hébergée par l'OMS (dépôt CPCD)."
+  },
+  {
+   "id": "CM-RECUEIL-MINSANTE-2008",
+   "titre": "Recueil des textes réglementaires du ministère de la Santé publique (2008)",
+   "dossier": "A_cameroun/01_lois_reglementations_sante",
+   "axes": [
+    "E1",
+    "E4"
+   ],
+   "autorite": "MINSANTE",
+   "date": "2008",
+   "type": "recueil",
+   "langue": "fr",
+   "urls": [
+    "https://p4h.world/app/uploads/2024/02/Recueil_textes_reglementaires_MoH_2008.x23411.pdf"
+   ],
+   "verification": "verifie_web_2026-11-04",
+   "utilite": "Des dizaines de décrets et arrêtés sanitaires en un document : organisation, formations sanitaires, professions.",
+   "themes": [
+    "sante",
+    "institutions"
+   ],
+   "note": "Copie hébergée par P4H (réseau OMS / partenaires) ; vérifier qu'un texte n'a pas été abrogé depuis 2008."
+  },
+  {
+   "id": "CM-TRANSF-POL-2025",
+   "titre": "Politique nationale de transfusion sanguine (version finale du 24 janvier 2025)",
+   "dossier": "A_cameroun/04_mandats_institutionnels",
+   "axes": [
+    "E1",
+    "E4"
+   ],
+   "autorite": "MINSANTE",
+   "date": "2025-01-24",
+   "type": "politique",
+   "langue": "fr",
+   "urls": [
+    "https://extranet.who.int/uhcpartnershiplivemonitoring/system/files/doc_attachments/Politique%20Nationale%20de%20Transfusion%20Sanguine_%20Final_Version%20du%2024%20janvier%202025.pdf"
+   ],
+   "verification": "verifie_web_2026-11-04",
+   "utilite": "Cadre de la transfusion : orientation urgente (anémie sévère, hémorragie, drépanocytose).",
+   "themes": [
+    "sante"
+   ]
+  },
+  {
+   "id": "CM-TRANSF-PNS-2022",
+   "titre": "Plan national stratégique de transfusion sanguine 2022-2026",
+   "dossier": "A_cameroun/04_mandats_institutionnels",
+   "axes": [
+    "E4"
+   ],
+   "autorite": "MINSANTE",
+   "date": "2024-01-24",
+   "type": "strategie",
+   "langue": "fr",
+   "urls": [
+    "https://extranet.who.int/uhcpartnershiplivemonitoring/system/files/doc_attachments/PNS%20TS%202022-2026%20_Final_Version%20du%2024%20Janvier%202024.pdf"
+   ],
+   "verification": "verifie_web_2026-11-04",
+   "utilite": "Organisation et objectifs du système transfusionnel.",
+   "themes": [
+    "sante"
+   ]
+  },
+  {
+   "id": "CM-HAND-2010",
+   "titre": "Loi n° 2010/002 du 13 avril 2010 portant protection et promotion des personnes handicapées",
+   "dossier": "A_cameroun/05_handicap_inclusion",
+   "axes": [
+    "E1"
+   ],
+   "autorite": "Présidence de la République du Cameroun",
+   "date": "2010-04-13",
+   "type": "loi",
+   "langue": "fr/en",
+   "urls": [
+    "https://social.desa.un.org/sites/default/files/migrated/15/2019/11/Cameroon_-protection-and-promotion-of-persons-with-disabilities.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Droit d'accès des personnes sourdes et muettes aux soins et à la communication : cœur du projet.",
+   "themes": [
+    "handicap",
+    "acces"
+   ]
+  },
+  {
+   "id": "CM-HAND-DEC-2018",
+   "titre": "Décret d'application de la loi de 2010 sur les personnes handicapées (version anglaise)",
+   "dossier": "A_cameroun/05_handicap_inclusion",
+   "axes": [
+    "E1"
+   ],
+   "autorite": "Premier ministre du Cameroun",
+   "date": "2018",
+   "type": "decret",
+   "langue": "en",
+   "urls": [
+    "https://social.desa.un.org/sites/default/files/migrated/15/2019/11/Cameroon_DECREE-OF-APPLICATION-2010-LAW-ENGLISH-VERSION.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Mesures concrètes d'accessibilité et de prise en charge.",
+   "themes": [
+    "handicap"
+   ]
+  },
+  {
+   "id": "CM-HAND-RECUEIL",
+   "titre": "Recueil des textes juridiques relatifs à la promotion et à la protection des droits des personnes handicapées au Cameroun",
+   "dossier": "A_cameroun/05_handicap_inclusion",
+   "axes": [
+    "E1"
+   ],
+   "autorite": "CVUC / MINAS",
+   "date": "2020",
+   "type": "recueil",
+   "langue": "fr",
+   "urls": [
+    "https://cvuc-uccc.com/download/52/legislation-reglementation/6100/recueil-des-textes-juridiques-relatifs-a-la-promotion-et-la-protection-des-droits-des-personnes-handicapees-au-cameroun.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Ensemble des textes handicap (lois, décrets, arrêtés).",
+   "themes": [
+    "handicap"
+   ]
+  },
+  {
+   "id": "CM-HAND-SPM",
+   "titre": "Promotion des personnes handicapées — document des services du Premier ministre",
+   "dossier": "A_cameroun/05_handicap_inclusion",
+   "axes": [
+    "E1",
+    "E4"
+   ],
+   "autorite": "Services du Premier ministre",
+   "date": "2019",
+   "type": "document",
+   "langue": "fr",
+   "urls": [
+    "https://spm.gov.cm/site/sites/default/files/promotion%20personnes%20handicap%C3%A9es.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Engagements du gouvernement en faveur des personnes handicapées.",
+   "themes": [
+    "handicap"
+   ]
+  },
+  {
+   "id": "UN-DUDH-1948",
+   "titre": "Déclaration universelle des droits de l'homme",
+   "dossier": "B_international/01_onu_droits_humains",
+   "axes": [
+    "E5"
+   ],
+   "autorite": "Assemblée générale des Nations Unies",
+   "date": "1948-12-10",
+   "type": "declaration",
+   "langue": "fr",
+   "urls": [
+    "https://www.ohchr.org/sites/default/files/UDHR/Documents/UDHR_Translations/frn.pdf"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Dignité, égalité, vie privée (art. 12), santé (art. 25).",
+   "themes": [
+    "droits"
+   ]
+  },
+  {
+   "id": "UN-PIDESC-1966",
+   "titre": "Pacte international relatif aux droits économiques, sociaux et culturels",
+   "dossier": "B_international/01_onu_droits_humains",
+   "axes": [
+    "E5"
+   ],
+   "autorite": "Assemblée générale des Nations Unies",
+   "date": "1966-12-16",
+   "type": "traite",
+   "langue": "fr/en",
+   "urls": [
+    "https://www.ohchr.org/fr/instruments-mechanisms/instruments/international-covenant-economic-social-and-cultural-rights",
+    "https://www.ohchr.org/en/instruments-mechanisms/instruments/international-covenant-economic-social-and-cultural-rights"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Article 12 : droit au meilleur état de santé possible.",
+   "themes": [
+    "droits",
+    "sante"
+   ]
+  },
+  {
+   "id": "UN-CESCR-OG14-2000",
+   "titre": "Observation générale n° 14 (2000) : le droit au meilleur état de santé susceptible d'être atteint (E/C.12/2000/4)",
+   "dossier": "B_international/01_onu_droits_humains",
+   "axes": [
+    "E5"
+   ],
+   "autorite": "Comité des droits économiques, sociaux et culturels",
+   "date": "2000-08-11",
+   "type": "observation_generale",
+   "langue": "en",
+   "urls": [
+    "https://digitallibrary.un.org/record/425041/files/E_C.12_2000_4-EN.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Disponibilité, accessibilité (dont l'information), acceptabilité, qualité des soins.",
+   "themes": [
+    "droits",
+    "sante",
+    "acces"
+   ]
+  },
+  {
+   "id": "UN-PIDCP-1966",
+   "titre": "Pacte international relatif aux droits civils et politiques",
+   "dossier": "B_international/01_onu_droits_humains",
+   "axes": [
+    "E5"
+   ],
+   "autorite": "Assemblée générale des Nations Unies",
+   "date": "1966-12-16",
+   "type": "traite",
+   "langue": "fr/en",
+   "urls": [
+    "https://www.ohchr.org/fr/instruments-mechanisms/instruments/international-covenant-civil-and-political-rights",
+    "https://www.ohchr.org/en/instruments-mechanisms/instruments/international-covenant-civil-and-political-rights"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Article 17 : vie privée ; article 19 : liberté d'information.",
+   "themes": [
+    "droits",
+    "donnees"
+   ]
+  },
+  {
+   "id": "UN-CRPD-2006",
+   "titre": "Convention relative aux droits des personnes handicapées et protocole facultatif",
+   "dossier": "B_international/01_onu_droits_humains",
+   "axes": [
+    "E5"
+   ],
+   "autorite": "Assemblée générale des Nations Unies",
+   "date": "2006-12-13",
+   "type": "traite",
+   "langue": "fr/en",
+   "urls": [
+    "https://www.ohchr.org/fr/instruments-mechanisms/instruments/convention-rights-persons-disabilities",
+    "https://www.ohchr.org/en/instruments-mechanisms/instruments/convention-rights-persons-disabilities",
+    "https://social.desa.un.org/issues/disability/crpd/convention-on-the-rights-of-persons-with-disabilities-articles"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Art. 9 accessibilité, 21 communication (langues des signes, pictogrammes), 25 santé.",
+   "themes": [
+    "handicap",
+    "droits",
+    "sante"
+   ]
+  },
+  {
+   "id": "UN-CRC-1989",
+   "titre": "Convention relative aux droits de l'enfant",
+   "dossier": "B_international/01_onu_droits_humains",
+   "axes": [
+    "E5"
+   ],
+   "autorite": "Assemblée générale des Nations Unies",
+   "date": "1989-11-20",
+   "type": "traite",
+   "langue": "fr/en",
+   "urls": [
+    "https://www.ohchr.org/fr/instruments-mechanisms/instruments/convention-rights-child",
+    "https://www.ohchr.org/en/instruments-mechanisms/instruments/convention-rights-child"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Art. 24 santé de l'enfant ; art. 23 enfant handicapé.",
+   "themes": [
+    "droits",
+    "sante",
+    "enfant"
+   ]
+  },
+  {
+   "id": "UN-CEDAW-1979",
+   "titre": "Convention sur l'élimination de toutes les formes de discrimination à l'égard des femmes",
+   "dossier": "B_international/01_onu_droits_humains",
+   "axes": [
+    "E5"
+   ],
+   "autorite": "Assemblée générale des Nations Unies",
+   "date": "1979-12-18",
+   "type": "traite",
+   "langue": "fr/en",
+   "urls": [
+    "https://www.ohchr.org/fr/instruments-mechanisms/instruments/convention-elimination-all-forms-discrimination-against-women",
+    "https://www.ohchr.org/en/instruments-mechanisms/instruments/convention-elimination-all-forms-discrimination-against-women"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Art. 12 : accès des femmes aux soins, dont la santé reproductive.",
+   "themes": [
+    "droits",
+    "sante"
+   ]
+  },
+  {
+   "id": "UN-DISINCL-2019",
+   "titre": "Stratégie des Nations Unies pour l'inclusion du handicap",
+   "dossier": "B_international/01_onu_droits_humains",
+   "axes": [
+    "E5"
+   ],
+   "autorite": "Nations Unies",
+   "date": "2019",
+   "type": "strategie",
+   "langue": "en",
+   "urls": [
+    "https://www.un.org/en/disabilitystrategy/"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Bonnes pratiques d'inclusion et d'accessibilité.",
+   "themes": [
+    "handicap"
+   ]
+  },
+  {
+   "id": "UN-AG-78-265-EN",
+   "titre": "Résolution A/RES/78/265 : Saisir les possibilités offertes par des systèmes d'IA sûrs, sécurisés et dignes de confiance",
+   "dossier": "B_international/02_ia_ethique_gouvernance",
+   "axes": [
+    "E2",
+    "E5"
+   ],
+   "autorite": "Assemblée générale des Nations Unies",
+   "date": "2024-03-21",
+   "type": "resolution",
+   "langue": "en",
+   "urls": [
+    "https://digitallibrary.un.org/record/4043244/files/A_RES_78_265-EN.pdf?version=1",
+    "https://digitallibrary.un.org/record/4043244/files/A_RES_78_265-EN.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Premier consensus mondial sur l'IA sûre et respectueuse des droits ; cite la santé.",
+   "themes": [
+    "ia",
+    "droits"
+   ],
+   "page": "https://digitallibrary.un.org/record/4043244"
+  },
+  {
+   "id": "UN-AG-78-265-FR",
+   "titre": "Résolution A/RES/78/265 (version française)",
+   "dossier": "B_international/02_ia_ethique_gouvernance",
+   "axes": [
+    "E2",
+    "E5"
+   ],
+   "autorite": "Assemblée générale des Nations Unies",
+   "date": "2024-03-21",
+   "type": "resolution",
+   "langue": "fr",
+   "urls": [
+    "https://digitallibrary.un.org/record/4043244/files/A_RES_78_265-FR.pdf"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Version française de la résolution.",
+   "themes": [
+    "ia",
+    "droits"
+   ],
+   "page": "https://digitallibrary.un.org/record/4043244?ln=fr"
+  },
+  {
+   "id": "UN-GDC-2024",
+   "titre": "Pacte numérique mondial (Global Digital Compact), annexe du Pacte pour l'avenir",
+   "dossier": "B_international/02_ia_ethique_gouvernance",
+   "axes": [
+    "E2",
+    "E3",
+    "E5"
+   ],
+   "autorite": "Assemblée générale des Nations Unies",
+   "date": "2024-09-22",
+   "type": "engagement",
+   "langue": "en",
+   "urls": [
+    "https://www.un.org/global-digital-compact/sites/default/files/2024-09/Global%20Digital%20Compact%20-%20English_0.pdf"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Engagements sur l'inclusion numérique, les données et la gouvernance de l'IA.",
+   "themes": [
+    "ia",
+    "numerique",
+    "donnees"
+   ],
+   "page": "https://www.un.org/techenvoy/global-digital-compact"
+  },
+  {
+   "id": "UN-HLAB-2024",
+   "titre": "Governing AI for Humanity — rapport final de l'Organe consultatif de haut niveau sur l'IA",
+   "dossier": "B_international/02_ia_ethique_gouvernance",
+   "axes": [
+    "E2",
+    "E5"
+   ],
+   "autorite": "Nations Unies, Organe consultatif sur l'IA",
+   "date": "2024-09",
+   "type": "rapport",
+   "langue": "en",
+   "urls": [],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Recommandations mondiales de gouvernance de l'IA (lacunes de gouvernance, inclusion).",
+   "themes": [
+    "ia"
+   ],
+   "page": "https://digitallibrary.un.org/record/4062495"
+  },
+  {
+   "id": "UNESCO-AI-2021",
+   "titre": "Recommandation sur l'éthique de l'intelligence artificielle",
+   "dossier": "B_international/02_ia_ethique_gouvernance",
+   "axes": [
+    "E2",
+    "E5"
+   ],
+   "autorite": "UNESCO",
+   "date": "2021-11-23",
+   "type": "recommandation",
+   "langue": "fr/en",
+   "urls": [],
+   "verification": "a_confirmer",
+   "utilite": "Valeurs et principes ; domaine santé ; supervision humaine.",
+   "themes": [
+    "ia",
+    "ethique"
+   ],
+   "note": "Si la page UNESDOC ne livre pas le PDF automatiquement, l'enregistrer depuis le navigateur dans entrees_manuelles/UNESCO-AI-2021.pdf.",
+   "page": "https://unesdoc.unesco.org/ark:/48223/pf0000381137"
+  },
+  {
+   "id": "OECD-AI-2019",
+   "titre": "Recommandation du Conseil sur l'intelligence artificielle (principes de l'OCDE sur l'IA, révisés en 2024)",
+   "dossier": "B_international/02_ia_ethique_gouvernance",
+   "axes": [
+    "E2",
+    "E5"
+   ],
+   "autorite": "OCDE",
+   "date": "2019-05-22",
+   "type": "recommandation",
+   "langue": "en",
+   "urls": [
+    "https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0449"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Principes de référence (transparence, robustesse, responsabilité).",
+   "themes": [
+    "ia"
+   ]
+  },
+  {
+   "id": "COE-CETS225-2024",
+   "titre": "Convention-cadre du Conseil de l'Europe sur l'IA et les droits de l'homme, la démocratie et l'État de droit (STCE n° 225)",
+   "dossier": "B_international/02_ia_ethique_gouvernance",
+   "axes": [
+    "E2",
+    "E5"
+   ],
+   "autorite": "Conseil de l'Europe",
+   "date": "2024-09-05",
+   "type": "traite",
+   "langue": "en",
+   "urls": [
+    "https://rm.coe.int/1680afae67"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Premier traité international sur l'IA, ouvert aux États non européens.",
+   "themes": [
+    "ia",
+    "droits"
+   ]
+  },
+  {
+   "id": "EU-AIA-2024",
+   "titre": "Règlement (UE) 2024/1689 sur l'intelligence artificielle",
+   "dossier": "B_international/02_ia_ethique_gouvernance",
+   "axes": [
+    "E2"
+   ],
+   "autorite": "Union européenne",
+   "date": "2024-06-13",
+   "type": "reglement",
+   "langue": "fr",
+   "urls": [
+    "https://eur-lex.europa.eu/legal-content/FR/TXT/PDF/?uri=OJ:L_202401689"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Exemple mondial : classement à haut risque des dispositifs médicaux à IA, journalisation (art. 12).",
+   "themes": [
+    "ia",
+    "sante"
+   ]
+  },
+  {
+   "id": "NIST-AIRMF-2023",
+   "titre": "Artificial Intelligence Risk Management Framework (AI RMF 1.0)",
+   "dossier": "B_international/02_ia_ethique_gouvernance",
+   "axes": [
+    "E2"
+   ],
+   "autorite": "NIST (États-Unis)",
+   "date": "2023-01",
+   "type": "norme",
+   "langue": "en",
+   "urls": [
+    "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Méthode de gestion des risques de l'IA (gouverner, cartographier, mesurer, gérer).",
+   "themes": [
+    "ia",
+    "risques"
+   ]
+  },
+  {
+   "id": "WHO-AI-2021",
+   "titre": "Ethics and governance of artificial intelligence for health",
+   "dossier": "B_international/03_oms_sante_numerique",
+   "axes": [
+    "E2",
+    "E5"
+   ],
+   "autorite": "OMS",
+   "date": "2021-06-28",
+   "type": "orientation",
+   "langue": "en",
+   "urls": [],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Six principes de l'OMS pour l'IA en santé.",
+   "themes": [
+    "ia",
+    "sante",
+    "ethique"
+   ],
+   "page": "https://www.who.int/publications/i/item/9789240029200"
+  },
+  {
+   "id": "WHO-LMM-2024",
+   "titre": "Ethics and governance of AI for health: guidance on large multi-modal models",
+   "dossier": "B_international/03_oms_sante_numerique",
+   "axes": [
+    "E2",
+    "E5"
+   ],
+   "autorite": "OMS",
+   "date": "2024-01-18",
+   "type": "orientation",
+   "langue": "en",
+   "urls": [],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Règles pour les grands modèles comme celui de l'assistant médical.",
+   "themes": [
+    "ia",
+    "sante"
+   ],
+   "page": "https://www.who.int/publications/i/item/9789240084759"
+  },
+  {
+   "id": "WHO-REG-AI-2023",
+   "titre": "Regulatory considerations on artificial intelligence for health",
+   "dossier": "B_international/03_oms_sante_numerique",
+   "axes": [
+    "E2",
+    "E4"
+   ],
+   "autorite": "OMS",
+   "date": "2023-10",
+   "type": "orientation",
+   "langue": "en",
+   "urls": [],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Documentation, gestion des risques, validation, qualité des données.",
+   "themes": [
+    "ia",
+    "sante",
+    "regulation"
+   ],
+   "page": "https://iris.who.int/items/21da9dd6-f2b7-441f-823d-2f34fb1f39ea"
+  },
+  {
+   "id": "WHO-GSDH-2020",
+   "titre": "Global strategy on digital health 2020-2025",
+   "dossier": "B_international/03_oms_sante_numerique",
+   "axes": [
+    "E2",
+    "E5"
+   ],
+   "autorite": "OMS",
+   "date": "2021",
+   "type": "strategie",
+   "langue": "en",
+   "urls": [
+    "https://www.itu.int/net4/wsis/forum/2023/Files/View/DOC/fe2c52a0a1c2ed11914cd067e5f879f3/global_strategy_on_digital_health_2020-2025.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Stratégie mondiale de santé numérique.",
+   "themes": [
+    "sante",
+    "numerique"
+   ],
+   "page": "https://www.who.int/publications/i/item/9789240020924"
+  },
+  {
+   "id": "WHO-AFRO-DH-2021",
+   "titre": "Framework for implementing the global strategy on digital health in the WHO African Region (AFR/RC71/10)",
+   "dossier": "B_international/03_oms_sante_numerique",
+   "axes": [
+    "E2",
+    "E5"
+   ],
+   "autorite": "OMS, Bureau régional de l'Afrique",
+   "date": "2021",
+   "type": "strategie",
+   "langue": "en",
+   "urls": [
+    "https://www.afro.who.int/sites/default/files/2021-11/AFR-RC71-10%20Framework%20for%20implementing%20the%20Global%20strategy%20on%20digital%20health%20in%20the%20WHO%20African%20Region.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Déclinaison africaine de la stratégie numérique (cible le Cameroun).",
+   "themes": [
+    "sante",
+    "numerique",
+    "afrique"
+   ]
+  },
+  {
+   "id": "WHO-IHR-2005",
+   "titre": "Règlement sanitaire international (2005), 3e édition",
+   "dossier": "B_international/03_oms_sante_numerique",
+   "axes": [
+    "E1",
+    "E5"
+   ],
+   "autorite": "OMS",
+   "date": "2005",
+   "type": "reglement",
+   "langue": "en",
+   "urls": [
+    "https://apps.who.int/gb/bd/pdf_files/IHR_2022-en.pdf"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Notification des maladies à potentiel épidémique (alertes du coordinateur).",
+   "themes": [
+    "sante",
+    "surveillance"
+   ]
+  },
+  {
+   "id": "WHO-HEAR-2021",
+   "titre": "World report on hearing",
+   "dossier": "B_international/04_handicap_accessibilite",
+   "axes": [
+    "E5"
+   ],
+   "autorite": "OMS",
+   "date": "2021-03-03",
+   "type": "rapport",
+   "langue": "en",
+   "urls": [
+    "https://wfdeaf.org/wp-content/uploads/9789240020481-eng.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Chiffres et recommandations sur la surdité : justification du projet.",
+   "themes": [
+    "handicap",
+    "sante"
+   ],
+   "page": "https://www.who.int/publications/i/item/9789240020481"
+  },
+  {
+   "id": "WHO-HEQ-DIS-2022",
+   "titre": "Global report on health equity for persons with disabilities",
+   "dossier": "B_international/04_handicap_accessibilite",
+   "axes": [
+    "E5"
+   ],
+   "autorite": "OMS",
+   "date": "2022-12-02",
+   "type": "rapport",
+   "langue": "en",
+   "urls": [
+    "https://digitallibrary.un.org/record/3998942/files/9789240063600-eng.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Obstacles à l'accès aux soins des personnes handicapées et actions recommandées.",
+   "themes": [
+    "handicap",
+    "sante",
+    "acces"
+   ]
+  },
+  {
+   "id": "EU-RGPD-2016",
+   "titre": "Règlement (UE) 2016/679 — règlement général sur la protection des données",
+   "dossier": "B_international/05_protection_donnees",
+   "axes": [
+    "E3"
+   ],
+   "autorite": "Union européenne",
+   "date": "2016-04-27",
+   "type": "reglement",
+   "langue": "fr",
+   "urls": [
+    "https://eur-lex.europa.eu/legal-content/FR/TXT/PDF/?uri=CELEX:32016R0679"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Exemple mondial : données de santé (art. 9), décision automatisée (art. 22).",
+   "themes": [
+    "donnees",
+    "sante"
+   ]
+  },
+  {
+   "id": "COE-108PLUS-2018",
+   "titre": "Convention 108+ pour la protection des personnes à l'égard du traitement des données à caractère personnel",
+   "dossier": "B_international/05_protection_donnees",
+   "axes": [
+    "E3",
+    "E5"
+   ],
+   "autorite": "Conseil de l'Europe",
+   "date": "2018",
+   "type": "traite",
+   "langue": "en",
+   "urls": [
+    "https://rm.coe.int/convention-108-convention-for-the-protection-of-individuals-with-regar/16808b36f1"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Seul traité de protection des données ouvert aux États africains.",
+   "themes": [
+    "donnees"
+   ]
+  },
+  {
+   "id": "OECD-HDG-2016",
+   "titre": "Recommandation du Conseil sur la gouvernance des données de santé",
+   "dossier": "B_international/05_protection_donnees",
+   "axes": [
+    "E3"
+   ],
+   "autorite": "OCDE",
+   "date": "2016-12-13",
+   "type": "recommandation",
+   "langue": "en",
+   "urls": [
+    "https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0433"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Bonnes pratiques de gouvernance des données de santé.",
+   "themes": [
+    "donnees",
+    "sante"
+   ]
+  },
+  {
+   "id": "WMA-HELSINKI-2024",
+   "titre": "Déclaration d'Helsinki de l'AMM — principes éthiques applicables à la recherche médicale (révision 2024)",
+   "dossier": "B_international/06_ethique_medicale",
+   "axes": [
+    "E5"
+   ],
+   "autorite": "Association médicale mondiale",
+   "date": "2024-10",
+   "type": "declaration",
+   "langue": "en",
+   "urls": [
+    "https://www.wma.net/policies-post/wma-declaration-of-helsinki/"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Consentement éclairé, protection des personnes vulnérables (pour les tests du système).",
+   "themes": [
+    "ethique",
+    "consentement"
+   ]
+  },
+  {
+   "id": "WMA-LISBONNE",
+   "titre": "Déclaration de Lisbonne de l'AMM sur les droits du patient",
+   "dossier": "B_international/06_ethique_medicale",
+   "axes": [
+    "E5"
+   ],
+   "autorite": "Association médicale mondiale",
+   "date": "2015",
+   "type": "declaration",
+   "langue": "en",
+   "urls": [
+    "https://www.wma.net/policies-post/wma-declaration-of-lisbon-on-the-rights-of-the-patient/"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Droit à l'information, au consentement, à la confidentialité, à un interprète.",
+   "themes": [
+    "droits",
+    "consentement"
+   ]
+  },
+  {
+   "id": "UNESCO-BIOETH-2005",
+   "titre": "Déclaration universelle sur la bioéthique et les droits de l'homme",
+   "dossier": "B_international/06_ethique_medicale",
+   "axes": [
+    "E5"
+   ],
+   "autorite": "UNESCO",
+   "date": "2005-10-19",
+   "type": "declaration",
+   "langue": "fr/en",
+   "urls": [],
+   "verification": "a_confirmer",
+   "utilite": "Autonomie, consentement, vie privée, non-discrimination.",
+   "themes": [
+    "ethique"
+   ],
+   "page": "https://unesdoc.unesco.org/ark:/48223/pf0000146180"
+  },
+  {
+   "id": "ITU-Y3172-2019",
+   "titre": "Recommandation UIT-T Y.3172 : architecture de l'apprentissage automatique dans les réseaux futurs",
+   "dossier": "B_international/07_normes_uit",
+   "axes": [
+    "E2",
+    "E6"
+   ],
+   "autorite": "UIT-T",
+   "date": "2019-06",
+   "type": "norme",
+   "langue": "en",
+   "urls": [],
+   "verification": "a_confirmer",
+   "utilite": "Architecture de référence exigée par le hackathon (pipeline, orchestrateur, bac à sable).",
+   "themes": [
+    "ia",
+    "architecture"
+   ],
+   "page": "https://www.itu.int/rec/T-REC-Y.3172-201906-I/en"
+  },
+  {
+   "id": "ITU-AIR-2026",
+   "titre": "AI readiness — cadre de préparation à l'IA (AI for Good)",
+   "dossier": "B_international/07_normes_uit",
+   "axes": [
+    "E2",
+    "E5"
+   ],
+   "autorite": "UIT",
+   "date": "2025",
+   "type": "rapport",
+   "langue": "en",
+   "urls": [
+    "https://www.itu.int/dms_pub/itu-t/opb/ai4g/T-AI4G-AI4GOOD-2025-6-PDF-E.pdf"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Grille de préparation à l'IA demandée par le hackathon.",
+   "themes": [
+    "ia"
+   ]
+  },
+  {
+   "id": "AU-MALABO-2014",
+   "titre": "Convention de l'Union africaine sur la cybersécurité et la protection des données à caractère personnel (Malabo)",
+   "dossier": "C_afrique_regional/01_numerique_donnees",
+   "axes": [
+    "E2",
+    "E3",
+    "E5"
+   ],
+   "autorite": "Union africaine",
+   "date": "2014-06-27",
+   "type": "traite",
+   "langue": "en",
+   "urls": [
+    "https://au.int/sites/default/files/treaties/29560-treaty-0048_-_african_union_convention_on_cyber_security_and_personal_data_protection_e.pdf"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Cadre africain de protection des données et de cybersécurité.",
+   "themes": [
+    "donnees",
+    "cybersecurite",
+    "afrique"
+   ],
+   "page": "https://au.int/en/treaties/african-union-convention-cyber-security-and-personal-data-protection"
+  },
+  {
+   "id": "AU-DPF-2022",
+   "titre": "Cadre de politique des données de l'Union africaine",
+   "dossier": "C_afrique_regional/01_numerique_donnees",
+   "axes": [
+    "E3",
+    "E5"
+   ],
+   "autorite": "Union africaine",
+   "date": "2022-02",
+   "type": "strategie",
+   "langue": "en",
+   "urls": [],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Gouvernance et circulation des données en Afrique.",
+   "themes": [
+    "donnees",
+    "afrique"
+   ],
+   "page": "https://au.int/en/node/42078"
+  },
+  {
+   "id": "AU-DTS-2020",
+   "titre": "Stratégie de transformation numérique pour l'Afrique 2020-2030",
+   "dossier": "C_afrique_regional/01_numerique_donnees",
+   "axes": [
+    "E2",
+    "E5",
+    "E6"
+   ],
+   "autorite": "Union africaine",
+   "date": "2020",
+   "type": "strategie",
+   "langue": "en",
+   "urls": [
+    "https://au.int/sites/default/files/documents/38507-doc-dts-english.pdf"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Santé numérique et infrastructures dans la stratégie continentale.",
+   "themes": [
+    "numerique",
+    "afrique",
+    "infrastructure"
+   ]
+  },
+  {
+   "id": "AU-AI-2024",
+   "titre": "Stratégie continentale de l'Union africaine sur l'intelligence artificielle",
+   "dossier": "C_afrique_regional/02_ia",
+   "axes": [
+    "E2",
+    "E5"
+   ],
+   "autorite": "Union africaine",
+   "date": "2024-07",
+   "type": "strategie",
+   "langue": "en",
+   "urls": [],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Priorités africaines pour l'IA, dont la santé.",
+   "themes": [
+    "ia",
+    "afrique"
+   ],
+   "page": "https://au.int/en/node/44004"
+  },
+  {
+   "id": "AU-CADHP-1981",
+   "titre": "Charte africaine des droits de l'homme et des peuples",
+   "dossier": "C_afrique_regional/03_droits_handicap",
+   "axes": [
+    "E5"
+   ],
+   "autorite": "Union africaine (OUA)",
+   "date": "1981-06-27",
+   "type": "traite",
+   "langue": "fr/en",
+   "urls": [
+    "https://achpr.au.int/fr/charter/african-charter-human-and-peoples-rights",
+    "https://achpr.au.int/en/charter/african-charter-human-and-peoples-rights"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Art. 16 : droit à la santé ; art. 18 : protection des personnes handicapées.",
+   "themes": [
+    "droits",
+    "sante",
+    "afrique"
+   ]
+  },
+  {
+   "id": "AU-PROT-HAND-2018",
+   "titre": "Protocole à la Charte africaine relatif aux droits des personnes handicapées en Afrique",
+   "dossier": "C_afrique_regional/03_droits_handicap",
+   "axes": [
+    "E5"
+   ],
+   "autorite": "Union africaine",
+   "date": "2018-01-29",
+   "type": "traite",
+   "langue": "en",
+   "urls": [
+    "https://achpr.au.int/sites/default/files/files/2022-08/disabilityprotocol.pdf"
+   ],
+   "verification": "verifie_web_2026-11-02",
+   "utilite": "Accès à la santé et à la communication des personnes handicapées en Afrique.",
+   "themes": [
+    "handicap",
+    "afrique"
+   ]
+  },
+  {
+   "id": "AE-PDPL-2021",
+   "titre": "Décret-loi fédéral n° 45 de 2021 sur la protection des données personnelles",
+   "dossier": "D_emirats_pays_hote/",
+   "axes": [
+    "E3"
+   ],
+   "autorite": "Émirats arabes unis",
+   "date": "2021",
+   "type": "loi",
+   "langue": "en",
+   "urls": [
+    "https://uaelegislation.gov.ae/en/legislations/1972"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Protection des données (texte arabe faisant foi).",
+   "themes": [
+    "donnees"
+   ]
+  },
+  {
+   "id": "AE-ICT-2019",
+   "titre": "Loi fédérale n° 2 de 2019 sur l'usage des TIC dans les domaines de la santé",
+   "dossier": "D_emirats_pays_hote/",
+   "axes": [
+    "E1",
+    "E2",
+    "E3"
+   ],
+   "autorite": "Émirats arabes unis",
+   "date": "2019",
+   "type": "loi",
+   "langue": "en",
+   "urls": [
+    "https://uaelegislation.gov.ae/en/legislations/1209"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Données de santé, dossier électronique, localisation des données.",
+   "themes": [
+    "sante",
+    "donnees"
+   ]
+  },
+  {
+   "id": "AE-ML-2016",
+   "titre": "Loi fédérale n° 4 de 2016 sur la responsabilité médicale",
+   "dossier": "D_emirats_pays_hote/",
+   "axes": [
+    "E1"
+   ],
+   "autorite": "Émirats arabes unis",
+   "date": "2016",
+   "type": "loi",
+   "langue": "en",
+   "urls": [
+    "https://uaelegislation.gov.ae/en/legislations/1192"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Responsabilité du médecin et consentement.",
+   "themes": [
+    "sante",
+    "responsabilite"
+   ]
+  },
+  {
+   "id": "AE-MP-2024",
+   "titre": "Décret-loi fédéral de 2024 sur les produits médicaux, la pharmacie et les établissements pharmaceutiques",
+   "dossier": "D_emirats_pays_hote/",
+   "axes": [
+    "E1"
+   ],
+   "autorite": "Émirats arabes unis",
+   "date": "2024",
+   "type": "loi",
+   "langue": "en",
+   "urls": [
+    "https://uaelegislation.gov.ae/en/legislations/2751"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Logiciels dispositifs médicaux et médicaments.",
+   "themes": [
+    "sante",
+    "medicament"
+   ]
+  },
+  {
+   "id": "AE-POD-2006",
+   "titre": "Loi fédérale n° 29 de 2006 sur les droits des personnes handicapées",
+   "dossier": "D_emirats_pays_hote/",
+   "axes": [
+    "E1"
+   ],
+   "autorite": "Émirats arabes unis",
+   "date": "2006",
+   "type": "loi",
+   "langue": "en",
+   "urls": [
+    "https://elaws.moj.gov.ae/UAE-MOJ_LC-En/00_SOCIAL%20WELFARE/UAE-LC-En_2006-08-13_00029_Kait.html"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Droit d'accès aux soins et à l'information des personnes handicapées.",
+   "themes": [
+    "handicap"
+   ]
+  },
+  {
+   "id": "AE-RES51-2021",
+   "titre": "Décision ministérielle n° 51 de 2021 : cas où les données de santé peuvent être stockées hors du pays",
+   "dossier": "D_emirats_pays_hote/",
+   "axes": [
+    "E3"
+   ],
+   "autorite": "Ministère de la Santé (MOHAP)",
+   "date": "2021",
+   "type": "decision",
+   "langue": "en",
+   "urls": [
+    "https://mohap.gov.ae/en/w/ministerial-decree-no.-51-of-the-year-2021-regarding-cases-in-which-health-data-and-information-may-be-stored-or-transferred-outside-the-country"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Localisation des données de santé.",
+   "themes": [
+    "donnees",
+    "sante"
+   ]
+  },
+  {
+   "id": "AE-NSAI-2031",
+   "titre": "Stratégie nationale des Émirats pour l'intelligence artificielle 2031",
+   "dossier": "D_emirats_pays_hote/",
+   "axes": [
+    "E2"
+   ],
+   "autorite": "Gouvernement des Émirats",
+   "date": "2018",
+   "type": "strategie",
+   "langue": "en",
+   "urls": [
+    "https://u.ae/-/media/AI-publications/UAE-National-Strategy-for-Artificial-Intelligence-2031.pdf"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Stratégie IA du pays hôte.",
+   "themes": [
+    "ia"
+   ]
+  },
+  {
+   "id": "AE-CHARTER-2024",
+   "titre": "Charte des Émirats pour le développement et l'usage de l'IA",
+   "dossier": "D_emirats_pays_hote/",
+   "axes": [
+    "E2"
+   ],
+   "autorite": "Bureau de l'IA des Émirats",
+   "date": "2024-07",
+   "type": "charte",
+   "langue": "en",
+   "urls": [
+    "https://ai.gov.ae/wp-content/uploads/2024/07/UAEAI-Methaq-EN2-3.pdf"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Douze principes, dont supervision humaine et protection des données.",
+   "themes": [
+    "ia",
+    "ethique"
+   ]
+  },
+  {
+   "id": "AE-DOH-AI-2018",
+   "titre": "Politique du Département de la santé d'Abou Dabi sur l'IA",
+   "dossier": "D_emirats_pays_hote/",
+   "axes": [
+    "E2"
+   ],
+   "autorite": "DOH Abou Dabi",
+   "date": "2018",
+   "type": "politique",
+   "langue": "en",
+   "urls": [
+    "https://www.doh.gov.ae/-/media/E9C1470A575146B18015DEBE57E47F8D.ashx"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Exigences d'IA en santé (Abou Dabi).",
+   "themes": [
+    "ia",
+    "sante"
+   ]
+  },
+  {
+   "id": "AE-DOH-RAI-2025",
+   "titre": "Norme d'IA responsable du DOH Abou Dabi",
+   "dossier": "D_emirats_pays_hote/",
+   "axes": [
+    "E2"
+   ],
+   "autorite": "DOH Abou Dabi",
+   "date": "2025",
+   "type": "norme",
+   "langue": "en",
+   "urls": [
+    "https://www.doh.gov.ae/-/media/B84FF5DD027846699C51F36C439A580F.ashx"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Gouvernance de l'IA clinique.",
+   "themes": [
+    "ia",
+    "sante"
+   ]
+  },
+  {
+   "id": "AE-DHA-AI-2021",
+   "titre": "Politique de la Dubai Health Authority sur l'IA",
+   "dossier": "D_emirats_pays_hote/",
+   "axes": [
+    "E2"
+   ],
+   "autorite": "Dubai Health Authority",
+   "date": "2021",
+   "type": "politique",
+   "langue": "en",
+   "urls": [
+    "https://www.dha.gov.ae/uploads/082022/Artificial%20Intelligence%20Policy20228457.pdf"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Exigences d'IA en santé (Dubaï).",
+   "themes": [
+    "ia",
+    "sante"
+   ]
+  },
+  {
+   "id": "AE-DHA-TH-2023",
+   "titre": "Normes de la DHA pour les services de télésanté",
+   "dossier": "D_emirats_pays_hote/",
+   "axes": [
+    "E1",
+    "E2"
+   ],
+   "autorite": "Dubai Health Authority",
+   "date": "2023",
+   "type": "norme",
+   "langue": "en",
+   "urls": [
+    "https://dha.gov.ae/uploads/012023/Standards%20for%20Telehealth%20Services2023158613.pdf"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Téléconsultation à Dubaï.",
+   "themes": [
+    "sante",
+    "numerique"
+   ]
+  },
+  {
+   "id": "AE-DOH-TM-2020",
+   "titre": "Norme de télémédecine du DOH Abou Dabi",
+   "dossier": "D_emirats_pays_hote/",
+   "axes": [
+    "E1",
+    "E2"
+   ],
+   "autorite": "DOH Abou Dabi",
+   "date": "2020",
+   "type": "norme",
+   "langue": "en",
+   "urls": [
+    "https://www.doh.gov.ae/-/media/Feature/Resources/Standards/Telemedicine-Standard-Final-with-Appendices.ashx"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Téléconsultation à Abou Dabi.",
+   "themes": [
+    "sante",
+    "numerique"
+   ]
+  },
+  {
+   "id": "AE-CRPD-REPORT",
+   "titre": "Rapport initial des Émirats au Comité des droits des personnes handicapées (CRPD/C/ARE/1)",
+   "dossier": "D_emirats_pays_hote/",
+   "axes": [
+    "E5"
+   ],
+   "autorite": "Émirats arabes unis / ONU",
+   "date": "2015",
+   "type": "rapport",
+   "langue": "en",
+   "urls": [
+    "https://digitallibrary.un.org/record/811055/files/CRPD_C_ARE_1-EN.pdf"
+   ],
+   "verification": "a_confirmer",
+   "utilite": "Engagement multilatéral du pays hôte sur le handicap.",
+   "themes": [
+    "handicap"
+   ]
+  },
+  {
+   "id": "US-DM-TRAMADOL",
+   "titre": "Tramadol hydrochloride tablets — prescribing information (FDA, DailyMed)",
+   "dossier": "B_international/09_securite_medicaments",
+   "axes": [
+    "E1"
+   ],
+   "autorite": "U.S. Food and Drug Administration",
+   "date": "2021-03",
+   "type": "notice",
+   "langue": "en",
+   "urls": [
+    "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=de66ea8a-f320-483d-a429-724c9b65994e"
+   ],
+   "verification": "verifie_web_2026-11-06",
+   "utilite": "Grossesse, enfants et adolescents, dose maximale (400 mg/j) : fonde les contre-indications du juriste.",
+   "themes": [
+    "sante",
+    "medicaments",
+    "securite"
+   ],
+   "note": "Référence clinique étrangère : à remplacer par la notice de l'Emirates Drug Establishment pour un déploiement."
+  },
+  {
+   "id": "US-DM-METFORMIN",
+   "titre": "Metformin hydrochloride tablets — prescribing information (FDA, DailyMed)",
+   "dossier": "B_international/09_securite_medicaments",
+   "axes": [
+    "E1"
+   ],
+   "autorite": "U.S. Food and Drug Administration",
+   "date": "2026-06",
+   "type": "notice",
+   "langue": "en",
+   "urls": [
+    "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b8004451-7b26-425b-b5ea-cbb1b08e30e3"
+   ],
+   "verification": "verifie_web_2026-11-06",
+   "utilite": "Rein (DFG), foie, dose maximale adulte et enfant.",
+   "themes": [
+    "sante",
+    "medicaments",
+    "securite"
+   ],
+   "note": "Référence clinique étrangère : à remplacer par la notice de l'Emirates Drug Establishment pour un déploiement."
+  },
+  {
+   "id": "US-DM-AMOXICILLIN",
+   "titre": "Amoxicillin capsules — prescribing information (FDA, DailyMed)",
+   "dossier": "B_international/09_securite_medicaments",
+   "axes": [
+    "E1"
+   ],
+   "autorite": "U.S. Food and Drug Administration",
+   "date": "2024-01",
+   "type": "notice",
+   "langue": "en",
+   "urls": [
+    "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=7e3a4517-1934-4e03-b96b-4ad65ab076c5"
+   ],
+   "verification": "verifie_web_2026-11-06",
+   "utilite": "Allergie aux bêta-lactamines, insuffisance rénale, posologie de l'enfant.",
+   "themes": [
+    "sante",
+    "medicaments",
+    "securite"
+   ],
+   "note": "Référence clinique étrangère : à remplacer par la notice de l'Emirates Drug Establishment pour un déploiement."
+  },
+  {
+   "id": "US-FDA-NSAID-2020",
+   "titre": "FDA Drug Safety Communication: avoid NSAIDs in pregnancy at 20 weeks or later",
+   "dossier": "B_international/09_securite_medicaments",
+   "axes": [
+    "E1"
+   ],
+   "autorite": "U.S. Food and Drug Administration",
+   "date": "2020-10-15",
+   "type": "notice",
+   "langue": "en",
+   "urls": [
+    "https://www.fda.gov/safety/medical-product-safety-information/nonsteroidal-anti-inflammatory-drugs-nsaids-drug-safety-communication-avoid-use-nsaids-pregnancy-20"
+   ],
+   "verification": "verifie_web_2026-11-06",
+   "utilite": "AINS et grossesse ; cite le paracétamol comme alternative.",
+   "themes": [
+    "sante",
+    "medicaments",
+    "securite"
+   ],
+   "note": "Référence clinique étrangère : à remplacer par la notice de l'Emirates Drug Establishment pour un déploiement."
+  }
+ ]
+}

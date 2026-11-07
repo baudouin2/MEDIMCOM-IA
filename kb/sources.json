@@ -1,0 +1,978 @@
+{
+  "name": "MEDIMCOM IA knowledge base - source manifest",
+  "version": "1.0",
+  "checked_on": "2026-10-27",
+  "scope": "Host country (United Arab Emirates) primary sources for the jurist agent; global policy examples for the gap analysis; Cameroon texts as comparative material only.",
+  "verification_levels": {
+    "official_text": "Provision read on the official publisher's site (government portal, regulator, EU institution, UN body).",
+    "secondary_source": "Content confirmed only through a law-firm or press summary; obtain the official text before relying on it in production.",
+    "to_confirm": "Listed for completeness; content not yet read in full."
+  },
+  "warning": "English translations of UAE legislation are for information; the Arabic text prevails. Prototype knowledge base for a hackathon: not legal advice.",
+  "sources": [
+    {
+      "id": "AE-ML-2016",
+      "title": "Federal Decree-Law No. (4) of 2016 Concerning Medical Liability",
+      "short_title": "UAE Federal Decree-Law 4/2016 (Medical Liability)",
+      "type": "federal decree-law",
+      "jurisdiction": "AE (federal)",
+      "authority": "UAE Federal Government",
+      "date_issued": "2016-08-02",
+      "date_in_force": "2016-08-15",
+      "legal_status": "in force (amended once; consolidated English text consulted)",
+      "url": "https://uaelegislation.gov.ae/en/legislations/1192",
+      "download_url": "https://uaelegislation.gov.ae/en/legislations/1192/download",
+      "language": "en (Arabic prevails)",
+      "verification": "official_text",
+      "role": "primary",
+      "used_for": [
+        "prescription checks",
+        "consent",
+        "patient information duties",
+        "pregnancy safeguard"
+      ]
+    },
+    {
+      "id": "AE-ICT-2019",
+      "title": "Federal Law No. (2) of 2019 Concerning the Use of Information and Communication Technology in Health Fields",
+      "short_title": "UAE Federal Law 2/2019 (ICT in Health)",
+      "type": "federal law",
+      "jurisdiction": "AE (federal)",
+      "authority": "UAE Federal Government",
+      "date_issued": "2019-02-06",
+      "date_in_force": "three months after publication (Art. 31)",
+      "legal_status": "in force",
+      "url": "https://uaelegislation.gov.ae/en/legislations/1209",
+      "download_url": "https://uaelegislation.gov.ae/en/legislations/1209/download",
+      "language": "en (Arabic prevails)",
+      "verification": "official_text",
+      "role": "primary",
+      "used_for": [
+        "health data sharing",
+        "data localisation",
+        "retention",
+        "integrity of records"
+      ]
+    },
+    {
+      "id": "AE-RES51-2021",
+      "title": "Ministry of Health and Prevention Resolution No. (51) of 2021 on cases where health data may be stored or transferred outside the State",
+      "short_title": "MOHAP Resolution 51/2021",
+      "type": "ministerial resolution",
+      "jurisdiction": "AE (federal)",
+      "authority": "Ministry of Health and Prevention (MOHAP)",
+      "date_issued": "2021-04-28",
+      "date_in_force": "2021-05-16 (Official Gazette No. 702)",
+      "legal_status": "in force (per secondary source)",
+      "url": "https://mohap.gov.ae/en/w/ministerial-decree-no.-51-of-the-year-2021-regarding-cases-in-which-health-data-and-information-may-be-stored-or-transferred-outside-the-country",
+      "download_url": null,
+      "language": "en (summary)",
+      "verification": "secondary_source",
+      "role": "primary",
+      "used_for": [
+        "exceptions to health data localisation"
+      ],
+      "note": "Official MOHAP page identified (27 October 2026) but its content could not be read by our tools: content still known through Al Tamimi's summary; read the official text before production use."
+    },
+    {
+      "id": "AE-PDPL-2021",
+      "title": "Federal Decree-Law No. (45) of 2021 Concerning the Protection of Personal Data",
+      "short_title": "UAE Federal Decree-Law 45/2021 (PDPL)",
+      "type": "federal decree-law",
+      "jurisdiction": "AE (federal, outside financial free zones)",
+      "authority": "UAE Federal Government",
+      "date_issued": "2021-09-20",
+      "date_in_force": "2022-01-02",
+      "legal_status": "in force",
+      "url": "https://uaelegislation.gov.ae/en/legislations/1972",
+      "download_url": "https://uaelegislation.gov.ae/en/legislations/1972/download",
+      "language": "en (Arabic prevails)",
+      "verification": "official_text",
+      "role": "primary",
+      "used_for": [
+        "scope boundary with health data law",
+        "automated decisions",
+        "cross-border transfers of non-health personal data"
+      ]
+    },
+    {
+      "id": "AE-MP-2024",
+      "title": "Federal Decree-Law No. (38) of 2024 Governing Medical Products, Pharmacists and Pharmaceutical Establishments",
+      "short_title": "UAE Federal Decree-Law 38/2024 (Medical Products)",
+      "type": "federal decree-law",
+      "jurisdiction": "AE (federal)",
+      "authority": "UAE Federal Government; Emirates Drug Establishment (EDE)",
+      "date_issued": "2024-10-01 (per secondary source)",
+      "date_in_force": "2025-01-02 (per secondary source; one-year grace period)",
+      "legal_status": "in force; replaces Federal Law No. (8) of 2019",
+      "url": "https://uaelegislation.gov.ae/en/legislations/2751",
+      "download_url": "https://uaelegislation.gov.ae/en/legislations/2751/download",
+      "language": "en (Arabic prevails)",
+      "verification": "official_text",
+      "role": "primary",
+      "used_for": [
+        "prescriber authorisation",
+        "marketing approval of medicines",
+        "AI-based medical equipment definition"
+      ],
+      "note": "Dates confirmed through Baker McKenzie (https://healthcarelifesciences.bakermckenzie.com/2025/01/14/uae-enacts-new-pharma-law-to-boost-pharmaceutical-innovation); article text read on the official portal."
+    },
+    {
+      "id": "AE-POD-2006",
+      "title": "Federal Law No. (29) of 2006 Concerning the Rights of People with Special Needs (People of Determination), as amended by Federal Law No. (14) of 2009",
+      "short_title": "UAE Federal Law 29/2006 (People of Determination)",
+      "type": "federal law",
+      "jurisdiction": "AE (federal)",
+      "authority": "UAE Federal Government",
+      "date_issued": "2006-08-13",
+      "date_in_force": "in force",
+      "legal_status": "in force (amended 2009)",
+      "url": "https://elaws.moj.gov.ae/UAE-MOJ_LC-En/00_SOCIAL%20WELFARE/UAE-LC-En_2006-08-13_00029_Kait.html",
+      "download_url": null,
+      "language": "en",
+      "verification": "official_text",
+      "role": "primary",
+      "used_for": [
+        "accessible communication",
+        "right to information",
+        "health services for people of determination"
+      ]
+    },
+    {
+      "id": "AE-CD-2014",
+      "title": "Federal Law No. (14) of 2014 On Control of Communicable Diseases",
+      "short_title": "UAE Federal Law 14/2014 (Communicable Diseases)",
+      "type": "federal law",
+      "jurisdiction": "AE (federal)",
+      "authority": "UAE Federal Government; Ministry of Health and Prevention",
+      "date_issued": "2014-11-20",
+      "date_in_force": "30 days after publication (Art. 47)",
+      "legal_status": "in force",
+      "url": "https://uaelegislation.gov.ae/en/legislations/1198",
+      "download_url": "https://uaelegislation.gov.ae/en/legislations/1198/download",
+      "language": "en (Arabic prevails)",
+      "verification": "official_text",
+      "role": "primary",
+      "used_for": [
+        "crisis mode: notification duties",
+        "emergency powers",
+        "confidentiality of infected persons"
+      ]
+    },
+    {
+      "id": "AE-DOH-AI-2018",
+      "title": "Department of Health Abu Dhabi - Policy on Use of Artificial Intelligence in the Healthcare Sector (Policy/AI/0.9)",
+      "short_title": "DoH Abu Dhabi AI Policy 2018",
+      "type": "regulator policy",
+      "jurisdiction": "AE-AZ (Abu Dhabi)",
+      "authority": "Department of Health - Abu Dhabi (DoH)",
+      "date_issued": "2018-04-30",
+      "date_in_force": "2018",
+      "legal_status": "version 0.9; check whether superseded by the 2025 Responsible AI Standard",
+      "url": "https://www.doh.gov.ae/-/media/E9C1470A575146B18015DEBE57E47F8D.ashx",
+      "download_url": "https://www.doh.gov.ae/-/media/E9C1470A575146B18015DEBE57E47F8D.ashx",
+      "language": "en",
+      "verification": "official_text",
+      "role": "primary",
+      "used_for": [
+        "AI as supportive technology",
+        "human final decision",
+        "explainability",
+        "graceful degradation"
+      ]
+    },
+    {
+      "id": "AE-DOH-RAI-2025",
+      "title": "Department of Health Abu Dhabi - Responsible Artificial Intelligence (AI) Standard (DoH/ST/DDGO/RAI/V1/2025)",
+      "short_title": "DoH Abu Dhabi Responsible AI Standard 2025",
+      "type": "regulator standard",
+      "jurisdiction": "AE-AZ (Abu Dhabi)",
+      "authority": "Department of Health - Abu Dhabi, Data and Digital Governance Office",
+      "date_issued": "2025-10",
+      "date_in_force": "2025-10 (next revision Oct 2026)",
+      "legal_status": "in force; scheduled for revision in Oct 2026 - check for a newer version",
+      "url": "https://www.doh.gov.ae/-/media/B84FF5DD027846699C51F36C439A580F.ashx",
+      "download_url": "https://www.doh.gov.ae/-/media/B84FF5DD027846699C51F36C439A580F.ashx",
+      "language": "en",
+      "verification": "official_text",
+      "role": "primary",
+      "used_for": [
+        "clinician authority",
+        "patient information and consent for AI",
+        "logging",
+        "UAE-hosted compute",
+        "dataset diversity",
+        "validation"
+      ]
+    },
+    {
+      "id": "AE-DHA-AI-2021",
+      "title": "Dubai Health Authority - Policy: Artificial Intelligence in the Healthcare (DHA/HISHD/PP-09)",
+      "short_title": "DHA AI in Healthcare Policy 2021",
+      "type": "regulator policy",
+      "jurisdiction": "AE-DU (Dubai)",
+      "authority": "Dubai Health Authority (DHA)",
+      "date_issued": "2021-07-01",
+      "date_in_force": "2021-07-01 (revision date 2026-07-01)",
+      "legal_status": "issue 1; revision date has passed - check for a newer issue",
+      "url": "https://www.dha.gov.ae/uploads/082022/Artificial%20Intelligence%20Policy20228457.pdf",
+      "download_url": "https://www.dha.gov.ae/uploads/082022/Artificial%20Intelligence%20Policy20228457.pdf",
+      "language": "en",
+      "verification": "official_text",
+      "role": "primary",
+      "used_for": [
+        "accountability",
+        "override by end users",
+        "traceable failures",
+        "independent validation",
+        "incident reporting"
+      ]
+    },
+    {
+      "id": "AE-DHA-TH-2025",
+      "title": "Dubai Health Authority - Standards for Telehealth Services (DHA/HRS/HPSD/ST-14, version 4)",
+      "short_title": "DHA Telehealth Standards v4 (2025)",
+      "type": "regulator standard",
+      "jurisdiction": "AE-DU (Dubai)",
+      "authority": "Dubai Health Authority, Health Regulation Sector",
+      "date_issued": "2025-09-26",
+      "date_in_force": "2025-11-26",
+      "legal_status": "in force",
+      "url": "https://dha.gov.ae/uploads/012023/Standards%20for%20Telehealth%20Services2023158613.pdf",
+      "download_url": "https://dha.gov.ae/uploads/012023/Standards%20for%20Telehealth%20Services2023158613.pdf",
+      "language": "en",
+      "verification": "official_text",
+      "role": "primary",
+      "used_for": [
+        "remote prescribing limits",
+        "telehealth consent",
+        "patient identification",
+        "people of determination",
+        "emergency protocols",
+        "data in UAE"
+      ]
+    },
+    {
+      "id": "AE-DOH-TM-2020",
+      "title": "Department of Health Abu Dhabi - Standard on Tele-Medicine",
+      "short_title": "DoH Abu Dhabi Tele-Medicine Standard 2020",
+      "type": "regulator standard",
+      "jurisdiction": "AE-AZ (Abu Dhabi)",
+      "authority": "Department of Health - Abu Dhabi",
+      "date_issued": "2020-09",
+      "date_in_force": "2020",
+      "legal_status": "to confirm (possibly revised)",
+      "url": "https://www.doh.gov.ae/-/media/Feature/Resources/Standards/Telemedicine-Standard-Final-with-Appendices.ashx",
+      "download_url": null,
+      "language": "en (summary)",
+      "verification": "official_text",
+      "role": "primary",
+      "used_for": [
+        "scope of tele-medicine services in Abu Dhabi"
+      ],
+      "note": "DOH Standard on Tele-Medicine, ref. DOH/SA/TLM/0.9/2020, effective 16 September 2020; sections 1-2 read on doh.gov.ae, 27 October 2026."
+    },
+    {
+      "id": "AE-CHARTER-2024",
+      "title": "The UAE Charter for the Development and Use of Artificial Intelligence",
+      "short_title": "UAE AI Charter 2024",
+      "type": "national charter (soft law)",
+      "jurisdiction": "AE (federal)",
+      "authority": "UAE Government (published on ai.gov.ae)",
+      "date_issued": "2024-07",
+      "date_in_force": "not binding",
+      "legal_status": "policy charter",
+      "url": "https://ai.gov.ae/wp-content/uploads/2024/07/UAEAI-Methaq-EN2-3.pdf",
+      "download_url": "https://ai.gov.ae/wp-content/uploads/2024/07/UAEAI-Methaq-EN2-3.pdf",
+      "language": "en",
+      "verification": "official_text",
+      "role": "primary",
+      "used_for": [
+        "national AI principles: human oversight, transparency, privacy, inclusion, compliance with treaties"
+      ]
+    },
+    {
+      "id": "AE-NSAI-2031",
+      "title": "UAE National Strategy for Artificial Intelligence 2031",
+      "short_title": "UAE National AI Strategy 2031",
+      "type": "national strategy",
+      "jurisdiction": "AE (federal)",
+      "authority": "UAE Minister of State for Artificial Intelligence / AI Office",
+      "date_issued": "2018 (publication date not printed; inferred)",
+      "date_in_force": "strategy",
+      "legal_status": "strategy",
+      "url": "https://u.ae/-/media/AI-publications/UAE-National-Strategy-for-Artificial-Intelligence-2031.pdf",
+      "download_url": "https://u.ae/-/media/AI-publications/UAE-National-Strategy-for-Artificial-Intelligence-2031.pdf",
+      "language": "en",
+      "verification": "official_text",
+      "role": "primary",
+      "used_for": [
+        "healthcare as priority sector",
+        "objective 8: strong governance and effective regulation",
+        "test-bed data infrastructure"
+      ]
+    },
+    {
+      "id": "AE-CRPD-REPORT",
+      "title": "Initial report of the United Arab Emirates to the Committee on the Rights of Persons with Disabilities (CRPD/C/ARE/1)",
+      "short_title": "UAE report to the CRPD Committee",
+      "type": "treaty body report",
+      "jurisdiction": "AE / UN",
+      "authority": "United Nations, Committee on the Rights of Persons with Disabilities",
+      "date_issued": "2014 (per UN Digital Library record)",
+      "date_in_force": "n/a",
+      "legal_status": "state report",
+      "url": "https://digitallibrary.un.org/record/811055/files/CRPD_C_ARE_1-EN.pdf",
+      "download_url": "https://digitallibrary.un.org/record/811055/files/CRPD_C_ARE_1-EN.pdf",
+      "language": "en",
+      "verification": "official_text",
+      "role": "primary",
+      "used_for": [
+        "UAE signature and ratification of the CRPD"
+      ],
+      "note": "Report states signature on 12 Feb 2008 and ratification by Presidential Decree of 24 Dec 2009 (para. 67); its introduction gives 19 March 2010 (para. 3). Date of the report itself to confirm."
+    },
+    {
+      "id": "UN-CRPD-2006",
+      "title": "Convention on the Rights of Persons with Disabilities",
+      "short_title": "UN CRPD",
+      "type": "international treaty",
+      "jurisdiction": "International (binding on the UAE and Cameroon as States Parties)",
+      "authority": "United Nations",
+      "date_issued": "2006-12-13",
+      "date_in_force": "2008-05-03",
+      "legal_status": "in force",
+      "url": "https://social.desa.un.org/issues/disability/crpd/convention-on-the-rights-of-persons-with-disabilities-articles",
+      "download_url": null,
+      "language": "en",
+      "verification": "official_text",
+      "role": "global_example",
+      "used_for": [
+        "accessible information and alternative communication",
+        "situations of risk",
+        "health on the basis of free and informed consent"
+      ],
+      "note": "Article 21 read on the UN DESA article page (https://un.org/development/desa/disabilities/convention-on-the-rights-of-persons-with-disabilities/article-21-freedom-of-expression-and-opinion-and-access-to-information.html); Articles 9, 11, 12 and 25 are summarised from the treaty and should be re-read on the UN DESA article pages before quotation."
+    },
+    {
+      "id": "WHO-IHR-2005",
+      "title": "International Health Regulations (2005)",
+      "short_title": "WHO International Health Regulations (2005)",
+      "type": "international legal instrument",
+      "jurisdiction": "International (WHO Member States)",
+      "authority": "World Health Organization",
+      "date_issued": "2005-05-23",
+      "date_in_force": "2007-06-15",
+      "legal_status": "in force (amendments adopted 2022 and 2024)",
+      "url": "https://apps.who.int/gb/bd/pdf_files/IHR_2022-en.pdf",
+      "download_url": null,
+      "language": "en",
+      "verification": "official_text",
+      "role": "global_example",
+      "used_for": [
+        "24-hour notification model",
+        "treatment of personal data in public health events"
+      ],
+      "note": "Arts 6(1) and 45(1) read on WHO's official text (IHR 2005 as amended in 2014 and 2022), 27 October 2026."
+    },
+    {
+      "id": "WHO-AI-2021",
+      "title": "Ethics and governance of artificial intelligence for health: WHO guidance",
+      "short_title": "WHO AI ethics guidance 2021",
+      "type": "international guidance",
+      "jurisdiction": "International",
+      "authority": "World Health Organization",
+      "date_issued": "2021-06-28",
+      "date_in_force": "guidance",
+      "legal_status": "guidance",
+      "url": "https://who.int/publications/i/item/9789240029200",
+      "download_url": null,
+      "language": "en",
+      "verification": "official_text",
+      "role": "global_example",
+      "used_for": [
+        "six guiding principles"
+      ]
+    },
+    {
+      "id": "WHO-LMM-2024",
+      "title": "Ethics and governance of artificial intelligence for health: Guidance on large multi-modal models",
+      "short_title": "WHO LMM guidance 2024",
+      "type": "international guidance",
+      "jurisdiction": "International",
+      "authority": "World Health Organization",
+      "date_issued": "2024-01-18",
+      "date_in_force": "guidance",
+      "legal_status": "guidance",
+      "url": "https://www.who.int/news/item/18-01-2024-who-releases-ai-ethics-and-governance-guidance-for-large-multi-modal-models",
+      "download_url": null,
+      "language": "en",
+      "verification": "official_text",
+      "role": "global_example",
+      "used_for": [
+        "regulator approval of LMMs",
+        "post-release audits broken down by disability"
+      ]
+    },
+    {
+      "id": "UNESCO-AI-2021",
+      "title": "Recommendation on the Ethics of Artificial Intelligence",
+      "short_title": "UNESCO AI Ethics Recommendation 2021",
+      "type": "international recommendation",
+      "jurisdiction": "International (UNESCO Member States)",
+      "authority": "UNESCO General Conference",
+      "date_issued": "2021-11-23",
+      "date_in_force": "recommendation",
+      "legal_status": "soft law",
+      "url": "https://www.unesco.org/en/legal-affairs/recommendation-ethics-artificial-intelligence",
+      "download_url": null,
+      "language": "en",
+      "verification": "official_text",
+      "role": "global_example",
+      "used_for": [
+        "human oversight and determination principle"
+      ],
+      "note": "Principle 'Human oversight and determination' (para. 36) read on UNESCO's official page, 27 October 2026."
+    },
+    {
+      "id": "EU-AIA-2024",
+      "title": "Regulation (EU) 2024/1689 laying down harmonised rules on artificial intelligence (Artificial Intelligence Act)",
+      "short_title": "EU AI Act (Reg. 2024/1689)",
+      "type": "regulation",
+      "jurisdiction": "EU",
+      "authority": "European Parliament and Council",
+      "date_issued": "2024-06-13 (OJ L, 12.7.2024)",
+      "date_in_force": "2024-08-01 (obligations apply in stages)",
+      "legal_status": "in force",
+      "url": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-12",
+      "download_url": null,
+      "language": "en",
+      "verification": "official_text",
+      "role": "global_example",
+      "used_for": [
+        "automatic logging",
+        "human oversight",
+        "regulatory sandboxes and data",
+        "serious incident reporting"
+      ]
+    },
+    {
+      "id": "EU-PLD-2024",
+      "title": "Directive (EU) 2024/2853 on liability for defective products",
+      "short_title": "EU Product Liability Directive 2024/2853",
+      "type": "directive",
+      "jurisdiction": "EU",
+      "authority": "European Parliament and Council",
+      "date_issued": "2024-10-23",
+      "date_in_force": "transposition by 2026-12-09",
+      "legal_status": "adopted; transposition pending",
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX%3A32024L2853",
+      "download_url": null,
+      "language": "en",
+      "verification": "official_text",
+      "role": "global_example",
+      "used_for": [
+        "software as a product",
+        "disclosure of evidence",
+        "presumption of defectiveness"
+      ],
+      "note": "Arts 4(1), 9(1) and 10 read on EUR-Lex, 27 October 2026."
+    },
+    {
+      "id": "EU-MDR-2017",
+      "title": "Regulation (EU) 2017/745 on medical devices - Annex VIII, Rule 11",
+      "short_title": "EU MDR 2017/745",
+      "type": "regulation",
+      "jurisdiction": "EU",
+      "authority": "European Parliament and Council",
+      "date_issued": "2017-04-05",
+      "date_in_force": "applies since 2021-05-26",
+      "legal_status": "in force",
+      "url": "https://www.bristows.com/news/the-regulation-of-software-medical-devices",
+      "download_url": null,
+      "language": "en",
+      "verification": "secondary_source",
+      "role": "global_example",
+      "used_for": [
+        "classification of decision-support software"
+      ]
+    },
+    {
+      "id": "EU-EECC-2018",
+      "title": "Directive (EU) 2018/1972 establishing the European Electronic Communications Code - Article 109",
+      "short_title": "EU Electronic Communications Code 2018/1972",
+      "type": "directive",
+      "jurisdiction": "EU",
+      "authority": "European Parliament and Council",
+      "date_issued": "2018-12-11",
+      "date_in_force": "transposition by 2020-12-21",
+      "legal_status": "in force",
+      "url": "https://www.legislation.gov.uk/eudr/2018/1972/article/109",
+      "download_url": null,
+      "language": "en",
+      "verification": "secondary_source",
+      "role": "global_example",
+      "used_for": [
+        "equivalent access to emergency services for end-users with disabilities"
+      ],
+      "note": "Read on legislation.gov.uk (retained EU law copy); cite EUR-Lex in production."
+    },
+    {
+      "id": "US-FDA-CDS-2026",
+      "title": "FDA guidance: Clinical Decision Support Software (revised final guidance)",
+      "short_title": "FDA CDS guidance (2026)",
+      "type": "regulator guidance",
+      "jurisdiction": "US",
+      "authority": "U.S. Food and Drug Administration",
+      "date_issued": "2026-01-06 (supersedes the September 2022 guidance)",
+      "date_in_force": "guidance",
+      "legal_status": "guidance",
+      "url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/clinical-decision-support-software",
+      "download_url": null,
+      "language": "en",
+      "verification": "official_text",
+      "role": "global_example",
+      "used_for": [
+        "four criteria for non-device decision support",
+        "automation bias"
+      ],
+      "note": "Final guidance (January 2026) on fda.gov; the four non-device criteria (FD&C Act 520(o)(1)(E)) read in FDA's own restatement (fda.gov/media/191560), 27 October 2026."
+    },
+    {
+      "id": "US-FDA-NSAID-2020",
+      "title": "FDA Drug Safety Communication: avoid use of NSAIDs in pregnancy at 20 weeks or later",
+      "short_title": "FDA NSAID pregnancy safety communication 2020",
+      "type": "regulator safety communication",
+      "jurisdiction": "US",
+      "authority": "U.S. Food and Drug Administration",
+      "date_issued": "2020-10-15",
+      "date_in_force": "safety communication",
+      "legal_status": "current",
+      "url": "https://www.fda.gov/safety/medical-product-safety-information/nonsteroidal-anti-inflammatory-drugs-nsaids-drug-safety-communication-avoid-use-nsaids-pregnancy-20",
+      "download_url": null,
+      "language": "en",
+      "verification": "official_text",
+      "role": "clinical_reference",
+      "used_for": [
+        "demo clinical rule: NSAID in pregnancy"
+      ],
+      "note": "Clinical rules of the prototype must be validated by a physician and replaced by the UAE formulary / EDE product information."
+    },
+    {
+      "id": "US-CYTOTEC-LABEL",
+      "title": "CYTOTEC (misoprostol) prescribing information - Boxed Warning",
+      "short_title": "Cytotec (misoprostol) label",
+      "type": "product label",
+      "jurisdiction": "US",
+      "authority": "Pfizer (FDA-approved labeling)",
+      "date_issued": "current label",
+      "date_in_force": "current",
+      "legal_status": "current",
+      "url": "https://www.pfizermedical.com/cytotec/boxed-warning",
+      "download_url": null,
+      "language": "en",
+      "verification": "official_text",
+      "role": "clinical_reference",
+      "used_for": [
+        "demo clinical rule: abortifacient property of misoprostol"
+      ]
+    },
+    {
+      "id": "UK-NHS-AIS",
+      "title": "NHS England - Accessible Information Standard (DCB1605)",
+      "short_title": "NHS Accessible Information Standard",
+      "type": "information standard",
+      "jurisdiction": "UK (England)",
+      "authority": "NHS England",
+      "date_issued": "2015 (legal requirement from 2016-08-01; specification v1.1 August 2017)",
+      "date_in_force": "2016-08-01",
+      "legal_status": "in force",
+      "url": "https://www.england.nhs.uk/accessibleinfo",
+      "download_url": null,
+      "language": "en",
+      "verification": "official_text",
+      "role": "global_example",
+      "used_for": [
+        "identify, record, flag, share and meet communication needs"
+      ]
+    },
+    {
+      "id": "UK-MHRA-AIRLOCK",
+      "title": "MHRA AI Airlock - regulatory sandbox for AI as a Medical Device",
+      "short_title": "MHRA AI Airlock",
+      "type": "regulatory sandbox programme",
+      "jurisdiction": "UK",
+      "authority": "Medicines and Healthcare products Regulatory Agency",
+      "date_issued": "2024-05",
+      "date_in_force": "pilot",
+      "legal_status": "pilot programme",
+      "url": "https://www.gov.uk/government/news/mhra-launches-ai-airlock-to-address-challenges-for-regulating-medical-devices-that-use-artificial-intelligence",
+      "download_url": null,
+      "language": "en",
+      "verification": "official_text",
+      "role": "global_example",
+      "used_for": [
+        "regulatory sandbox for AI medical devices"
+      ],
+      "note": "Launched 9 May 2024 as a regulatory sandbox for AI as a medical device (gov.uk), read 27 October 2026."
+    },
+    {
+      "id": "ISO-9186-1-2014",
+      "title": "ISO 9186-1:2014 Graphical symbols - Test methods - Part 1: Method for testing comprehensibility",
+      "short_title": "ISO 9186-1:2014",
+      "type": "international standard",
+      "jurisdiction": "International",
+      "authority": "ISO",
+      "date_issued": "2014-03-15 (second edition)",
+      "date_in_force": "current (revision in progress)",
+      "legal_status": "voluntary standard",
+      "url": "https://webstore.ansi.org/preview-pages/ISO/preview_ISO+9186-1-2014.pdf",
+      "download_url": null,
+      "language": "en",
+      "verification": "official_text",
+      "role": "global_example",
+      "used_for": [
+        "testing pictogram comprehension"
+      ],
+      "note": "Preview only; acceptance thresholds are not in the preview and are not cited."
+    },
+    {
+      "id": "ITU-Y3172-2019",
+      "title": "ITU-T Recommendation Y.3172 (06/2019) Architectural framework for machine learning in future networks including IMT-2020",
+      "short_title": "ITU-T Y.3172",
+      "type": "technical recommendation",
+      "jurisdiction": "International",
+      "authority": "ITU-T",
+      "date_issued": "2019-06",
+      "date_in_force": "in force",
+      "legal_status": "recommendation",
+      "url": "https://www.itu.int/dms_pubrec/itu-t/rec/y/T-REC-Y.3172-201906-P!!SUM-HTM-E.htm",
+      "download_url": null,
+      "language": "en",
+      "verification": "official_text",
+      "role": "architecture_reference",
+      "used_for": [
+        "ML pipeline mapping (source, collector, pre-processor, model, policy, distributor, sink)"
+      ]
+    },
+    {
+      "id": "ITU-AIR-2024",
+      "title": "ITU AI for Good - Preliminary Analysis Towards a Standardized Readiness Framework",
+      "short_title": "ITU AI readiness (2024)",
+      "type": "report",
+      "jurisdiction": "International",
+      "authority": "ITU (AI for Good)",
+      "date_issued": "2024-05",
+      "date_in_force": "report",
+      "legal_status": "report",
+      "url": "https://aiforgood.itu.int/event/ai-readiness-towards-a-standardized-readiness-framework/",
+      "download_url": null,
+      "language": "en",
+      "verification": "secondary_source",
+      "role": "architecture_reference",
+      "used_for": [
+        "readiness factors: data, research, deployment support, standards, open source and code, sandbox environments"
+      ],
+      "note": "Preliminary framework, superseded by Report 2.0 (ITU-AIR-2026)."
+    },
+    {
+      "id": "ITU-AIR-2026",
+      "title": "AI Ready – Analysis Towards a Standardized Readiness Framework, Report 2.0",
+      "short_title": "ITU AI Ready Report 2.0 (2026)",
+      "type": "report",
+      "jurisdiction": "International",
+      "authority": "ITU (AI for Good)",
+      "date_issued": "2026-01",
+      "date_in_force": "report",
+      "legal_status": "report",
+      "url": "https://www.itu.int/dms_pub/itu-t/opb/ai4g/T-AI4G-AI4GOOD-2025-6-PDF-E.pdf",
+      "download_url": "https://www.itu.int/dms_pub/itu-t/opb/ai4g/T-AI4G-AI4GOOD-2025-6-PDF-E.pdf",
+      "language": "en",
+      "verification": "official_text",
+      "role": "architecture_reference",
+      "used_for": [
+        "readiness framework 2.0 presented in the hackathon sessions (17 October 2026): 6 factors and 13 dimensions with metrics",
+        "evaluation criterion: clear mapping to ITU AI Readiness factors and dimensions"
+      ]
+    },
+    {
+      "id": "AU-AI-2024",
+      "title": "African Union - Continental Artificial Intelligence Strategy",
+      "short_title": "AU Continental AI Strategy 2024",
+      "type": "regional strategy",
+      "jurisdiction": "African Union",
+      "authority": "African Union Executive Council",
+      "date_issued": "2024-07-18/19 (endorsed, 45th Ordinary Session, Accra)",
+      "date_in_force": "strategy",
+      "legal_status": "strategy",
+      "url": "https://au.int/pt/node/44004",
+      "download_url": null,
+      "language": "en",
+      "verification": "official_text",
+      "role": "global_example",
+      "used_for": [
+        "regional perspective: inclusive and responsible AI"
+      ]
+    },
+    {
+      "id": "CM-MED-1990",
+      "title": "Cameroun - Loi n° 90/36 du 10 août 1990 relative à l'exercice et à l'organisation de la profession de médecin",
+      "short_title": "Cameroun loi 90/36",
+      "type": "loi",
+      "jurisdiction": "CM",
+      "authority": "République du Cameroun",
+      "date_issued": "1990-08-10",
+      "date_in_force": "en vigueur",
+      "legal_status": "en vigueur",
+      "url": "https://www.camerlex.com/cameroun-loi-n-90-36-10-aout-1990-relative-a-lexercice-a-lorganisation-de-profession-de-medecin/",
+      "download_url": null,
+      "language": "fr",
+      "verification": "secondary_source",
+      "role": "national_cm",
+      "used_for": [
+        "Cameroon jurisdiction: practice reserved to physicians registered with the Order; illegal practice; professional secrecy"
+      ],
+      "note": "Article text read on Camerlex (legal database reproducing the law), not on the Journal officiel: obtain the official text before production use."
+    },
+    {
+      "id": "CM-DCP-2024",
+      "title": "Cameroun - Loi n° 2024/017 du 23 décembre 2024 relative à la protection des données à caractère personnel",
+      "short_title": "Cameroun loi 2024/017",
+      "type": "loi",
+      "jurisdiction": "CM",
+      "authority": "République du Cameroun",
+      "date_issued": "2024-12-23",
+      "date_in_force": "2026-06-23",
+      "legal_status": "applicable depuis le 23 juin 2026",
+      "url": "https://www.anove.ai/fr/regulations/cameroon-law-2024-017",
+      "download_url": null,
+      "language": "fr",
+      "verification": "secondary_source",
+      "role": "national_cm",
+      "used_for": [
+        "Cameroon jurisdiction: sensitive (health) data, consent, transfers abroad, supervisory authority, compliance deadline, penalties"
+      ],
+      "note": "Article numbers (9, 53, 70, 73) come from secondary summaries (anove.ai, obs-cc.org) that agree; the official text (prc.cm, Journal officiel) must be read before citation in production."
+    },
+    {
+      "id": "CM-HAND-2010",
+      "title": "Cameroun - Loi n° 2010/002 du 13 avril 2010 portant protection et promotion des personnes handicapées",
+      "short_title": "Cameroun loi 2010/002 (personnes handicapées)",
+      "type": "loi",
+      "jurisdiction": "CM",
+      "authority": "République du Cameroun",
+      "date_issued": "2010-04-13",
+      "date_in_force": "en vigueur",
+      "legal_status": "en vigueur",
+      "url": "https://www.un.org/development/desa/disabilities/wp-content/uploads/sites/15/2019/11/Cameroon_-protection-and-promotion-of-persons-with-disabilities.pdf",
+      "download_url": "https://www.un.org/development/desa/disabilities/wp-content/uploads/sites/15/2019/11/Cameroon_-protection-and-promotion-of-persons-with-disabilities.pdf",
+      "language": "fr",
+      "verification": "secondary_source",
+      "role": "national_cm",
+      "used_for": [
+        "Cameroon jurisdiction: deaf persons as persons with sensory disability; health care coverage; access to information technologies"
+      ],
+      "note": "Copy of the law hosted by UN DESA; text read there. Sign language is not mentioned in the law."
+    },
+    {
+      "id": "CM-DEONTO-1983",
+      "title": "Cameroun - Décret n° 83/166 du 12 avril 1983 portant code de déontologie médicale",
+      "short_title": "Cameroun code de déontologie médicale (1983)",
+      "type": "décret",
+      "jurisdiction": "CM",
+      "authority": "République du Cameroun",
+      "date_issued": "1983-04-12",
+      "date_in_force": "en vigueur",
+      "legal_status": "en vigueur (révision proposée par l'Ordre)",
+      "url": "https://onmc.cm/wp-content/uploads/2021/07/ONMC_code-de-deontotologie-corrigee-en-Francais.pdf",
+      "download_url": null,
+      "language": "fr",
+      "verification": "to_confirm",
+      "role": "national_cm",
+      "used_for": [
+        "Cameroon jurisdiction: consent, information of the patient, written prescription, medical secrecy (articles to read)"
+      ],
+      "note": "Published by the Ordre national des médecins du Cameroun; the file could not be read from our environment: decree number and articles to be confirmed before citation."
+    },
+    {
+      "id": "CM-PHARM-1990",
+      "title": "Cameroun - Loi n° 90/035 du 10 août 1990 relative à l'exercice et à l'organisation de la profession de pharmacien",
+      "short_title": "Cameroun loi 90/035 (pharmacie)",
+      "type": "loi",
+      "jurisdiction": "CM",
+      "authority": "République du Cameroun",
+      "date_issued": "1990-08-10",
+      "date_in_force": "en vigueur",
+      "legal_status": "en vigueur",
+      "url": "https://extranet.who.int/cpcd/health-legislation/loi-ndeg90-035-du-10-aout-1990-relative-lexercice-et-lorganisation-de-la",
+      "download_url": null,
+      "language": "fr",
+      "verification": "to_confirm",
+      "role": "national_cm",
+      "used_for": [
+        "Cameroon jurisdiction: pharmacy and medicines (marketing authorisation to be checked with the national regulator)"
+      ],
+      "note": "Listed in the WHO health legislation database; content not read."
+    },
+    {
+      "id": "CM-CP-2016",
+      "title": "Cameroun - Loi n° 2016/007 du 12 juillet 2016 portant Code pénal (secret professionnel)",
+      "short_title": "Cameroun Code pénal (2016)",
+      "type": "loi",
+      "jurisdiction": "CM",
+      "authority": "République du Cameroun",
+      "date_issued": "2016-07-12",
+      "date_in_force": "en vigueur",
+      "legal_status": "en vigueur",
+      "url": "https://www.memoireonline.com/10/10/4008/m_La-responsabilite-penale-du-medecin-traitant-dans-le-systeme-penal-camerounais12.html",
+      "download_url": null,
+      "language": "fr",
+      "verification": "to_confirm",
+      "role": "national_cm",
+      "used_for": [
+        "Cameroon jurisdiction: criminal sanction of breaches of medical secrecy (Art. 310 according to doctrine)"
+      ],
+      "note": "Article 310 cited by an academic thesis (memoireonline); official text and penalty not read."
+    },
+    {
+      "id": "US-FDA-TRAMADOL-LABEL",
+      "title": "Tramadol hydrochloride tablets — FDA-approved prescribing information (DailyMed), revised 3/2021",
+      "short_title": "FDA tramadol label (DailyMed) 2021",
+      "type": "regulator-approved drug label",
+      "jurisdiction": "US",
+      "authority": "U.S. Food and Drug Administration (via NLM DailyMed)",
+      "date_issued": "2021-03-01",
+      "date_in_force": "current label",
+      "legal_status": "current",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=de66ea8a-f320-483d-a429-724c9b65994e",
+      "download_url": null,
+      "language": "en",
+      "verification": "official_text",
+      "role": "clinical_reference",
+      "used_for": [
+        "demo clinical rules: tramadol in pregnancy, children and adolescents, maximum daily dose"
+      ],
+      "note": "Clinical rules of the prototype must be validated by a physician and replaced by the UAE formulary / EDE product information."
+    },
+    {
+      "id": "US-DM-METFORMIN",
+      "title": "Metformin hydrochloride tablets — FDA-approved prescribing information (DailyMed), revised 6/2026",
+      "short_title": "Metformin label (DailyMed) 2026",
+      "type": "regulator-approved drug label",
+      "jurisdiction": "US",
+      "authority": "U.S. Food and Drug Administration (labelling)",
+      "date_issued": "2026-06-09",
+      "date_in_force": "current label",
+      "legal_status": "current",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b8004451-7b26-425b-b5ea-cbb1b08e30e3",
+      "download_url": null,
+      "language": "en",
+      "verification": "official_text",
+      "role": "clinical_reference",
+      "used_for": [
+        "demo clinical rules: contraindications, maximum daily dose, high-risk situations"
+      ],
+      "note": "Clinical rules of the prototype must be validated by a physician and replaced by the UAE formulary / EDE product information."
+    },
+    {
+      "id": "US-DM-AMOXICILLIN",
+      "title": "Amoxicillin capsules — FDA-approved prescribing information (DailyMed), revised 01/2024",
+      "short_title": "Amoxicillin label (DailyMed) 2024",
+      "type": "regulator-approved drug label",
+      "jurisdiction": "US",
+      "authority": "U.S. Food and Drug Administration (labelling)",
+      "date_issued": "2024-01-23",
+      "date_in_force": "current label",
+      "legal_status": "current",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=7e3a4517-1934-4e03-b96b-4ad65ab076c5",
+      "download_url": null,
+      "language": "en",
+      "verification": "official_text",
+      "role": "clinical_reference",
+      "used_for": [
+        "demo clinical rules: contraindications, maximum daily dose, high-risk situations"
+      ],
+      "note": "Clinical rules of the prototype must be validated by a physician and replaced by the UAE formulary / EDE product information."
+    },
+    {
+      "id": "US-OTC-ACETAMINOPHEN",
+      "title": "Acetaminophen 500 mg tablets — FDA OTC Drug Facts label (reproduced by NDC List)",
+      "short_title": "Acetaminophen OTC Drug Facts",
+      "type": "regulated OTC drug label (mirror)",
+      "jurisdiction": "US",
+      "authority": "U.S. Food and Drug Administration (labelling)",
+      "date_issued": null,
+      "date_in_force": "current label",
+      "legal_status": "current",
+      "url": "https://ndclist.com/ndc/69842-465/label",
+      "download_url": null,
+      "language": "en",
+      "verification": "secondary_source",
+      "role": "clinical_reference",
+      "used_for": [
+        "demo clinical rules: contraindications, maximum daily dose, high-risk situations"
+      ],
+      "note": "Clinical rules of the prototype must be validated by a physician and replaced by the UAE formulary / EDE product information. Mirror of the FDA-regulated label text; to be checked against DailyMed."
+    },
+    {
+      "id": "US-OTC-IBUPROFEN",
+      "title": "Ibuprofen 200 mg tablets — FDA OTC Drug Facts label (reproduced by NDC List)",
+      "short_title": "Ibuprofen OTC Drug Facts",
+      "type": "regulated OTC drug label (mirror)",
+      "jurisdiction": "US",
+      "authority": "U.S. Food and Drug Administration (labelling)",
+      "date_issued": null,
+      "date_in_force": "current label",
+      "legal_status": "current",
+      "url": "https://ndclist.com/ndc/72927-805/label",
+      "download_url": null,
+      "language": "en",
+      "verification": "secondary_source",
+      "role": "clinical_reference",
+      "used_for": [
+        "demo clinical rules: contraindications, maximum daily dose, high-risk situations"
+      ],
+      "note": "Clinical rules of the prototype must be validated by a physician and replaced by the UAE formulary / EDE product information. Mirror of the FDA-regulated label text; to be checked against DailyMed."
+    },
+    {
+      "id": "US-RX-IBUPROFEN",
+      "title": "Ibuprofen tablets USP — prescription label (reproduced by MedLibrary)",
+      "short_title": "Ibuprofen Rx label",
+      "type": "regulated prescription drug label (mirror)",
+      "jurisdiction": "US",
+      "authority": "U.S. Food and Drug Administration (labelling)",
+      "date_issued": null,
+      "date_in_force": "current label",
+      "legal_status": "current",
+      "url": "https://medlibrary.org/lib/rx/meds/ibuprofen-16/page/6/",
+      "download_url": null,
+      "language": "en",
+      "verification": "secondary_source",
+      "role": "clinical_reference",
+      "used_for": [
+        "demo clinical rules: contraindications, maximum daily dose, high-risk situations"
+      ],
+      "note": "Clinical rules of the prototype must be validated by a physician and replaced by the UAE formulary / EDE product information. Mirror of the FDA-regulated label text; to be checked against DailyMed."
+    },
+    {
+      "id": "US-OTC-ASPIRIN",
+      "title": "Aspirin 325 mg tablets — FDA OTC Drug Facts label (reproduced by NDC List)",
+      "short_title": "Aspirin OTC Drug Facts",
+      "type": "regulated OTC drug label (mirror)",
+      "jurisdiction": "US",
+      "authority": "U.S. Food and Drug Administration (labelling)",
+      "date_issued": null,
+      "date_in_force": "current label",
+      "legal_status": "current",
+      "url": "https://ndclist.com/ndc/41250-681/label",
+      "download_url": null,
+      "language": "en",
+      "verification": "secondary_source",
+      "role": "clinical_reference",
+      "used_for": [
+        "demo clinical rules: contraindications, maximum daily dose, high-risk situations"
+      ],
+      "note": "Clinical rules of the prototype must be validated by a physician and replaced by the UAE formulary / EDE product information. Mirror of the FDA-regulated label text; to be checked against DailyMed."
+    }
+  ]
+}

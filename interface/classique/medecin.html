@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MEDIMCOM IA · Écran médecin</title>
+<style>
+:root { --fond:#F4F6F7; --carte:#FFFFFF; --texte:#1E2B31; --doux:#5A6A72; --trait:#DDE3E6; --accent:#C2571A;
+        --vert:#1D7A46; --rouge:#B42318; --orange:#B5541C; --jaune:#8A6D00; --bleu:#2F80C0; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--fond); color:var(--texte); font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+header { display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; padding:10px 16px; background:var(--carte); border-bottom:1px solid var(--trait); position:sticky; top:0; z-index:5; }
+header h1 { font-size:17px; margin:0; } header h1 span { color:var(--accent); }
+.badge { border-radius:999px; padding:2px 10px; font-size:12px; font-weight:600; background:#EEF2F4; }
+.ok { background:#E3F3EA; color:var(--vert); } .ko { background:#FDECEA; color:var(--rouge); }
+header a, header button { font-size:13px; }
+.demo[hidden] { display:none; }
+.demo { display:flex; gap:10px; align-items:center; padding:8px 16px; background:#FFF6E8; border-bottom:1px solid #F1D9B5; flex-wrap:wrap; }
+main { display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; padding:12px 16px; max-width:1500px; margin:0 auto; }
+@media (max-width: 1100px) { main { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 720px) { main { grid-template-columns: 1fr; } }
+section { background:var(--carte); border:1px solid var(--trait); border-radius:10px; padding:10px 12px; margin-bottom:12px; }
+h2 { font-size:14px; margin:0 0 8px; display:flex; justify-content:space-between; align-items:center; }
+h2 small { color:var(--doux); font-weight:400; }
+label { display:block; font-size:12px; color:var(--doux); margin:6px 0 2px; }
+input, select, textarea { width:100%; font:inherit; padding:6px 8px; border:1px solid var(--trait); border-radius:6px; background:#fff; color:var(--texte); }
+textarea { min-height:64px; resize:vertical; }
+.ligne { display:flex; gap:8px; } .ligne > * { flex:1; }
+.cases { display:flex; gap:12px; flex-wrap:wrap; margin-top:6px; } .cases label { display:flex; gap:6px; align-items:center; margin:0; color:var(--texte); }
+.cases input { width:auto; }
+button { font:inherit; border:1px solid var(--trait); background:#fff; border-radius:6px; padding:6px 12px; cursor:pointer; }
+button.principal { background:var(--texte); color:#fff; border-color:var(--texte); }
+button.valider { background:var(--vert); color:#fff; border-color:var(--vert); }
+button.rejeter { color:var(--rouge); }
+button:disabled { opacity:.5; cursor:default; }
+.pictos { display:flex; flex-wrap:wrap; gap:4px; margin:6px 0; } .pictos img { width:52px; height:52px; }
+.item { border-top:1px solid var(--trait); padding:8px 0; } .item:first-child { border-top:0; }
+.meta { color:var(--doux); font-size:12px; }
+.v { font-weight:700; } .CONFORME { color:var(--vert); } .BLOQUE { color:var(--rouge); } .A_REVOIR { color:var(--orange); }
+.PREUVES_INSUFFISANTES { color:var(--jaune); } .MAINTENUE { color:var(--bleu); } .envoye { color:var(--vert); }
+.alerte { border-left:4px solid var(--rouge); padding-left:8px; } .information { border-left:4px solid var(--bleu); padding-left:8px; }
+.demande { border-left:4px solid var(--orange); padding-left:8px; }
+.attention { color:var(--orange); font-size:12px; }
+table { width:100%; border-collapse:collapse; font-size:13px; } td { border-top:1px solid var(--trait); padding:4px 2px; vertical-align:top; }
+details summary { cursor:pointer; color:var(--doux); font-size:12px; }
+.vide { color:var(--doux); font-size:13px; font-style:italic; }
+.toast { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); background:var(--texte); color:#fff; padding:8px 14px; border-radius:8px; opacity:0; transition:opacity .2s; pointer-events:none; max-width:90vw; }
+.toast.on { opacity:.95; }
+.urgence[hidden] { display:none; }
+.urgence { display:flex; gap:12px; align-items:center; padding:10px 16px; background:var(--rouge); color:#fff; font-weight:700; font-size:16px; }
+.urgence img { width:40px; height:40px; background:#fff; border-radius:8px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>MEDIMCOM <span>IA</span> · écran médecin</h1>
+  <span id="mode" class="badge">…</span>
+  <span id="journal" class="badge">…</span>
+  <a href="/patient" target="_blank" rel="noopener">Ouvrir l'écran patient</a>
+  <a id="lienJournal" href="#" target="_blank" rel="noopener">Journal lisible</a>
+  <label class="cases" style="margin:0"><span class="meta">Médecin :</span>
+    <select id="medecin" style="width:auto"></select></label>
+  <button id="reinit">Nouvelle consultation</button>
+  <span class="meta">Données fictives · prototype, pas un dispositif médical</span>
+  <a href="/credits" target="_blank" rel="noopener">Crédits des pictogrammes</a>
+</header>
+<div id="urgence" class="urgence" role="alert" hidden>
+  <img src="/pictos/URGENCE.svg" alt=""> Le patient a signalé une URGENCE (bouton rouge). À prendre en charge en priorité.
+</div>
+<div id="demo" class="demo" hidden>
+  <b>Démonstration :</b> <span id="demoTitre"></span> · étape <span id="demoEtape"></span>
+  <span class="meta">Prochaine : <span id="demoProchaine"></span></span>
+  <button id="demoSuivant" class="principal">Étape suivante</button>
+</div>
+<main>
+  <div>
+    <section>
+      <h2>Patient <small>fiche saisie par le médecin</small></h2>
+      <div class="ligne">
+        <div><label for="sexe">Sexe</label><select id="sexe"><option value="">—</option><option value="F">Femme</option><option value="M">Homme</option></select></div>
+        <div><label for="age">Âge</label><input id="age" type="number" min="0" max="120"></div>
+      </div>
+      <label for="allergies">Allergies (« aucune » si aucune)</label><input id="allergies">
+      <label for="traitements">Traitements en cours (« aucun » si aucun)</label><input id="traitements">
+      <div class="cases">
+        <label><input type="checkbox" id="pictos" checked> communique en pictogrammes</label>
+        <label><input type="checkbox" id="ia"> informé que l'IA aide le médecin</label>
+      </div>
+      <p><button id="faits">Enregistrer</button></p>
+      <table id="etat"></table>
+    </section>
+    <section>
+      <h2>Écrire au patient <small>traduit en pictogrammes, puis validé par vous</small></h2>
+      <textarea id="message" placeholder="Ex. : Avez-vous mal au ventre ?"></textarea>
+      <div class="cases">
+        <label><input type="checkbox" id="estQuestion" checked> c'est une question</label>
+        <label>réponse oui / non enregistrée comme : <select id="cle" style="width:auto"><option value="">(texte seulement)</option></select></label>
+      </div>
+      <p><button id="envoyerMessage" class="principal">Faire traduire</button></p>
+    </section>
+    <section>
+      <h2>Conversation</h2>
+      <div id="fil"></div>
+    </section>
+  </div>
+
+  <div>
+    <section>
+      <h2>À valider <small>rien ne part sans vous</small></h2>
+      <div id="propositions"></div>
+    </section>
+    <section>
+      <h2>Ordonnance</h2>
+      <div class="ligne">
+        <div><label for="medicament">Médicament</label><input id="medicament" list="listeMedicaments"><datalist id="listeMedicaments"></datalist></div>
+        <div><label for="dose">Dose</label><input id="dose" placeholder="500 mg"></div>
+      </div>
+      <label for="posologie">Mode d'emploi</label><input id="posologie" placeholder="3 fois par jour pendant 3 jours">
+      <div class="ligne">
+        <div><label for="modeConsult">Consultation</label><select id="modeConsult"><option value="presentiel">en présentiel</option><option value="distance">téléconsultation</option></select></div>
+        <div><label for="remplace">Remplace</label><select id="remplace"><option value="">—</option></select></div>
+      </div>
+      <div class="cases"><label><input type="checkbox" id="suggestion"> inspirée d'une suggestion de l'IA</label></div>
+      <p><button id="prescrire" class="principal">Prescrire (contrôle du juriste)</button></p>
+    </section>
+    <section>
+      <h2>Décisions</h2>
+      <div id="decisions"></div>
+    </section>
+  </div>
+
+  <div>
+    <section>
+      <h2>Messages des agents</h2>
+      <div id="messages"></div>
+    </section>
+    <section>
+      <h2>Suggestions de l'assistant <small>vous validez ou ignorez</small></h2>
+      <div id="suggestions"></div>
+    </section>
+    <section>
+      <h2>Demander au juriste</h2>
+      <textarea id="questionJuriste" placeholder="Ex. : un consentement donné en pictogrammes est-il valable ?"></textarea>
+      <p><button id="demanderJuriste">Demander</button></p>
+    </section>
+    <section id="crise" hidden>
+      <h2>Tableau de crise <small>institutions (sans données de patients)</small></h2>
+      <div id="mesures"></div>
+    </section>
+    <section>
+      <h2>Lacunes du droit signalées</h2>
+      <div id="lacunes"></div>
+    </section>
+  </div>
+</main>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script>
+const $ = id => document.getElementById(id);
+const poser = (el, html) => { if (el._html !== html) { el.innerHTML = html; el._html = html; } };   // pas de clignotement
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const picto = id => `<img src="/pictos/${encodeURIComponent(id)}.svg" alt="${esc(id)}" title="${esc(id.replaceAll("+", " + "))}">`;
+const CLES = {grossesse:"enceinte", fievre:"fièvre", douleur:"douleur", nausees:"nausées", consentement_traitement:"accord pour le traitement"};
+const JETON = "__JETON__";                                   // inséré par le serveur ; ne pas partager l'adresse de cette page
+const ENTETES = {"Content-Type": "application/json", "X-Jeton": JETON};
+$("lienJournal").href = "/journal?jeton=" + encodeURIComponent(JETON);
+let vue = null, occupe = false, session = null, remplaceCle = null;
+
+function toast(t) { const e = $("toast"); e.textContent = t; e.classList.add("on"); setTimeout(() => e.classList.remove("on"), 2600); }
+async function poster(url, corps) {
+  if (occupe) return; occupe = true;
+  try {
+    const r = await fetch(url, {method:"POST", headers:ENTETES, body:JSON.stringify(corps || {})});
+    const j = await r.json();
+    if (!r.ok) toast("Erreur : " + (j.erreur || r.status)); else if (j.retour) toast(j.retour);
+    await rafraichir(); return j;
+  } catch (e) { toast("Serveur injoignable"); } finally { occupe = false; }
+}
+
+function viderFormulaires() {
+  for (const id of ["sexe", "age", "allergies", "traitements", "message", "medicament", "dose", "posologie", "questionJuriste"]) $(id).value = "";
+  $("ia").checked = false; $("pictos").checked = true; $("suggestion").checked = false; $("estQuestion").checked = true;
+  $("cle").value = ""; $("modeConsult").value = "presentiel"; remplaceCle = null;
+}
+function rendre(v) {
+  if (session !== null && v.session !== session) viderFormulaires();   // nouvelle consultation : rien ne doit rester de l'ancienne
+  session = v.session;
+  vue = v;
+  $("urgence").hidden = !(v.etat.urgence && v.etat.urgence.valeur === true);
+  $("mode").textContent = v.mode === "simulé" ? "agents : politiques écrites" : "agents : " + v.mode;
+  $("journal").textContent = v.journal + " · " + v.lignes + " lignes";
+  $("journal").className = "badge " + (v.journal === "Journal intact" ? "ok" : "ko");
+  if (!$("medecin").options.length) {
+    for (const [k, n] of Object.entries(v.prescripteurs)) $("medecin").add(new Option(`${n} (${k})`, k));
+    for (const m of v.medicaments) $("listeMedicaments").append(new Option(m));
+    for (const c of v.cles_fermees) $("cle").add(new Option(CLES[c] || c, c));
+  }
+  $("demo").hidden = !v.demo.actif;
+  if (v.demo.actif) {
+    $("demoTitre").textContent = v.demo.titre; $("demoEtape").textContent = `${v.demo.etape}/${v.demo.total}`;
+    $("demoProchaine").textContent = v.demo.prochaine || "fin du scénario"; $("demoSuivant").disabled = !v.demo.prochaine;
+  }
+  poser($("etat"), Object.entries(v.etat).map(([k, x]) =>
+    `<tr><td>${esc(k)}</td><td><b>${esc(x.valeur)}</b></td><td class="meta">${x.confirme ? "confirmé" : "<span class='attention'>non confirmé</span>"}</td></tr>`).join("")
+    || `<tr><td class="vide">Aucune information pour l'instant.</td></tr>`);
+  const envoyes = v.decisions.filter(d => d.type === "envoi_patient" && d.statut === "envoye");
+  const fil = [...v.fil.map(e => ({t:"e", e})), ...envoyes.map(d => ({t:"m", d}))];
+  poser($("fil"), fil.length ? fil.map(x => x.t === "e"
+      ? `<div class="item"><span class="meta">${esc(x.e.auteur)}</span><br>${esc(x.e.texte)}</div>`
+      : `<div class="item"><span class="meta">envoyé au patient (#${x.d.id}, validé par ${esc(x.d.valide_par)})</span><div class="pictos">${(x.d.pictogrammes||[]).map(picto).join("")}</div></div>`).join("")
+    : `<p class="vide">La consultation commence.</p>`);
+  const props = v.decisions.filter(d => d.type === "envoi_patient" && d.statut === "attente_validation");
+  poser($("propositions"), props.length ? props.map(d => `<div class="item">
+      <span class="meta">#${d.id} · ${esc(d.contenu_type)} · texte d'origine :</span> ${esc(d.texte)}
+      ${d.pictogrammes_choisis_par ? `<div class="meta">pictogrammes : ${esc(d.pictogrammes_choisis_par)}${(d.pictogrammes||[]).some(x => x.includes("+")) ? " · contient une image combinée" : ""}</div>` : ""}
+      <div class="pictos">${(d.pictogrammes||[]).map(picto).join("")}</div>
+      ${d.non_traduits && d.non_traduits.length ? `<div class="attention">Sans pictogramme : ${esc(d.non_traduits.join(", "))}</div>` : ""}
+      <button class="valider" data-valider="${d.id}">Valider et envoyer</button> <button class="rejeter" data-rejeter="${d.id}">Rejeter</button></div>`).join("")
+    : `<p class="vide">Aucune proposition en attente.</p>`);
+  const presc = v.decisions.filter(d => d.type === "prescription" && !["annulee"].includes(d.statut));
+  const cle = presc.map(d => d.id + ":" + d.medicament).join("|");
+  if (cle !== remplaceCle) {                                  // reconstruit seulement si la liste change (sinon le menu ouvert se ferme)
+    const sel = $("remplace"), avant = sel.value; remplaceCle = cle;
+    sel.innerHTML = `<option value="">—</option>` + presc.map(d => `<option value="${esc(d.medicament)}">${esc(d.medicament)} (#${d.id})</option>`).join("");
+    sel.value = [...sel.options].some(o => o.value === avant) ? avant : "";
+  }
+  poser($("decisions"), v.decisions.filter(d => d.type !== "envoi_patient" || d.statut !== "attente_validation").slice().reverse().map(d => {
+    const quoi = d.type === "prescription" ? `${esc(d.medicament)} ${esc(d.dose || "")}` : d.type === "partage_donnees" ? `partage de données (${esc(d.auteur)})` : `message au patient`;
+    const maintenir = d.statut === "A_REVOIR" ? ` <button data-maintenir="${d.id}">Maintenir (justifier)</button>` : "";
+    const m = d.maintien ? `<div class="meta">maintenu par ${esc(d.maintien.par)} : ${esc(d.maintien.justification)}</div>` : "";
+    return `<div class="item">#${d.id} ${quoi} → <span class="v ${esc(d.statut)}">${esc(d.statut)}</span>${maintenir}${m}</div>`; }).join("")
+    || `<p class="vide">Aucune décision.</p>`);
+  poser($("messages"), v.messages.slice().reverse().map(m =>
+    `<div class="item ${esc(m.type)}"><span class="meta">${esc(m.de)} · ${esc(m.type)}</span><br>${esc(m.contenu)}</div>`).join("")
+    || `<p class="vide">Aucun message.</p>`);
+  const sg = v.suggestions.filter(s => s.statut === "proposee_au_medecin");
+  poser($("suggestions"), sg.length ? sg.map(s => `<div class="item"><b>${esc(s.texte)}</b><div class="meta">${esc(s.raison)} · source : ${esc(s.source)}</div>
+      <button data-ignorer="${s.id}">Ignorer</button></div>`).join("") : `<p class="vide">Aucune suggestion.</p>`);
+  $("crise").hidden = !(v.mesures.length || v.incidents.length);
+  poser($("mesures"), v.mesures.map(x => `<div class="item"><span class="meta">${esc(x.par)} · mesure</span><br><b>${esc(x.mesure)}</b> <span class="meta">[${esc(x.citation)}]</span></div>`).join("")
+    + v.incidents.map(x => `<div class="item alerte"><span class="meta">${esc(x.par)} · incident ${esc(x.gravite)}</span><br>${esc(x.description)}</div>`).join(""));
+  poser($("lacunes"), v.lacunes.map(l => `<div class="item"><b>${esc(l.id || "")}</b> ${esc(l.sujet)}</div>`).join("") || `<p class="vide">Aucune.</p>`);
+}
+
+async function rafraichir() {
+  try { const r = await fetch("/api/medecin", {headers: {"X-Jeton": JETON}});
+        if (r.status === 403) { $("journal").textContent = "accès refusé : rouvrir le lien affiché au démarrage"; $("journal").className = "badge ko"; return; }
+        rendre(await r.json()); } catch (e) { $("journal").textContent = "serveur injoignable"; $("journal").className = "badge ko"; }
+}
+
+document.addEventListener("click", async e => {
+  const t = e.target, med = $("medecin").value;
+  if (t.dataset.valider) await poster("/api/medecin/valider", {decision_id: +t.dataset.valider, medecin: med});
+  if (t.dataset.rejeter) { const raison = prompt("Pourquoi rejeter cette proposition ?", "à reformuler"); if (raison !== null) await poster("/api/medecin/rejeter", {decision_id: +t.dataset.rejeter, raison}); }
+  if (t.dataset.maintenir) { const j = prompt("Justification écrite (votre nom sera enregistré) :"); if (j) await poster("/api/medecin/maintenir", {decision_id: +t.dataset.maintenir, justification: j, medecin: med}); }
+  if (t.dataset.ignorer) await poster("/api/medecin/ignorer", {suggestion_id: +t.dataset.ignorer});
+});
+$("faits").onclick = () => poster("/api/medecin/faits", {donnees: {sexe: $("sexe").value, age: $("age").value, allergies: $("allergies").value.trim(),
+  traitements_en_cours: $("traitements").value.trim(), moyen_communication: $("pictos").checked ? "pictogrammes" : "", informe_usage_ia: $("ia").checked || ""}});
+$("envoyerMessage").onclick = async () => { const texte = $("message").value.trim(); if (!texte) return toast("Écrire un message d'abord.");
+  await poster("/api/medecin/message", {texte, question: $("estQuestion").checked, cle: $("cle").value}); $("message").value = ""; };
+$("prescrire").onclick = () => { if (!$("medicament").value.trim()) return toast("Indiquer le médicament.");
+  poster("/api/medecin/prescription", {medicament: $("medicament").value, dose: $("dose").value, posologie: $("posologie").value, mode: $("modeConsult").value,
+    remplace_medicament: $("remplace").value, issue_de_suggestion: $("suggestion").checked, medecin: $("medecin").value}); };
+$("demanderJuriste").onclick = async () => { const texte = $("questionJuriste").value.trim(); if (!texte) return; await poster("/api/medecin/juriste", {texte}); $("questionJuriste").value = ""; };
+$("reinit").onclick = () => { if (confirm("Démarrer une nouvelle consultation ? (le journal actuel est remplacé)")) poster("/api/reinitialiser"); };
+$("demoSuivant").onclick = async () => { const j = await poster("/api/demo/suivant"); if (j && j.description) toast("Étape : " + j.description); };
+rafraichir(); setInterval(() => { if (!occupe) rafraichir(); }, 1500);
+</script>
+</body>
+</html>

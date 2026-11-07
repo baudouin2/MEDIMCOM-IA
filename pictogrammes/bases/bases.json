@@ -1,0 +1,57 @@
+{
+ "description": "Bases de pictogrammes utilisables par MEDIMCOM IA et leurs conditions. Vérifié le 27 octobre 2026 sur les pages citées ; relire la licence avant toute diffusion. Une image modifiée ou combinée garde la licence de sa base (clause SA).",
+ "bases": {
+  "arasaac": {
+   "nom": "ARASAAC",
+   "url": "https://arasaac.org",
+   "licence": "CC BY-NC-SA 4.0",
+   "commercial": false,
+   "modification": true,
+   "attribution": "Pictogrammes : Sergio Palao. Origine : ARASAAC (https://arasaac.org). Licence : CC BY-NC-SA. Propriété : Gouvernement d'Aragon (Espagne).",
+   "verifie_sur": "https://globalsymbols.com/symbolsets/arasaac/symbols/21642?locale=fr",
+   "telechargement": "automatique (python pictogrammes/bases/telecharger_arasaac.py)"
+  },
+  "tawasol": {
+   "nom": "Tawasol (Mada, Qatar)",
+   "url": "https://tawasol.mada.org.qa",
+   "licence": "CC BY-SA 4.0 (à confirmer : le pied de page du site indique CC BY-NC 4.0)",
+   "commercial": null,
+   "modification": true,
+   "attribution": "Symboles Tawasol, Mada (Qatar), https://tawasol.mada.org.qa — licence Creative Commons (voir le site).",
+   "verifie_sur": "https://tawasol.mada.org.qa/terms-and-conditions/?lang=en",
+   "telechargement": "manuel : déposer les fichiers dans pictogrammes/bases/images/tawasol/<IDENTIFIANT>.png, puis importer_fichiers.py"
+  },
+  "mulberry": {
+   "nom": "Mulberry Symbols",
+   "url": "https://mulberrysymbols.org",
+   "licence": "CC BY-SA 2.0 UK",
+   "commercial": true,
+   "modification": true,
+   "attribution": "Mulberry Symbols (https://mulberrysymbols.org), licence CC BY-SA 2.0 UK.",
+   "verifie_sur": "https://www.opensymbols.org/repositories/mulberry",
+   "telechargement": "manuel : pictogrammes/bases/images/mulberry/<IDENTIFIANT>.svg, puis importer_fichiers.py"
+  },
+  "sclera": {
+   "nom": "Sclera",
+   "url": "https://www.sclera.be",
+   "licence": "CC BY-NC 2.0 BE",
+   "commercial": false,
+   "modification": true,
+   "attribution": "Pictogrammes Sclera (www.sclera.be), licence CC BY-NC 2.0 Belgique.",
+   "verifie_sur": "https://sclera.be/fr/picto/copyright",
+   "telechargement": "manuel : pictogrammes/bases/images/sclera/<IDENTIFIANT>.png, puis importer_fichiers.py"
+  },
+  "santebd": {
+   "nom": "SantéBD",
+   "url": "https://santebd.org",
+   "licence": "aucune licence nommée ; mention « ©SantéBD » obligatoire",
+   "commercial": null,
+   "modification": null,
+   "autorisation_ecrite_requise": true,
+   "autorisation_ecrite_obtenue": false,
+   "attribution": "©SantéBD",
+   "verifie_sur": "https://informations.handicap.fr/a-santeb-20000-images-faciles-a-comprendre-acces-gratuit-34783.php",
+   "telechargement": "bloqué tant que « autorisation_ecrite_obtenue » n'est pas vrai (accord écrit de l'éditeur)"
+  }
+ }
+}

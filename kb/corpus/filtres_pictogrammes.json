@@ -1,0 +1,766 @@
+{
+ "description": "Règles de tri des pictogrammes pour MEDIMCOM IA (consultation médicale). Un pictogramme est GARDÉ s'il correspond à une notion du vocabulaire (correspondance exacte d'un mot-clé), ou si ses étiquettes / catégories contiennent un motif de la liste blanche ET aucun motif de la liste noire. Les motifs sont cherchés en minuscules, comme sous-chaînes, dans les étiquettes (tags), catégories et mots-clés anglais et français. Lancez d'abord `--audit-pictos` : il écrit 02_pictogrammes/audit/etiquettes_arasaac.csv avec chaque étiquette et son effectif, pour ajuster ces listes avant le téléchargement complet.",
+ "arasaac": {
+  "variantes_par_notion": 3,
+  "collecte_par_etiquettes": true,
+  "max_par_categorie": 350,
+  "exclure_drapeaux": [
+   "violence",
+   "sex"
+  ],
+  "liste_blanche": {
+   "09_corps_anatomie": [
+    "human body",
+    "body part",
+    "anatomy",
+    "organ",
+    "skeleton",
+    "senses organ",
+    "cuerpo humano",
+    "partes del cuerpo"
+   ],
+   "12_symptomes": [
+    "symptom",
+    "injury",
+    "wound",
+    "first aid"
+   ],
+   "13_maladies_antecedents": [
+    "illness",
+    "disease",
+    "pathology",
+    "infectious disease",
+    "medical condition",
+    "enfermedad"
+   ],
+   "14_emotions_ressenti": [
+    "feeling",
+    "emotion",
+    "mood",
+    "sensation",
+    "sentimiento",
+    "emoción"
+   ],
+   "15_examens_actes": [
+    "medical test",
+    "medical examination",
+    "diagnostic",
+    "medical procedure",
+    "vaccination",
+    "therapy",
+    "rehabilitation",
+    "physiotherapy"
+   ],
+   "16_medicaments_posologie": [
+    "medicine",
+    "medication",
+    "drug",
+    "pharmacy",
+    "pharmaceutical",
+    "treatment",
+    "medicamento"
+   ],
+   "18_materiel_medical": [
+    "medical equipment",
+    "medical material",
+    "medical instrument",
+    "medical device",
+    "orthopedic",
+    "technical aid"
+   ],
+   "19_lieux_services_parcours": [
+    "hospital",
+    "health center",
+    "health centre",
+    "clinic",
+    "medical service",
+    "health service",
+    "health professional",
+    "healthcare",
+    "doctor's office"
+   ],
+   "08_personnes_soignants": [
+    "health professional",
+    "medical staff",
+    "healthcare worker",
+    "doctor",
+    "nurse"
+   ],
+   "21_hygiene_prevention": [
+    "hygiene",
+    "personal care",
+    "cleanliness",
+    "prevention",
+    "health promotion",
+    "toilet",
+    "higiene"
+   ],
+   "23_grossesse_enfant_sexualite": [
+    "pregnancy",
+    "childbirth",
+    "maternity",
+    "baby care",
+    "breastfeeding",
+    "sexual health",
+    "reproductive health"
+   ],
+   "24_handicap_aides": [
+    "disability",
+    "disabled",
+    "accessibility",
+    "sign language",
+    "deaf",
+    "blind",
+    "wheelchair",
+    "aac",
+    "discapacidad"
+   ],
+   "29_urgence_securite": [
+    "emergency",
+    "accident",
+    "safety",
+    "first aid",
+    "urgencia"
+   ],
+   "30_droits_consentement_donnees": [
+    "rights",
+    "consent",
+    "privacy",
+    "confidential",
+    "patient rights"
+   ],
+   "26_temps_frequence_duree": [
+    "time",
+    "day of the week",
+    "time of day",
+    "frequency",
+    "calendar"
+   ],
+   "27_nombres_quantites_mesures": [
+    "number",
+    "quantity",
+    "intensity",
+    "scale"
+   ],
+   "04_comprehension_communication": [
+    "communication",
+    "core vocabulary"
+   ],
+   "_sante_generique": [
+    "health",
+    "medical",
+    "salud",
+    "medicina",
+    "santé"
+   ],
+   "11_douleur_description": [
+    "pain",
+    "ache"
+   ],
+   "17_chirurgie_operations": [
+    "surgery",
+    "surgical",
+    "operating room",
+    "anaesthesia",
+    "anesthesia"
+   ],
+   "01_accueil_politesse": [
+    "greeting",
+    "courtesy",
+    "social relationship",
+    "politeness"
+   ],
+   "03_questions": [
+    "question word",
+    "interrogative",
+    "question"
+   ],
+   "10_localisation_position": [
+    "position",
+    "spatial",
+    "location adverb",
+    "place adverb"
+   ],
+   "20_alimentation_regime": [
+    "food",
+    "drink",
+    "beverage",
+    "nutrition",
+    "fruit",
+    "vegetable",
+    "meal"
+   ],
+   "22_activite_sommeil_mode_de_vie": [
+    "sleep",
+    "rest",
+    "physical activity",
+    "healthy habit",
+    "lifestyle"
+   ],
+   "25_vie_quotidienne_contexte": [
+    "home",
+    "household",
+    "daily life",
+    "family"
+   ],
+   "28_couleurs_aspect_sensations": [
+    "colour",
+    "color",
+    "texture",
+    "taste",
+    "smell",
+    "sensation"
+   ]
+  },
+  "liste_noire": [
+   "dinosaur",
+   "prehistor",
+   "plant",
+   "tree",
+   "flower",
+   "garden",
+   "fungi",
+   "mushroom",
+   "animal",
+   "mammal",
+   "bird",
+   "fish",
+   "reptile",
+   "insect",
+   "farm",
+   "aragon",
+   "spain",
+   "zaragoza",
+   "huesca",
+   "teruel",
+   "region",
+   "city",
+   "country",
+   "flag",
+   "monument",
+   "geograph",
+   "map",
+   "sport",
+   "game",
+   "toy",
+   "leisure",
+   "music",
+   "musical instrument",
+   "dance",
+   "theatre",
+   "cinema",
+   "festival",
+   "christmas",
+   "easter",
+   "carnival",
+   "halloween",
+   "religion",
+   "church",
+   "mythology",
+   "fantasy",
+   "fairy tale",
+   "superhero",
+   "character",
+   "vehicle",
+   "transport",
+   "car part",
+   "aircraft",
+   "boat",
+   "train",
+   "makeup",
+   "cosmetic",
+   "eyeshadow",
+   "beauty",
+   "jewel",
+   "costume",
+   "clothing",
+   "fashion",
+   "hairdress",
+   "furniture",
+   "decoration",
+   "tool",
+   "construction",
+   "building material",
+   "antenna",
+   "electronics",
+   "appliance",
+   "school subject",
+   "mathematics",
+   "geometry",
+   "chemistry",
+   "physics",
+   "astronomy",
+   "planet",
+   "weapon",
+   "war",
+   "military",
+   "history",
+   "politic",
+   "recipe",
+   "cooking",
+   "job",
+   "profession",
+   "work"
+  ],
+  "exceptions_liste_noire": [
+   "body",
+   "disability",
+   "first aid",
+   "food",
+   "health",
+   "health professional",
+   "hospital",
+   "hygiene",
+   "medical",
+   "medicine",
+   "nutrition",
+   "safety"
+  ],
+  "categorie_par_defaut": "15_examens_actes",
+  "description_categories": "Les clés de liste_blanche sont les catégories de kb/corpus/vocabulaire_consultation.json ; « _sante_generique » va dans 99_sante_divers."
+ },
+ "mulberry": {
+  "categories_gardees": {
+   "Healthcare Body parts": "09_corps_anatomie",
+   "Healthcare Medical items": "18_materiel_medical",
+   "Healthcare Medical conditions": "12_symptomes",
+   "Healthcare Grooming activities": "21_hygiene_prevention",
+   "Healthcare Grooming items": "21_hygiene_prevention",
+   "People Feelings": "14_emotions_ressenti",
+   "Descriptive Time": "26_temps_frequence_duree",
+   "Work and School Timetable": "26_temps_frequence_duree",
+   "Descriptive Quantity": "27_nombres_quantites_mesures",
+   "Number": "27_nombres_quantites_mesures",
+   "Communication Aid": "24_handicap_aides",
+   "People Relationship": "08_personnes_soignants",
+   "Food Meals and snacks": "20_alimentation_regime",
+   "Food Fruit": "20_alimentation_regime",
+   "Food Vegetables and salads": "20_alimentation_regime",
+   "Drink Type": "20_alimentation_regime",
+   "Food Dairy": "20_alimentation_regime",
+   "Food Breads and baking": "20_alimentation_regime",
+   "Food Feeding and eating": "20_alimentation_regime",
+   "Descriptive Position": "10_localisation_position",
+   "Descriptive Direction": "10_localisation_position",
+   "Art Colour": "28_couleurs_aspect_sensations"
+  },
+  "professions_sante": [
+   "doctor",
+   "nurse",
+   "dentist",
+   "pharmacist",
+   "surgeon",
+   "paramedic",
+   "midwife",
+   "optician",
+   "physiotherapist",
+   "psychologist",
+   "carer",
+   "care_worker",
+   "ambulance",
+   "receptionist",
+   "radiographer",
+   "therapist",
+   "chemist",
+   "hospital",
+   "porter"
+  ],
+  "verbes_sante": [
+   "vomit",
+   "smoke",
+   "breathe",
+   "cough",
+   "sneeze",
+   "swallow",
+   "wash",
+   "sleep",
+   "drink",
+   "eat",
+   "lie",
+   "sit",
+   "stand",
+   "fall",
+   "faint",
+   "bleed",
+   "hurt",
+   "cry",
+   "help",
+   "wait",
+   "listen",
+   "look",
+   "point",
+   "sign",
+   "inject",
+   "bath",
+   "shower",
+   "brush",
+   "dress",
+   "undress",
+   "toilet",
+   "wee",
+   "poo"
+  ],
+  "noms_exclus": [
+   "blusher",
+   "eye_shadow",
+   "eyebrow",
+   "eyelash",
+   "mascara",
+   "lipstick",
+   "make_up",
+   "powder_puff",
+   "perfume",
+   "aftershave",
+   "hair_c",
+   "hair_dye",
+   "hairspray",
+   "hot_brush",
+   "hairbrush",
+   "hairdryer",
+   "toupee",
+   "wig",
+   "nail_polish",
+   "polish_nails",
+   "emery",
+   "headband",
+   "perm_",
+   "haircut",
+   "dry_hair",
+   "shower_cap",
+   "put_on_cap",
+   "take_off_cap",
+   "put_on_coat",
+   "tie_2",
+   "unbuckle",
+   "unbutton",
+   "untie",
+   "sit_in_beanbag",
+   "wait_table",
+   "fall_off",
+   "bubble_bath",
+   "shaving",
+   "shave_underarm",
+   "look_in_mirror",
+   "safety_pin",
+   "curler"
+  ],
+  "correspondance_notions": "Tout symbole Mulberry dont le nom anglais (sans « , to » ni numéro de variante) est exactement le libellé anglais d'une notion est gardé, quelle que soit sa catégorie Mulberry, sauf nom exclu."
+ },
+ "openmoji": {
+  "sous_groupes_gardes": {
+   "healthcare": "18_materiel_medical",
+   "medical": "16_medicaments_posologie",
+   "body-parts": "09_corps_anatomie",
+   "face-unwell": "12_symptomes",
+   "face-concerned": "14_emotions_ressenti",
+   "face-negative": "14_emotions_ressenti",
+   "face-neutral-skeptical": "14_emotions_ressenti",
+   "face-smiling": "14_emotions_ressenti",
+   "face-sleepy": "14_emotions_ressenti",
+   "emotion": "14_emotions_ressenti",
+   "emergency": "29_urgence_securite",
+   "person-gesture": "04_comprehension_communication",
+   "hand-fingers-open": "04_comprehension_communication",
+   "hand-single-finger": "10_localisation_position",
+   "time": "26_temps_frequence_duree",
+   "food-fruit": "20_alimentation_regime",
+   "food-vegetable": "20_alimentation_regime",
+   "food-prepared": "20_alimentation_regime",
+   "drink": "20_alimentation_regime",
+   "sky-weather": "25_vie_quotidienne_contexte"
+  },
+  "mots_role_sante": [
+   "health worker",
+   "doctor",
+   "nurse",
+   "pharmacist",
+   "pregnant",
+   "breast-feeding",
+   "baby",
+   "deaf",
+   "wheelchair",
+   "probing cane",
+   "service dog",
+   "guide dog",
+   "ambulance",
+   "hospital",
+   "pill",
+   "syringe",
+   "stethoscope",
+   "thermometer",
+   "bandage",
+   "adhesive",
+   "crutch",
+   "x-ray",
+   "drop of blood",
+   "dna",
+   "microbe",
+   "mask",
+   "sneezing",
+   "vomiting",
+   "hot face",
+   "cold face",
+   "dizzy",
+   "woozy",
+   "nauseated",
+   "injured"
+  ],
+  "exclure_teintes": true,
+  "annotations_exclues": [
+   "middle finger",
+   "vulcan",
+   "chick",
+   "angel",
+   "guy fawkes",
+   "tardis",
+   "diving",
+   "performing arts",
+   "babylon",
+   "oil spill",
+   "nuclear",
+   "cyclone",
+   "splatter",
+   "goblin",
+   "ogre",
+   "lying face",
+   "drooling",
+   "zipper-mouth",
+   "smirking",
+   "melting",
+   "upside-down",
+   "dotted line",
+   "face in clouds",
+   "exploding head"
+  ],
+  "sous_groupes_filtres": {
+   "emergency": [
+    "medical",
+    "sneez",
+    "disinfect",
+    "quarantine",
+    "distancing",
+    "sanitizer",
+    "wash hands",
+    "temperature",
+    "gloves",
+    "first aid",
+    "help others",
+    "sos"
+   ]
+  },
+  "correspondance_notions": "Tout emoji dont l'annotation anglaise est exactement le libellé anglais d'une notion est gardé (sans les variantes de teinte)."
+ },
+ "reclassement": {
+  "description": "Après sélection, un pictogramme Mulberry ou OpenMoji dont le nom contient ce motif change de catégorie (ex. « headache » trouvé parmi le matériel → symptômes).",
+  "regles": [
+   [
+    "ache",
+    "12_symptomes"
+   ],
+   [
+    "pain",
+    "12_symptomes"
+   ],
+   [
+    "fracture",
+    "12_symptomes"
+   ],
+   [
+    "vomit",
+    "12_symptomes"
+   ],
+   [
+    "sneez",
+    "12_symptomes"
+   ],
+   [
+    "doctor",
+    "08_personnes_soignants"
+   ],
+   [
+    "nurse",
+    "08_personnes_soignants"
+   ],
+   [
+    "health worker",
+    "08_personnes_soignants"
+   ],
+   [
+    "liver",
+    "09_corps_anatomie"
+   ],
+   [
+    "stomach",
+    "09_corps_anatomie"
+   ],
+   [
+    "intestine",
+    "09_corps_anatomie"
+   ],
+   [
+    "kidney",
+    "09_corps_anatomie"
+   ],
+   [
+    "brain",
+    "09_corps_anatomie"
+   ],
+   [
+    "pregnan",
+    "23_grossesse_enfant_sexualite"
+   ],
+   [
+    "feeding baby",
+    "23_grossesse_enfant_sexualite"
+   ],
+   [
+    "breast-feeding",
+    "23_grossesse_enfant_sexualite"
+   ],
+   [
+    "baby bottle",
+    "23_grossesse_enfant_sexualite"
+   ],
+   [
+    "wheelchair",
+    "24_handicap_aides"
+   ],
+   [
+    "wheel chair",
+    "24_handicap_aides"
+   ],
+   [
+    "guide dog",
+    "24_handicap_aides"
+   ],
+   [
+    "service dog",
+    "24_handicap_aides"
+   ],
+   [
+    "deaf",
+    "24_handicap_aides"
+   ],
+   [
+    "hearing aid",
+    "24_handicap_aides"
+   ],
+   [
+    "communication_aid",
+    "24_handicap_aides"
+   ],
+   [
+    "switch",
+    "24_handicap_aides"
+   ],
+   [
+    "hospital",
+    "19_lieux_services_parcours"
+   ],
+   [
+    "ambulance",
+    "29_urgence_securite"
+   ],
+   [
+    "wash hands",
+    "21_hygiene_prevention"
+   ],
+   [
+    "wash_hands",
+    "21_hygiene_prevention"
+   ],
+   [
+    "sanitizer",
+    "21_hygiene_prevention"
+   ],
+   [
+    "disinfect",
+    "21_hygiene_prevention"
+   ],
+   [
+    "toothbrush",
+    "21_hygiene_prevention"
+   ],
+   [
+    "brush_teeth",
+    "21_hygiene_prevention"
+   ],
+   [
+    "soap",
+    "21_hygiene_prevention"
+   ],
+   [
+    "sanitary",
+    "21_hygiene_prevention"
+   ],
+   [
+    "tampon",
+    "21_hygiene_prevention"
+   ],
+   [
+    "nappy",
+    "21_hygiene_prevention"
+   ],
+   [
+    "pill",
+    "16_medicaments_posologie"
+   ],
+   [
+    "medication",
+    "16_medicaments_posologie"
+   ],
+   [
+    "syringe",
+    "16_medicaments_posologie"
+   ],
+   [
+    "ointment",
+    "16_medicaments_posologie"
+   ],
+   [
+    "inhaler",
+    "16_medicaments_posologie"
+   ],
+   [
+    "tablet",
+    "16_medicaments_posologie"
+   ],
+   [
+    "medicine",
+    "16_medicaments_posologie"
+   ],
+   [
+    "stethoscope",
+    "18_materiel_medical"
+   ],
+   [
+    "thermometer",
+    "18_materiel_medical"
+   ],
+   [
+    "crutch",
+    "18_materiel_medical"
+   ],
+   [
+    "x-ray",
+    "15_examens_actes"
+   ],
+   [
+    "xray",
+    "15_examens_actes"
+   ],
+   [
+    "ct scan",
+    "15_examens_actes"
+   ],
+   [
+    "temperature taking",
+    "15_examens_actes"
+   ],
+   [
+    "blood_pressure",
+    "15_examens_actes"
+   ]
+  ]
+ }
+}

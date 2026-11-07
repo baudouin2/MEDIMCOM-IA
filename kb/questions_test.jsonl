@@ -1,0 +1,65 @@
+{"id": "Q01", "question": "Can a doctor treat a patient who has not agreed to the treatment?", "attendu": ["ML16-A5-1"], "langue": "en"}
+{"id": "Q02", "question": "What must a written prescription contain in the UAE?", "attendu": ["ML16-A4-6"], "langue": "en"}
+{"id": "Q03", "question": "Is it allowed to prescribe medication before examining the patient in person?", "attendu": ["ML16-A5-5"], "langue": "en"}
+{"id": "Q04", "question": "Which patient history must be recorded before diagnosis and treatment?", "attendu": ["ML16-A4-2"], "langue": "en"}
+{"id": "Q05", "question": "Can a physician prescribe a drug that could terminate a pregnancy?", "attendu": ["ML16-A16"], "langue": "en"}
+{"id": "Q06", "question": "Must the patient be told about the seriousness of their illness?", "attendu": ["ML16-A4-7"], "langue": "en"}
+{"id": "Q07", "question": "Is written consent needed before surgery?", "attendu": ["ML16-A8-1c"], "langue": "en"}
+{"id": "Q08", "question": "Is liability insurance mandatory for medical practitioners?", "attendu": ["ML16-A25"], "langue": "en"}
+{"id": "Q09", "question": "Can we host patient health records on a server located abroad?", "attendu": ["ICT19-A13", "DHATH-DATA", "RAI25-3.1.4.5.1"], "langue": "en"}
+{"id": "Q10", "question": "What is the fine for storing health data outside the UAE?", "attendu": ["ICT19-A24"], "langue": "en"}
+{"id": "Q11", "question": "How long must electronic health records be kept?", "attendu": ["ICT19-A20", "DHATH-11"], "langue": "en"}
+{"id": "Q12", "question": "May a company use patient information for marketing?", "attendu": ["ICT19-A16"], "langue": "en"}
+{"id": "Q13", "question": "Can an insurer obtain information about the care a patient received?", "attendu": ["ICT19-A16"], "langue": "en"}
+{"id": "Q14", "question": "Which exceptions allow health data to be transferred outside the country?", "attendu": ["RES51-EXC"], "langue": "en"}
+{"id": "Q15", "question": "What conditions apply when health data is sent to a foreign laboratory?", "attendu": ["RES51-COND", "RES51-EXC"], "langue": "en"}
+{"id": "Q16", "question": "Does the personal data protection law apply to health data?", "attendu": ["PDPL-A2-2"], "langue": "en"}
+{"id": "Q17", "question": "Can a person object to a decision made automatically by an algorithm?", "attendu": ["PDPL-A18"], "langue": "en"}
+{"id": "Q18", "question": "Is AI-based software regulated as medical equipment?", "attendu": ["MP24-A1-EQ"], "langue": "en"}
+{"id": "Q19", "question": "Can a medicine be used without marketing approval from the Emirates Drug Establishment?", "attendu": ["MP24-A5-1"], "langue": "en"}
+{"id": "Q20", "question": "Who may dispense controlled medicines?", "attendu": ["MP24-A55"], "langue": "en"}
+{"id": "Q21", "question": "Can narcotics be prescribed during a telehealth consultation in Dubai?", "attendu": ["DHATH-17.12.7"], "langue": "en"}
+{"id": "Q22", "question": "How should the patient be identified in a telehealth consultation?", "attendu": ["DHATH-10.2.1"], "langue": "en"}
+{"id": "Q23", "question": "Is electronic consent acceptable for teleconsultation?", "attendu": ["DHATH-10"], "langue": "en"}
+{"id": "Q24", "question": "What must a telehealth service provide for people of determination?", "attendu": ["DHATH-14.1.5"], "langue": "en"}
+{"id": "Q25", "question": "What emergency protocols are required for telehealth providers?", "attendu": ["DHATH-12.4"], "langue": "en"}
+{"id": "Q26", "question": "Do deaf people have a right to receive information through sign language?", "attendu": ["POD06-A7", "CRPD-A21"], "langue": "en"}
+{"id": "Q27", "question": "Within how many hours must a doctor notify a suspected Group A communicable disease?", "attendu": ["CD14-A4"], "langue": "en"}
+{"id": "Q28", "question": "What powers does the ministry have during an epidemic?", "attendu": ["CD14-A18"], "langue": "en"}
+{"id": "Q29", "question": "Is the information of a person with an infectious disease confidential?", "attendu": ["CD14-A29"], "langue": "en"}
+{"id": "Q30", "question": "Who makes the final decision when AI is used in healthcare in Abu Dhabi?", "attendu": ["RAI25-3.1.7.2.2", "DOH18-SUPPORT"], "langue": "en"}
+{"id": "Q31", "question": "Must patients be informed that AI contributed to a clinical decision?", "attendu": ["RAI25-3.1.6.1.1"], "langue": "en"}
+{"id": "Q32", "question": "Must AI decisions be logged and traceable?", "attendu": ["RAI25-3.1.7.1.3", "AIA-A12", "DHA21-4.3.1"], "langue": "en"}
+{"id": "Q33", "question": "Where must the compute infrastructure of a healthcare AI system be located in Abu Dhabi?", "attendu": ["RAI25-3.1.4.5.1"], "langue": "en"}
+{"id": "Q34", "question": "Must AI outputs be overridable by clinicians in Dubai?", "attendu": ["DHA21-4.4"], "langue": "en"}
+{"id": "Q35", "question": "Do AI solutions in Dubai require independent third-party validation?", "attendu": ["DHA21-4.3.3"], "langue": "en"}
+{"id": "Q36", "question": "To whom should AI incidents be reported in Dubai?", "attendu": ["DHA21-4.8"], "langue": "en"}
+{"id": "Q37", "question": "Should NSAIDs be avoided in late pregnancy?", "attendu": ["FDA20-NSAID"], "langue": "en"}
+{"id": "Q38", "question": "Is there a standard method to test whether people understand a pictogram?", "attendu": ["ISO9186"], "langue": "en"}
+{"id": "Q39", "question": "How does England make sure communication needs of deaf patients are recorded?", "attendu": ["NHS-AIS"], "langue": "en"}
+{"id": "Q40", "question": "Within what time must serious AI incidents be reported under the EU AI Act?", "attendu": ["AIA-A73"], "langue": "en"}
+{"id": "Q41", "question": "Is software considered a product for liability purposes in the EU?", "attendu": ["PLD24-SW"], "langue": "en"}
+{"id": "Q42", "question": "When is clinical decision support software not a medical device in the US?", "attendu": ["FDA26-CDS"], "langue": "en"}
+{"id": "Q43", "question": "How is diagnostic decision-support software classified under EU medical device rules?", "attendu": ["MDR-R11"], "langue": "en"}
+{"id": "Q44", "question": "Can personal data be reused in an AI regulatory sandbox?", "attendu": ["AIA-A57-59"], "langue": "en"}
+{"id": "Q45", "question": "What are the WHO principles for AI in health?", "attendu": ["WHO21-PRINC"], "langue": "en"}
+{"id": "Q46", "question": "Within how many hours must a State notify WHO of a possible public health emergency?", "attendu": ["IHR-A6"], "langue": "en"}
+{"id": "Q47", "question": "Le médecin peut-il soigner un patient sans son consentement en cas d'urgence ?", "attendu": ["ML16-A5-1"], "langue": "fr"}
+{"id": "Q48", "question": "Que doit contenir une ordonnance écrite ?", "attendu": ["ML16-A4-6"], "langue": "fr"}
+{"id": "Q49", "question": "Peut-on envoyer les données de santé d'un patient à une IA hébergée à l'étranger ?", "attendu": ["ICT19-A13", "RAI25-3.1.4.5.1", "DHATH-DATA"], "langue": "fr"}
+{"id": "Q50", "question": "Peut-on prescrire un stupéfiant en téléconsultation ?", "attendu": ["DHATH-17.12.7"], "langue": "fr"}
+{"id": "Q51", "question": "Dans quel délai faut-il déclarer une maladie transmissible du groupe A ?", "attendu": ["CD14-A4", "CD14-A5"], "langue": "fr"}
+{"id": "Q52", "question": "Qui est responsable si une suggestion de l'IA validée par le médecin est fausse ?", "attendu": ["DOH18-SUPPORT", "DHA21-4.2", "PLD24-SW", "ML16-A6"], "langue": "fr"}
+{"id": "Q53", "question": "Les sourds ont-ils droit à une communication par pictogrammes ou langue des signes ?", "attendu": ["POD06-A7", "CRPD-A21", "POD06-A13"], "langue": "fr"}
+{"id": "Q54", "question": "Peut-on vendre les données des patientes enceintes à une entreprise de publicité ?", "attendu": ["ICT19-A16"], "langue": "fr"}
+{"id": "Q55", "question": "Combien d'années faut-il conserver les données de santé ?", "attendu": ["ICT19-A20", "DHATH-11"], "langue": "fr"}
+{"id": "Q56", "question": "Un médicament non enregistré peut-il être prescrit ?", "attendu": ["MP24-A5-1"], "langue": "fr"}
+{"id": "Q57", "question": "Faut-il informer le patient que l'intelligence artificielle aide le médecin ?", "attendu": ["RAI25-3.1.6.1.1", "RAI25-3.1.6.1.3"], "langue": "fr"}
+{"id": "Q58", "question": "Comment signaler un incident d'IA ?", "attendu": ["DHA21-4.8", "AIA-A73", "RAI25-3.1.7.1.2.3"], "langue": "fr"}
+{"id": "Q59", "question": "Peut-on prescrire du misoprostol à une femme enceinte ?", "attendu": ["ML16-A16", "CYTOTEC-BW"], "langue": "fr"}
+{"id": "Q60", "question": "La supervision humaine de l'IA est-elle obligatoire ?", "attendu": ["RAI25-3.1.7.2.2", "DHA21-4.4", "AIA-A14", "CHARTER-P6", "DOH18-SUPPORT", "DHA21-DEF"], "langue": "fr"}
+{"id": "Q61", "question": "Which ITU AI readiness dimension covers generative AI support for sign languages?", "attendu": ["AIR2-D11"], "langue": "en"}
+{"id": "Q62", "question": "Quelle dimension de préparation à l'IA de l'UIT concerne le test des politiques dans des bacs à sable ?", "attendu": ["AIR2-D10"], "langue": "fr"}
+{"id": "Q63", "question": "Faut-il être inscrit à l'Ordre pour exercer la médecine au Cameroun ?", "attendu": ["CM90-A2"], "langue": "fr"}
+{"id": "Q64", "question": "Peut-on envoyer des données de santé hors du Cameroun ?", "attendu": ["CM24-TRANSFERT"], "langue": "fr"}
+{"id": "Q65", "question": "Les personnes sourdes sont-elles des personnes handicapées selon la loi camerounaise ?", "attendu": ["CM10-A3"], "langue": "fr"}

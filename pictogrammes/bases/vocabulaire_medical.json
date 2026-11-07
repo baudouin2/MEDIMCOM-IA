@@ -1,0 +1,1599 @@
+{
+ "description": "Vocabulaire médical de MEDIMCOM IA : identifiant, catégorie, libellés (fr, en, ar — l'arabe est à faire relire par un locuteur natif) et mots de recherche dans les bases de pictogrammes existantes.",
+ "vocabulaire": [
+  {
+   "id": "OUI",
+   "categorie": "reponse",
+   "fr": "oui",
+   "en": "yes",
+   "ar": "نعم",
+   "recherche": {
+    "fr": [
+     "oui"
+    ],
+    "en": [
+     "yes"
+    ]
+   },
+   "nouveau": false,
+   "description": "Réponse affirmative. Le patient l'utilise pour répondre à une question fermée ; seul, en réponse à une question fermée, il devient un fait du dossier."
+  },
+  {
+   "id": "NON",
+   "categorie": "reponse",
+   "fr": "non",
+   "en": "no",
+   "ar": "لا",
+   "recherche": {
+    "fr": [
+     "non"
+    ],
+    "en": [
+     "no"
+    ]
+   },
+   "nouveau": false,
+   "description": "Réponse négative à une question fermée. Seul, en réponse à une question fermée, il devient un fait du dossier."
+  },
+  {
+   "id": "NE_PAS",
+   "categorie": "reponse",
+   "fr": "ne pas",
+   "en": "do not",
+   "ar": "لا تفعل",
+   "recherche": {
+    "fr": [
+     "interdit",
+     "ne pas"
+    ],
+    "en": [
+     "forbidden",
+     "don't"
+    ]
+   },
+   "nouveau": false,
+   "description": "Interdiction ou négation (« ne pas… »). Toujours affiché en entier, jamais réduit en médaillon : une consigne négative ne doit pas passer inaperçue."
+  },
+  {
+   "id": "ACCORD",
+   "categorie": "reponse",
+   "fr": "d'accord",
+   "en": "agree",
+   "ar": "موافق",
+   "recherche": {
+    "fr": [
+     "d'accord"
+    ],
+    "en": [
+     "agree",
+     "ok"
+    ]
+   },
+   "nouveau": false,
+   "description": "Accord du patient (« je suis d'accord »), utilisé pour le consentement au traitement après explication."
+  },
+  {
+   "id": "QUESTION",
+   "categorie": "reponse",
+   "fr": "question",
+   "en": "question",
+   "ar": "سؤال",
+   "recherche": {
+    "fr": [
+     "question"
+    ],
+    "en": [
+     "question"
+    ]
+   },
+   "nouveau": false,
+   "description": "Marque une question posée au patient : elle attend une réponse."
+  },
+  {
+   "id": "COMPRENDRE",
+   "categorie": "reponse",
+   "fr": "comprendre",
+   "en": "understand",
+   "ar": "أفهم",
+   "recherche": {
+    "fr": [
+     "comprendre"
+    ],
+    "en": [
+     "understand"
+    ]
+   },
+   "nouveau": false,
+   "description": "Compréhension (« j'ai compris » / « avez-vous compris ? »), pour vérifier que le message est passé."
+  },
+  {
+   "id": "STOP",
+   "categorie": "reponse",
+   "fr": "stop",
+   "en": "stop",
+   "ar": "توقف",
+   "recherche": {
+    "fr": [
+     "stop",
+     "arrêter"
+    ],
+    "en": [
+     "stop"
+    ]
+   },
+   "nouveau": false,
+   "description": "Arrêter, cesser (un médicament, une action). Toujours affiché en entier."
+  },
+  {
+   "id": "ATTENDRE",
+   "categorie": "reponse",
+   "fr": "attendre",
+   "en": "wait",
+   "ar": "انتظر",
+   "recherche": {
+    "fr": [
+     "attendre"
+    ],
+    "en": [
+     "wait"
+    ]
+   },
+   "nouveau": false,
+   "description": "Attendre (patienter, attendre un résultat ou le médecin)."
+  },
+  {
+   "id": "VOUS",
+   "categorie": "personne",
+   "fr": "vous",
+   "en": "you",
+   "ar": "أنت",
+   "recherche": {
+    "fr": [
+     "toi",
+     "vous"
+    ],
+    "en": [
+     "you"
+    ]
+   },
+   "nouveau": false,
+   "description": "Désigne le patient (« vous »)."
+  },
+  {
+   "id": "MOI",
+   "categorie": "personne",
+   "fr": "moi",
+   "en": "me",
+   "ar": "أنا",
+   "recherche": {
+    "fr": [
+     "moi",
+     "je"
+    ],
+    "en": [
+     "me",
+     "I"
+    ]
+   },
+   "nouveau": false,
+   "description": "Désigne la personne qui s'exprime (« moi », « je »), utilisé par le patient dans ses réponses."
+  },
+  {
+   "id": "MEDECIN",
+   "categorie": "personne",
+   "fr": "médecin",
+   "en": "doctor",
+   "ar": "طبيب",
+   "recherche": {
+    "fr": [
+     "médecin"
+    ],
+    "en": [
+     "doctor"
+    ]
+   },
+   "nouveau": false,
+   "description": "Le médecin."
+  },
+  {
+   "id": "BEBE",
+   "categorie": "personne",
+   "fr": "bébé",
+   "en": "baby",
+   "ar": "طفل رضيع",
+   "recherche": {
+    "fr": [
+     "bébé"
+    ],
+    "en": [
+     "baby"
+    ]
+   },
+   "nouveau": false,
+   "description": "Bébé, nouveau-né."
+  },
+  {
+   "id": "ENCEINTE",
+   "categorie": "personne",
+   "fr": "enceinte",
+   "en": "pregnant",
+   "ar": "حامل",
+   "recherche": {
+    "fr": [
+     "enceinte"
+    ],
+    "en": [
+     "pregnant"
+    ]
+   },
+   "nouveau": false,
+   "description": "Grossesse (« enceinte »). Information critique avant tout traitement chez une femme en âge de procréer."
+  },
+  {
+   "id": "TETE",
+   "categorie": "corps",
+   "fr": "tête",
+   "en": "head",
+   "ar": "رأس",
+   "recherche": {
+    "fr": [
+     "tête"
+    ],
+    "en": [
+     "head"
+    ]
+   },
+   "nouveau": false,
+   "description": "La tête. Combiné avec DOULEUR : mal de tête."
+  },
+  {
+   "id": "POITRINE",
+   "categorie": "corps",
+   "fr": "poitrine",
+   "en": "chest",
+   "ar": "صدر",
+   "recherche": {
+    "fr": [
+     "poitrine"
+    ],
+    "en": [
+     "chest"
+    ]
+   },
+   "nouveau": false,
+   "description": "La poitrine (thorax). Combiné avec DOULEUR : douleur thoracique, signe d'alerte possible."
+  },
+  {
+   "id": "VENTRE",
+   "categorie": "corps",
+   "fr": "ventre",
+   "en": "belly",
+   "ar": "بطن",
+   "recherche": {
+    "fr": [
+     "ventre"
+    ],
+    "en": [
+     "belly",
+     "stomach"
+    ]
+   },
+   "nouveau": false,
+   "description": "Le ventre (abdomen). Combiné avec DOULEUR : douleur abdominale."
+  },
+  {
+   "id": "DOULEUR",
+   "categorie": "symptome",
+   "fr": "douleur",
+   "en": "pain",
+   "ar": "ألم",
+   "recherche": {
+    "fr": [
+     "douleur",
+     "mal"
+    ],
+    "en": [
+     "pain"
+    ]
+   },
+   "nouveau": false,
+   "description": "Douleur (« avoir mal »). Se combine avec une partie du corps pour localiser la douleur, et avec un chiffre de 0 à 10 pour son intensité."
+  },
+  {
+   "id": "FIEVRE",
+   "categorie": "symptome",
+   "fr": "fièvre",
+   "en": "fever",
+   "ar": "حمّى",
+   "recherche": {
+    "fr": [
+     "fièvre"
+    ],
+    "en": [
+     "fever"
+    ]
+   },
+   "nouveau": false,
+   "description": "Fièvre (température élevée)."
+  },
+  {
+   "id": "TOUX",
+   "categorie": "symptome",
+   "fr": "toux",
+   "en": "cough",
+   "ar": "سعال",
+   "recherche": {
+    "fr": [
+     "tousser",
+     "toux"
+    ],
+    "en": [
+     "cough"
+    ]
+   },
+   "nouveau": false,
+   "description": "Toux (tousser)."
+  },
+  {
+   "id": "VOMIR",
+   "categorie": "symptome",
+   "fr": "vomir",
+   "en": "vomit",
+   "ar": "تقيؤ",
+   "recherche": {
+    "fr": [
+     "vomir"
+    ],
+    "en": [
+     "vomit"
+    ]
+   },
+   "nouveau": false,
+   "description": "Vomir ; utilisé aussi pour les nausées."
+  },
+  {
+   "id": "RESPIRER",
+   "categorie": "symptome",
+   "fr": "respirer",
+   "en": "breathe",
+   "ar": "تنفّس",
+   "recherche": {
+    "fr": [
+     "respirer"
+    ],
+    "en": [
+     "breathe"
+    ]
+   },
+   "nouveau": false,
+   "description": "Respirer ; avec une négation ou une douleur : difficulté à respirer, signe d'alerte."
+  },
+  {
+   "id": "SANG",
+   "categorie": "symptome",
+   "fr": "sang",
+   "en": "blood",
+   "ar": "دم",
+   "recherche": {
+    "fr": [
+     "sang"
+    ],
+    "en": [
+     "blood"
+    ]
+   },
+   "nouveau": false,
+   "description": "Sang : saignement, sang dans les urines, les selles ou les crachats ; analyse de sang selon le contexte."
+  },
+  {
+   "id": "ALLERGIE",
+   "categorie": "symptome",
+   "fr": "allergie",
+   "en": "allergy",
+   "ar": "حساسية",
+   "recherche": {
+    "fr": [
+     "allergie"
+    ],
+    "en": [
+     "allergy"
+    ]
+   },
+   "nouveau": false,
+   "description": "Allergie (à un médicament, un aliment…). Information critique avant toute prescription."
+  },
+  {
+   "id": "MEDICAMENT",
+   "categorie": "soin",
+   "fr": "médicament",
+   "en": "medicine",
+   "ar": "دواء",
+   "recherche": {
+    "fr": [
+     "médicament"
+    ],
+    "en": [
+     "medicine"
+    ]
+   },
+   "nouveau": false,
+   "description": "Médicament en général ; avec un nom (MEDICAMENT:paracetamol), un médicament précis."
+  },
+  {
+   "id": "COMPRIME",
+   "categorie": "soin",
+   "fr": "comprimé",
+   "en": "tablet",
+   "ar": "قرص",
+   "recherche": {
+    "fr": [
+     "comprimé",
+     "pilule"
+    ],
+    "en": [
+     "pill",
+     "tablet"
+    ]
+   },
+   "nouveau": false,
+   "description": "Comprimé (forme du médicament), pour expliquer combien en prendre."
+  },
+  {
+   "id": "PRENDRE",
+   "categorie": "soin",
+   "fr": "prendre (avaler)",
+   "en": "take (swallow)",
+   "ar": "تناول",
+   "recherche": {
+    "fr": [
+     "prendre un médicament",
+     "prendre"
+    ],
+    "en": [
+     "take medicine",
+     "take"
+    ]
+   },
+   "nouveau": false,
+   "description": "Prendre (un médicament, par la bouche)."
+  },
+  {
+   "id": "HOPITAL",
+   "categorie": "soin",
+   "fr": "hôpital",
+   "en": "hospital",
+   "ar": "مستشفى",
+   "recherche": {
+    "fr": [
+     "hôpital"
+    ],
+    "en": [
+     "hospital"
+    ]
+   },
+   "nouveau": false,
+   "description": "Hôpital, établissement de soins."
+  },
+  {
+   "id": "URGENCE",
+   "categorie": "soin",
+   "fr": "urgence",
+   "en": "emergency",
+   "ar": "طوارئ",
+   "recherche": {
+    "fr": [
+     "urgences",
+     "urgence"
+    ],
+    "en": [
+     "emergency"
+    ]
+   },
+   "nouveau": false,
+   "description": "Urgence. Bouton rouge du patient : prioritaire sur tout le reste. Toujours affiché en entier."
+  },
+  {
+   "id": "ANALYSE",
+   "categorie": "soin",
+   "fr": "analyse",
+   "en": "test (lab)",
+   "ar": "تحليل",
+   "recherche": {
+    "fr": [
+     "analyse de sang",
+     "prise de sang"
+    ],
+    "en": [
+     "blood test"
+    ]
+   },
+   "nouveau": false,
+   "description": "Analyse de laboratoire (prise de sang)."
+  },
+  {
+   "id": "EXAMEN",
+   "categorie": "soin",
+   "fr": "examen",
+   "en": "examination",
+   "ar": "فحص",
+   "recherche": {
+    "fr": [
+     "examen médical",
+     "examiner"
+    ],
+    "en": [
+     "medical examination"
+    ]
+   },
+   "nouveau": false,
+   "description": "Examen médical (le médecin examine le patient)."
+  },
+  {
+   "id": "MANGER",
+   "categorie": "soin",
+   "fr": "manger",
+   "en": "eat",
+   "ar": "أكل",
+   "recherche": {
+    "fr": [
+     "manger"
+    ],
+    "en": [
+     "eat"
+    ]
+   },
+   "nouveau": false,
+   "description": "Manger ; avant / après le repas pour la prise d'un médicament."
+  },
+  {
+   "id": "BOIRE",
+   "categorie": "soin",
+   "fr": "boire",
+   "en": "drink",
+   "ar": "شرب",
+   "recherche": {
+    "fr": [
+     "boire"
+    ],
+    "en": [
+     "drink"
+    ]
+   },
+   "nouveau": false,
+   "description": "Boire."
+  },
+  {
+   "id": "EAU",
+   "categorie": "soin",
+   "fr": "eau",
+   "en": "water",
+   "ar": "ماء",
+   "recherche": {
+    "fr": [
+     "eau"
+    ],
+    "en": [
+     "water"
+    ]
+   },
+   "nouveau": false,
+   "description": "Eau (boire de l'eau, s'hydrater)."
+  },
+  {
+   "id": "DORMIR",
+   "categorie": "soin",
+   "fr": "dormir",
+   "en": "sleep",
+   "ar": "نوم",
+   "recherche": {
+    "fr": [
+     "dormir"
+    ],
+    "en": [
+     "sleep"
+    ]
+   },
+   "nouveau": false,
+   "description": "Dormir, se reposer."
+  },
+  {
+   "id": "MATIN",
+   "categorie": "temps",
+   "fr": "matin",
+   "en": "morning",
+   "ar": "صباح",
+   "recherche": {
+    "fr": [
+     "matin"
+    ],
+    "en": [
+     "morning"
+    ]
+   },
+   "nouveau": false,
+   "description": "Le matin (moment de la prise)."
+  },
+  {
+   "id": "MIDI",
+   "categorie": "temps",
+   "fr": "midi",
+   "en": "noon",
+   "ar": "ظهر",
+   "recherche": {
+    "fr": [
+     "midi"
+    ],
+    "en": [
+     "noon"
+    ]
+   },
+   "nouveau": false,
+   "description": "Midi (moment de la prise)."
+  },
+  {
+   "id": "SOIR",
+   "categorie": "temps",
+   "fr": "soir",
+   "en": "evening",
+   "ar": "مساء",
+   "recherche": {
+    "fr": [
+     "soir"
+    ],
+    "en": [
+     "evening"
+    ]
+   },
+   "nouveau": false,
+   "description": "Le soir (moment de la prise)."
+  },
+  {
+   "id": "NUIT",
+   "categorie": "temps",
+   "fr": "nuit",
+   "en": "night",
+   "ar": "ليل",
+   "recherche": {
+    "fr": [
+     "nuit"
+    ],
+    "en": [
+     "night"
+    ]
+   },
+   "nouveau": false,
+   "description": "La nuit."
+  },
+  {
+   "id": "JOUR",
+   "categorie": "temps",
+   "fr": "jour",
+   "en": "day",
+   "ar": "يوم",
+   "recherche": {
+    "fr": [
+     "jour"
+    ],
+    "en": [
+     "day"
+    ]
+   },
+   "nouveau": false,
+   "description": "Jour (durée en jours : « pendant 3 jours »)."
+  },
+  {
+   "id": "SEMAINE",
+   "categorie": "temps",
+   "fr": "semaine",
+   "en": "week",
+   "ar": "أسبوع",
+   "recherche": {
+    "fr": [
+     "semaine"
+    ],
+    "en": [
+     "week"
+    ]
+   },
+   "nouveau": false,
+   "description": "Semaine (durée en semaines)."
+  },
+  {
+   "id": "FOIS",
+   "categorie": "nombre",
+   "fr": "fois (répéter)",
+   "en": "times (repeat)",
+   "ar": "مرة",
+   "recherche": {
+    "fr": [
+     "fois",
+     "répéter"
+    ],
+    "en": [
+     "times",
+     "repeat"
+    ]
+   },
+   "nouveau": false,
+   "description": "Nombre de fois (« 3 fois par jour »)."
+  },
+  {
+   "id": "PLUS",
+   "categorie": "nombre",
+   "fr": "plus (davantage)",
+   "en": "more",
+   "ar": "أكثر",
+   "recherche": {
+    "fr": [
+     "plus"
+    ],
+    "en": [
+     "more"
+    ]
+   },
+   "nouveau": false,
+   "description": "Plus, davantage (augmentation)."
+  },
+  {
+   "id": "MOINS",
+   "categorie": "nombre",
+   "fr": "moins (réduire)",
+   "en": "less",
+   "ar": "أقل",
+   "recherche": {
+    "fr": [
+     "moins"
+    ],
+    "en": [
+     "less"
+    ]
+   },
+   "nouveau": false,
+   "description": "Moins (diminution)."
+  },
+  {
+   "id": "MAXIMUM",
+   "categorie": "nombre",
+   "fr": "au maximum (jusqu'à)",
+   "en": "at most (up to)",
+   "ar": "كحد أقصى",
+   "recherche": {
+    "fr": [
+     "maximum"
+    ],
+    "en": [
+     "maximum"
+    ]
+   },
+   "nouveau": false,
+   "description": "Au maximum, jusqu'à (limite de dose). Toujours affiché en entier : une limite ne doit jamais disparaître."
+  },
+  {
+   "id": "AVANT",
+   "categorie": "temps",
+   "fr": "avant",
+   "en": "before",
+   "ar": "قبل",
+   "recherche": {
+    "fr": [
+     "avant"
+    ],
+    "en": [
+     "before"
+    ]
+   },
+   "nouveau": false,
+   "description": "Avant (avant le repas, avant de dormir)."
+  },
+  {
+   "id": "APRES",
+   "categorie": "temps",
+   "fr": "après",
+   "en": "after",
+   "ar": "بعد",
+   "recherche": {
+    "fr": [
+     "après"
+    ],
+    "en": [
+     "after"
+    ]
+   },
+   "nouveau": false,
+   "description": "Après (après le repas)."
+  },
+  {
+   "id": "GORGE",
+   "categorie": "corps",
+   "fr": "gorge",
+   "en": "throat",
+   "ar": "حلق",
+   "recherche": {
+    "fr": [
+     "gorge"
+    ],
+    "en": [
+     "throat"
+    ]
+   },
+   "nouveau": true,
+   "description": "La gorge. Combiné avec DOULEUR : mal de gorge."
+  },
+  {
+   "id": "OREILLE",
+   "categorie": "corps",
+   "fr": "oreille",
+   "en": "ear",
+   "ar": "أذن",
+   "recherche": {
+    "fr": [
+     "oreille"
+    ],
+    "en": [
+     "ear"
+    ]
+   },
+   "nouveau": true,
+   "description": "L'oreille. Combiné avec DOULEUR : mal d'oreille."
+  },
+  {
+   "id": "OEIL",
+   "categorie": "corps",
+   "fr": "œil",
+   "en": "eye",
+   "ar": "عين",
+   "recherche": {
+    "fr": [
+     "œil",
+     "oeil"
+    ],
+    "en": [
+     "eye"
+    ]
+   },
+   "nouveau": true,
+   "description": "L'œil (les yeux). Combiné avec DOULEUR : douleur oculaire."
+  },
+  {
+   "id": "DENT",
+   "categorie": "corps",
+   "fr": "dent",
+   "en": "tooth",
+   "ar": "سن",
+   "recherche": {
+    "fr": [
+     "dent"
+    ],
+    "en": [
+     "tooth"
+    ]
+   },
+   "nouveau": true,
+   "description": "La dent. Combiné avec DOULEUR : mal de dents."
+  },
+  {
+   "id": "DOS",
+   "categorie": "corps",
+   "fr": "dos",
+   "en": "back",
+   "ar": "ظهر",
+   "recherche": {
+    "fr": [
+     "dos"
+    ],
+    "en": [
+     "back"
+    ]
+   },
+   "nouveau": true,
+   "description": "Le dos. Combiné avec DOULEUR : mal de dos."
+  },
+  {
+   "id": "BRAS",
+   "categorie": "corps",
+   "fr": "bras",
+   "en": "arm",
+   "ar": "ذراع",
+   "recherche": {
+    "fr": [
+     "bras"
+    ],
+    "en": [
+     "arm"
+    ]
+   },
+   "nouveau": true,
+   "description": "Le bras."
+  },
+  {
+   "id": "JAMBE",
+   "categorie": "corps",
+   "fr": "jambe",
+   "en": "leg",
+   "ar": "ساق",
+   "recherche": {
+    "fr": [
+     "jambe"
+    ],
+    "en": [
+     "leg"
+    ]
+   },
+   "nouveau": true,
+   "description": "La jambe."
+  },
+  {
+   "id": "PIED",
+   "categorie": "corps",
+   "fr": "pied",
+   "en": "foot",
+   "ar": "قدم",
+   "recherche": {
+    "fr": [
+     "pied"
+    ],
+    "en": [
+     "foot"
+    ]
+   },
+   "nouveau": true,
+   "description": "Le pied."
+  },
+  {
+   "id": "MAIN",
+   "categorie": "corps",
+   "fr": "main",
+   "en": "hand",
+   "ar": "يد",
+   "recherche": {
+    "fr": [
+     "main"
+    ],
+    "en": [
+     "hand"
+    ]
+   },
+   "nouveau": true,
+   "description": "La main."
+  },
+  {
+   "id": "COEUR",
+   "categorie": "corps",
+   "fr": "cœur",
+   "en": "heart",
+   "ar": "قلب",
+   "recherche": {
+    "fr": [
+     "cœur",
+     "coeur"
+    ],
+    "en": [
+     "heart"
+    ]
+   },
+   "nouveau": true,
+   "description": "Le cœur ; palpitations ou douleur cardiaque selon la combinaison."
+  },
+  {
+   "id": "PEAU",
+   "categorie": "corps",
+   "fr": "peau",
+   "en": "skin",
+   "ar": "جلد",
+   "recherche": {
+    "fr": [
+     "peau"
+    ],
+    "en": [
+     "skin"
+    ]
+   },
+   "nouveau": true,
+   "description": "La peau ; boutons, rougeurs, démangeaisons selon la combinaison."
+  },
+  {
+   "id": "VERTIGE",
+   "categorie": "symptome",
+   "fr": "vertige",
+   "en": "dizziness",
+   "ar": "دوار",
+   "recherche": {
+    "fr": [
+     "vertige",
+     "étourdissement"
+    ],
+    "en": [
+     "dizzy"
+    ]
+   },
+   "nouveau": true,
+   "description": "Vertige, étourdissement, tête qui tourne."
+  },
+  {
+   "id": "FATIGUE",
+   "categorie": "symptome",
+   "fr": "fatigue",
+   "en": "tiredness",
+   "ar": "تعب",
+   "recherche": {
+    "fr": [
+     "fatigué",
+     "fatigue"
+    ],
+    "en": [
+     "tired"
+    ]
+   },
+   "nouveau": true,
+   "description": "Fatigue, épuisement."
+  },
+  {
+   "id": "DIARRHEE",
+   "categorie": "symptome",
+   "fr": "diarrhée",
+   "en": "diarrhoea",
+   "ar": "إسهال",
+   "recherche": {
+    "fr": [
+     "diarrhée"
+    ],
+    "en": [
+     "diarrhea",
+     "diarrhoea"
+    ]
+   },
+   "nouveau": true,
+   "description": "Diarrhée (selles liquides et fréquentes)."
+  },
+  {
+   "id": "CONSTIPATION",
+   "categorie": "symptome",
+   "fr": "constipation",
+   "en": "constipation",
+   "ar": "إمساك",
+   "recherche": {
+    "fr": [
+     "constipation"
+    ],
+    "en": [
+     "constipation"
+    ]
+   },
+   "nouveau": true,
+   "description": "Constipation."
+  },
+  {
+   "id": "DEMANGEAISON",
+   "categorie": "symptome",
+   "fr": "démangeaison",
+   "en": "itching",
+   "ar": "حكة",
+   "recherche": {
+    "fr": [
+     "démangeaison",
+     "gratter"
+    ],
+    "en": [
+     "itch"
+    ]
+   },
+   "nouveau": true,
+   "description": "Démangeaison (gratter), souvent liée à une allergie ou à la peau."
+  },
+  {
+   "id": "BRULURE",
+   "categorie": "symptome",
+   "fr": "brûlure",
+   "en": "burn",
+   "ar": "حرق",
+   "recherche": {
+    "fr": [
+     "brûlure"
+    ],
+    "en": [
+     "burn"
+    ]
+   },
+   "nouveau": true,
+   "description": "Brûlure (de la peau, ou sensation de brûlure)."
+  },
+  {
+   "id": "GONFLEMENT",
+   "categorie": "symptome",
+   "fr": "gonflement",
+   "en": "swelling",
+   "ar": "تورم",
+   "recherche": {
+    "fr": [
+     "gonflé",
+     "enflure"
+    ],
+    "en": [
+     "swelling",
+     "swollen"
+    ]
+   },
+   "nouveau": true,
+   "description": "Gonflement (œdème) ; au visage ou à la gorge : signe d'alerte d'allergie grave."
+  },
+  {
+   "id": "RHUME",
+   "categorie": "symptome",
+   "fr": "rhume",
+   "en": "cold (illness)",
+   "ar": "زكام",
+   "recherche": {
+    "fr": [
+     "rhume",
+     "enrhumé"
+    ],
+    "en": [
+     "cold",
+     "runny nose"
+    ]
+   },
+   "nouveau": true,
+   "description": "Rhume (nez qui coule, nez bouché)."
+  },
+  {
+   "id": "EVANOUISSEMENT",
+   "categorie": "symptome",
+   "fr": "évanouissement",
+   "en": "fainting",
+   "ar": "إغماء",
+   "recherche": {
+    "fr": [
+     "s'évanouir",
+     "évanouissement"
+    ],
+    "en": [
+     "faint"
+    ]
+   },
+   "nouveau": true,
+   "description": "Évanouissement, perte de connaissance, malaise : signe d'alerte."
+  },
+  {
+   "id": "PEUR",
+   "categorie": "emotion",
+   "fr": "peur",
+   "en": "fear",
+   "ar": "خوف",
+   "recherche": {
+    "fr": [
+     "peur"
+    ],
+    "en": [
+     "fear",
+     "scared"
+    ]
+   },
+   "nouveau": true,
+   "description": "Peur, angoisse : ressenti du patient, à prendre en compte dans la relation de soin."
+  },
+  {
+   "id": "INQUIET",
+   "categorie": "emotion",
+   "fr": "inquiet",
+   "en": "worried",
+   "ar": "قلق",
+   "recherche": {
+    "fr": [
+     "inquiet",
+     "préoccupé"
+    ],
+    "en": [
+     "worried"
+    ]
+   },
+   "nouveau": true,
+   "description": "Inquiétude."
+  },
+  {
+   "id": "TRISTE",
+   "categorie": "emotion",
+   "fr": "triste",
+   "en": "sad",
+   "ar": "حزين",
+   "recherche": {
+    "fr": [
+     "triste"
+    ],
+    "en": [
+     "sad"
+    ]
+   },
+   "nouveau": true,
+   "description": "Tristesse."
+  },
+  {
+   "id": "CONTENT",
+   "categorie": "emotion",
+   "fr": "content",
+   "en": "happy",
+   "ar": "سعيد",
+   "recherche": {
+    "fr": [
+     "content",
+     "heureux"
+    ],
+    "en": [
+     "happy"
+    ]
+   },
+   "nouveau": true,
+   "description": "Contentement, satisfaction."
+  },
+  {
+   "id": "COLERE",
+   "categorie": "emotion",
+   "fr": "colère",
+   "en": "anger",
+   "ar": "غضب",
+   "recherche": {
+    "fr": [
+     "colère",
+     "fâché"
+    ],
+    "en": [
+     "angry"
+    ]
+   },
+   "nouveau": true,
+   "description": "Colère, mécontentement."
+  },
+  {
+   "id": "INJECTION",
+   "categorie": "soin",
+   "fr": "piqûre",
+   "en": "injection",
+   "ar": "حقنة",
+   "recherche": {
+    "fr": [
+     "piqûre",
+     "injection"
+    ],
+    "en": [
+     "injection"
+    ]
+   },
+   "nouveau": true,
+   "description": "Piqûre, injection."
+  },
+  {
+   "id": "VACCIN",
+   "categorie": "soin",
+   "fr": "vaccin",
+   "en": "vaccine",
+   "ar": "لقاح",
+   "recherche": {
+    "fr": [
+     "vaccin",
+     "vacciner"
+    ],
+    "en": [
+     "vaccine"
+    ]
+   },
+   "nouveau": true,
+   "description": "Vaccin, vaccination."
+  },
+  {
+   "id": "PANSEMENT",
+   "categorie": "soin",
+   "fr": "pansement",
+   "en": "bandage",
+   "ar": "ضمادة",
+   "recherche": {
+    "fr": [
+     "pansement"
+    ],
+    "en": [
+     "bandage"
+    ]
+   },
+   "nouveau": true,
+   "description": "Pansement, soin d'une plaie."
+  },
+  {
+   "id": "ORDONNANCE",
+   "categorie": "soin",
+   "fr": "ordonnance",
+   "en": "prescription",
+   "ar": "وصفة طبية",
+   "recherche": {
+    "fr": [
+     "ordonnance"
+    ],
+    "en": [
+     "prescription"
+    ]
+   },
+   "nouveau": true,
+   "description": "Ordonnance (prescription écrite du médecin)."
+  },
+  {
+   "id": "PHARMACIE",
+   "categorie": "soin",
+   "fr": "pharmacie",
+   "en": "pharmacy",
+   "ar": "صيدلية",
+   "recherche": {
+    "fr": [
+     "pharmacie"
+    ],
+    "en": [
+     "pharmacy"
+    ]
+   },
+   "nouveau": true,
+   "description": "Pharmacie (où obtenir les médicaments)."
+  },
+  {
+   "id": "THERMOMETRE",
+   "categorie": "soin",
+   "fr": "thermomètre",
+   "en": "thermometer",
+   "ar": "ميزان الحرارة",
+   "recherche": {
+    "fr": [
+     "thermomètre"
+    ],
+    "en": [
+     "thermometer"
+    ]
+   },
+   "nouveau": true,
+   "description": "Thermomètre (prendre la température)."
+  },
+  {
+   "id": "TENSION",
+   "categorie": "soin",
+   "fr": "tension artérielle",
+   "en": "blood pressure",
+   "ar": "ضغط الدم",
+   "recherche": {
+    "fr": [
+     "tension artérielle",
+     "prendre la tension"
+    ],
+    "en": [
+     "blood pressure"
+    ]
+   },
+   "nouveau": true,
+   "description": "Tension artérielle (la mesurer)."
+  },
+  {
+   "id": "RADIO",
+   "categorie": "soin",
+   "fr": "radiographie",
+   "en": "X-ray",
+   "ar": "صورة أشعة",
+   "recherche": {
+    "fr": [
+     "radiographie",
+     "radio"
+    ],
+    "en": [
+     "x-ray"
+    ]
+   },
+   "nouveau": true,
+   "description": "Radiographie."
+  },
+  {
+   "id": "ECHOGRAPHIE",
+   "categorie": "soin",
+   "fr": "échographie",
+   "en": "ultrasound scan",
+   "ar": "تصوير بالموجات فوق الصوتية",
+   "recherche": {
+    "fr": [
+     "échographie"
+    ],
+    "en": [
+     "ultrasound"
+    ]
+   },
+   "nouveau": true,
+   "description": "Échographie (par exemple pendant la grossesse)."
+  },
+  {
+   "id": "OPERATION",
+   "categorie": "soin",
+   "fr": "opération",
+   "en": "surgery",
+   "ar": "عملية جراحية",
+   "recherche": {
+    "fr": [
+     "opération",
+     "chirurgie"
+    ],
+    "en": [
+     "surgery",
+     "operation"
+    ]
+   },
+   "nouveau": true,
+   "description": "Opération chirurgicale."
+  },
+  {
+   "id": "SIROP",
+   "categorie": "soin",
+   "fr": "sirop",
+   "en": "syrup",
+   "ar": "شراب دوائي",
+   "recherche": {
+    "fr": [
+     "sirop"
+    ],
+    "en": [
+     "syrup"
+    ]
+   },
+   "nouveau": true,
+   "description": "Sirop (forme liquide d'un médicament)."
+  },
+  {
+   "id": "POMMADE",
+   "categorie": "soin",
+   "fr": "pommade",
+   "en": "ointment",
+   "ar": "مرهم",
+   "recherche": {
+    "fr": [
+     "pommade",
+     "crème"
+    ],
+    "en": [
+     "ointment",
+     "cream"
+    ]
+   },
+   "nouveau": true,
+   "description": "Pommade, crème à appliquer sur la peau."
+  },
+  {
+   "id": "GOUTTES",
+   "categorie": "soin",
+   "fr": "gouttes",
+   "en": "drops",
+   "ar": "قطرات",
+   "recherche": {
+    "fr": [
+     "gouttes",
+     "collyre"
+    ],
+    "en": [
+     "drops"
+    ]
+   },
+   "nouveau": true,
+   "description": "Gouttes (yeux, oreilles, nez)."
+  },
+  {
+   "id": "AMBULANCE",
+   "categorie": "soin",
+   "fr": "ambulance",
+   "en": "ambulance",
+   "ar": "سيارة إسعاف",
+   "recherche": {
+    "fr": [
+     "ambulance"
+    ],
+    "en": [
+     "ambulance"
+    ]
+   },
+   "nouveau": true,
+   "description": "Ambulance, transport en urgence."
+  },
+  {
+   "id": "INFIRMIER",
+   "categorie": "personne",
+   "fr": "infirmier",
+   "en": "nurse",
+   "ar": "ممرض",
+   "recherche": {
+    "fr": [
+     "infirmier",
+     "infirmière"
+    ],
+    "en": [
+     "nurse"
+    ]
+   },
+   "nouveau": true,
+   "description": "Infirmier ou infirmière."
+  },
+  {
+   "id": "FAMILLE",
+   "categorie": "personne",
+   "fr": "famille",
+   "en": "family",
+   "ar": "عائلة",
+   "recherche": {
+    "fr": [
+     "famille"
+    ],
+    "en": [
+     "family"
+    ]
+   },
+   "nouveau": true,
+   "description": "La famille, les proches."
+  },
+  {
+   "id": "ENFANT",
+   "categorie": "personne",
+   "fr": "enfant",
+   "en": "child",
+   "ar": "طفل",
+   "recherche": {
+    "fr": [
+     "enfant"
+    ],
+    "en": [
+     "child"
+    ]
+   },
+   "nouveau": true,
+   "description": "Enfant."
+  },
+  {
+   "id": "INTERPRETE",
+   "categorie": "personne",
+   "fr": "interprète",
+   "en": "interpreter",
+   "ar": "مترجم",
+   "recherche": {
+    "fr": [
+     "interprète",
+     "langue des signes"
+    ],
+    "en": [
+     "interpreter",
+     "sign language"
+    ]
+   },
+   "nouveau": true,
+   "description": "Interprète en langue des signes."
+  },
+  {
+   "id": "AIDE",
+   "categorie": "reponse",
+   "fr": "aide",
+   "en": "help",
+   "ar": "مساعدة",
+   "recherche": {
+    "fr": [
+     "aider",
+     "aide"
+    ],
+    "en": [
+     "help"
+    ]
+   },
+   "nouveau": true,
+   "description": "Demander de l'aide."
+  },
+  {
+   "id": "REPETER",
+   "categorie": "reponse",
+   "fr": "répéter",
+   "en": "repeat",
+   "ar": "كرر",
+   "recherche": {
+    "fr": [
+     "répéter"
+    ],
+    "en": [
+     "repeat"
+    ]
+   },
+   "nouveau": true,
+   "description": "Répéter (« pouvez-vous répéter ? »)."
+  }
+ ]
+}

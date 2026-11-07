@@ -1,0 +1,1673 @@
+{
+ "nom": "Règles du juriste MEDIMCOM IA - Émirats arabes unis (pays hôte)",
+ "version": "1.0",
+ "verifie_le": "2026-10-16",
+ "avertissement": "Prototype de hackathon. Chaque règle cite des fiches de la base (kb/fiches.jsonl) ; le texte arabe des lois prévaut. Les règles CLINIQUES (contre-indications) sont des exemples tirés de sources publiques et doivent être validées par un médecin et remplacées par le formulaire national (EDE/MOHAP) avant tout usage réel. Les praticiens et médicaments listés sont fictifs ou de démonstration.",
+ "principes": [
+  "Seule une source contraignante (LOI, NORME d'un régulateur) peut BLOQUER. Une RECOMMANDATION clinique peut au plus demander une révision (A_REVOIR).",
+  "A_REVOIR : le médecin peut maintenir sa décision en la justifiant ; son nom est enregistré. BLOQUE : aucune dérogation dans le système.",
+  "Une information inconnue n'est jamais supposée favorable : PREUVES_INSUFFISANTES.",
+  "OBLIGATION : action à accomplir (consentement, information du patient) sans changer le verdict. INFORMATION : simple rappel.",
+  "Une règle peut signaler une LACUNE (kb/lacunes.json) quand les textes ne règlent pas la situation."
+ ],
+ "niveaux": [
+  "CONFORME",
+  "PREUVES_INSUFFISANTES",
+  "A_REVOIR",
+  "BLOQUE"
+ ],
+ "juridiction_par_defaut": "AE-DU",
+ "signature": {
+  "_note": "Signature typée des variables de chaque famille de règles. monde « ouvert » : une valeur absente est INCONNUE (logique de Kleene : une règle restrictive qui pourrait s'appliquer donne « preuves insuffisantes ») ; monde « ferme » : une valeur absente veut dire « aucun ». Toute variable utilisée par une règle doit être déclarée ici (contrôlé par outils/verifier_formel.py).",
+  "partage": {
+   "lieu": {
+    "type": "enum",
+    "valeurs": [
+     "dans_le_pays",
+     "hors_du_pays"
+    ],
+    "monde": "ouvert"
+   },
+   "finalite": {
+    "type": "texte",
+    "monde": "ouvert"
+   },
+   "destinataire_type": {
+    "type": "texte",
+    "monde": "ouvert"
+   },
+   "consentement_ecrit": {
+    "type": "booleen",
+    "monde": "ouvert"
+   },
+   "chiffrement": {
+    "type": "booleen",
+    "monde": "ouvert"
+   },
+   "copie_eau": {
+    "type": "booleen",
+    "monde": "ouvert"
+   },
+   "anonymise": {
+    "type": "booleen",
+    "monde": "ouvert"
+   },
+   "exception_res51": {
+    "type": "texte",
+    "monde": "ferme"
+   }
+  },
+  "prescription": {
+   "dose": {
+    "type": "texte",
+    "monde": "ouvert"
+   },
+   "posologie": {
+    "type": "texte",
+    "monde": "ouvert"
+   },
+   "mode": {
+    "type": "enum",
+    "valeurs": [
+     "presentiel",
+     "distance"
+    ],
+    "monde": "ouvert"
+   },
+   "categorie": {
+    "type": "texte",
+    "monde": "ouvert"
+   },
+   "urgence": {
+    "type": "booleen",
+    "monde": "ferme"
+   },
+   "moyen_communication": {
+    "type": "texte",
+    "monde": "ouvert"
+   },
+   "informe_usage_ia": {
+    "type": "booleen",
+    "monde": "ouvert"
+   },
+   "issue_de_suggestion": {
+    "type": "booleen",
+    "monde": "ferme"
+   }
+  },
+  "contre_indications": {
+   "grossesse": {
+    "type": "booleen",
+    "monde": "ouvert"
+   },
+   "sexe": {
+    "type": "enum",
+    "valeurs": [
+     "F",
+     "M"
+    ],
+    "monde": "ouvert"
+   },
+   "age": {
+    "type": "nombre",
+    "monde": "ouvert"
+   },
+   "maladie_renale": {
+    "type": "booleen",
+    "monde": "ferme"
+   },
+   "maladie_hepatique": {
+    "type": "booleen",
+    "monde": "ferme"
+   },
+   "ulcere_digestif": {
+    "type": "booleen",
+    "monde": "ferme"
+   },
+   "anticoagulant": {
+    "type": "booleen",
+    "monde": "ferme"
+   },
+   "maladie_cardiaque": {
+    "type": "booleen",
+    "monde": "ferme"
+   }
+  },
+  "axiomes": {
+   "sexe": {
+    "type": "enum",
+    "valeurs": [
+     "F",
+     "M"
+    ],
+    "monde": "ouvert"
+   },
+   "age": {
+    "type": "nombre",
+    "monde": "ouvert"
+   }
+  },
+  "envoi_patient": {
+   "valideur_autorise": {
+    "type": "booleen",
+    "monde": "ferme"
+   },
+   "statut_prescription_liee": {
+    "type": "texte",
+    "monde": "ferme"
+   },
+   "contenu_type": {
+    "type": "texte",
+    "monde": "ferme"
+   },
+   "incitation_au_mal": {
+    "type": "booleen",
+    "monde": "ferme"
+   },
+   "medicament_controle": {
+    "type": "booleen",
+    "monde": "ferme"
+   }
+  },
+  "etat": {
+   "maladie_declarable_groupe": {
+    "type": "texte",
+    "monde": "ferme"
+   },
+   "urgence": {
+    "type": "booleen",
+    "monde": "ferme"
+   },
+   "moyen_communication": {
+    "type": "texte",
+    "monde": "ouvert"
+   }
+  }
+ },
+ "lieux": {
+  "eau": "dans_le_pays",
+  "emirats": "dans_le_pays",
+  "emirats_arabes_unis": "dans_le_pays",
+  "uae": "dans_le_pays",
+  "ae": "dans_le_pays",
+  "dubai": "dans_le_pays",
+  "abu_dhabi": "dans_le_pays",
+  "hors_eau": "hors_du_pays",
+  "hors_uae": "hors_du_pays",
+  "outside_uae": "hors_du_pays",
+  "hors_emirats": "hors_du_pays",
+  "cameroun": "hors_du_pays"
+ },
+ "note_lieux": "Noms de lieux reconnus pour ces règles, traduits en jetons neutres : « dans_le_pays » (Émirats) ou « hors_du_pays ».",
+ "prescripteurs": {
+  "DR-001": {
+   "nom": "Dr Amal (fictive)",
+   "licence": "DHA-FICTIVE-0001",
+   "autorite": "DHA",
+   "humain": true,
+   "actif": true
+  },
+  "DR-002": {
+   "nom": "Dr Karim (fictif)",
+   "licence": "DHA-FICTIVE-0002",
+   "autorite": "DHA",
+   "humain": true,
+   "actif": false
+  }
+ },
+ "regle_prescripteur": {
+  "inconnu": {
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "MP24-A42-2",
+    "MP24-A1-RX",
+    "ML16-A4-1"
+   ],
+   "detail": "Prescripteur absent du registre des praticiens autorisés : seul un praticien autorisé peut prescrire.",
+   "detail_en": "Prescriber not in the register of authorised practitioners: only an authorised practitioner may prescribe."
+  },
+  "inactif": {
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "MP24-A42-2"
+   ],
+   "detail": "Licence du prescripteur inactive : prescription impossible.",
+   "detail_en": "Prescriber licence inactive: prescription not allowed."
+  },
+  "non_humain": {
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "ML16-A4-6",
+    "DOH18-SUPPORT",
+    "RAI25-3.1.7.2.2"
+   ],
+   "detail": "Une prescription doit être faite par écrit par le médecin (nom, signature, date) ; un agent d'IA ne prescrit jamais.",
+   "detail_en": "A prescription must be written by the physician (name, signature, date); an AI agent never prescribes."
+  }
+ },
+ "champs_obligatoires_avant_prescription": [
+  {
+   "champ": "grossesse",
+   "si": {
+    "sexe": "F",
+    "age_min": 12,
+    "age_max": 50
+   },
+   "base": "LOI",
+   "fiches": [
+    "ML16-A4-2"
+   ],
+   "detail": "Grossesse non renseignée chez une femme en âge de procréer : l'état du patient doit être consigné avant le traitement.",
+   "detail_en": "Pregnancy status unknown for a woman of childbearing age: the patient's condition must be recorded before treatment."
+  },
+  {
+   "champ": "allergies",
+   "si": {},
+   "base": "LOI",
+   "fiches": [
+    "ML16-A4-2"
+   ],
+   "detail": "Allergies non renseignées : les antécédents doivent être consignés avant le traitement.",
+   "detail_en": "Allergies unknown: medical history must be recorded before treatment."
+  },
+  {
+   "champ": "traitements_en_cours",
+   "si": {},
+   "base": "LOI",
+   "fiches": [
+    "ML16-A4-2"
+   ],
+   "detail": "Traitements en cours non renseignés : les antécédents doivent être consignés avant le traitement.",
+   "detail_en": "Current treatments unknown: medical history must be recorded before treatment."
+  }
+ ],
+ "axiomes": [
+  {
+   "id": "AX-HOMME",
+   "si": {
+    "sexe": "M"
+   },
+   "alors": {
+    "grossesse": false
+   },
+   "raison": "Un homme n'est pas enceint.",
+   "fiches": [
+    "ML16-A4-2"
+   ],
+   "base": "LOI",
+   "detail": "Un homme n'est pas enceint. L'état du patient doit être consigné correctement avant le traitement : vérifier le dossier."
+  },
+  {
+   "id": "AX-AGE-BAS",
+   "si": {
+    "age": {
+     "inferieur_a": 12
+    }
+   },
+   "alors": {
+    "grossesse": false
+   },
+   "raison": "Hors de l'âge de procréer retenu par les champs obligatoires (12 à 50 ans).",
+   "fiches": [
+    "ML16-A4-2"
+   ],
+   "base": "LOI",
+   "detail": "Hors de l'âge de procréer retenu par les champs obligatoires (12 à 50 ans). L'état du patient doit être consigné correctement avant le traitement : vérifier le dossier."
+  },
+  {
+   "id": "AX-AGE-HAUT",
+   "si": {
+    "age": {
+     "superieur_a": 50
+    }
+   },
+   "alors": {
+    "grossesse": false
+   },
+   "raison": "Hors de l'âge de procréer retenu par les champs obligatoires (12 à 50 ans).",
+   "fiches": [
+    "ML16-A4-2"
+   ],
+   "base": "LOI",
+   "detail": "Hors de l'âge de procréer retenu par les champs obligatoires (12 à 50 ans). L'état du patient doit être consigné correctement avant le traitement : vérifier le dossier."
+  }
+ ],
+ "medicaments": {
+  "paracetamol": {
+   "categorie": "standard",
+   "amm": true,
+   "amm_a_confirmer": true,
+   "contre_indications": [
+    {
+     "si": {
+      "maladie_hepatique": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-APAP-FOIE"
+     ],
+     "detail": "Paracétamol et maladie du foie : risque d'atteinte hépatique grave ; dose à réduire et avis médical.",
+     "detail_en": "Paracetamol and liver disease: risk of severe liver damage; reduce the dose and seek medical advice."
+    },
+    {
+     "si": {
+      "anticoagulant": true
+     },
+     "niveau": "INFORMATION",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-APAP-FOIE"
+     ],
+     "detail": "Paracétamol sous anticoagulant (warfarine) : surveiller l'INR en cas de prise régulière.",
+     "detail_en": "Paracetamol with an anticoagulant (warfarin): monitor INR with regular use."
+    }
+   ],
+   "synonymes": [
+    "acetaminophene",
+    "acetaminophen",
+    "panadol",
+    "doliprane",
+    "efferalgan"
+   ],
+   "dose_max_jour_mg": {
+    "valeur": 4000,
+    "fiches": [
+     "OTC-APAP-FOIE"
+    ]
+   }
+  },
+  "ibuprofene": {
+   "categorie": "standard",
+   "amm": true,
+   "amm_a_confirmer": true,
+   "contre_indications": [
+    {
+     "si": {
+      "grossesse": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "FDA20-NSAID"
+     ],
+     "detail": "Anti-inflammatoire (AINS) : à éviter à partir de 20 semaines de grossesse sauf avis médical explicite ; le paracétamol est cité comme alternative. Règle clinique d'exemple, à valider par un médecin.",
+     "detail_en": "NSAID: avoid from 20 weeks of pregnancy unless specifically advised; acetaminophen is cited as an alternative. Example clinical rule, to be validated by a physician.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    },
+    {
+     "si": {
+      "grossesse": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-IBU-GROSS"
+     ],
+     "detail": "Ibuprofène : à ne pas utiliser pendant les 3 derniers mois de la grossesse.",
+     "detail_en": "Ibuprofen: not to be used during the last 3 months of pregnancy.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    },
+    {
+     "si": {
+      "ulcere_digestif": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-IBU-SAIGNEMENT"
+     ],
+     "detail": "Ibuprofène et antécédent d'ulcère ou de saignement digestif : risque d'hémorragie.",
+     "detail_en": "Ibuprofen and history of ulcer or bleeding: risk of haemorrhage.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    },
+    {
+     "si": {
+      "anticoagulant": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-IBU-SAIGNEMENT"
+     ],
+     "detail": "Ibuprofène sous anticoagulant : risque d'hémorragie digestive.",
+     "detail_en": "Ibuprofen with an anticoagulant: risk of gastrointestinal bleeding.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    },
+    {
+     "si": {
+      "maladie_renale": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-IBU-SAIGNEMENT"
+     ],
+     "detail": "Ibuprofène et maladie des reins : avis médical nécessaire, risque d'aggravation.",
+     "detail_en": "Ibuprofen and kidney disease: medical advice needed, risk of worsening.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    },
+    {
+     "si": {
+      "maladie_cardiaque": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-IBU-SAIGNEMENT"
+     ],
+     "detail": "Ibuprofène et maladie du cœur : avis médical nécessaire.",
+     "detail_en": "Ibuprofen and heart disease: medical advice needed.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    },
+    {
+     "si": {
+      "age": {
+       "superieur_a": 59
+      }
+     },
+     "niveau": "INFORMATION",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-IBU-SAIGNEMENT"
+     ],
+     "detail": "Ibuprofène après 60 ans : risque de saignement digestif plus élevé.",
+     "detail_en": "Ibuprofen at 60 or older: higher risk of stomach bleeding."
+    }
+   ],
+   "synonymes": [
+    "ibuprofen",
+    "advil",
+    "brufen",
+    "nurofen"
+   ],
+   "classes": [
+    "ains",
+    "nsaid",
+    "anti_inflammatoire",
+    "aspirine",
+    "aspirin",
+    "acide_acetylsalicylique"
+   ],
+   "dose_max_jour_mg": {
+    "valeur": 3200,
+    "fiches": [
+     "RX-IBU-MAX"
+    ]
+   }
+  },
+  "misoprostol": {
+   "categorie": "standard",
+   "amm": true,
+   "amm_a_confirmer": true,
+   "contre_indications": [
+    {
+     "si": {
+      "grossesse": true
+     },
+     "niveau": "BLOQUE",
+     "base": "LOI",
+     "fiches": [
+      "ML16-A16",
+      "CYTOTEC-BW"
+     ],
+     "detail": "Interdit : prescription pouvant provoquer un avortement chez une femme enceinte. Les exceptions de la loi (danger pour la vie de la mère, malformation grave) exigent une procédure (rapport médical, comité, consentement écrit des époux) qui ne peut pas être validée d'un clic dans ce système : orienter vers cette procédure, hors du système.",
+     "detail_en": "Prohibited: prescribing anything that may cause abortion of a pregnant woman. The legal exceptions (danger to the mother's life, serious fetal deformity) require a procedure (medical report, committee, written consent of both spouses) that cannot be cleared by one click in this system: refer to that procedure, outside the system."
+    }
+   ],
+   "synonymes": [
+    "cytotec"
+   ]
+  },
+  "tramadol": {
+   "categorie": "controle",
+   "amm": true,
+   "amm_a_confirmer": true,
+   "contre_indications": [
+    {
+     "si": {
+      "grossesse": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "FDA-TRAM-GROSS"
+     ],
+     "detail": "Tramadol pendant la grossesse : risque de syndrome de sevrage néonatal aux opioïdes, parfois mortel. À éviter sauf justification médicale explicite.",
+     "detail_en": "Tramadol in pregnancy: risk of neonatal opioid withdrawal syndrome, which may be life-threatening. Avoid unless explicitly justified.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    },
+    {
+     "si": {
+      "age": {
+       "inferieur_a": 12
+      }
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "FDA-TRAM-ENFANT"
+     ],
+     "detail": "Tramadol chez l'enfant de moins de 12 ans : contre-indiqué par l'étiquette de la FDA (référence étrangère, à confirmer par la notice émiratie).",
+     "detail_en": "Tramadol in a child under 12: contraindicated by the FDA label (foreign reference, to be confirmed by the UAE product information)."
+    },
+    {
+     "si": {
+      "age": {
+       "inferieur_a": 18
+      }
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "FDA-TRAM-ENFANT"
+     ],
+     "detail": "Tramadol chez un mineur : à éviter chez l'adolescent de 12 à 18 ans qui a d'autres facteurs de risque ; justification nécessaire.",
+     "detail_en": "Tramadol in a minor: avoid in adolescents aged 12 to 18 with other risk factors; justification required."
+    }
+   ],
+   "synonymes": [
+    "tramal",
+    "ultram"
+   ],
+   "dose_max_jour_mg": {
+    "valeur": 400,
+    "fiches": [
+     "FDA-TRAM-MAX"
+    ]
+   }
+  },
+  "medicament_fictif_x": {
+   "categorie": "standard",
+   "amm": false,
+   "base": "LOI",
+   "fiches": [
+    "MP24-A5-1"
+   ],
+   "detail": "Médicament sans autorisation de mise sur le marché aux Émirats : utilisation interdite.",
+   "detail_en": "Medicine without UAE marketing approval: use prohibited."
+  },
+  "aspirine": {
+   "categorie": "standard",
+   "amm": true,
+   "amm_a_confirmer": true,
+   "synonymes": [
+    "aspirin",
+    "acide acetylsalicylique",
+    "acide_acetylsalicylique",
+    "aspegic"
+   ],
+   "classes": [
+    "ains",
+    "nsaid",
+    "anti_inflammatoire"
+   ],
+   "contre_indications": [
+    {
+     "si": {
+      "age": {
+       "inferieur_a": 18
+      }
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-ASA-REYE"
+     ],
+     "detail": "Aspirine chez l'enfant ou l'adolescent : syndrome de Reye (rare, grave) en cas de varicelle ou de syndrome grippal.",
+     "detail_en": "Aspirin in children or teenagers: Reye's syndrome (rare, serious) with chickenpox or flu-like symptoms.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    },
+    {
+     "si": {
+      "grossesse": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-ASA-GROSS"
+     ],
+     "detail": "Aspirine : à ne pas utiliser pendant les 3 derniers mois de la grossesse.",
+     "detail_en": "Aspirin: not to be used during the last 3 months of pregnancy.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    },
+    {
+     "si": {
+      "ulcere_digestif": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-ASA-SAIGNEMENT"
+     ],
+     "detail": "Aspirine et antécédent d'ulcère ou de saignement digestif : risque d'hémorragie.",
+     "detail_en": "Aspirin and history of ulcer or bleeding: risk of haemorrhage.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    },
+    {
+     "si": {
+      "anticoagulant": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-ASA-SAIGNEMENT"
+     ],
+     "detail": "Aspirine sous anticoagulant : risque d'hémorragie.",
+     "detail_en": "Aspirin with an anticoagulant: risk of bleeding.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    }
+   ],
+   "dose_max_jour_mg": {
+    "valeur": 3900,
+    "fiches": [
+     "OTC-ASA-SAIGNEMENT"
+    ]
+   }
+  },
+  "amoxicilline": {
+   "categorie": "standard",
+   "amm": true,
+   "amm_a_confirmer": true,
+   "synonymes": [
+    "amoxicillin",
+    "amoxil",
+    "clamoxyl"
+   ],
+   "classes": [
+    "penicilline",
+    "penicillines",
+    "penicillin",
+    "beta_lactamine",
+    "betalactamine",
+    "beta-lactamine",
+    "cephalosporine"
+   ],
+   "contre_indications": [
+    {
+     "si": {
+      "maladie_renale": true
+     },
+     "niveau": "INFORMATION",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "DM-AMOX-REIN"
+     ],
+     "detail": "Amoxicilline et insuffisance rénale sévère (DFG < 30) : pas de dose de 875 mg ; 250 ou 500 mg toutes les 12 h.",
+     "detail_en": "Amoxicillin and severe renal impairment (GFR < 30): no 875 mg dose; 250 or 500 mg every 12 hours."
+    }
+   ],
+   "allergie_fiches": [
+    "DM-AMOX-ALLERGIE"
+   ]
+  },
+  "metformine": {
+   "categorie": "standard",
+   "amm": true,
+   "amm_a_confirmer": true,
+   "synonymes": [
+    "metformin",
+    "glucophage",
+    "stagid"
+   ],
+   "contre_indications": [
+    {
+     "si": {
+      "maladie_renale": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "DM-METF-REIN"
+     ],
+     "detail": "Metformine et maladie des reins : contre-indiquée si DFG < 30, à ne pas débuter entre 30 et 45 ; vérifier le DFG.",
+     "detail_en": "Metformin and kidney disease: contraindicated if eGFR < 30, not to be started between 30 and 45; check eGFR."
+    },
+    {
+     "si": {
+      "maladie_hepatique": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "DM-METF-FOIE"
+     ],
+     "detail": "Metformine et maladie du foie : non recommandée (risque d'acidose lactique).",
+     "detail_en": "Metformin and liver disease: not recommended (risk of lactic acidosis)."
+    }
+   ],
+   "dose_max_jour_mg": {
+    "valeur": 2550,
+    "fiches": [
+     "DM-METF-MAX"
+    ]
+   },
+   "dose_max_jour_mg_enfant": {
+    "valeur": 2000,
+    "age_inferieur_a": 18,
+    "fiches": [
+     "DM-METF-MAX"
+    ]
+   }
+  }
+ },
+ "regle_medicament_inconnu": {
+  "niveau": "PREUVES_INSUFFISANTES",
+  "base": "LOI",
+  "fiches": [
+   "MP24-A5-1"
+  ],
+  "detail": "Médicament absent de la base : impossible de vérifier son autorisation de mise sur le marché.",
+  "detail_en": "Medicine not in the knowledge base: marketing approval cannot be checked."
+ },
+ "regle_amm_a_confirmer": {
+  "niveau": "INFORMATION",
+  "base": "LOI",
+  "fiches": [
+   "MP24-A5-1"
+  ],
+  "detail": "Autorisation de mise sur le marché supposée pour la démonstration : à confirmer dans le registre de l'Emirates Drug Establishment.",
+  "detail_en": "Marketing approval assumed for the demo: to be confirmed in the Emirates Drug Establishment register."
+ },
+ "regle_allergie": {
+  "niveau": "A_REVOIR",
+  "base": "LOI",
+  "fiches": [
+   "ML16-A3",
+   "ML16-A4-2"
+  ],
+  "detail": "Le patient a déclaré une allergie à ce médicament ou à sa classe (y compris l'aspirine pour les AINS) : à revoir par le médecin.",
+  "detail_en": "The patient declared an allergy to this medicine or its class (including aspirin for NSAIDs): to be reviewed by the physician."
+ },
+ "regles_prescription": [
+  {
+   "id": "RX-ECRITE-DOSE",
+   "si": {
+    "dose": {
+     "absent": true
+    }
+   },
+   "niveau": "PREUVES_INSUFFISANTES",
+   "base": "LOI",
+   "fiches": [
+    "ML16-A4-6"
+   ],
+   "detail": "Dose non précisée : la prescription doit indiquer le médicament, sa dose et son mode d'emploi, par écrit.",
+   "detail_en": "Dose missing: the prescription must state the medicine, its dose and usage, in writing."
+  },
+  {
+   "id": "RX-ECRITE-POSOLOGIE",
+   "si": {
+    "posologie": {
+     "absent": true
+    }
+   },
+   "niveau": "PREUVES_INSUFFISANTES",
+   "base": "LOI",
+   "fiches": [
+    "ML16-A4-6"
+   ],
+   "detail": "Mode d'emploi (fréquence, durée) non précisé : la prescription écrite doit l'indiquer.",
+   "detail_en": "Usage (frequency, duration) missing: the written prescription must state it."
+  },
+  {
+   "id": "TELE-CONTROLE",
+   "si": {
+    "mode": "distance",
+    "categorie": {
+     "dans": [
+      "controle",
+      "semi_controle",
+      "stupefiant"
+     ]
+    }
+   },
+   "niveau": "BLOQUE",
+   "base": "NORME",
+   "fiches": [
+    "DHATH-17.12.7",
+    "MP24-A55"
+   ],
+   "juridiction": "AE-DU",
+   "detail": "Médicament contrôlé ou stupéfiant : interdit de le prescrire en téléconsultation (norme de Dubaï).",
+   "detail_en": "Controlled or narcotic medicine: may not be prescribed through telehealth (Dubai standard)."
+  },
+  {
+   "id": "TELE-CADRE",
+   "si": {
+    "mode": "distance"
+   },
+   "niveau": "OBLIGATION",
+   "base": "LOI",
+   "fiches": [
+    "ML16-A5-5",
+    "DHATH-10.2.1",
+    "DHATH-10"
+   ],
+   "detail": "Téléconsultation : pas de prescription sans examen clinique hors du cadre de télésanté fixé par l'autorité ; identifier le patient (au moins trois identifiants) et documenter son consentement à chaque rencontre.",
+   "detail_en": "Telehealth: no prescription without clinical examination outside the authority's telehealth framework; identify the patient (at least three identifiers) and document consent at each encounter."
+  },
+  {
+   "id": "CONSENTEMENT",
+   "si": {
+    "urgence": {
+     "pas": true
+    }
+   },
+   "niveau": "OBLIGATION",
+   "base": "LOI",
+   "fiches": [
+    "ML16-A5-1"
+   ],
+   "detail": "Recueillir et consigner le consentement du patient avant d'administrer le traitement.",
+   "detail_en": "Obtain and record the patient's consent before administering the treatment."
+  },
+  {
+   "id": "CONSENTEMENT-PICTO",
+   "si": {
+    "urgence": {
+     "pas": true
+    },
+    "moyen_communication": "pictogrammes"
+   },
+   "niveau": "OBLIGATION",
+   "base": "LOI",
+   "fiches": [
+    "ML16-A5-1",
+    "CRPD-A21",
+    "CRPD-A12"
+   ],
+   "lacune": "L04",
+   "detail": "Consentement exprimé en pictogrammes : vérifier la compréhension (reformulation par pictogrammes) et faire attester le médecin ; aucun texte ne précise la valeur d'un tel consentement.",
+   "detail_en": "Consent expressed with pictograms: check understanding (teach-back with pictograms) and have the physician attest; no text states the value of such consent."
+  },
+  {
+   "id": "URGENCE-CONSENTEMENT",
+   "si": {
+    "urgence": true
+   },
+   "niveau": "INFORMATION",
+   "base": "LOI",
+   "fiches": [
+    "ML16-A5-1"
+   ],
+   "detail": "Urgence : la loi permet de traiter sans consentement si celui-ci ne peut pas être obtenu ; consigner la raison.",
+   "detail_en": "Emergency: the law allows treatment without consent where it cannot be obtained; record the reason."
+  },
+  {
+   "id": "INFORMATION-PATIENT",
+   "si": {},
+   "niveau": "OBLIGATION",
+   "base": "LOI",
+   "fiches": [
+    "ML16-A4-5",
+    "ML16-A4-6"
+   ],
+   "detail": "Expliquer au patient l'importance du traitement et les options disponibles.",
+   "detail_en": "Explain to the patient the importance of the treatment and the available options."
+  },
+  {
+   "id": "INFORMATION-ACCESSIBLE",
+   "si": {
+    "moyen_communication": "pictogrammes"
+   },
+   "niveau": "OBLIGATION",
+   "base": "LOI",
+   "fiches": [
+    "POD06-A7",
+    "DHATH-14.1.5",
+    "CRPD-A21"
+   ],
+   "lacune": "L03",
+   "detail": "Informer dans un moyen de communication que le patient comprend (pictogrammes validés par le médecin).",
+   "detail_en": "Inform the patient through a means of communication they understand (pictograms validated by the physician)."
+  },
+  {
+   "id": "IA-INFORMER",
+   "si": {
+    "informe_usage_ia": {
+     "pas": true
+    }
+   },
+   "niveau": "OBLIGATION",
+   "base": "NORME",
+   "fiches": [
+    "RAI25-3.1.6.1.1",
+    "RAI25-3.1.6.1.3"
+   ],
+   "detail": "Informer le patient que des agents d'IA assistent le médecin (rôle, limites) et qu'il peut refuser.",
+   "detail_en": "Inform the patient that AI agents assist the physician (role, limits) and that they may opt out."
+  },
+  {
+   "id": "IA-SUGGESTION",
+   "si": {
+    "issue_de_suggestion": true
+   },
+   "niveau": "INFORMATION",
+   "base": "NORME",
+   "fiches": [
+    "DOH18-SUPPORT",
+    "RAI25-3.1.7.2.2",
+    "DHA21-4.2"
+   ],
+   "lacune": "L01",
+   "detail": "Décision inspirée d'une suggestion de l'IA : le médecin reste le décideur et le responsable ; la répartition de la responsabilité n'est fixée par aucun texte.",
+   "detail_en": "Decision inspired by an AI suggestion: the physician remains the decision-maker and responsible; no text allocates liability."
+  }
+ ],
+ "regles_partage": [
+  {
+   "id": "LIEU-INCONNU",
+   "si": {
+    "lieu": {
+     "absent": true
+    }
+   },
+   "niveau": "PREUVES_INSUFFISANTES",
+   "base": "LOI",
+   "fiches": [
+    "ICT19-A13"
+   ],
+   "detail": "Lieu de stockage ou de traitement non précisé (Émirats ou étranger) : impossible de vérifier.",
+   "detail_en": "Storage or processing location not stated (UAE or abroad): cannot be checked."
+  },
+  {
+   "id": "HORS-EAU-SANS-EXCEPTION",
+   "si": {
+    "lieu": "hors_du_pays",
+    "exception_res51": {
+     "absent": true
+    }
+   },
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "ICT19-A13",
+    "ICT19-A24",
+    "RAI25-3.1.4.5.1",
+    "DHATH-DATA"
+   ],
+   "lacune": "L06",
+   "detail": "Données de santé hors des Émirats sans exception prévue : interdit (amende de 500 000 à 700 000 AED).",
+   "detail_en": "Health data outside the UAE without a listed exception: prohibited (fine AED 500,000-700,000).",
+   "piste": "Utiliser un modèle hébergé aux Émirats ou en local ; ou invoquer une exception prévue avec ses conditions.",
+   "piste_en": "Use a model hosted in the UAE or locally, or invoke a listed exception with its conditions."
+  },
+  {
+   "id": "HORS-EAU-CONSENTEMENT",
+   "si": {
+    "lieu": "hors_du_pays",
+    "exception_res51": {
+     "present": true
+    },
+    "consentement_ecrit": false
+   },
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "ICT19-A13",
+    "RES51-COND"
+   ],
+   "detail": "Exception invoquée mais sans consentement écrit du patient : l'exception ne s'applique pas, l'interdiction de la loi demeure (conditions connues par source secondaire, à confirmer sur le texte officiel).",
+   "detail_en": "Exception invoked but no written patient consent: the exception does not apply and the legal prohibition stands (conditions known from a secondary source, to confirm on the official text)."
+  },
+  {
+   "id": "HORS-EAU-CONSENTEMENT-INCONNU",
+   "si": {
+    "lieu": "hors_du_pays",
+    "exception_res51": {
+     "present": true
+    },
+    "consentement_ecrit": {
+     "absent": true
+    }
+   },
+   "niveau": "PREUVES_INSUFFISANTES",
+   "base": "LOI",
+   "fiches": [
+    "RES51-COND"
+   ],
+   "detail": "Exception invoquée : condition « consentement_ecrit » non renseignée.",
+   "detail_en": "Exception invoked: condition 'consentement_ecrit' not documented."
+  },
+  {
+   "id": "HORS-EAU-CHIFFREMENT",
+   "si": {
+    "lieu": "hors_du_pays",
+    "exception_res51": {
+     "present": true
+    },
+    "chiffrement": false
+   },
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "ICT19-A13",
+    "RES51-COND"
+   ],
+   "detail": "Exception invoquée mais données non chiffrées : l'exception ne s'applique pas, l'interdiction de la loi demeure (conditions connues par source secondaire, à confirmer sur le texte officiel).",
+   "detail_en": "Exception invoked but data not encrypted: the exception does not apply and the legal prohibition stands (conditions known from a secondary source, to confirm on the official text)."
+  },
+  {
+   "id": "HORS-EAU-CHIFFREMENT-INCONNU",
+   "si": {
+    "lieu": "hors_du_pays",
+    "exception_res51": {
+     "present": true
+    },
+    "chiffrement": {
+     "absent": true
+    }
+   },
+   "niveau": "PREUVES_INSUFFISANTES",
+   "base": "LOI",
+   "fiches": [
+    "RES51-COND"
+   ],
+   "detail": "Exception invoquée : condition « chiffrement » non renseignée.",
+   "detail_en": "Exception invoked: condition 'chiffrement' not documented."
+  },
+  {
+   "id": "HORS-EAU-COPIE",
+   "si": {
+    "lieu": "hors_du_pays",
+    "exception_res51": {
+     "present": true
+    },
+    "copie_eau": false
+   },
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "ICT19-A13",
+    "RES51-COND"
+   ],
+   "detail": "Exception invoquée mais aucune copie conservée aux Émirats : l'exception ne s'applique pas, l'interdiction de la loi demeure (conditions connues par source secondaire, à confirmer sur le texte officiel).",
+   "detail_en": "Exception invoked but no copy kept in the UAE: the exception does not apply and the legal prohibition stands (conditions known from a secondary source, to confirm on the official text)."
+  },
+  {
+   "id": "HORS-EAU-COPIE-INCONNU",
+   "si": {
+    "lieu": "hors_du_pays",
+    "exception_res51": {
+     "present": true
+    },
+    "copie_eau": {
+     "absent": true
+    }
+   },
+   "niveau": "PREUVES_INSUFFISANTES",
+   "base": "LOI",
+   "fiches": [
+    "RES51-COND"
+   ],
+   "detail": "Exception invoquée : condition « copie_eau » non renseignée.",
+   "detail_en": "Exception invoked: condition 'copie_eau' not documented."
+  },
+  {
+   "id": "HORS-EAU-AUTORISATION",
+   "si": {
+    "lieu": "hors_du_pays",
+    "exception_res51": {
+     "present": true
+    },
+    "consentement_ecrit": true,
+    "chiffrement": true,
+    "copie_eau": true
+   },
+   "niveau": "A_REVOIR",
+   "base": "LOI",
+   "fiches": [
+    "RES51-EXC",
+    "RES51-COND",
+    "ICT19-A13"
+   ],
+   "detail": "Transfert hors des Émirats couvert par une exception, conditions remplies : autorisation nominative d'un responsable requise.",
+   "detail_en": "Transfer outside the UAE under a listed exception with all conditions met: named authorisation by a responsible person required."
+  },
+  {
+   "id": "SOINS",
+   "si": {
+    "finalite": "soins",
+    "destinataire_type": {
+     "dans": [
+      "medecin_traitant",
+      "etablissement_sante",
+      "hopital"
+     ]
+    },
+    "lieu": "dans_le_pays"
+   },
+   "niveau": "CONFORME",
+   "base": "LOI",
+   "fiches": [
+    "ICT19-A4",
+    "ICT19-A16"
+   ],
+   "detail": "Transmission pour les soins à un professionnel de santé, aux Émirats : permise, sous secret.",
+   "detail_en": "Transmission for care to a health professional, inside the UAE: permitted, under confidentiality."
+  },
+  {
+   "id": "COMMERCIAL-SANS-ACCORD",
+   "si": {
+    "finalite": {
+     "dans": [
+      "commerciale",
+      "publicite"
+     ]
+    },
+    "consentement_ecrit": false
+   },
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "ICT19-A16"
+   ],
+   "detail": "Usage non médical sans accord écrit du patient : interdit (aucune des exceptions de la loi ne s'applique).",
+   "detail_en": "Non-health use without the patient's written approval: prohibited (none of the legal exceptions applies).",
+   "piste": "Ne rien transmettre ; seul un accord écrit du patient permettrait d'examiner la demande.",
+   "piste_en": "Share nothing; only the patient's written approval would allow the request to be examined."
+  },
+  {
+   "id": "COMMERCIAL-ACCORD-INCONNU",
+   "si": {
+    "finalite": {
+     "dans": [
+      "commerciale",
+      "publicite"
+     ]
+    },
+    "consentement_ecrit": {
+     "absent": true
+    }
+   },
+   "niveau": "PREUVES_INSUFFISANTES",
+   "base": "LOI",
+   "fiches": [
+    "ICT19-A16"
+   ],
+   "detail": "Usage non médical : l'accord écrit du patient doit être produit.",
+   "detail_en": "Non-health use: the patient's written approval must be produced."
+  },
+  {
+   "id": "COMMERCIAL-AVEC-ACCORD",
+   "si": {
+    "finalite": {
+     "dans": [
+      "commerciale",
+      "publicite"
+     ]
+    },
+    "consentement_ecrit": true
+   },
+   "niveau": "A_REVOIR",
+   "base": "LOI",
+   "fiches": [
+    "ICT19-A16"
+   ],
+   "detail": "Usage non médical avec accord écrit : à autoriser nominativement par un responsable.",
+   "detail_en": "Non-health use with written approval: needs named authorisation."
+  },
+  {
+   "id": "RECHERCHE-ANONYME",
+   "si": {
+    "finalite": "recherche",
+    "anonymise": true,
+    "lieu": "dans_le_pays"
+   },
+   "niveau": "CONFORME",
+   "base": "LOI",
+   "fiches": [
+    "ICT19-A16"
+   ],
+   "detail": "Recherche sans divulguer l'identité des patients : exception prévue par la loi.",
+   "detail_en": "Research without disclosing patients' identity: legal exception."
+  },
+  {
+   "id": "RECHERCHE-IDENTIFIANTE",
+   "si": {
+    "finalite": "recherche",
+    "anonymise": false,
+    "consentement_ecrit": false
+   },
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "ICT19-A16"
+   ],
+   "detail": "Recherche avec données identifiantes et sans accord écrit : interdit.",
+   "detail_en": "Research with identifiable data and no written approval: prohibited.",
+   "piste": "Anonymiser les données, ou obtenir l'accord écrit du patient.",
+   "piste_en": "De-identify the data, or obtain the patient's written approval."
+  },
+  {
+   "id": "RECHERCHE-ANONYMISATION-INCONNUE",
+   "si": {
+    "finalite": "recherche",
+    "anonymise": {
+     "absent": true
+    }
+   },
+   "niveau": "PREUVES_INSUFFISANTES",
+   "base": "LOI",
+   "fiches": [
+    "ICT19-A16"
+   ],
+   "detail": "Recherche : préciser si les données sont anonymisées.",
+   "detail_en": "Research: state whether the data is de-identified."
+  },
+  {
+   "id": "RECHERCHE-IDENTIFIANTE-ACCORD",
+   "si": {
+    "finalite": "recherche",
+    "anonymise": false,
+    "consentement_ecrit": true
+   },
+   "niveau": "A_REVOIR",
+   "base": "LOI",
+   "fiches": [
+    "ICT19-A16"
+   ],
+   "detail": "Recherche avec données identifiantes et accord écrit : autorisation nominative (et avis éthique) requise.",
+   "detail_en": "Research with identifiable data and written approval: named authorisation (and ethics review) required."
+  },
+  {
+   "id": "RECHERCHE-ACCORD-INCONNU",
+   "si": {
+    "finalite": "recherche",
+    "anonymise": false,
+    "consentement_ecrit": {
+     "absent": true
+    }
+   },
+   "niveau": "PREUVES_INSUFFISANTES",
+   "base": "LOI",
+   "fiches": [
+    "ICT19-A16"
+   ],
+   "detail": "Recherche avec données identifiantes : l'accord écrit du patient doit être produit.",
+   "detail_en": "Research with identifiable data: the patient's written approval must be produced."
+  },
+  {
+   "id": "ASSURANCE",
+   "si": {
+    "finalite": "assurance",
+    "lieu": "dans_le_pays"
+   },
+   "niveau": "CONFORME",
+   "base": "LOI",
+   "fiches": [
+    "ICT19-A16"
+   ],
+   "detail": "Demande d'un assureur ou financeur pour vérifier les droits liés aux soins : exception prévue.",
+   "detail_en": "Request by an insurer or funder to verify entitlements for care received: legal exception."
+  },
+  {
+   "id": "SANTE-PUBLIQUE",
+   "si": {
+    "finalite": "sante_publique",
+    "lieu": "dans_le_pays"
+   },
+   "niveau": "CONFORME",
+   "base": "LOI",
+   "fiches": [
+    "ICT19-A16",
+    "CD14-A10",
+    "CD14-A29"
+   ],
+   "detail": "Mesures de santé publique : exception prévue ; ne transmettre que le nécessaire, sous secret.",
+   "detail_en": "Public-health measures: legal exception; share only what is necessary, under confidentiality."
+  },
+  {
+   "id": "AUTORITE-JUDICIAIRE",
+   "si": {
+    "destinataire_type": "autorite_judiciaire",
+    "lieu": "dans_le_pays"
+   },
+   "niveau": "CONFORME",
+   "base": "LOI",
+   "fiches": [
+    "ICT19-A16"
+   ],
+   "detail": "Demande d'une autorité judiciaire compétente : exception prévue.",
+   "detail_en": "Request by a competent judicial authority: legal exception."
+  },
+  {
+   "id": "AUTORITE-SANTE",
+   "si": {
+    "destinataire_type": "autorite_sante",
+    "lieu": "dans_le_pays"
+   },
+   "niveau": "CONFORME",
+   "base": "LOI",
+   "fiches": [
+    "ICT19-A16"
+   ],
+   "detail": "Demande de l'autorité de santé (contrôle, inspection, santé publique) : exception prévue.",
+   "detail_en": "Request by the Health Authority (monitoring, inspection, public health): legal exception."
+  },
+  {
+   "id": "ENTRAINEMENT-IA",
+   "si": {
+    "finalite": "entrainement_ia",
+    "anonymise": {
+     "pas": true
+    }
+   },
+   "niveau": "A_REVOIR",
+   "base": "LOI",
+   "fiches": [
+    "ICT19-A16",
+    "AIA-A57-59"
+   ],
+   "lacune": "L06",
+   "detail": "Entraînement d'un modèle avec des données identifiantes : aucun texte ne dit s'il s'agit d'une finalité de santé ; décision humaine nominative requise.",
+   "detail_en": "Training a model on identifiable data: no text says whether this is a health purpose; named human decision required."
+  },
+  {
+   "id": "PUBLICATION-NOMINATIVE",
+   "si": {
+    "destinataire_type": "public",
+    "anonymise": false
+   },
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "CD14-A29",
+    "ICT19-A16"
+   ],
+   "detail": "Publier l'identité de personnes infectées : interdit (secret des informations sur la maladie ; usage hors soins sans accord).",
+   "detail_en": "Publishing the identity of infected persons: prohibited (confidentiality of disease information; non-health use without approval).",
+   "piste": "Publier des chiffres agrégés et anonymisés (par exemple le nombre de cas par quartier).",
+   "piste_en": "Publish aggregated, de-identified figures (e.g. number of cases per district)."
+  },
+  {
+   "id": "PUBLICATION-ANONYME",
+   "si": {
+    "destinataire_type": "public",
+    "anonymise": true,
+    "lieu": "dans_le_pays"
+   },
+   "niveau": "CONFORME",
+   "base": "LOI",
+   "fiches": [
+    "ICT19-A16",
+    "CD14-A29"
+   ],
+   "detail": "Information du public par des chiffres anonymisés, pour une mesure de santé publique : permise.",
+   "detail_en": "Informing the public with de-identified figures for a public-health measure: permitted."
+  },
+  {
+   "id": "PUBLICATION-ANONYMISATION-INCONNUE",
+   "si": {
+    "destinataire_type": "public",
+    "anonymise": {
+     "absent": true
+    }
+   },
+   "niveau": "PREUVES_INSUFFISANTES",
+   "base": "LOI",
+   "fiches": [
+    "CD14-A29"
+   ],
+   "detail": "Publication : préciser si les données sont anonymisées.",
+   "detail_en": "Publication: state whether the data is de-identified."
+  }
+ ],
+ "regle_partage_non_couvert": {
+  "niveau": "PREUVES_INSUFFISANTES",
+  "base": "-",
+  "fiches": [
+   "ICT19-A16"
+  ],
+  "detail": "Aucune règle ne couvre cette demande : à soumettre à un humain.",
+  "detail_en": "No rule covers this request: refer to a human."
+ },
+ "regles_envoi_patient": [
+  {
+   "id": "ENVOI-PROPOS-DANGEREUX",
+   "si": {
+    "incitation_au_mal": true
+   },
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "ML16-A3",
+    "DHA21-4.4"
+   ],
+   "detail": "Message dangereux pour le patient (incitation à se faire du mal, propos violents ou injurieux) : contraire au devoir de soin du praticien et à l'exigence d'une IA sûre. Il ne partira pas.",
+   "detail_en": "Message harmful to the patient (incitement to self-harm, violent or abusive words): contrary to the practitioner's duty of care and to the requirement of a safe AI. It will not be sent.",
+   "piste": "Retirez ce message. Si le patient semble en détresse, dites-lui que vous êtes là pour l'aider et appelez les urgences (998 aux Émirats).",
+   "piste_en": "Withdraw this message. If the patient seems distressed, tell them you are there to help and call emergency services (998 in the UAE).",
+   "note": "Contenu repéré par medimcom/surete.py (déterministe) : le message est bloqué AVANT que le médecin puisse le valider."
+  },
+  {
+   "id": "ENVOI-PRODUIT-CONTROLE",
+   "si": {
+    "medicament_controle": true,
+    "statut_prescription_liee": {
+     "absent": true
+    }
+   },
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "MP24-A55",
+    "ML16-A4-6"
+   ],
+   "detail": "Consigne de prise d'un produit contrôlé sans ordonnance : il n'est délivré que sur prescription écrite d'un médecin humain autorisé.",
+   "detail_en": "Instruction to take a controlled product without a prescription: it may only be dispensed on a written prescription by an authorised human physician.",
+   "piste": "Pour un traitement, passez par l'onglet Ordonnance (médicament, dose, posologie) : le juriste contrôle la prescription, puis le traducteur prépare l'explication pour le patient.",
+   "piste_en": "For a treatment, use the Prescription tab (medicine, dose, dosage): the jurist checks the prescription, then the translator prepares the explanation for the patient."
+  },
+  {
+   "id": "ENVOI-NON-VALIDE",
+   "si": {
+    "valideur_autorise": {
+     "pas": true
+    }
+   },
+   "niveau": "BLOQUE",
+   "base": "NORME",
+   "fiches": [
+    "DOH18-SUPPORT",
+    "DHA21-4.4",
+    "RAI25-3.1.7.2.2"
+   ],
+   "detail": "Message au patient non validé par un médecin autorisé et actif : l'IA ne communique jamais seule avec le patient.",
+   "detail_en": "Message to the patient not validated by an authorised, active physician: the AI never communicates alone with the patient."
+  },
+  {
+   "id": "ENVOI-PRESCRIPTION-NON-CONFORME",
+   "si": {
+    "statut_prescription_liee": {
+     "hors": [
+      "CONFORME",
+      "MAINTENUE"
+     ]
+    }
+   },
+   "niveau": "BLOQUE",
+   "base": "NORME",
+   "fiches": [
+    "DHA21-4.4",
+    "ML16-A4-6"
+   ],
+   "detail": "Le message explique une prescription qui n'est plus conforme : il ne doit pas partir.",
+   "detail_en": "The message explains a prescription that is no longer compliant: it must not be sent.",
+   "note": "Liste d'autorisation (et non liste d'exclusion) : tout statut autre que conforme ou maintenu bloque l'envoi. Défaut trouvé par la vérification formelle (outils/verifier_formel.py)."
+  },
+  {
+   "id": "ENVOI-TRAITEMENT-SANS-PRESCRIPTION",
+   "si": {
+    "contenu_type": "traitement",
+    "statut_prescription_liee": {
+     "absent": true
+    }
+   },
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "ML16-A4-6",
+    "MP24-A1-RX"
+   ],
+   "detail": "Consigne de traitement sans prescription du médecin : seul le médecin prescrit, par écrit, avec dose et posologie ; l'IA ne fait qu'expliquer une prescription contrôlée.",
+   "detail_en": "Treatment message with no physician prescription: only the physician prescribes; the AI only explains the prescription.",
+   "piste": "Pour un traitement, passez par l'onglet Ordonnance (médicament, dose, posologie) : le juriste contrôle la prescription, puis le traducteur prépare l'explication pour le patient.",
+   "piste_en": "For a treatment, use the Prescription tab (medicine, dose, dosage): the jurist checks the prescription, then the translator prepares the explanation for the patient."
+  },
+  {
+   "id": "ENVOI-VALIDE",
+   "si": {
+    "valideur_autorise": true
+   },
+   "niveau": "CONFORME",
+   "base": "NORME",
+   "fiches": [
+    "DHA21-4.4"
+   ],
+   "detail": "Message validé par un médecin autorisé : peut être envoyé.",
+   "detail_en": "Message validated by an authorised physician: may be sent."
+  },
+  {
+   "id": "ENVOI-DIAGNOSTIC",
+   "si": {
+    "contenu_type": {
+     "dans": [
+      "diagnostic",
+      "traitement"
+     ]
+    }
+   },
+   "niveau": "OBLIGATION",
+   "base": "LOI",
+   "fiches": [
+    "ML16-A4-7",
+    "ML16-A4-6"
+   ],
+   "lacune": "L05",
+   "detail": "Annonce d'un diagnostic ou d'un traitement : vérifier que le patient a compris (aucune norme ne valide les pictogrammes médicaux).",
+   "detail_en": "Diagnosis or treatment message: check that the patient understood (no standard validates medical pictograms)."
+  }
+ ],
+ "regles_etat": [
+  {
+   "id": "DECLARATION-A",
+   "si": {
+    "maladie_declarable_groupe": "A"
+   },
+   "niveau": "OBLIGATION",
+   "base": "LOI",
+   "fiches": [
+    "CD14-A4",
+    "CD14-A5",
+    "CD14-A29"
+   ],
+   "detail": "Maladie transmissible du groupe A suspectée : déclaration à l'autorité au plus tard 24 heures après la suspicion ; secret sur l'identité du patient.",
+   "detail_en": "Suspected Group A communicable disease: notify the authority within 24 hours of suspicion; keep the patient's information confidential."
+  },
+  {
+   "id": "DECLARATION-B",
+   "si": {
+    "maladie_declarable_groupe": "B"
+   },
+   "niveau": "OBLIGATION",
+   "base": "LOI",
+   "fiches": [
+    "CD14-A5",
+    "CD14-A29"
+   ],
+   "detail": "Maladie transmissible du groupe B : déclaration par l'établissement au plus tard 7 jours après.",
+   "detail_en": "Group B communicable disease: notification by the facility within 7 days."
+  },
+  {
+   "id": "CONSENTEMENT-INFECTIEUX",
+   "si": {
+    "maladie_declarable_groupe": {
+     "dans": [
+      "A",
+      "B"
+     ]
+    }
+   },
+   "niveau": "INFORMATION",
+   "base": "LOI",
+   "fiches": [
+    "ML16-A5-1"
+   ],
+   "detail": "Maladie infectieuse menaçant la santé publique : la loi prévoit une exception au consentement pour le traitement.",
+   "detail_en": "Infectious disease threatening public health: the law provides an exception to consent for treatment."
+  },
+  {
+   "id": "URGENCE-ACCESSIBLE",
+   "si": {
+    "urgence": true,
+    "moyen_communication": "pictogrammes"
+   },
+   "niveau": "OBLIGATION",
+   "base": "NORME",
+   "fiches": [
+    "DHATH-12.4",
+    "POD06-A7",
+    "CRPD-A11"
+   ],
+   "lacune": "L09",
+   "detail": "Urgence chez un patient sourd : utiliser le jeu de pictogrammes d'urgence et ne pas retarder l'orientation vers les secours.",
+   "detail_en": "Emergency for a deaf patient: use the emergency pictogram set and do not delay referral to emergency services."
+  }
+ ],
+ "regle_mode_inconnu": {
+  "niveau": "PREUVES_INSUFFISANTES",
+  "base": "LOI",
+  "fiches": [
+   "ML16-A5-5"
+  ],
+  "detail": "Mode de consultation inconnu (présentiel ou téléconsultation) : les règles de prescription à distance ne peuvent pas être vérifiées.",
+  "detail_en": "Consultation mode unknown (in person or telehealth): remote-prescribing rules cannot be checked."
+ },
+ "regle_mode_contradictoire": {
+  "niveau": "PREUVES_INSUFFISANTES",
+  "base": "LOI",
+  "fiches": [
+   "ML16-A5-5"
+  ],
+  "detail": "Le mode indiqué sur la prescription contredit le dossier du patient (présentiel / téléconsultation) : à clarifier.",
+  "detail_en": "The mode on the prescription contradicts the patient record (in person / telehealth): to be clarified."
+ }
+}

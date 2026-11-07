@@ -1,0 +1,3 @@
+participant,item,reponse_transcrite,code_juge1,code_juge2,code_consensus,remarque
+PART-001,P01,"(ce que la personne a signé, transcrit par l'interprète)",C,C,,
+PART-001,P02,(exemple de désaccord tranché ensemble),C,P,P,juges réunis le …

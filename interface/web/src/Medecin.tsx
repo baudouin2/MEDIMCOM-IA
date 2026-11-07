@@ -1,0 +1,1117 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { ReactNode } from "react";
+import {
+  AlertTriangle, BookOpen, Bot, Building2, Check, ChevronDown, ClipboardList, FileText, Gavel, Hand, Info,
+  Languages, Lock, MessageSquareText, MonitorSmartphone, Network, Pill, Play, RotateCcw, Scale, ScrollText,
+  Send, Share2, ShieldAlert, ShieldCheck, Siren, Sparkles, Stethoscope, UserRound, X,
+  Loader2,
+} from "lucide-react";
+import {
+  combinable, envoyer, ErreurApi, jetonMedecin, lire, urlPicto,
+  type Decision, type Echange, type MessageAgent, type Verdict, type VueMedecin,
+} from "./api";
+import { Bouton, Case, Champ, champ, cx, Dialogue, Panneau, Pastille, Picto, Statut, useLibelle, useRechercheSens, useNotifier, useSondage, Vide } from "./ui";
+import { Marque } from "./Marque";
+
+// ------------------------------------------------------------------ vocabulaire affiché
+const FAITS: Record<string, string> = {
+  sexe: "Sexe", age: "Âge", symptome: "Motif", douleur: "Douleur", localisation_douleur: "Siège de la douleur",
+  intensite_douleur: "Intensité de la douleur", nausees: "Nausées", fievre: "Fièvre", grossesse: "Grossesse",
+  allergies: "Allergies", traitements_en_cours: "Traitements en cours", moyen_communication: "Communication",
+  informe_usage_ia: "Informé de l'usage de l'IA", consentement_traitement: "Accord pour le traitement", urgence: "Urgence signalée",
+  antecedents: "Antécédents (texte libre)", maladies_connues: "Maladies repérées", autres_informations: "Autres informations",
+  poids: "Poids", maladie_renale: "Maladie rénale", maladie_hepatique: "Maladie du foie", ulcere_digestif: "Ulcère digestif",
+  anticoagulant: "Sous anticoagulant", maladie_cardiaque: "Maladie cardiaque", allaitement: "Allaitement",
+};
+const ORDRE_FAITS = Object.keys(FAITS);
+const CLES_REPONSE: Record<string, string> = {
+  grossesse: "Grossesse", fievre: "Fièvre", douleur: "Douleur", nausees: "Nausées", consentement_traitement: "Accord pour le traitement",
+};
+const AGENTS: Record<string, { nom: string; icone: ReactNode }> = {
+  traducteur: { nom: "Traducteur", icone: <Languages size={15} /> },
+  assistant: { nom: "Assistant médical", icone: <Stethoscope size={15} /> },
+  juriste: { nom: "Juriste", icone: <Scale size={15} /> },
+  coordinateur: { nom: "Coordinateur", icone: <Network size={15} /> },
+  medecin: { nom: "Médecin", icone: <UserRound size={15} /> },
+  autorite_sante: { nom: "Autorité de santé", icone: <Building2 size={15} /> },
+  hopital: { nom: "Hôpital", icone: <Building2 size={15} /> },
+  cellule_crise: { nom: "Cellule de crise", icone: <Building2 size={15} /> },
+};
+const agent = (cle: string) => AGENTS[cle] ?? { nom: cle.charAt(0).toUpperCase() + cle.slice(1).replace(/_/g, " "), icone: <Bot size={15} /> };
+
+function valeur(cle: string, v: unknown): string {
+  if (v === true) return "Oui";
+  if (v === false) return "Non";
+  if (cle === "sexe") return v === "F" ? "Femme" : v === "M" ? "Homme" : String(v);
+  if (cle === "age") return `${v} ans`;
+  if (cle === "poids") return `${v} kg`;
+  if (Array.isArray(v)) return v.join(", ");
+  if (cle === "intensite_douleur") return `${v} sur 10`;
+  if (cle === "moyen_communication" && v === "pictogrammes") return "Pictogrammes";
+  const t = String(v ?? "");
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
+/** Message d'agent → en-tête (« #10 BLOQUÉ … »), texte, références entre crochets et piste proposée. */
+function analyserMessage(t: string) {
+  const refs = [...t.matchAll(/\[([^\]]+)\]/g)].map((m) => m[1]);
+  let texte = t.replace(/\s*\[[^\]]+\]/g, "").trim();
+  let piste: string | null = null;
+  const i = texte.search(/\s*Piste conforme\s*:/);
+  if (i >= 0) { piste = texte.slice(i).replace(/^\s*Piste conforme\s*:\s*/, ""); texte = texte.slice(0, i); }
+  let entete: string | null = null;
+  const m = texte.match(/^((?:Prescription|Message au patient|Demande de partage)?\s*#\d+[^:]*?)\s*:\s*/);
+  if (m) { entete = m[1]; texte = texte.slice(m[0].length); }
+  return { entete, texte: texte.charAt(0).toUpperCase() + texte.slice(1), refs, piste };
+}
+const nomMedicament = (m?: string | null) => (m ? m.charAt(0).toUpperCase() + m.slice(1).replace(/_/g, " ") : "");
+
+// ================================================================== écran
+export default function EcranMedecin() {
+  const jeton = useMemo(jetonMedecin, []);
+  const notifier = useNotifier();
+  const { donnees: vue, erreur, rafraichir } = useSondage(() => lire<VueMedecin>("/api/medecin", jeton));
+  const [occupe, setOccupe] = useState(false);
+  const [medecin, setMedecin] = useState("DR-001");
+  const [dialogue, setDialogue] = useState<null | { type: "rejeter" | "maintenir" | "reinit"; id?: number }>(null);
+  const [edition, setEdition] = useState<null | { id: number; pictos: string[] }>(null);
+
+  const poster = useCallback(async (url: string, corps: object = {}) => {
+    setOccupe(true);
+    try {
+      const j = await envoyer<{ retour?: string; description?: string }>(url, corps, jeton);
+      const msg = j.retour?.replace(/^[✔✖⚑]\s*/, "") || (j.description ? `Étape : ${j.description}` : "");
+      if (msg) notifier(msg, /^✖/.test(j.retour ?? ""));
+      await rafraichir();
+      return j;
+    } catch (e) {
+      notifier(e instanceof ErreurApi ? e.message : "Le serveur ne répond pas. Vérifiez qu'il tourne toujours.", true);
+      return null;
+    } finally {
+      setOccupe(false);
+    }
+  }, [jeton, notifier, rafraichir]);
+
+  if (erreur instanceof ErreurApi && erreur.statut === 403) return <AccesRefuse />;
+  if (!vue) return <Chargement erreur={!!erreur} />;
+
+  const urgence = vue.etat.urgence?.valeur === true;
+  return (
+    <div className="flex min-h-dvh flex-col xl:h-dvh">
+      <BarreHaute vue={vue} jeton={jeton} medecin={medecin} setMedecin={setMedecin} onReinit={() => setDialogue({ type: "reinit" })} />
+      {urgence && (
+        <div id="urgence" role="alert" className="flex items-center gap-3 bg-danger px-4 py-2.5 text-white sm:px-6">
+          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/15"><Siren size={18} /></span>
+          <p className="text-sm"><b className="font-semibold">Urgence signalée par le patient.</b> Il a appuyé sur le bouton d'urgence : prenez-le en charge en priorité.</p>
+        </div>
+      )}
+      {vue.demo.actif && <BarreDemo vue={vue} occupe={occupe} onSuivant={() => poster("/api/demo/suivant")} />}
+
+      <main key={vue.session} className="grid flex-1 grid-cols-[minmax(0,1fr)] gap-4 p-4 sm:p-5 lg:grid-cols-[300px_minmax(0,1fr)] xl:min-h-0 xl:grid-cols-[300px_minmax(0,1fr)_420px] 2xl:grid-cols-[340px_minmax(0,1fr)_460px]">
+        <div className="flex flex-col gap-4 xl:min-h-0 xl:overflow-y-auto barre-fine">
+          <DossierPatient vue={vue} occupe={occupe} poster={poster} />
+        </div>
+        <Conversation vue={vue} occupe={occupe} poster={poster} medecin={medecin}
+          onRejeter={(id) => setDialogue({ type: "rejeter", id })} onModifier={(id, pictos) => setEdition({ id, pictos })} />
+        <div className="lg:col-span-2 xl:col-span-1 xl:min-h-0">
+          <Inspecteur vue={vue} occupe={occupe} poster={poster} medecin={medecin}
+            onMaintenir={(id) => setDialogue({ type: "maintenir", id })} />
+        </div>
+      </main>
+
+      <DialogueTexte ouvert={dialogue?.type === "rejeter"} titre="Rejeter la traduction"
+        description="Elle ne sera pas envoyée au patient. Indiquez pourquoi : le traducteur en tiendra compte."
+        libelle="Raison" defaut="À reformuler" action="Rejeter la traduction" variante="danger"
+        onFermer={() => setDialogue(null)}
+        onValider={(raison) => { poster("/api/medecin/rejeter", { decision_id: dialogue?.id, raison }); setDialogue(null); }} />
+      <DialogueTexte ouvert={dialogue?.type === "maintenir"} titre="Maintenir la prescription"
+        description="Le juriste demande une révision. Vous pouvez maintenir votre décision par écrit : votre nom et votre justification sont enregistrés dans le journal."
+        libelle="Justification médicale" defaut="" action="Maintenir et signer" variante="primary"
+        onFermer={() => setDialogue(null)}
+        onValider={(justification) => { poster("/api/medecin/maintenir", { decision_id: dialogue?.id, justification, medecin }); setDialogue(null); }} />
+      {edition && <EditeurPictos initial={edition.pictos} onFermer={() => setEdition(null)}
+        onEnregistrer={(pictos) => { poster("/api/medecin/pictogrammes", { decision_id: edition.id, pictogrammes: pictos, medecin }); setEdition(null); }} />}
+      <Dialogue ouvert={dialogue?.type === "reinit"} titre="Démarrer une nouvelle consultation ?"
+        description="Le dossier, la conversation et le journal actuels sont remplacés. L'écran patient repart de zéro."
+        onFermer={() => setDialogue(null)}
+        actions={<>
+          <Bouton onClick={() => setDialogue(null)}>Annuler</Bouton>
+          <Bouton id="confirmerReinit" data-defaut variante="primary" icone={<RotateCcw size={15} />}
+            onClick={() => { setDialogue(null); poster("/api/reinitialiser"); }}>Nouvelle consultation</Bouton>
+        </>} />
+    </div>
+  );
+}
+
+type Poster = (url: string, corps?: object) => Promise<unknown>;
+
+// ------------------------------------------------------------------ barre haute
+function BarreHaute({ vue, jeton, medecin, setMedecin, onReinit }:
+  { vue: VueMedecin; jeton: string; medecin: string; setMedecin: (m: string) => void; onReinit: () => void }) {
+  const intact = vue.journal === "Journal intact";
+  return (
+    <header className="sticky top-0 z-30 border-b border-line bg-surface/95 backdrop-blur">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5 sm:px-6">
+        <div className="flex items-center gap-3">
+          <Marque />
+          <span className="hidden h-5 w-px bg-line xl:block" />
+          <div className="hidden xl:block">
+            <p className="text-sm font-semibold leading-tight text-ink">Consultation</p>
+            <p className="text-2xs text-ink-muted tabulaire">Session {vue.session}</p>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Pastille ton={intact ? "ok" : "danger"} icone={intact ? <ShieldCheck size={13} /> : <ShieldAlert size={13} />}>
+            <span id="journal" title="Chaque action est enregistrée dans un journal chaîné : toute modification après coup est détectée.">
+              {intact ? `Journal intact, ${vue.lignes} entrées` : vue.journal}
+            </span>
+          </Pastille>
+          <Pastille ton="brand" icone={<Bot size={13} />}>{vue.mode === "simulé" ? "Agents en mode simulé" : `Agents : ${vue.mode}`}</Pastille>
+          {vue.reflexion_en_cours ? (
+            <Pastille ton="brand" icone={<Loader2 size={13} className="animate-spin" />}>
+              <span id="reflexion" title="L'assistant interroge le modèle en ligne en arrière-plan. Vous pouvez continuer : vos clics passent avant lui.">
+                L'assistant réfléchit…{vue.duree_modele ? ` (dernière réponse : ${vue.duree_modele.toFixed(1).replace(".", ",")} s)` : ""}
+              </span>
+            </Pastille>
+          ) : null}
+          <Pastille ton="warn" icone={<Lock size={12} />}>Données fictives</Pastille>
+        </div>
+        <div className="ml-auto flex flex-wrap items-center gap-1">
+          <a href="/patient" target="_blank" rel="noopener" title="Ouvrir l'écran patient" className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-ink-soft hover:bg-canvas hover:text-ink">
+            <MonitorSmartphone size={16} /><span className="hidden 2xl:inline">Écran patient</span>
+          </a>
+          <a href={`/journal?jeton=${encodeURIComponent(jeton)}`} target="_blank" rel="noopener" title="Journal lisible" className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-ink-soft hover:bg-canvas hover:text-ink">
+            <ScrollText size={16} /><span className="hidden 2xl:inline">Journal</span>
+          </a>
+          <a href="/credits" target="_blank" rel="noopener" title="Crédits des pictogrammes" className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-ink-soft hover:bg-canvas hover:text-ink">
+            <FileText size={16} /><span className="hidden 2xl:inline">Crédits</span>
+          </a>
+          <span className="mx-1 hidden h-5 w-px bg-line md:block" />
+          <label className="relative flex items-center">
+            <span className="sr-only">Médecin connecté</span>
+            <UserRound size={15} className="pointer-events-none absolute left-2.5 text-ink-muted" />
+            <select id="medecin" value={medecin} onChange={(e) => setMedecin(e.target.value)}
+              className={cx(champ, "h-9 w-auto appearance-none pl-8 pr-8")}>
+              {Object.entries(vue.prescripteurs).map(([k, n]) => <option key={k} value={k}>{n}</option>)}
+            </select>
+            <ChevronDown size={15} className="pointer-events-none absolute right-2.5 text-ink-muted" />
+          </label>
+          <Bouton id="reinit" onClick={onReinit} icone={<RotateCcw size={15} />}>Nouvelle consultation</Bouton>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function BarreDemo({ vue, occupe, onSuivant }: { vue: VueMedecin; occupe: boolean; onSuivant: () => void }) {
+  const { etape, total, titre, prochaine } = vue.demo;
+  return (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-action-100 bg-action-50 px-4 py-2 sm:px-6">
+      <Pastille ton="action" icone={<Play size={12} />}>Démonstration</Pastille>
+      <p className="min-w-0 flex-1 truncate text-sm text-ink-soft"><span className="font-medium text-ink">{titre}</span></p>
+      <div className="flex items-center gap-3">
+        <div className="hidden w-32 sm:block" aria-hidden>
+          <div className="h-1.5 rounded-full bg-action-100"><div className="h-1.5 rounded-full bg-action transition-all" style={{ width: `${(100 * etape) / Math.max(total, 1)}%` }} /></div>
+        </div>
+        <span className="text-xs text-ink-muted tabulaire">Étape {etape} sur {total}</span>
+        <span className="hidden max-w-[320px] truncate text-xs text-ink-muted md:inline" title={prochaine ?? ""}>{prochaine ? `Ensuite : ${prochaine}` : "Scénario terminé"}</span>
+        <Bouton id="demoSuivant" taille="sm" variante="primary" disabled={occupe || !prochaine} onClick={onSuivant}>Étape suivante</Bouton>
+      </div>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------ dossier patient
+function DossierPatient({ vue, occupe, poster }: { vue: VueMedecin; occupe: boolean; poster: Poster }) {
+  const e = vue.etat;
+  const identite = [e.sexe && valeur("sexe", e.sexe.valeur), e.age && valeur("age", e.age.valeur)].filter(Boolean).join(", ");
+  const faits = Object.entries(e).filter(([k]) => k !== "urgence")
+    .sort(([a], [b]) => (ORDRE_FAITS.indexOf(a) + 1 || 99) - (ORDRE_FAITS.indexOf(b) + 1 || 99));
+  const aConfirmer = faits.filter(([, f]) => !f.confirme).length;
+  return (
+    <>
+      <Panneau corps="p-0">
+        <div className="flex items-center gap-3 px-4 pb-3 pt-4">
+          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand-50 text-brand"><UserRound size={22} /></div>
+          <div className="min-w-0">
+            <h2 className="text-[15px] font-semibold text-ink">Patient</h2>
+            <p className="text-sm text-ink-muted">{identite || "Identité non renseignée"}</p>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-1.5 px-4 pb-3">
+          {e.moyen_communication?.valeur === "pictogrammes" && <Pastille ton="action" icone={<Hand size={12} />}>Communique en pictogrammes</Pastille>}
+          {e.informe_usage_ia?.valeur === true && <Pastille ton="ok" icone={<Check size={12} />}>Informé de l'IA</Pastille>}
+          {e.grossesse?.valeur === true && <Pastille ton="review">Enceinte</Pastille>}
+          {e.allergies && e.allergies.valeur !== "aucune" && <Pastille ton="danger" icone={<AlertTriangle size={12} />}>Allergie : {String(e.allergies.valeur)}</Pastille>}
+        </div>
+        <div className="border-t border-line">
+          <div className="flex items-center justify-between px-4 pb-1 pt-3">
+            <h3 className="text-[13px] font-semibold text-ink">Informations cliniques</h3>
+            {aConfirmer > 0 && <span className="text-xs text-warn">{aConfirmer} à confirmer</span>}
+          </div>
+          {faits.length ? (
+            <dl id="etat" className="px-4 pb-3">
+              {faits.map(([k, f]) => (
+                <div key={k} className="flex items-baseline justify-between gap-3 border-b border-line/70 py-2 last:border-0" title={f.source}>
+                  <dt className="text-[13px] text-ink-muted">{FAITS[k] ?? k.replace(/_/g, " ")}</dt>
+                  <dd className="flex items-center gap-1.5 text-right text-[13px] font-medium text-ink">
+                    {valeur(k, f.valeur)}
+                    {f.confirme ? <Check size={13} className="text-ok" aria-label="confirmé" /> : <span className="rounded bg-warn-50 px-1 text-2xs font-medium text-warn">à confirmer</span>}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          ) : <Vide titre="Aucune information pour l'instant" texte="Remplissez la fiche ci-dessous ou posez une question au patient." />}
+        </div>
+      </Panneau>
+      <FichePatient occupe={occupe} poster={poster} />
+    </>
+  );
+}
+
+function FichePatient({ occupe, poster }: { occupe: boolean; poster: Poster }) {
+  // Rien n'est obligatoire : le médecin renseigne ce qu'il sait, en texte libre si besoin ; les agents en tirent les faits utiles.
+  const [f, setF] = useState({ sexe: "", age: "", poids: "", grossesse: "", allergies: "", traitements: "", antecedents: "", autres: "", pictos: true, ia: false });
+  const [libres, setLibres] = useState<{ cle: string; valeur: string }[]>([]);
+  const maj = (k: keyof typeof f) => (v: string | boolean) => setF((x) => ({ ...x, [k]: v }));
+  const enregistrer = () => {
+    const donnees: Record<string, unknown> = {
+      sexe: f.sexe, age: f.age, poids: f.poids ? Number(f.poids) : "", allergies: f.allergies.trim(), traitements_en_cours: f.traitements.trim(),
+      antecedents: f.antecedents.trim(), autres_informations: f.autres.trim(),
+      grossesse: f.grossesse === "oui" ? true : f.grossesse === "non" ? false : "",
+      moyen_communication: f.pictos ? "pictogrammes" : "", informe_usage_ia: f.ia || "",
+    };
+    for (const l of libres) if (l.cle.trim() && l.valeur.trim()) donnees[l.cle.trim().toLowerCase().replace(/\s+/g, "_")] = l.valeur.trim();
+    poster("/api/medecin/faits", { donnees });
+  };
+  return (
+    <Panneau titre="Fiche patient" aide="Tout est facultatif. Saisi par vous, enregistré comme information confirmée.">
+      <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-3 gap-2">
+          <Champ libelle="Sexe" htmlFor="sexe">
+            <select id="sexe" value={f.sexe} onChange={(e) => maj("sexe")(e.target.value)} className={cx(champ, "h-9 px-2")}>
+              <option value="">—</option><option value="F">Femme</option><option value="M">Homme</option>
+            </select>
+          </Champ>
+          <Champ libelle="Âge" htmlFor="age">
+            <input id="age" type="number" min={0} max={120} inputMode="numeric" value={f.age} onChange={(e) => maj("age")(e.target.value)} className={cx(champ, "h-9 tabulaire")} placeholder="ans" />
+          </Champ>
+          <Champ libelle="Poids" htmlFor="poids">
+            <input id="poids" type="number" min={0} max={400} inputMode="decimal" value={f.poids} onChange={(e) => maj("poids")(e.target.value)} className={cx(champ, "h-9 tabulaire")} placeholder="kg" />
+          </Champ>
+        </div>
+        {f.sexe !== "M" && (
+          <Champ libelle="Grossesse" htmlFor="grossesse">
+            <select id="grossesse" value={f.grossesse} onChange={(e) => maj("grossesse")(e.target.value)} className={cx(champ, "h-9")}>
+              <option value="">Non renseignée</option><option value="non">Non</option><option value="oui">Oui</option>
+            </select>
+          </Champ>
+        )}
+        <Champ libelle="Maladies connues, antécédents" htmlFor="antecedents" aide="Texte libre, par exemple : diabète, HTA, insuffisance rénale, opéré de l'appendicite.">
+          <textarea id="antecedents" rows={2} value={f.antecedents} onChange={(e) => maj("antecedents")(e.target.value)} className={cx(champ, "resize-y py-2")} />
+        </Champ>
+        <Champ libelle="Allergies" htmlFor="allergies">
+          <input id="allergies" value={f.allergies} onChange={(e) => maj("allergies")(e.target.value)} className={cx(champ, "h-9")} placeholder="ou « aucune »" />
+        </Champ>
+        <Champ libelle="Traitements en cours" htmlFor="traitements">
+          <input id="traitements" value={f.traitements} onChange={(e) => maj("traitements")(e.target.value)} className={cx(champ, "h-9")} placeholder="ou « aucun »" />
+        </Champ>
+        <Champ libelle="Autres informations" htmlFor="autres" aide="Tout ce qui peut aider : contexte, mode de vie, entourage…">
+          <textarea id="autres" rows={2} value={f.autres} onChange={(e) => maj("autres")(e.target.value)} className={cx(champ, "resize-y py-2")} />
+        </Champ>
+        {libres.map((l, i) => (
+          <div key={i} className="flex gap-2">
+            <input aria-label="Renseignement" value={l.cle} placeholder="Renseignement (ex. tabac)" className={cx(champ, "h-9 w-2/5")}
+              onChange={(e) => setLibres((x) => x.map((y, j) => (j === i ? { ...y, cle: e.target.value } : y)))} />
+            <input aria-label="Valeur" value={l.valeur} placeholder="Valeur" className={cx(champ, "h-9 flex-1")}
+              onChange={(e) => setLibres((x) => x.map((y, j) => (j === i ? { ...y, valeur: e.target.value } : y)))} />
+            <button aria-label="Supprimer" onClick={() => setLibres((x) => x.filter((_, j) => j !== i))} className="px-1 text-ink-faint hover:text-danger"><X size={16} /></button>
+          </div>
+        ))}
+        <button id="ajouterRenseignement" onClick={() => setLibres((x) => [...x, { cle: "", valeur: "" }])}
+          className="self-start text-[13px] font-medium text-action hover:underline">+ Ajouter un renseignement</button>
+        <div className="flex flex-col gap-2 pt-1">
+          <Case id="pictos" coche={f.pictos} onChange={maj("pictos")}>Communique en pictogrammes</Case>
+          <Case id="ia" coche={f.ia} onChange={maj("ia")}>Informé qu'une IA aide le médecin</Case>
+        </div>
+        <Bouton id="faits" variante="secondary" disabled={occupe} className="mt-1 w-full" onClick={enregistrer}>Enregistrer la fiche</Bouton>
+      </div>
+    </Panneau>
+  );
+}
+
+// ------------------------------------------------------------------ conversation
+type Element = { v: number; ordre: number } & ({ genre: "echange"; e: Echange } | { genre: "decision"; d: Decision });
+
+function Conversation({ vue, occupe, poster, medecin, onRejeter, onModifier }:
+  { vue: VueMedecin; occupe: boolean; poster: Poster; medecin: string; onRejeter: (id: number) => void; onModifier: (id: number, pictos: string[]) => void }) {
+  const elements: Element[] = [
+    ...vue.fil.map((e, i) => ({ genre: "echange" as const, e, v: e.v ?? i, ordre: i })),
+    ...vue.decisions.map((d, i) => ({ genre: "decision" as const, d, v: d.v ?? 1e6 + d.id, ordre: 1e3 + i })),
+  ].sort((a, b) => a.v - b.v || a.ordre - b.ordre);
+  const enAttente = vue.decisions.filter((d) => d.type === "envoi_patient" && d.statut === "attente_validation").length;
+  const nomMedecin = (id?: string | null) => (id && vue.prescripteurs[id]) || id || "";
+  const fil = useRef<HTMLDivElement>(null);
+  const [attente, setAttente] = useState<null | { texte: string; n: number }>(null);
+  useEffect(() => { if (attente && vue.decisions.length > attente.n) setAttente(null); }, [vue.decisions.length, attente]);
+  const nombre = elements.length + vue.decisions.filter((d) => d.statut === "attente_validation").length;
+  useEffect(() => {                       // nouvel élément : on descend en bas du fil, comme une messagerie
+    const f = fil.current;
+    if (f) f.scrollTo({ top: f.scrollHeight, behavior: "smooth" });
+  }, [nombre]);
+  return (
+    <section className="flex min-h-[560px] flex-col rounded-xl bg-surface shadow-panel xl:min-h-0">
+      <header className="flex items-center justify-between gap-3 border-b border-line px-5 py-3">
+        <div>
+          <h2 className="text-[15px] font-semibold text-ink">Conversation</h2>
+          <p className="text-xs text-ink-muted">Vos messages sont traduits en pictogrammes. Rien ne part sans votre validation.</p>
+        </div>
+        {enAttente > 0 && <Pastille ton="action">{enAttente} à valider</Pastille>}
+      </header>
+      <div id="fil" ref={fil} className="flex flex-1 flex-col gap-4 overflow-y-auto px-5 py-5 barre-fine">
+        {elements.length === 0 && <Vide icone={<MessageSquareText size={20} />} titre="La consultation commence"
+          texte="Écrivez une première question au patient : elle sera traduite en pictogrammes et soumise à votre validation." />}
+        {elements.map((x) => x.genre === "echange"
+          ? <ElementEchange key={`e${x.ordre}`} e={x.e} />
+          : <ElementDecision key={`d${x.d.id}`} d={x.d} occupe={occupe} nomMedecin={nomMedecin}
+              parAssistant={Boolean(x.d.source_question && vue.questions.find((q) => q.id === x.d.source_question)?.auteur !== "medecin")}
+              onValider={() => poster("/api/medecin/valider", { decision_id: x.d.id, medecin })} onRejeter={() => onRejeter(x.d.id)}
+              onModifier={() => onModifier(x.d.id, x.d.pictogrammes ?? [])} />)}
+      </div>
+      {attente && (
+        <div className="mx-5 mb-3 flex items-center gap-2 self-end rounded-2xl border border-dashed border-action/50 bg-action-50 px-3.5 py-2 text-[13px] text-action" role="status">
+          <span className="h-3 w-3 animate-spin rounded-full border-2 border-action border-t-transparent" />
+          « {attente.texte} » : traduction en pictogrammes en cours…
+        </div>
+      )}
+      <Compositeur vue={vue} occupe={occupe} poster={poster} onEnvoye={(t) => setAttente({ texte: t, n: vue.decisions.length })} />
+    </section>
+  );
+}
+
+function ElementEchange({ e }: { e: Echange }) {
+  if (e.pictogrammes?.length) {
+    return (
+      <div className="flex max-w-[92%] gap-3 self-start">
+        <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-canvas text-ink-soft ring-1 ring-line"><Hand size={15} /></div>
+        <div className="min-w-0">
+          <p className="mb-1 text-xs text-ink-muted"><span className="font-medium text-ink-soft">Patient</span>{e.en_reponse_a ? ` répond à « ${e.en_reponse_a} »` : ""}</p>
+          <div className="rounded-2xl rounded-tl-md border border-line bg-surface p-3 shadow-tile">
+            <div className="flex flex-wrap gap-2">{e.pictogrammes.map((p, i) => <Picto key={i} id={p} taille={60} legende />)}</div>
+          </div>
+          {e.interpretation && <p className="mt-1.5 text-[13px] text-ink-soft">Compris comme <span className="font-medium text-ink">« {e.interpretation} »</span></p>}
+        </div>
+      </div>
+    );
+  }
+  const a = agent(e.auteur);
+  const donnees = Object.entries(e.donnees ?? {});
+  return (
+    <div className="flex items-start gap-3 rounded-xl bg-canvas/70 px-3.5 py-3">
+      <span className="mt-0.5 text-ink-muted">{a.icone}</span>
+      <div className="min-w-0 text-[13px]">
+        <p className="text-ink-soft"><span className="font-medium text-ink">{a.nom}</span> {e.auteur === "medecin" ? "a mis à jour la fiche patient." : ""}</p>
+        {e.auteur !== "medecin" && <p className="mt-0.5 text-ink-soft">{e.texte}</p>}
+        {donnees.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {donnees.map(([k, v]) => <span key={k} className="rounded-md bg-surface px-1.5 py-0.5 text-2xs text-ink-soft ring-1 ring-line">{FAITS[k] ?? k} : {valeur(k, v)}</span>)}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ElementDecision({ d, occupe, nomMedecin, parAssistant, onValider, onRejeter, onModifier }:
+  { d: Decision; occupe: boolean; nomMedecin: (id?: string | null) => string; parAssistant: boolean; onValider: () => void; onRejeter: () => void;
+    onModifier: () => void }) {
+  const libelle = useLibelle();
+  if (d.type === "prescription" || d.type === "partage_donnees") {
+    const texte = d.type === "prescription"
+      ? <>Prescription : <span className="font-medium text-ink">{nomMedicament(d.medicament)} {d.dose}</span></>
+      : <>Demande de partage de données ({agent(d.auteur).nom.toLowerCase()})</>;
+    return (
+      <div className="flex items-center justify-center gap-2 text-[13px] text-ink-muted">
+        <span className="h-px flex-1 bg-line" />
+        {d.type === "prescription" ? <Pill size={14} /> : <Share2 size={14} />}
+        <span>{texte}</span>
+        <Statut statut={d.statut} />
+        <span className="h-px flex-1 bg-line" />
+      </div>
+    );
+  }
+  const attente = d.statut === "attente_validation";
+  const origine = parAssistant ? "Question proposée par l'assistant (à valider ou rejeter)" : d.contenu_type === "traitement" ? "Consignes de traitement" : "Votre message";
+  const combinee = (d.pictogrammes ?? []).some((x) => x.includes("+"));
+  return (
+    <div className="flex max-w-[92%] flex-col items-end gap-1.5 self-end">
+      <p className="text-xs text-ink-muted">{origine}</p>
+      {d.texte && <div className="rounded-2xl rounded-tr-md bg-brand px-3.5 py-2 text-sm text-white">{d.texte}</div>}
+      <div className={cx("w-full rounded-2xl border bg-surface p-3", attente ? "border-action ring-4 ring-action/10" : "border-line shadow-tile")}>
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <p className="flex items-center gap-1.5 text-xs text-ink-muted"><Languages size={13} />Traduction en pictogrammes</p>
+          <Statut statut={d.statut} />
+        </div>
+        <div className="flex flex-wrap gap-2">{(d.pictogrammes ?? []).map((p, i) => <Picto key={i} id={p} taille={56} legende />)}</div>
+        {Object.keys(d.rapproches ?? {}).length > 0 && (
+          <p className="mt-2 text-xs text-ink-soft" data-rapproches={d.id}>
+            <span className="font-medium text-ink">Rapproché automatiquement</span> (faute de frappe ou conjugaison, à vérifier) :{" "}
+            {Object.entries(d.rapproches ?? {}).map(([mot, id]) => `« ${mot} » → ${libelle(id)}`).join(" · ")}
+          </p>
+        )}
+        {d.non_traduits && d.non_traduits.length > 0 && d.statut !== "BLOQUE" && (
+          <p className="mt-2 flex items-start gap-1.5 rounded-lg bg-warn-50 px-2.5 py-1.5 text-xs text-warn">
+            <AlertTriangle size={13} className="mt-px shrink-0" />Sans pictogramme : {d.non_traduits.join(", ")}. Reformulez si ces mots comptent.
+          </p>
+        )}
+        {attente ? (
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-line pt-3">
+            <p className="text-xs text-ink-muted">
+              {d.pictogrammes_choisis_par ? `Choisis par : ${d.pictogrammes_choisis_par}` : ""}{combinee ? ", avec une image combinée" : ""}
+            </p>
+            <div className="flex gap-2">
+              <Bouton taille="sm" variante="ghost" data-rejeter={d.id} disabled={occupe} onClick={onRejeter} icone={<X size={14} />}>Rejeter</Bouton>
+              <Bouton taille="sm" variante="secondary" data-modifier={d.id} disabled={occupe} onClick={onModifier} icone={<Languages size={14} />}>Modifier les pictogrammes</Bouton>
+              <Bouton taille="sm" variante="success" data-valider={d.id} disabled={occupe} onClick={onValider} icone={<Send size={14} />}>Valider et envoyer</Bouton>
+            </div>
+          </div>
+        ) : d.statut === "BLOQUE" && d.precontrole?.verdict === "BLOQUE" ? (
+          <div className="mt-3 rounded-xl border border-danger/30 bg-danger-50 p-3" data-bloque={d.id}>
+            <p className="flex items-center gap-1.5 text-[13px] font-semibold text-danger"><ShieldAlert size={15} />Bloqué par le juriste : ce message ne partira pas au patient</p>
+            <ul className="mt-1.5 flex flex-col gap-1">
+              {d.precontrole.constats.filter((c) => c.niveau === "BLOQUE").map((c, i) => (
+                <li key={i} className="text-[13px] leading-snug text-ink">{c.detail}
+                  <span className="mt-0.5 flex items-start gap-1 text-2xs text-ink-muted"><BookOpen size={11} className="mt-px shrink-0" />{c.base === "SURETE" ? "Sûreté du système" : c.base === "LOI" ? "Loi" : "Norme"} · {c.reference_courte}</span>
+                </li>
+              ))}
+            </ul>
+            {d.precontrole.constats.find((c) => c.niveau === "BLOQUE" && c.piste) && (
+              <p className="mt-2 rounded-lg bg-surface px-2.5 py-1.5 text-xs text-ok"><span className="font-semibold">Que faire : </span>
+                {d.precontrole.constats.find((c) => c.niveau === "BLOQUE" && c.piste)?.piste}</p>
+            )}
+          </div>
+        ) : ["BLOQUE", "rejete"].includes(d.statut) ? (
+          <p className="mt-2 flex items-center gap-1 text-xs text-ink-muted"><X size={13} />{d.statut === "BLOQUE" ? "Non envoyé : bloqué par le juriste (voir l'onglet Agents)." : "Non envoyé : rejeté par le médecin."}</p>
+        ) : d.statut === "envoye" && (
+          <p className="mt-2 flex items-center gap-1 text-xs text-ok"><Check size={13} />Envoyé au patient, validé par {nomMedecin(d.valide_par)}</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------ dictée vocale (reconnaissance de la parole du navigateur)
+// Chrome et Edge la fournissent (Firefox non). Le texte dicté arrive dans la zone de saisie : le médecin le relit et le corrige
+// avant « Faire traduire » ; rien n'est envoyé au patient sans sa validation. Dans Chrome, l'audio est transcrit par les
+// serveurs de Google : patients fictifs uniquement pour la démonstration.
+type Reconnaissance = {
+  lang: string; continuous: boolean; interimResults: boolean; start: () => void; stop: () => void;
+  onresult: ((e: { resultIndex: number; results: ArrayLike<{ isFinal: boolean; 0: { transcript: string } }> }) => void) | null;
+  onend: (() => void) | null; onerror: ((e: { error: string }) => void) | null;
+};
+function useDictee(ajouter: (t: string) => void) {
+  const Classe = (window as unknown as { SpeechRecognition?: new () => Reconnaissance; webkitSpeechRecognition?: new () => Reconnaissance })
+    .SpeechRecognition ?? (window as unknown as { webkitSpeechRecognition?: new () => Reconnaissance }).webkitSpeechRecognition;
+  const [actif, setActif] = useState(false);
+  const [provisoire, setProvisoire] = useState("");
+  const [erreur, setErreur] = useState("");
+  const rec = useRef<Reconnaissance | null>(null);
+  const demarrer = (langue: string) => {
+    if (!Classe) return;
+    const r = new Classe();
+    r.lang = langue; r.continuous = true; r.interimResults = true;
+    r.onresult = (e) => {
+      let prov = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const x = e.results[i];
+        if (x.isFinal) ajouter(x[0].transcript.trim()); else prov += x[0].transcript;
+      }
+      setProvisoire(prov);
+    };
+    r.onerror = (e) => setErreur(e.error === "not-allowed" ? "Micro refusé : autorisez-le dans le navigateur." : `Dictée interrompue (${e.error}).`);
+    r.onend = () => { setActif(false); setProvisoire(""); };
+    rec.current = r; setErreur(""); setActif(true);
+    try { r.start(); } catch { setActif(false); }
+  };
+  const arreter = () => rec.current?.stop();
+  return { disponible: Boolean(Classe), actif, provisoire, erreur, demarrer, arreter };
+}
+
+// Dictée par la reconnaissance vocale de xAI (même clé que Grok) : le navigateur enregistre un fichier WAV, le serveur le
+// fait transcrire. Fonctionne dans tous les navigateurs récents (Chrome, Edge, Firefox) dès que le micro est autorisé.
+function encoderWav(morceaux: Float32Array[], frequence: number, cible = 16000): Blob {
+  const total = morceaux.reduce((n, m) => n + m.length, 0);
+  const brut = new Float32Array(total);
+  let o = 0;
+  for (const m of morceaux) { brut.set(m, o); o += m.length; }
+  const pas = frequence / cible;
+  const n = Math.floor(brut.length / pas);
+  const vue = new DataView(new ArrayBuffer(44 + n * 2));
+  const ecrire = (p: number, t: string) => { for (let i = 0; i < t.length; i++) vue.setUint8(p + i, t.charCodeAt(i)); };
+  ecrire(0, "RIFF"); vue.setUint32(4, 36 + n * 2, true); ecrire(8, "WAVE"); ecrire(12, "fmt ");
+  vue.setUint32(16, 16, true); vue.setUint16(20, 1, true); vue.setUint16(22, 1, true); vue.setUint32(24, cible, true);
+  vue.setUint32(28, cible * 2, true); vue.setUint16(32, 2, true); vue.setUint16(34, 16, true); ecrire(36, "data"); vue.setUint32(40, n * 2, true);
+  for (let i = 0; i < n; i++) {
+    const x = Math.max(-1, Math.min(1, brut[Math.floor(i * pas)]));
+    vue.setInt16(44 + i * 2, x < 0 ? x * 0x8000 : x * 0x7fff, true);
+  }
+  return new Blob([vue], { type: "audio/wav" });
+}
+const enBase64 = (b: Blob) => new Promise<string>((ok, ko) => { const r = new FileReader(); r.onload = () => ok(String(r.result)); r.onerror = ko; r.readAsDataURL(b); });
+
+function useEnregistreur(transcrire: (audio: string) => Promise<void>) {
+  const [etat, setEtat] = useState<"repos" | "enregistre" | "transcrit">("repos");
+  const [duree, setDuree] = useState(0);
+  const [niveau, setNiveau] = useState(0);
+  const [erreur, setErreur] = useState("");
+  const r = useRef<{ ctx: AudioContext; flux: MediaStream; proc: ScriptProcessorNode; morceaux: Float32Array[]; minuteur: number } | null>(null);
+  const arreter = useCallback(async () => {
+    const x = r.current;
+    if (!x) return;
+    r.current = null;
+    clearInterval(x.minuteur);
+    x.proc.disconnect(); x.flux.getTracks().forEach((t) => t.stop());
+    const frequence = x.ctx.sampleRate;
+    await x.ctx.close();
+    const secondes = x.morceaux.reduce((n, m) => n + m.length, 0) / frequence;
+    if (secondes < 0.6) { setEtat("repos"); setErreur("Enregistrement trop court : maintenez la dictée au moins une seconde."); return; }
+    setEtat("transcrit");
+    try { await transcrire(await enBase64(encoderWav(x.morceaux, frequence))); } finally { setEtat("repos"); setNiveau(0); }
+  }, [transcrire]);
+  const demarrer = async () => {
+    setErreur("");
+    try {
+      const flux = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+      const ctx = new AudioContext();
+      const source = ctx.createMediaStreamSource(flux);
+      const proc = ctx.createScriptProcessor(4096, 1, 1);
+      const morceaux: Float32Array[] = [];
+      proc.onaudioprocess = (e) => {
+        const d = e.inputBuffer.getChannelData(0);
+        morceaux.push(new Float32Array(d));
+        let s = 0; for (let i = 0; i < d.length; i += 16) s += d[i] * d[i];
+        setNiveau(Math.min(1, Math.sqrt(s / (d.length / 16)) * 6));
+      };
+      source.connect(proc); proc.connect(ctx.destination);
+      const debut = Date.now();
+      const minuteur = window.setInterval(() => {
+        const t = Math.floor((Date.now() - debut) / 1000);
+        setDuree(t);
+        if (t >= 120) arreter();
+      }, 250);
+      r.current = { ctx, flux, proc, morceaux, minuteur };
+      setDuree(0); setEtat("enregistre");
+    } catch {
+      setErreur("Micro inaccessible : autorisez le micro pour cette page (icône à gauche de l'adresse), puis réessayez.");
+    }
+  };
+  return { etat, duree, niveau, erreur, demarrer, arreter };
+}
+
+function Compositeur({ vue, occupe, poster, onEnvoye }: { vue: VueMedecin; occupe: boolean; poster: Poster; onEnvoye: (t: string) => void }) {
+  const [texte, setTexte] = useState("");
+  const [langueDictee, setLangueDictee] = useState("fr-FR");
+  const [envoye, setEnvoye] = useState("");
+  const ajouter = useCallback((t: string) => setTexte((x) => (x.trim() ? `${x.trim()} ${t}` : t)), []);
+  const navigateur = useDictee(ajouter);
+  const serveur = useEnregistreur(useCallback(async (audio: string) => {
+    const r = (await poster("/api/medecin/dictee", { audio, langue: langueDictee.slice(0, 2) })) as { texte?: string } | undefined;
+    if (r?.texte) { ajouter(r.texte); document.getElementById("envoyerMessage")?.focus(); }
+    else if (r) throw new Error("rien");
+  }, [poster, langueDictee, ajouter]));
+  const parXai = vue.dictee === "xai";
+  const enregistre = parXai ? serveur.etat === "enregistre" : navigateur.actif;
+  const [question, setQuestion] = useState(true);
+  const [cle, setCle] = useState("");
+  const envoyerTexte = async () => {
+    const t = texte.trim();
+    if (!t || t === envoye) return;
+    setEnvoye(t);
+    const r = await poster("/api/medecin/message", { texte: t, question, cle });
+    if (r) { setTexte(""); setCle(""); onEnvoye(t); } else setEnvoye("");
+  };
+  const mm = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  const erreur = parXai ? serveur.erreur : navigateur.erreur;
+  return (
+    <div className="border-t border-line bg-surface p-4">
+      {enregistre && (
+        <div className="mb-2 flex items-center gap-3 rounded-xl bg-danger-50 px-3 py-2 text-[13px] text-danger" role="status">
+          <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-danger" />
+          <span className="font-medium">Enregistrement {parXai ? mm(serveur.duree) : ""} : parlez normalement</span>
+          {parXai && <span className="h-2 flex-1 overflow-hidden rounded-full bg-white"><span className="block h-full bg-danger transition-all" style={{ width: `${Math.round(serveur.niveau * 100)}%` }} /></span>}
+          <Bouton taille="sm" variante="danger" onClick={() => (parXai ? serveur.arreter() : navigateur.arreter())}>Terminer</Bouton>
+        </div>
+      )}
+      {parXai && serveur.etat === "transcrit" && <p className="mb-2 text-[13px] text-ink-muted" role="status">Transcription en cours…</p>}
+      <div className="rounded-xl border border-line-strong bg-surface shadow-tile focus-within:border-action focus-within:ring-4 focus-within:ring-action/10">
+        <label htmlFor="message" className="sr-only">Message au patient</label>
+        <textarea id="message" rows={2} value={texte} onChange={(e) => setTexte(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) envoyerTexte(); }}
+          placeholder="Écrire, ou cliquer sur le micro et parler, par exemple : Avez-vous mal au ventre ?"
+          className="block w-full resize-none rounded-t-xl border-0 bg-transparent px-3.5 pt-3 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:ring-0" />
+        {(navigateur.provisoire || erreur) && (
+          <p className={cx("px-3.5 pb-1 text-xs", erreur ? "text-danger" : "italic text-ink-muted")}>{erreur || navigateur.provisoire}</p>
+        )}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-3 pb-3 pt-1">
+          {parXai || navigateur.disponible ? (
+            <div className="flex items-center gap-1.5">
+              <Bouton id="dictee" taille="sm" variante={enregistre ? "danger" : "secondary"} disabled={serveur.etat === "transcrit"}
+                onClick={() => (enregistre ? (parXai ? serveur.arreter() : navigateur.arreter()) : (parXai ? serveur.demarrer() : navigateur.demarrer(langueDictee)))}
+                icone={<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor" /><path d="M5 11a7 7 0 0014 0M12 18v3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>}>
+                {enregistre ? "Terminer" : serveur.etat === "transcrit" ? "Transcription…" : "Dicter"}
+              </Bouton>
+              <select aria-label="Langue de la dictée" value={langueDictee} onChange={(e) => setLangueDictee(e.target.value)} disabled={enregistre}
+                className={cx(champ, "h-8 w-auto py-0 pr-7 text-[13px]")}>
+                <option value="fr-FR">FR</option><option value="en-US">EN</option><option value="ar-SA">AR</option>
+              </select>
+            </div>
+          ) : <span className="text-xs text-ink-faint">Dictée : ajoutez la clé xAI ou utilisez Chrome</span>}
+          <Case id="estQuestion" coche={question} onChange={setQuestion}>C'est une question</Case>
+          <label className="flex items-center gap-2 whitespace-nowrap text-[13px] text-ink-muted">
+            Enregistrer la réponse comme
+            <select id="cle" value={cle} onChange={(e) => setCle(e.target.value)} className={cx(champ, "h-8 w-auto py-0 pr-7 text-[13px]")}>
+              <option value="">texte seulement</option>
+              {vue.cles_fermees.map((c) => <option key={c} value={c}>{CLES_REPONSE[c] ?? c}</option>)}
+            </select>
+          </label>
+          <Bouton id="envoyerMessage" variante="primary" className="ml-auto" disabled={occupe || !texte.trim() || texte.trim() === envoye} onClick={envoyerTexte} icone={<Languages size={15} />}>
+            Faire traduire
+          </Bouton>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------ inspecteur des agents
+type Onglet = "agents" | "assistant" | "ordonnance" | "droit" | "crise";
+
+function Inspecteur({ vue, occupe, poster, medecin, onMaintenir }:
+  { vue: VueMedecin; occupe: boolean; poster: Poster; medecin: string; onMaintenir: (id: number) => void }) {
+  const suggestions = vue.suggestions.filter((s) => s.statut === "proposee_au_medecin");
+  const alertes = vue.messages.filter((m) => m.type === "alerte").length;
+  const crise = vue.mesures.length + vue.incidents.length > 0;
+  const onglets: { cle: Onglet; nom: string; icone: ReactNode; nombre?: number; ton?: "danger" }[] = [
+    { cle: "agents", nom: "Agents", icone: <Bot size={15} />, nombre: alertes || undefined, ton: "danger" },
+    { cle: "assistant", nom: "Assistant", icone: <Sparkles size={15} />, nombre: suggestions.length || undefined },
+    { cle: "ordonnance", nom: "Ordonnance", icone: <Pill size={15} /> },
+    { cle: "droit", nom: "Droit", icone: <Gavel size={15} />, nombre: vue.lacunes.length || undefined },
+    ...(crise ? [{ cle: "crise" as Onglet, nom: "Crise", icone: <Siren size={15} /> }] : []),
+  ];
+  const [onglet, setOnglet] = useState<Onglet>("agents");
+  return (
+    <section className="flex flex-col rounded-xl bg-surface shadow-panel xl:h-full xl:min-h-0">
+      <nav role="tablist" aria-label="Agents" className="flex gap-1 overflow-x-auto border-b border-line px-2 pt-2 barre-fine">
+        {onglets.map((o) => (
+          <button key={o.cle} role="tab" aria-selected={onglet === o.cle} data-inspecteur={o.cle} onClick={() => setOnglet(o.cle)}
+            className={cx("relative flex shrink-0 items-center gap-1.5 rounded-t-lg px-2.5 pb-2.5 pt-2 text-[13px] font-medium transition-colors",
+              onglet === o.cle ? "text-ink after:absolute after:inset-x-2 after:-bottom-px after:h-0.5 after:rounded-full after:bg-action" : "text-ink-muted hover:text-ink")}>
+            <span className="hidden 2xl:inline">{o.icone}</span>{o.nom}
+            {o.nombre !== undefined && (
+              <span className={cx("min-w-[18px] rounded-full px-1.5 text-center text-2xs font-semibold leading-[18px] tabulaire",
+                o.ton === "danger" ? "bg-danger text-white" : "bg-action-50 text-action")}>{o.nombre}</span>
+            )}
+          </button>
+        ))}
+      </nav>
+      <div className="flex-1 overflow-y-auto barre-fine xl:min-h-0">
+        {onglet === "agents" && <OngletAgents vue={vue} occupe={occupe} poster={poster} />}
+        {onglet === "assistant" && <OngletAssistant vue={vue} occupe={occupe} poster={poster} />}
+        {onglet === "ordonnance" && <OngletOrdonnance vue={vue} occupe={occupe} poster={poster} medecin={medecin} onMaintenir={onMaintenir} />}
+        {onglet === "droit" && <OngletDroit vue={vue} />}
+        {onglet === "crise" && <OngletCrise vue={vue} />}
+      </div>
+    </section>
+  );
+}
+
+const TYPE_MESSAGE: Record<string, { nom: string; ton: "danger" | "review" | "action"; icone: ReactNode }> = {
+  alerte: { nom: "Alerte", ton: "danger", icone: <AlertTriangle size={14} /> },
+  demande: { nom: "Demande", ton: "review", icone: <ClipboardList size={14} /> },
+  desaccord: { nom: "Désaccord", ton: "review", icone: <AlertTriangle size={14} /> },
+  proposition: { nom: "Proposition", ton: "action", icone: <Sparkles size={14} /> },
+  information: { nom: "Information", ton: "action", icone: <Info size={14} /> },
+};
+
+// L'essentiel d'abord (première phrase, en clair), le détail ensuite : replié s'il est long.
+function TexteAgent({ texte }: { texte: string }) {
+  const i = texte.search(/[.!?](\s|$)/);
+  const essentiel = i > 0 && i < texte.length - 1 ? texte.slice(0, i + 1) : texte;
+  const reste = essentiel.length < texte.length ? texte.slice(essentiel.length).trim() : "";
+  return (
+    <>
+      <p className="text-[13px] font-medium leading-snug text-ink">{essentiel}</p>
+      {reste && (reste.length > 180 ? (
+        <details className="group mt-1">
+          <summary className="flex cursor-pointer list-none items-center gap-1 text-xs font-medium text-action">
+            <ChevronDown size={13} className="transition-transform group-open:rotate-180" />Détails
+          </summary>
+          <p className="mt-1 text-[13px] leading-relaxed text-ink-soft">{reste}</p>
+        </details>
+      ) : <p className="mt-0.5 text-[13px] leading-relaxed text-ink-soft">{reste}</p>)}
+    </>
+  );
+}
+
+function CarteMessage({ m }: { m: MessageAgent }) {
+  const t = TYPE_MESSAGE[m.type] ?? TYPE_MESSAGE.information;
+  const a = agent(m.de);
+  const { entete, texte, refs, piste } = analyserMessage(m.contenu);
+  return (
+    <article className={cx("border-b border-line px-4 py-3.5 last:border-0", m.type === "alerte" && "bg-danger-50/40")}>
+      <div className="mb-1.5 flex items-center gap-2">
+        <span className="grid h-6 w-6 place-items-center rounded-md bg-canvas text-ink-soft">{a.icone}</span>
+        <span className="text-[13px] font-semibold text-ink">{a.nom}</span>
+        <Pastille ton={t.ton} icone={t.icone} className="ml-auto">{t.nom}</Pastille>
+      </div>
+      {entete && <p className="text-xs font-semibold text-ink">{entete.replace(/#(\d+)/, "n° $1").replace(/,\s*$/, "")}</p>}
+      <TexteAgent texte={texte} />
+      {piste && <p className="mt-2 rounded-lg bg-ok-50 px-2.5 py-1.5 text-xs text-ok"><span className="font-semibold">Ce qui est possible : </span>{piste}</p>}
+      {refs.length > 0 && (
+        <ul className="mt-2 flex flex-col gap-1">
+          {[...new Set(refs.flatMap((r) => r.split(" ; ")))].map((r, i) => (
+            <li key={i} className="flex items-start gap-1.5 text-xs text-ink-muted"><BookOpen size={12} className="mt-0.5 shrink-0" /><span>{r}</span></li>
+          ))}
+        </ul>
+      )}
+    </article>
+  );
+}
+
+function OngletAgents({ vue, occupe, poster }: { vue: VueMedecin; occupe: boolean; poster: Poster }) {
+  const [q, setQ] = useState("");
+  const messages = vue.messages.slice().reverse();
+  return (
+    <div className="flex flex-col">
+      <div id="messages">
+        {messages.length ? messages.map((m) => <CarteMessage key={m.id} m={m} />)
+          : <Vide icone={<Bot size={20} />} titre="Aucun message des agents" texte="Le juriste, l'assistant et le traducteur vous écrivent ici quand une décision les concerne." />}
+      </div>
+      <div className="sticky bottom-0 border-t border-line bg-surface p-4">
+        <Champ libelle="Demander au juriste" htmlFor="questionJuriste">
+          <textarea id="questionJuriste" rows={2} value={q} onChange={(e) => setQ(e.target.value)}
+            placeholder="Par exemple : un consentement donné en pictogrammes est-il valable ?" className={cx(champ, "resize-none py-2")} />
+        </Champ>
+        <div className="mt-2 flex justify-end">
+          <Bouton id="demanderJuriste" variante="secondary" taille="sm" icone={<Scale size={14} />} disabled={occupe || !q.trim()}
+            onClick={async () => { if (await poster("/api/medecin/juriste", { texte: q.trim() })) setQ(""); }}>Envoyer la question</Bouton>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function OngletAssistant({ vue, occupe, poster }: { vue: VueMedecin; occupe: boolean; poster: Poster }) {
+  const suggestions = vue.suggestions.filter((s) => s.statut === "proposee_au_medecin");
+  const questions = vue.questions.slice().reverse();
+  return (
+    <div className="flex flex-col gap-5 p-4">
+      <div>
+        <h3 className="mb-2 text-[13px] font-semibold text-ink">Suggestions</h3>
+        <p className="mb-3 text-xs text-ink-muted">L'assistant propose, vous décidez. Ignorer une suggestion est enregistré.</p>
+        <div id="suggestions" className="flex flex-col gap-2.5">
+          {suggestions.length ? suggestions.map((s) => {
+            const [source] = s.source.split(" — ").slice(-1);
+            return (
+              <article key={s.id} className="rounded-xl border border-line p-3.5">
+                <p className="whitespace-pre-line text-sm font-medium leading-snug text-ink">{s.texte}</p>
+                <p className="mt-1 text-[13px] text-ink-muted">{s.raison}</p>
+                <div className="mt-2.5 flex items-end justify-between gap-3">
+                  <p className="flex items-start gap-1.5 text-xs text-ink-muted"><BookOpen size={13} className="mt-px shrink-0" />{source}</p>
+                  <Bouton taille="sm" variante="ghost" data-ignorer={s.id} disabled={occupe} onClick={() => poster("/api/medecin/ignorer", { suggestion_id: s.id })}>Ignorer</Bouton>
+                </div>
+              </article>
+            );
+          }) : <Vide icone={<Sparkles size={20} />} titre="Aucune suggestion en cours" />}
+        </div>
+      </div>
+      <div>
+        <h3 className="mb-2 text-[13px] font-semibold text-ink">Questions à poser</h3>
+        {questions.length ? (
+          <ul className="flex flex-col divide-y divide-line rounded-xl border border-line">
+            {questions.map((q) => (
+              <li key={q.id} className="flex items-start justify-between gap-3 px-3.5 py-2.5">
+                <div className="min-w-0"><p className="text-[13px] font-medium text-ink">{q.question}</p><p className="text-xs text-ink-muted">{q.raison}</p></div>
+                <Pastille ton={q.statut === "repondue" ? "ok" : "action"}>{q.statut === "repondue" ? "Répondue" : "À poser"}</Pastille>
+              </li>
+            ))}
+          </ul>
+        ) : <p className="text-[13px] text-ink-muted">L'assistant n'a pas de question en attente.</p>}
+      </div>
+    </div>
+  );
+}
+
+function DetailVerdict({ v }: { v?: Verdict }) {
+  if (!v) return null;
+  const lignes = [...v.constats, ...v.obligations];
+  if (!lignes.length) return null;
+  return (
+    <details className="group mt-2.5">
+      <summary className="flex cursor-pointer list-none items-center gap-1 text-xs font-medium text-action">
+        <ChevronDown size={14} className="transition-transform group-open:rotate-180" />Analyse du juriste ({lignes.length})
+      </summary>
+      <ul className="mt-2 flex flex-col gap-2">
+        {lignes.map((c, i) => (
+          <li key={i} className="rounded-lg bg-canvas px-3 py-2">
+            <div className="flex items-center gap-2"><Statut statut={c.niveau} /><span className="text-2xs text-ink-muted">{c.base === "LOI" ? "Loi" : c.base === "NORME" ? "Norme" : c.base === "SURETE" ? "Sûreté du système" : "Recommandation"}</span></div>
+            <p className="mt-1 text-[13px] text-ink-soft">{c.detail}</p>
+            {c.piste && <p className="mt-1 text-xs text-ink"><span className="font-medium">Que faire : </span>{c.piste}</p>}
+            <p className="mt-1 flex items-start gap-1.5 text-2xs text-ink-muted"><BookOpen size={12} className="mt-px shrink-0" />{c.reference_courte}</p>
+          </li>
+        ))}
+      </ul>
+    </details>
+  );
+}
+
+function OngletOrdonnance({ vue, occupe, poster, medecin, onMaintenir }:
+  { vue: VueMedecin; occupe: boolean; poster: Poster; medecin: string; onMaintenir: (id: number) => void }) {
+  const [f, setF] = useState({ medicament: "", dose: "", posologie: "", mode: "presentiel", remplace: "", suggestion: false });
+  const maj = (k: keyof typeof f) => (v: string | boolean) => setF((x) => ({ ...x, [k]: v }));
+  const prescriptions = vue.decisions.filter((d) => d.type === "prescription" || d.type === "partage_donnees").slice().reverse();
+  const actives = vue.decisions.filter((d) => d.type === "prescription" && d.statut !== "annulee");
+  const verdictDe = (id: number) => vue.verdicts.filter((v) => v.decision_id === id).slice(-1)[0];
+  return (
+    <div className="flex flex-col gap-5 p-4">
+      <div className="rounded-xl border border-line p-3.5">
+        <div className="flex flex-col gap-3">
+          <div className="grid grid-cols-[1fr_120px] gap-3">
+            <Champ libelle="Médicament" htmlFor="medicament">
+              <input id="medicament" list="listeMedicaments" value={f.medicament} onChange={(e) => maj("medicament")(e.target.value)} className={cx(champ, "h-9")} placeholder="Rechercher" />
+              <datalist id="listeMedicaments">{vue.medicaments.map((m) => <option key={m} value={m}>{nomMedicament(m)}</option>)}</datalist>
+            </Champ>
+            <Champ libelle="Dose" htmlFor="dose"><input id="dose" value={f.dose} onChange={(e) => maj("dose")(e.target.value)} className={cx(champ, "h-9")} placeholder="500 mg" /></Champ>
+          </div>
+          <Champ libelle="Mode d'emploi" htmlFor="posologie">
+            <input id="posologie" value={f.posologie} onChange={(e) => maj("posologie")(e.target.value)} className={cx(champ, "h-9")} placeholder="3 fois par jour pendant 3 jours" />
+          </Champ>
+          <div className="grid grid-cols-2 gap-3">
+            <Champ libelle="Consultation" htmlFor="modeConsult">
+              <select id="modeConsult" value={f.mode} onChange={(e) => maj("mode")(e.target.value)} className={cx(champ, "h-9")}>
+                <option value="presentiel">En présentiel</option><option value="distance">Téléconsultation</option>
+              </select>
+            </Champ>
+            <Champ libelle="Remplace" htmlFor="remplace">
+              <select id="remplace" value={f.remplace} onChange={(e) => maj("remplace")(e.target.value)} className={cx(champ, "h-9")}>
+                <option value="">Aucune</option>
+                {actives.map((d) => <option key={d.id} value={d.medicament ?? ""}>{nomMedicament(d.medicament)}</option>)}
+              </select>
+            </Champ>
+          </div>
+          <Case id="suggestion" coche={f.suggestion} onChange={maj("suggestion")}>Inspirée d'une suggestion de l'assistant</Case>
+          <Bouton id="prescrire" variante="primary" disabled={occupe || !f.medicament.trim()} icone={<ShieldCheck size={15} />}
+            onClick={async () => {
+              const r = await poster("/api/medecin/prescription", { medicament: f.medicament, dose: f.dose, posologie: f.posologie, mode: f.mode,
+                remplace_medicament: f.remplace, issue_de_suggestion: f.suggestion, medecin });
+              if (r) setF((x) => ({ ...x, medicament: "", dose: "", posologie: "", remplace: "", suggestion: false }));
+            }}>Prescrire</Bouton>
+          <p className="-mt-1 text-center text-xs text-ink-muted">Chaque prescription est vérifiée par le juriste avant d'être transmise.</p>
+        </div>
+      </div>
+      <div>
+        <h3 className="mb-2 text-[13px] font-semibold text-ink">Décisions</h3>
+        <div id="decisions" className="flex flex-col gap-2.5">
+          {prescriptions.length ? prescriptions.map((d) => (
+            <article key={d.id} className="rounded-xl border border-line p-3.5">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-ink">{d.type === "prescription" ? `${nomMedicament(d.medicament)} ${d.dose ?? ""}` : "Partage de données"}</p>
+                  <p className="text-xs text-ink-muted">{d.type === "prescription" ? (d.posologie || "Sans mode d'emploi") : `Demandé par : ${agent(d.auteur).nom}`}</p>
+                </div>
+                <Statut statut={d.statut} />
+              </div>
+              {d.maintien && <p className="mt-2 rounded-lg bg-held-50 px-2.5 py-1.5 text-xs text-held">Maintenue par {vue.prescripteurs[d.maintien.par] ?? d.maintien.par} : {d.maintien.justification}</p>}
+              <DetailVerdict v={verdictDe(d.id)} />
+              {d.statut === "A_REVOIR" && (
+                <div className="mt-3 flex justify-end">
+                  <Bouton taille="sm" data-maintenir={d.id} disabled={occupe} onClick={() => onMaintenir(d.id)}>Maintenir en justifiant</Bouton>
+                </div>
+              )}
+            </article>
+          )) : <Vide icone={<Pill size={20} />} titre="Aucune prescription" texte="Les prescriptions et leur vérification par le juriste apparaissent ici." />}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function OngletDroit({ vue }: { vue: VueMedecin }) {
+  const verifs = vue.verdicts.slice().reverse();
+  const OBJETS: Record<string, string> = { envoi_au_patient: "Message au patient", prescription: "Prescription", partage_de_donnees: "Partage de données" };
+  return (
+    <div className="flex flex-col gap-5 p-4">
+      <div>
+        <h3 className="mb-1 text-[13px] font-semibold text-ink">Lacunes du droit signalées</h3>
+        <p className="mb-3 text-xs text-ink-muted">Situations que les textes en vigueur ne règlent pas, relevées pendant la consultation.</p>
+        <div id="lacunes" className="flex flex-col gap-2">
+          {vue.lacunes.length ? vue.lacunes.map((l, i) => (
+            <details key={i} className="group rounded-xl border border-line px-3.5 py-2.5">
+              <summary className="flex cursor-pointer list-none items-start gap-2">
+                {l.id && <span className="mt-px rounded bg-brand-50 px-1.5 text-2xs font-semibold text-brand tabulaire">{l.id}</span>}
+                <span className="flex-1 text-[13px] font-medium text-ink">{l.sujet}</span>
+                <ChevronDown size={15} className="mt-0.5 shrink-0 text-ink-muted transition-transform group-open:rotate-180" />
+              </summary>
+              {l.detail && <div className="mt-2 flex flex-col gap-1.5 text-xs leading-relaxed text-ink-muted">{l.detail.split(" | ").map((x, j) => <p key={j}>{x}</p>)}</div>}
+            </details>
+          )) : <p className="text-[13px] text-ink-muted">Aucune lacune relevée pour cette consultation.</p>}
+        </div>
+      </div>
+      <div>
+        <h3 className="mb-2 text-[13px] font-semibold text-ink">Vérifications du juriste</h3>
+        {verifs.length ? (
+          <ul className="flex flex-col divide-y divide-line rounded-xl border border-line">
+            {verifs.map((v, i) => (
+              <li key={i} className="px-3.5 py-2.5">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="truncate text-[13px] text-ink">{OBJETS[v.objet] ?? v.objet}{v.decision_id ? ` n° ${v.decision_id}` : ""}</p>
+                  <Statut statut={v.verdict} />
+                </div>
+                {v.constats[0] && <p className="mt-0.5 truncate text-xs text-ink-muted" title={v.constats.map((c) => c.reference_courte).join(" ; ")}>{v.constats[0].reference_courte}</p>}
+              </li>
+            ))}
+          </ul>
+        ) : <p className="text-[13px] text-ink-muted">Aucune vérification pour l'instant.</p>}
+      </div>
+    </div>
+  );
+}
+
+function OngletCrise({ vue }: { vue: VueMedecin }) {
+  return (
+    <div id="mesures" className="flex flex-col gap-2.5 p-4">
+      <p className="text-xs text-ink-muted">Échanges entre institutions, sans données de patients.</p>
+      {vue.incidents.map((x, i) => (
+        <article key={`i${i}`} className="rounded-xl border border-danger/20 bg-danger-50/50 p-3.5">
+          <div className="mb-1 flex items-center justify-between"><span className="text-[13px] font-semibold text-ink">{agent(x.par).nom}</span><Pastille ton="danger">Incident {x.gravite}</Pastille></div>
+          <p className="text-[13px] text-ink-soft">{x.description}</p>
+        </article>
+      ))}
+      {vue.mesures.map((x, i) => (
+        <article key={`m${i}`} className="rounded-xl border border-line p-3.5">
+          <p className="text-[13px] font-semibold text-ink">{agent(x.par).nom}</p>
+          <p className="mt-0.5 text-[13px] text-ink-soft">{x.mesure}</p>
+          <p className="mt-1.5 flex items-start gap-1.5 text-xs text-ink-muted"><BookOpen size={13} className="mt-px shrink-0" />{x.citation}</p>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------ états de la page
+function DialogueTexte({ ouvert, titre, description, libelle, defaut, action, variante, onFermer, onValider }:
+  { ouvert: boolean; titre: string; description: string; libelle: string; defaut: string; action: string;
+    variante: "danger" | "primary"; onFermer: () => void; onValider: (t: string) => void }) {
+  return ouvert ? <DialogueTexteOuvert {...{ titre, description, libelle, defaut, action, variante, onFermer, onValider }} /> : null;
+}
+function DialogueTexteOuvert({ titre, description, libelle, defaut, action, variante, onFermer, onValider }:
+  { titre: string; description: string; libelle: string; defaut: string; action: string; variante: "danger" | "primary"; onFermer: () => void; onValider: (t: string) => void }) {
+  const [t, setT] = useState(defaut);
+  return (
+    <Dialogue ouvert titre={titre} description={description} onFermer={onFermer}
+      actions={<><Bouton onClick={onFermer}>Annuler</Bouton><Bouton id="confirmerDialogue" variante={variante} disabled={!t.trim()} onClick={() => onValider(t.trim())}>{action}</Bouton></>}>
+      <Champ libelle={libelle} htmlFor="texteDialogue">
+        <textarea id="texteDialogue" rows={3} value={t} onChange={(e) => setT(e.target.value)} className={cx(champ, "resize-none py-2")} />
+      </Champ>
+    </Dialogue>
+  );
+}
+
+function AccesRefuse() {
+  return (
+    <div className="grid min-h-dvh place-items-center p-6">
+      <div className="w-full max-w-sm rounded-2xl bg-surface p-6 text-center shadow-panel">
+        <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-danger-50 text-danger"><Lock size={22} /></div>
+        <h1 className="mt-4 text-lg font-semibold text-ink">Accès réservé au médecin</h1>
+        <p className="mt-2 text-sm text-ink-muted">Ouvrez le lien privé affiché dans le terminal au démarrage du serveur. Il contient une clé secrète : ne le partagez pas.</p>
+        <a href="/patient" className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-action hover:underline"><MonitorSmartphone size={15} />Ouvrir l'écran patient</a>
+      </div>
+    </div>
+  );
+}
+
+function Chargement({ erreur }: { erreur: boolean }) {
+  return (
+    <div className="grid min-h-dvh place-items-center p-6 text-center">
+      <div>
+        <img src={urlPicto("ATTENDRE")} alt="" width={56} height={56} className="mx-auto opacity-60" />
+        <p className="mt-3 text-sm text-ink-muted">{erreur ? "Le serveur ne répond pas. Vérifiez qu'il est lancé (python interface/serveur.py)." : "Ouverture de la consultation…"}</p>
+      </div>
+    </div>
+  );
+}
+
+
+
+// ------------------------------------------------------------------ éditeur de pictogrammes (médecin)
+// Le médecin corrige la traduction avant de valider : retirer, ajouter n'importe quel pictogramme de la base, combiner.
+// Le serveur refuse de retirer la négation, la limite, l'urgence, STOP, un chiffre, une dose ou un médicament.
+const sansAccentsM = (t: string) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const debutDeMotM = (texte: string, q: string) => sansAccentsM(texte).split(/[\s'’+\-/]+/).some((m) => m.startsWith(q));
+
+function EditeurPictos({ initial, onFermer, onEnregistrer }: { initial: string[]; onFermer: () => void; onEnregistrer: (p: string[]) => void }) {
+  const libelle = useLibelle();
+  const [pictos, setPictos] = useState<string[]>(initial);
+  const [palette, setPalette] = useState<Record<string, string[]>>({});
+  const [onglet, setOnglet] = useState("");
+  const [q, setQ] = useState("");
+  useEffect(() => { lire<Record<string, string[]>>("/api/palette").then(setPalette).catch(() => setPalette({})); }, []);
+  useEffect(() => {
+    const touche = (e: KeyboardEvent) => e.key === "Escape" && onFermer();
+    window.addEventListener("keydown", touche);
+    return () => window.removeEventListener("keydown", touche);
+  }, [onFermer]);
+  const onglets = Object.keys(palette);
+  const actif = onglet && palette[onglet] ? onglet : onglets[0];
+  const requete = sansAccentsM(q.trim());
+  const tous = useMemo(() => Array.from(new Set(Object.values(palette).flat())), [palette]);
+  const parSens = useRechercheSens(q);
+  const directs = requete.length >= 2
+    ? tous.filter((id) => (["fr", "en", "ar"] as const).some((lg) => debutDeMotM(libelle(id, lg), requete)) || debutDeMotM(id.replace(/_/g, " "), requete))
+    : null;
+  const presents = useMemo(() => new Set(tous), [tous]);
+  const liste = directs === null ? palette[actif] ?? [] : [...directs, ...parSens.filter((id) => presents.has(id) && !directs.includes(id))];
+  const peutCombiner = pictos.length >= 2 && combinable(pictos[pictos.length - 2], pictos[pictos.length - 1]);
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4 backdrop-blur-[2px]" onMouseDown={onFermer}>
+      <div role="dialog" aria-modal="true" aria-label="Modifier les pictogrammes" onMouseDown={(e) => e.stopPropagation()}
+        className="flex max-h-[90dvh] w-full max-w-4xl flex-col rounded-2xl bg-surface shadow-pop">
+        <div className="flex items-start justify-between gap-4 px-5 pt-5">
+          <div>
+            <h3 className="text-base font-semibold text-ink">Modifier les pictogrammes</h3>
+            <p className="mt-1 text-sm text-ink-muted">Cliquez un pictogramme pour le retirer, ajoutez-en depuis la base. La proposition reste à valider.</p>
+          </div>
+          <button onClick={onFermer} aria-label="Fermer" className="rounded-md p-1 text-ink-faint hover:bg-canvas hover:text-ink"><X size={18} /></button>
+        </div>
+        <div className="mx-5 mt-4 flex min-h-[88px] flex-wrap items-center gap-2 rounded-xl bg-canvas p-2 ring-1 ring-inset ring-line">
+          {pictos.length === 0 && <span className="px-2 text-sm text-ink-muted">Aucun pictogramme : ajoutez-en ci-dessous.</span>}
+          {pictos.map((id, i) => (
+            <button key={`${id}-${i}`} data-retirer-picto={i} title="Retirer" onClick={() => setPictos((p) => p.filter((_, j) => j !== i))}
+              className="rounded-xl bg-surface p-1 shadow-panel hover:ring-2 hover:ring-danger/50"><Picto id={id} taille={60} legende /></button>
+          ))}
+          <div className="ml-auto flex gap-2">
+            <Bouton taille="sm" variante="secondary" disabled={!peutCombiner}
+              onClick={() => setPictos((p) => [...p.slice(0, -2), `${p[p.length - 2]}+${p[p.length - 1]}`])}>Combiner les deux derniers</Bouton>
+            <Bouton taille="sm" variante="ghost" disabled={!pictos.length} onClick={() => setPictos((p) => p.slice(0, -1))}>Retirer le dernier</Bouton>
+          </div>
+        </div>
+        <div className="mx-5 mt-3 flex flex-wrap items-center gap-2">
+          <input id="rechercheMedecin" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Chercher dans toute la base (ex. ventre, brûlure, riz)"
+            className={cx(champ, "h-9 min-w-[240px] flex-1")} />
+          <select aria-label="Catégorie" value={actif ?? ""} onChange={(e) => { setOnglet(e.target.value); setQ(""); }} className={cx(champ, "h-9 w-auto")}>
+            {onglets.map((k) => <option key={k} value={k}>{k} ({palette[k].length})</option>)}
+          </select>
+        </div>
+        <div className="mx-5 mt-3 grid flex-1 grid-cols-[repeat(auto-fill,minmax(92px,1fr))] gap-2 overflow-y-auto pb-2 barre-fine">
+          {liste.slice(0, 240).map((id) => (
+            <button key={id} data-ajouter-picto={id} disabled={pictos.length >= 12} onClick={() => setPictos((p) => [...p, id])}
+              className="rounded-xl bg-surface p-1.5 shadow-panel hover:ring-2 hover:ring-action/40 disabled:opacity-50"><Picto id={id} taille={64} legende /></button>
+          ))}
+        </div>
+        <div className="mt-2 flex justify-end gap-2 rounded-b-2xl border-t border-line bg-canvas/60 px-5 py-3">
+          <Bouton onClick={onFermer}>Annuler</Bouton>
+          <Bouton id="enregistrerPictos" variante="primary" disabled={!pictos.length} onClick={() => onEnregistrer(pictos)}>Enregistrer la modification</Bouton>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,4 @@
+# Mode simulé : aucune dépendance (Python 3.10+ suffit).
+# Mode Ollama :
+ollama>=0.5.1
+# Tests et vérification formelle : pip install -r requirements-dev.txt

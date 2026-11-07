@@ -1,0 +1,22 @@
+sortie/
+__pycache__/
+*.pyc
+.venv/
+kb/originaux/*
+!kb/originaux/empreintes.json
+.pytest_cache/
+archives/
+donnees/jeu_assistant/
+pictogrammes/bases/images/
+pictogrammes/bases/candidats_arasaac.json
+pictogrammes/bases/planche_candidats.html
+interface/web/node_modules/
+
+# clés d API : jamais dans le dépôt
+.env
+*.env
+cle*.txt
+
+# base de connaissances constituée par outils/constituer_base_v2.py (volumineuse, licences propres) : hors dépôt
+base_v2/
+MEDIMCOM_base*/

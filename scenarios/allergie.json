@@ -1,0 +1,120 @@
+{
+  "titre": "Consultation d'un homme sourd allergique à l'aspirine : un autre patient, un autre déroulé",
+  "note": "Données fictives. Même système, autre patient : l'assistant ne pose pas la question de la grossesse, le juriste repère l'allergie de classe.",
+  "evenements": [
+    {
+      "description": "Le patient décrit ses symptômes en pictogrammes",
+      "type": "echange",
+      "auteur": "traducteur",
+      "texte": "Patient, 40 ans. Pictogrammes : [douleur] [tête]. Allergie : aspirine. Traitements : aucun. Il accepte l'aide de l'IA.",
+      "donnees": {
+        "sexe": "M",
+        "age": 40,
+        "symptome": "céphalée",
+        "allergies": "aspirine",
+        "traitements_en_cours": "aucun",
+        "moyen_communication": "pictogrammes",
+        "informe_usage_ia": true
+      },
+      "confirme": true
+    },
+    {
+      "description": "Le médecin prescrit de l'ibuprofène",
+      "type": "prescription",
+      "auteur": "medecin",
+      "prescripteur": "DR-001",
+      "medicament": "ibuprofene",
+      "dose": "400 mg",
+      "posologie": "2 fois par jour pendant 2 jours",
+      "mode": "presentiel",
+      "texte": "Ibuprofène 400 mg."
+    },
+    {
+      "description": "Le médecin change pour du paracétamol",
+      "type": "prescription",
+      "auteur": "medecin",
+      "prescripteur": "DR-001",
+      "medicament": "paracetamol",
+      "dose": "500 mg",
+      "posologie": "2 fois par jour pendant 2 jours",
+      "mode": "presentiel",
+      "remplace_medicament": "ibuprofene",
+      "texte": "Finalement : paracétamol 500 mg."
+    },
+    {
+      "description": "Le médecin valide l'explication préparée par l'agent 1",
+      "type": "validation",
+      "auteur": "medecin",
+      "medecin": "DR-001",
+      "contenu_type": "traitement"
+    },
+    {
+      "description": "Le patient répond « oui » (d'accord)",
+      "type": "reponse_patient",
+      "pictogrammes": [
+        "OUI"
+      ]
+    }
+  ],
+  "attendus": [
+    {
+      "id": "C1",
+      "categorie": "capacite",
+      "description": "Homme : aucune question de grossesse",
+      "type": "question_posee",
+      "cle": "grossesse",
+      "attendu": false
+    },
+    {
+      "id": "C2",
+      "categorie": "capacite",
+      "description": "L'allergie de classe (aspirine → AINS) est repérée",
+      "type": "verdicts_dans_l_ordre",
+      "filtre": {
+        "medicament": "ibuprofene"
+      },
+      "verdicts": [
+        "A_REVOIR"
+      ]
+    },
+    {
+      "id": "C3",
+      "categorie": "capacite",
+      "description": "Le médecin est alerté de l'allergie",
+      "type": "message",
+      "de": "juriste",
+      "a": "medecin",
+      "contient": [
+        "allergie"
+      ]
+    },
+    {
+      "id": "C4",
+      "categorie": "capacite",
+      "description": "Le paracétamol est conforme",
+      "type": "decision",
+      "filtre": {
+        "type": "prescription",
+        "medicament": "paracetamol"
+      },
+      "statuts": [
+        "CONFORME"
+      ]
+    },
+    {
+      "id": "C5",
+      "categorie": "capacite",
+      "description": "L'explication validée est envoyée",
+      "type": "envois",
+      "au_moins": 1
+    },
+    {
+      "id": "C6",
+      "categorie": "capacite",
+      "description": "L'accord du patient (OUI) est enregistré comme consentement",
+      "type": "fait",
+      "cle": "consentement_traitement",
+      "valeur": true
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+item,pictogramme,categorie,sens_attendu
+P01,PRENDRE,soin,prendre (avaler)
+P02,MEDICAMENT,soin,médicament
+P03,APRES,temps,après
+P04,COMPRIME,soin,comprimé
+P05,EXAMEN,soin,examen
+P06,TETE,corps,tête
+P07,QUESTION,reponse,question
+P08,URGENCE,soin,urgence
+P09,COMPRENDRE,reponse,comprendre
+P10,NON,reponse,non
+P11,AVANT,temps,avant
+P12,FIEVRE,symptome,fièvre
+P13,ALLERGIE,symptome,allergie
+P14,MANGER,soin,manger
+P15,TOUX,symptome,toux
+P16,DOULEUR,symptome,douleur
+P17,BEBE,personne,bébé
+P18,VOUS,personne,vous
+P19,ENCEINTE,personne,enceinte
+P20,FOIS,nombre,fois (répéter)
+P21,MEDECIN,personne,médecin
+P22,MOINS,nombre,moins (réduire)
+P23,SANG,symptome,sang
+P24,MATIN,temps,matin
+P25,SEMAINE,temps,semaine
+P26,DORMIR,soin,dormir
+P27,SOIR,temps,soir
+P28,MOI,personne,moi
+P29,ACCORD,reponse,d'accord
+P30,NE_PAS,reponse,ne pas
+P31,VOMIR,symptome,vomir
+P32,OUI,reponse,oui
+P33,VENTRE,corps,ventre
+P34,ANALYSE,soin,analyse
+P35,BOIRE,soin,boire
+P36,NUIT,temps,nuit
+P37,HOPITAL,soin,hôpital
+P38,MIDI,temps,midi
+P39,JOUR,temps,jour
+P40,POITRINE,corps,poitrine
+P41,STOP,reponse,stop
+P42,PLUS,nombre,plus (davantage)
+P43,MAXIMUM,nombre,au maximum (jusqu'à)
+P44,EAU,soin,eau
+P45,RESPIRER,symptome,respirer
+P46,ATTENDRE,reponse,attendre
+S01,VOUS ENCEINTE QUESTION,sequence,Êtes-vous enceinte ?
+S02,VOUS VENTRE DOULEUR QUESTION,sequence,Avez-vous mal au ventre ?
+S03,VOUS FIEVRE QUESTION,sequence,Avez-vous de la fièvre ?
+S04,VOUS ALLERGIE QUESTION,sequence,Avez-vous des allergies ?
+S05,PRENDRE CHIFFRE:1 COMPRIME MATIN SOIR,sequence,Prenez 1 comprimé le matin et le soir.
+S06,PRENDRE NE_PAS MEDICAMENT,sequence,Ne prenez pas ce médicament.
+S07,CHIFFRE:3 JOUR,sequence,Pendant 3 jours.
+S08,BOIRE PLUS EAU,sequence,Buvez beaucoup d'eau.
+S09,VOUS HOPITAL,sequence,Vous devez aller à l'hôpital.
+S10,VOUS ACCORD QUESTION,sequence,Êtes-vous d'accord ?

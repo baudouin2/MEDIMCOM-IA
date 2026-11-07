@@ -1,0 +1,1397 @@
+{
+ "nom": "Règles du juriste MEDIMCOM IA - Cameroun",
+ "version": "0.1",
+ "verifie_le": "2026-10-27",
+ "pays": "CM",
+ "avertissement": "Prototype. Règles fondées sur les textes camerounais de la base (kb/sources.json, rôle « national_cm »). La plupart sont connus par des sources secondaires ou restent à confirmer (code de déontologie) : lire les textes officiels (Journal officiel, prc.cm, Ordre des médecins) avant tout usage réel. Règles cliniques : les mêmes exemples que pour les Émirats, à valider par un médecin. Le scénario de crise reste propre aux Émirats.",
+ "principes": [
+  "Seule une source contraignante (LOI, NORME d'un régulateur) peut BLOQUER. Une RECOMMANDATION clinique peut au plus demander une révision (A_REVOIR).",
+  "A_REVOIR : le médecin peut maintenir sa décision en la justifiant ; son nom est enregistré. BLOQUE : aucune dérogation dans le système.",
+  "Une information inconnue n'est jamais supposée favorable : PREUVES_INSUFFISANTES.",
+  "OBLIGATION : action à accomplir (consentement, information du patient) sans changer le verdict. INFORMATION : simple rappel.",
+  "Une règle peut signaler une LACUNE (kb/lacunes.json) quand les textes ne règlent pas la situation.",
+  "Une règle ne BLOQUE que si elle cite au moins une loi camerounaise dont le contenu a été lu (source secondaire ou officielle), jamais une source « à confirmer » seule."
+ ],
+ "niveaux": [
+  "CONFORME",
+  "PREUVES_INSUFFISANTES",
+  "A_REVOIR",
+  "BLOQUE"
+ ],
+ "juridiction_par_defaut": "CM",
+ "lieux": {
+  "cameroun": "dans_le_pays",
+  "cameroon": "dans_le_pays",
+  "cm": "dans_le_pays",
+  "au_cameroun": "dans_le_pays",
+  "hors_cameroun": "hors_du_pays",
+  "emirats": "hors_du_pays",
+  "uae": "hors_du_pays",
+  "ae": "hors_du_pays",
+  "eau": "hors_du_pays",
+  "hors_eau": "hors_du_pays"
+ },
+ "note_lieux": "Noms de lieux reconnus pour ces règles, traduits en jetons neutres : « dans_le_pays » (Cameroun) ou « hors_du_pays » (y compris les Émirats).",
+ "signature": {
+  "_note": "Signature typée des variables de chaque famille de règles. monde « ouvert » : une valeur absente est INCONNUE (logique de Kleene : une règle restrictive qui pourrait s'appliquer donne « preuves insuffisantes ») ; monde « ferme » : une valeur absente veut dire « aucun ». Toute variable utilisée par une règle doit être déclarée ici (contrôlé par outils/verifier_formel.py).",
+  "partage": {
+   "lieu": {
+    "type": "enum",
+    "valeurs": [
+     "dans_le_pays",
+     "hors_du_pays"
+    ],
+    "monde": "ouvert"
+   },
+   "finalite": {
+    "type": "texte",
+    "monde": "ouvert"
+   },
+   "destinataire_type": {
+    "type": "texte",
+    "monde": "ouvert"
+   },
+   "consentement_ecrit": {
+    "type": "booleen",
+    "monde": "ouvert"
+   },
+   "anonymise": {
+    "type": "booleen",
+    "monde": "ouvert"
+   },
+   "autorisation_autorite": {
+    "type": "booleen",
+    "monde": "ouvert"
+   }
+  },
+  "prescription": {
+   "dose": {
+    "type": "texte",
+    "monde": "ouvert"
+   },
+   "posologie": {
+    "type": "texte",
+    "monde": "ouvert"
+   },
+   "mode": {
+    "type": "enum",
+    "valeurs": [
+     "presentiel",
+     "distance"
+    ],
+    "monde": "ouvert"
+   },
+   "categorie": {
+    "type": "texte",
+    "monde": "ouvert"
+   },
+   "urgence": {
+    "type": "booleen",
+    "monde": "ferme"
+   },
+   "moyen_communication": {
+    "type": "texte",
+    "monde": "ouvert"
+   },
+   "informe_usage_ia": {
+    "type": "booleen",
+    "monde": "ouvert"
+   },
+   "issue_de_suggestion": {
+    "type": "booleen",
+    "monde": "ferme"
+   }
+  },
+  "contre_indications": {
+   "grossesse": {
+    "type": "booleen",
+    "monde": "ouvert"
+   },
+   "sexe": {
+    "type": "enum",
+    "valeurs": [
+     "F",
+     "M"
+    ],
+    "monde": "ouvert"
+   },
+   "age": {
+    "type": "nombre",
+    "monde": "ouvert"
+   },
+   "maladie_renale": {
+    "type": "booleen",
+    "monde": "ferme"
+   },
+   "maladie_hepatique": {
+    "type": "booleen",
+    "monde": "ferme"
+   },
+   "ulcere_digestif": {
+    "type": "booleen",
+    "monde": "ferme"
+   },
+   "anticoagulant": {
+    "type": "booleen",
+    "monde": "ferme"
+   },
+   "maladie_cardiaque": {
+    "type": "booleen",
+    "monde": "ferme"
+   }
+  },
+  "axiomes": {
+   "sexe": {
+    "type": "enum",
+    "valeurs": [
+     "F",
+     "M"
+    ],
+    "monde": "ouvert"
+   },
+   "age": {
+    "type": "nombre",
+    "monde": "ouvert"
+   }
+  },
+  "envoi_patient": {
+   "valideur_autorise": {
+    "type": "booleen",
+    "monde": "ferme"
+   },
+   "statut_prescription_liee": {
+    "type": "texte",
+    "monde": "ferme"
+   },
+   "contenu_type": {
+    "type": "texte",
+    "monde": "ferme"
+   },
+   "incitation_au_mal": {
+    "type": "booleen",
+    "monde": "ferme"
+   },
+   "medicament_controle": {
+    "type": "booleen",
+    "monde": "ferme"
+   }
+  },
+  "etat": {
+   "maladie_declarable_groupe": {
+    "type": "texte",
+    "monde": "ferme"
+   },
+   "urgence": {
+    "type": "booleen",
+    "monde": "ferme"
+   },
+   "moyen_communication": {
+    "type": "texte",
+    "monde": "ouvert"
+   }
+  }
+ },
+ "prescripteurs": {
+  "DR-001": {
+   "nom": "Dr Ngo (fictive)",
+   "licence": "ONMC-FICTIVE-0001",
+   "autorite": "Ordre national des médecins du Cameroun",
+   "humain": true,
+   "actif": true
+  },
+  "DR-002": {
+   "nom": "Dr Mbarga (fictif)",
+   "licence": "ONMC-FICTIVE-0002",
+   "autorite": "Ordre national des médecins du Cameroun",
+   "humain": true,
+   "actif": false
+  }
+ },
+ "regle_prescripteur": {
+  "inconnu": {
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "CM90-A2",
+    "CM90-A16-17"
+   ],
+   "detail": "Prescripteur absent du tableau de l'Ordre : nul ne peut exercer la médecine au Cameroun sans y être inscrit (exercice illégal puni).",
+   "detail_en": "Prescriber not on the Order's roll: no one may practise medicine in Cameroon without registration (illegal practice is punished)."
+  },
+  "inactif": {
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "CM90-A2"
+   ],
+   "detail": "Prescripteur non inscrit ou suspendu : il ne peut pas exercer.",
+   "detail_en": "Prescriber not registered or suspended: may not practise."
+  },
+  "non_humain": {
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "CM90-A2",
+    "CM90-A16-17"
+   ],
+   "detail": "Une IA n'est pas un médecin inscrit : elle ne peut ni diagnostiquer ni prescrire (exercice illégal).",
+   "detail_en": "An AI is not a registered physician: it may neither diagnose nor prescribe (illegal practice)."
+  }
+ },
+ "champs_obligatoires_avant_prescription": [
+  {
+   "champ": "grossesse",
+   "si": {
+    "sexe": "F",
+    "age_min": 12,
+    "age_max": 50
+   },
+   "base": "NORME",
+   "fiches": [
+    "CM-DEONTO"
+   ],
+   "detail": "Grossesse non renseignée chez une femme en âge de procréer : l'état du patient doit être consigné avant le traitement.",
+   "detail_en": "Pregnancy status unknown for a woman of childbearing age: the patient's condition must be recorded before treatment."
+  },
+  {
+   "champ": "allergies",
+   "si": {},
+   "base": "NORME",
+   "fiches": [
+    "CM-DEONTO"
+   ],
+   "detail": "Allergies non renseignées : les antécédents doivent être consignés avant le traitement.",
+   "detail_en": "Allergies unknown: medical history must be recorded before treatment."
+  },
+  {
+   "champ": "traitements_en_cours",
+   "si": {},
+   "base": "NORME",
+   "fiches": [
+    "CM-DEONTO"
+   ],
+   "detail": "Traitements en cours non renseignés : les antécédents doivent être consignés avant le traitement.",
+   "detail_en": "Current treatments unknown: medical history must be recorded before treatment."
+  }
+ ],
+ "axiomes": [
+  {
+   "id": "AX-HOMME",
+   "si": {
+    "sexe": "M"
+   },
+   "alors": {
+    "grossesse": false
+   },
+   "raison": "Un homme n'est pas enceint.",
+   "fiches": [
+    "CM-DEONTO"
+   ],
+   "base": "NORME",
+   "detail": "Un homme n'est pas enceint. L'état du patient doit être consigné correctement avant le traitement : vérifier le dossier."
+  },
+  {
+   "id": "AX-AGE-BAS",
+   "si": {
+    "age": {
+     "inferieur_a": 12
+    }
+   },
+   "alors": {
+    "grossesse": false
+   },
+   "raison": "Hors de l'âge de procréer retenu par les champs obligatoires (12 à 50 ans).",
+   "fiches": [
+    "CM-DEONTO"
+   ],
+   "base": "NORME",
+   "detail": "Hors de l'âge de procréer retenu par les champs obligatoires (12 à 50 ans). L'état du patient doit être consigné correctement avant le traitement : vérifier le dossier."
+  },
+  {
+   "id": "AX-AGE-HAUT",
+   "si": {
+    "age": {
+     "superieur_a": 50
+    }
+   },
+   "alors": {
+    "grossesse": false
+   },
+   "raison": "Hors de l'âge de procréer retenu par les champs obligatoires (12 à 50 ans).",
+   "fiches": [
+    "CM-DEONTO"
+   ],
+   "base": "NORME",
+   "detail": "Hors de l'âge de procréer retenu par les champs obligatoires (12 à 50 ans). L'état du patient doit être consigné correctement avant le traitement : vérifier le dossier."
+  }
+ ],
+ "medicaments": {
+  "paracetamol": {
+   "categorie": "standard",
+   "amm": true,
+   "amm_a_confirmer": true,
+   "contre_indications": [
+    {
+     "si": {
+      "maladie_hepatique": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-APAP-FOIE"
+     ],
+     "detail": "Paracétamol et maladie du foie : risque d'atteinte hépatique grave ; dose à réduire et avis médical.",
+     "detail_en": "Paracetamol and liver disease: risk of severe liver damage; reduce the dose and seek medical advice."
+    },
+    {
+     "si": {
+      "anticoagulant": true
+     },
+     "niveau": "INFORMATION",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-APAP-FOIE"
+     ],
+     "detail": "Paracétamol sous anticoagulant (warfarine) : surveiller l'INR en cas de prise régulière.",
+     "detail_en": "Paracetamol with an anticoagulant (warfarin): monitor INR with regular use."
+    }
+   ],
+   "synonymes": [
+    "acetaminophene",
+    "acetaminophen",
+    "panadol",
+    "doliprane",
+    "efferalgan"
+   ],
+   "dose_max_jour_mg": {
+    "valeur": 4000,
+    "fiches": [
+     "OTC-APAP-FOIE"
+    ]
+   }
+  },
+  "ibuprofene": {
+   "categorie": "standard",
+   "amm": true,
+   "amm_a_confirmer": true,
+   "contre_indications": [
+    {
+     "si": {
+      "grossesse": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "FDA20-NSAID"
+     ],
+     "detail": "Anti-inflammatoire (AINS) : à éviter à partir de 20 semaines de grossesse sauf avis médical explicite ; le paracétamol est cité comme alternative. Règle clinique d'exemple, à valider par un médecin.",
+     "detail_en": "NSAID: avoid from 20 weeks of pregnancy unless specifically advised; acetaminophen is cited as an alternative. Example clinical rule, to be validated by a physician.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    },
+    {
+     "si": {
+      "grossesse": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-IBU-GROSS"
+     ],
+     "detail": "Ibuprofène : à ne pas utiliser pendant les 3 derniers mois de la grossesse.",
+     "detail_en": "Ibuprofen: not to be used during the last 3 months of pregnancy.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    },
+    {
+     "si": {
+      "ulcere_digestif": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-IBU-SAIGNEMENT"
+     ],
+     "detail": "Ibuprofène et antécédent d'ulcère ou de saignement digestif : risque d'hémorragie.",
+     "detail_en": "Ibuprofen and history of ulcer or bleeding: risk of haemorrhage.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    },
+    {
+     "si": {
+      "anticoagulant": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-IBU-SAIGNEMENT"
+     ],
+     "detail": "Ibuprofène sous anticoagulant : risque d'hémorragie digestive.",
+     "detail_en": "Ibuprofen with an anticoagulant: risk of gastrointestinal bleeding.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    },
+    {
+     "si": {
+      "maladie_renale": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-IBU-SAIGNEMENT"
+     ],
+     "detail": "Ibuprofène et maladie des reins : avis médical nécessaire, risque d'aggravation.",
+     "detail_en": "Ibuprofen and kidney disease: medical advice needed, risk of worsening.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    },
+    {
+     "si": {
+      "maladie_cardiaque": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-IBU-SAIGNEMENT"
+     ],
+     "detail": "Ibuprofène et maladie du cœur : avis médical nécessaire.",
+     "detail_en": "Ibuprofen and heart disease: medical advice needed.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    },
+    {
+     "si": {
+      "age": {
+       "superieur_a": 59
+      }
+     },
+     "niveau": "INFORMATION",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-IBU-SAIGNEMENT"
+     ],
+     "detail": "Ibuprofène après 60 ans : risque de saignement digestif plus élevé.",
+     "detail_en": "Ibuprofen at 60 or older: higher risk of stomach bleeding."
+    }
+   ],
+   "synonymes": [
+    "ibuprofen",
+    "advil",
+    "brufen",
+    "nurofen"
+   ],
+   "classes": [
+    "ains",
+    "nsaid",
+    "anti_inflammatoire",
+    "aspirine",
+    "aspirin",
+    "acide_acetylsalicylique"
+   ],
+   "dose_max_jour_mg": {
+    "valeur": 3200,
+    "fiches": [
+     "RX-IBU-MAX"
+    ]
+   }
+  },
+  "misoprostol": {
+   "categorie": "standard",
+   "amm": true,
+   "amm_a_confirmer": true,
+   "contre_indications": [
+    {
+     "si": {
+      "grossesse": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "CYTOTEC-BW"
+     ],
+     "detail": "Misoprostol chez une femme enceinte : risque d'avortement et de malformations (notice). Les dispositions pénales camerounaises sur l'avortement ne sont pas encore dans la base : à vérifier avant tout usage réel. Règle clinique d'exemple, à valider par un médecin.",
+     "detail_en": "Misoprostol in a pregnant woman: risk of abortion and birth defects (label). Cameroonian criminal provisions on abortion are not yet in the knowledge base. Example clinical rule, to be validated by a physician."
+    }
+   ],
+   "synonymes": [
+    "cytotec"
+   ]
+  },
+  "tramadol": {
+   "categorie": "controle",
+   "amm": true,
+   "amm_a_confirmer": true,
+   "contre_indications": [
+    {
+     "si": {
+      "grossesse": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "FDA-TRAM-GROSS"
+     ],
+     "detail": "Tramadol pendant la grossesse : risque de syndrome de sevrage néonatal aux opioïdes, parfois mortel. À éviter sauf justification médicale explicite.",
+     "detail_en": "Tramadol in pregnancy: risk of neonatal opioid withdrawal syndrome, which may be life-threatening. Avoid unless explicitly justified.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    },
+    {
+     "si": {
+      "age": {
+       "inferieur_a": 12
+      }
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "FDA-TRAM-ENFANT"
+     ],
+     "detail": "Tramadol chez l'enfant de moins de 12 ans : contre-indiqué par l'étiquette de la FDA (référence étrangère, à confirmer par la notice émiratie).",
+     "detail_en": "Tramadol in a child under 12: contraindicated by the FDA label (foreign reference, to be confirmed by the UAE product information)."
+    },
+    {
+     "si": {
+      "age": {
+       "inferieur_a": 18
+      }
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "FDA-TRAM-ENFANT"
+     ],
+     "detail": "Tramadol chez un mineur : à éviter chez l'adolescent de 12 à 18 ans qui a d'autres facteurs de risque ; justification nécessaire.",
+     "detail_en": "Tramadol in a minor: avoid in adolescents aged 12 to 18 with other risk factors; justification required."
+    }
+   ],
+   "synonymes": [
+    "tramal",
+    "ultram"
+   ],
+   "dose_max_jour_mg": {
+    "valeur": 400,
+    "fiches": [
+     "FDA-TRAM-MAX"
+    ]
+   }
+  },
+  "medicament_fictif_x": {
+   "categorie": "standard",
+   "amm": false,
+   "niveau_sans_amm": "PREUVES_INSUFFISANTES",
+   "base": "LOI",
+   "fiches": [
+    "CM-PHARM"
+   ],
+   "detail": "Médicament sans autorisation de mise sur le marché connue au Cameroun : à vérifier auprès de l'autorité du médicament avant toute prescription (texte camerounais à lire).",
+   "detail_en": "Medicine with no known Cameroonian marketing approval: check with the medicines authority before prescribing (Cameroonian text to be read)."
+  },
+  "aspirine": {
+   "categorie": "standard",
+   "amm": true,
+   "amm_a_confirmer": true,
+   "synonymes": [
+    "aspirin",
+    "acide acetylsalicylique",
+    "acide_acetylsalicylique",
+    "aspegic"
+   ],
+   "classes": [
+    "ains",
+    "nsaid",
+    "anti_inflammatoire"
+   ],
+   "contre_indications": [
+    {
+     "si": {
+      "age": {
+       "inferieur_a": 18
+      }
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-ASA-REYE"
+     ],
+     "detail": "Aspirine chez l'enfant ou l'adolescent : syndrome de Reye (rare, grave) en cas de varicelle ou de syndrome grippal.",
+     "detail_en": "Aspirin in children or teenagers: Reye's syndrome (rare, serious) with chickenpox or flu-like symptoms.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    },
+    {
+     "si": {
+      "grossesse": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-ASA-GROSS"
+     ],
+     "detail": "Aspirine : à ne pas utiliser pendant les 3 derniers mois de la grossesse.",
+     "detail_en": "Aspirin: not to be used during the last 3 months of pregnancy.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    },
+    {
+     "si": {
+      "ulcere_digestif": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-ASA-SAIGNEMENT"
+     ],
+     "detail": "Aspirine et antécédent d'ulcère ou de saignement digestif : risque d'hémorragie.",
+     "detail_en": "Aspirin and history of ulcer or bleeding: risk of haemorrhage.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    },
+    {
+     "si": {
+      "anticoagulant": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "OTC-ASA-SAIGNEMENT"
+     ],
+     "detail": "Aspirine sous anticoagulant : risque d'hémorragie.",
+     "detail_en": "Aspirin with an anticoagulant: risk of bleeding.",
+     "alternative": "paracetamol",
+     "fiches_alternative": [
+      "FDA20-NSAID"
+     ]
+    }
+   ],
+   "dose_max_jour_mg": {
+    "valeur": 3900,
+    "fiches": [
+     "OTC-ASA-SAIGNEMENT"
+    ]
+   }
+  },
+  "amoxicilline": {
+   "categorie": "standard",
+   "amm": true,
+   "amm_a_confirmer": true,
+   "synonymes": [
+    "amoxicillin",
+    "amoxil",
+    "clamoxyl"
+   ],
+   "classes": [
+    "penicilline",
+    "penicillines",
+    "penicillin",
+    "beta_lactamine",
+    "betalactamine",
+    "beta-lactamine",
+    "cephalosporine"
+   ],
+   "contre_indications": [
+    {
+     "si": {
+      "maladie_renale": true
+     },
+     "niveau": "INFORMATION",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "DM-AMOX-REIN"
+     ],
+     "detail": "Amoxicilline et insuffisance rénale sévère (DFG < 30) : pas de dose de 875 mg ; 250 ou 500 mg toutes les 12 h.",
+     "detail_en": "Amoxicillin and severe renal impairment (GFR < 30): no 875 mg dose; 250 or 500 mg every 12 hours."
+    }
+   ],
+   "allergie_fiches": [
+    "DM-AMOX-ALLERGIE"
+   ]
+  },
+  "metformine": {
+   "categorie": "standard",
+   "amm": true,
+   "amm_a_confirmer": true,
+   "synonymes": [
+    "metformin",
+    "glucophage",
+    "stagid"
+   ],
+   "contre_indications": [
+    {
+     "si": {
+      "maladie_renale": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "DM-METF-REIN"
+     ],
+     "detail": "Metformine et maladie des reins : contre-indiquée si DFG < 30, à ne pas débuter entre 30 et 45 ; vérifier le DFG.",
+     "detail_en": "Metformin and kidney disease: contraindicated if eGFR < 30, not to be started between 30 and 45; check eGFR."
+    },
+    {
+     "si": {
+      "maladie_hepatique": true
+     },
+     "niveau": "A_REVOIR",
+     "base": "RECOMMANDATION",
+     "fiches": [
+      "DM-METF-FOIE"
+     ],
+     "detail": "Metformine et maladie du foie : non recommandée (risque d'acidose lactique).",
+     "detail_en": "Metformin and liver disease: not recommended (risk of lactic acidosis)."
+    }
+   ],
+   "dose_max_jour_mg": {
+    "valeur": 2550,
+    "fiches": [
+     "DM-METF-MAX"
+    ]
+   },
+   "dose_max_jour_mg_enfant": {
+    "valeur": 2000,
+    "age_inferieur_a": 18,
+    "fiches": [
+     "DM-METF-MAX"
+    ]
+   }
+  }
+ },
+ "regle_medicament_inconnu": {
+  "niveau": "PREUVES_INSUFFISANTES",
+  "base": "LOI",
+  "fiches": [
+   "CM-PHARM"
+  ],
+  "detail": "Médicament absent de la base : impossible de vérifier son autorisation de mise sur le marché au Cameroun.",
+  "detail_en": "Medicine not in the knowledge base: Cameroonian marketing approval cannot be checked."
+ },
+ "regle_amm_a_confirmer": {
+  "niveau": "INFORMATION",
+  "base": "LOI",
+  "fiches": [
+   "CM-PHARM"
+  ],
+  "detail": "Autorisation de mise sur le marché supposée pour la démonstration : à confirmer auprès de l'autorité camerounaise du médicament.",
+  "detail_en": "Marketing approval assumed for the demo: to be confirmed with the Cameroonian medicines authority."
+ },
+ "regle_allergie": {
+  "niveau": "A_REVOIR",
+  "base": "NORME",
+  "fiches": [
+   "CM-DEONTO"
+  ],
+  "detail": "Le patient a déclaré une allergie à ce médicament ou à sa classe (y compris l'aspirine pour les AINS) : à revoir par le médecin.",
+  "detail_en": "The patient declared an allergy to this medicine or its class (including aspirin for NSAIDs): to be reviewed by the physician."
+ },
+ "regles_prescription": [
+  {
+   "id": "RX-ECRITE-DOSE",
+   "si": {
+    "dose": {
+     "absent": true
+    }
+   },
+   "niveau": "PREUVES_INSUFFISANTES",
+   "base": "NORME",
+   "fiches": [
+    "CM-DEONTO"
+   ],
+   "detail": "Dose absente : une prescription doit être complète et écrite.",
+   "detail_en": "Dose missing: a prescription must be complete and written."
+  },
+  {
+   "id": "RX-ECRITE-POSOLOGIE",
+   "si": {
+    "posologie": {
+     "absent": true
+    }
+   },
+   "niveau": "PREUVES_INSUFFISANTES",
+   "base": "NORME",
+   "fiches": [
+    "CM-DEONTO"
+   ],
+   "detail": "Mode d'emploi absent : une prescription doit être complète et écrite.",
+   "detail_en": "Directions missing: a prescription must be complete and written."
+  },
+  {
+   "id": "TELE-CM",
+   "si": {
+    "mode": "distance"
+   },
+   "niveau": "INFORMATION",
+   "base": "LOI",
+   "fiches": [
+    "CM90-A2",
+    "CM90-A16-17"
+   ],
+   "detail": "Téléconsultation : aucun texte camerounais spécifique n'est dans la base ; seul un médecin inscrit diagnostique et prescrit, à distance comme en présentiel.",
+   "detail_en": "Teleconsultation: no specific Cameroonian text in the knowledge base; only a registered physician diagnoses and prescribes, remotely or in person."
+  },
+  {
+   "id": "TELE-CONTROLE-CM",
+   "si": {
+    "mode": "distance",
+    "categorie": {
+     "dans": [
+      "controle",
+      "semi_controle",
+      "stupefiant"
+     ]
+    }
+   },
+   "niveau": "A_REVOIR",
+   "base": "RECOMMANDATION",
+   "fiches": [
+    "CM-PHARM"
+   ],
+   "detail": "Médicament contrôlé prescrit à distance : aucune règle camerounaise lue dans la base ; à revoir par le médecin.",
+   "detail_en": "Controlled medicine prescribed remotely: no Cameroonian rule read in the knowledge base; to be reviewed by the physician."
+  },
+  {
+   "id": "CONSENTEMENT",
+   "si": {
+    "urgence": {
+     "pas": true
+    }
+   },
+   "niveau": "OBLIGATION",
+   "base": "NORME",
+   "fiches": [
+    "CM-DEONTO"
+   ],
+   "detail": "Recueillir le consentement libre et éclairé du patient avant le traitement.",
+   "detail_en": "Obtain the patient's free and informed consent before treatment."
+  },
+  {
+   "id": "CONSENTEMENT-PICTO",
+   "si": {
+    "urgence": {
+     "pas": true
+    },
+    "moyen_communication": "pictogrammes"
+   },
+   "niveau": "OBLIGATION",
+   "base": "ENGAGEMENT_INTERNATIONAL",
+   "fiches": [
+    "CM-DEONTO",
+    "CRPD-A21",
+    "CRPD-A12",
+    "CM10-A3"
+   ],
+   "lacune": "L04",
+   "detail": "Consentement d'un patient sourd en pictogrammes : vérifier sa compréhension (question d'accord) ; aucun texte ne dit qu'un accord en pictogrammes vaut consentement.",
+   "detail_en": "Consent of a deaf patient in pictograms: check understanding (agreement question); no text says pictogram agreement is valid consent."
+  },
+  {
+   "id": "URGENCE-CONSENTEMENT",
+   "si": {
+    "urgence": true
+   },
+   "niveau": "INFORMATION",
+   "base": "NORME",
+   "fiches": [
+    "CM-DEONTO"
+   ],
+   "detail": "Urgence : les soins urgents ne doivent pas être retardés ; informer le patient dès que possible.",
+   "detail_en": "Emergency: urgent care must not be delayed; inform the patient as soon as possible."
+  },
+  {
+   "id": "INFORMATION-PATIENT",
+   "si": {},
+   "niveau": "OBLIGATION",
+   "base": "NORME",
+   "fiches": [
+    "CM-DEONTO"
+   ],
+   "detail": "Informer le patient du diagnostic et du traitement de façon compréhensible.",
+   "detail_en": "Inform the patient of the diagnosis and treatment in an understandable way."
+  },
+  {
+   "id": "INFORMATION-ACCESSIBLE",
+   "si": {
+    "moyen_communication": "pictogrammes"
+   },
+   "niveau": "OBLIGATION",
+   "base": "LOI",
+   "fiches": [
+    "CM10-A3",
+    "CM10-A32",
+    "CRPD-A21"
+   ],
+   "lacune": "L03",
+   "detail": "Patient sourd (handicap sensoriel au sens de la loi de 2010) : information dans un format accessible ; la loi ne mentionne pas la langue des signes.",
+   "detail_en": "Deaf patient (sensory disability under the 2010 law): information in an accessible format; the law does not mention sign language."
+  },
+  {
+   "id": "IA-INFORMER",
+   "si": {
+    "informe_usage_ia": {
+     "pas": true
+    }
+   },
+   "niveau": "INFORMATION",
+   "base": "EXEMPLE_MONDIAL",
+   "fiches": [
+    "WHO21-PRINC"
+   ],
+   "detail": "Aucun texte camerounais sur l'IA en santé dans la base ; bonne pratique (OMS) : informer le patient que l'IA aide le médecin.",
+   "detail_en": "No Cameroonian AI-in-health text in the knowledge base; good practice (WHO): tell the patient that AI supports the physician."
+  },
+  {
+   "id": "IA-SUGGESTION",
+   "si": {
+    "issue_de_suggestion": true
+   },
+   "niveau": "INFORMATION",
+   "base": "LOI",
+   "fiches": [
+    "CM90-A16-17"
+   ],
+   "lacune": "L01",
+   "detail": "Décision inspirée d'une suggestion de l'IA : le diagnostic et le traitement restent l'acte du médecin inscrit, qui en répond.",
+   "detail_en": "Decision inspired by an AI suggestion: diagnosis and treatment remain the act of the registered physician, who is accountable."
+  }
+ ],
+ "regles_partage": [
+  {
+   "id": "LIEU-INCONNU",
+   "si": {
+    "lieu": {
+     "absent": true
+    }
+   },
+   "niveau": "PREUVES_INSUFFISANTES",
+   "base": "LOI",
+   "fiches": [
+    "CM24-TRANSFERT"
+   ],
+   "detail": "Lieu de destination des données inconnu : impossible de vérifier les règles de transfert.",
+   "detail_en": "Data destination unknown: transfer rules cannot be checked."
+  },
+  {
+   "id": "HORS-PAYS-SANS-AUTORISATION",
+   "si": {
+    "lieu": "hors_du_pays",
+    "autorisation_autorite": false
+   },
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "CM24-TRANSFERT",
+    "CM24-SENSIBLES",
+    "CM24-A70"
+   ],
+   "lacune": "L06",
+   "detail": "Données de santé envoyées hors du Cameroun sans autorisation de l'autorité de protection des données : interdit (sanctions prévues).",
+   "detail_en": "Health data sent outside Cameroon without authorisation of the data protection authority: prohibited (sanctions apply)."
+  },
+  {
+   "id": "HORS-PAYS-AUTORISATION-INCONNUE",
+   "si": {
+    "lieu": "hors_du_pays",
+    "autorisation_autorite": {
+     "absent": true
+    }
+   },
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "CM24-TRANSFERT",
+    "CM24-SENSIBLES"
+   ],
+   "lacune": "L06",
+   "detail": "Transfert hors du Cameroun sans autorisation connue de l'autorité : bloqué tant que l'autorisation n'est pas établie.",
+   "detail_en": "Transfer outside Cameroon with no known authorisation: blocked until the authorisation is established."
+  },
+  {
+   "id": "HORS-PAYS-AUTORISE",
+   "si": {
+    "lieu": "hors_du_pays",
+    "autorisation_autorite": true
+   },
+   "niveau": "A_REVOIR",
+   "base": "LOI",
+   "fiches": [
+    "CM24-TRANSFERT",
+    "CM24-A9"
+   ],
+   "detail": "Transfert autorisé : vérifier le consentement exprès du patient et les garanties du pays destinataire.",
+   "detail_en": "Authorised transfer: check the patient's express consent and the safeguards of the destination country."
+  },
+  {
+   "id": "SOINS",
+   "si": {
+    "finalite": "soins",
+    "destinataire_type": {
+     "dans": [
+      "medecin_traitant",
+      "etablissement_sante",
+      "hopital"
+     ]
+    },
+    "lieu": "dans_le_pays"
+   },
+   "niveau": "CONFORME",
+   "base": "LOI",
+   "fiches": [
+    "CM24-SENSIBLES",
+    "CM90-A4"
+   ],
+   "detail": "Partage pour les soins avec des soignants au Cameroun : permis (protection de la santé), sous secret professionnel.",
+   "detail_en": "Sharing for care with health professionals in Cameroon: allowed (health protection), under professional secrecy."
+  },
+  {
+   "id": "COMMERCIAL-SANS-ACCORD",
+   "si": {
+    "finalite": {
+     "dans": [
+      "commerciale",
+      "publicite"
+     ]
+    },
+    "consentement_ecrit": false
+   },
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "CM24-SENSIBLES",
+    "CM24-A9"
+   ],
+   "detail": "Usage commercial de données de santé sans consentement exprès : interdit.",
+   "detail_en": "Commercial use of health data without express consent: prohibited."
+  },
+  {
+   "id": "COMMERCIAL-ACCORD-INCONNU",
+   "si": {
+    "finalite": {
+     "dans": [
+      "commerciale",
+      "publicite"
+     ]
+    },
+    "consentement_ecrit": {
+     "absent": true
+    }
+   },
+   "niveau": "PREUVES_INSUFFISANTES",
+   "base": "LOI",
+   "fiches": [
+    "CM24-A9"
+   ],
+   "detail": "Usage commercial : consentement du patient non établi.",
+   "detail_en": "Commercial use: patient consent not established."
+  },
+  {
+   "id": "COMMERCIAL-AVEC-ACCORD",
+   "si": {
+    "finalite": {
+     "dans": [
+      "commerciale",
+      "publicite"
+     ]
+    },
+    "consentement_ecrit": true
+   },
+   "niveau": "A_REVOIR",
+   "base": "LOI",
+   "fiches": [
+    "CM24-SENSIBLES",
+    "CM24-A9"
+   ],
+   "detail": "Usage commercial de données de santé avec consentement exprès : à autoriser nominativement par un responsable (finalité, durée, destinataires).",
+   "detail_en": "Commercial use of health data with express consent: needs named authorisation (purpose, duration, recipients).",
+   "note": "Règle ajoutée après la vérification formelle (exigence S-PA-COMMERCIAL-JAMAIS-CONFORME) : sans elle, un usage commercial consenti adressé à une autorité de santé était jugé conforme."
+  },
+  {
+   "id": "RECHERCHE-ANONYME",
+   "si": {
+    "finalite": "recherche",
+    "anonymise": true,
+    "lieu": "dans_le_pays"
+   },
+   "niveau": "CONFORME",
+   "base": "LOI",
+   "fiches": [
+    "CM24-SENSIBLES"
+   ],
+   "detail": "Recherche sur données anonymisées au Cameroun : permise.",
+   "detail_en": "Research on anonymised data in Cameroon: allowed."
+  },
+  {
+   "id": "RECHERCHE-IDENTIFIANTE",
+   "si": {
+    "finalite": "recherche",
+    "anonymise": false,
+    "consentement_ecrit": false
+   },
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "CM24-A9",
+    "CM24-SENSIBLES"
+   ],
+   "detail": "Recherche sur données identifiantes sans consentement exprès : interdite.",
+   "detail_en": "Research on identifiable data without express consent: prohibited."
+  },
+  {
+   "id": "AUTORITE-SANTE",
+   "si": {
+    "destinataire_type": "autorite_sante",
+    "lieu": "dans_le_pays"
+   },
+   "niveau": "CONFORME",
+   "base": "LOI",
+   "fiches": [
+    "CM24-SENSIBLES"
+   ],
+   "detail": "Transmission à l'autorité de santé camerounaise : permise pour la protection de la santé publique (minimum nécessaire).",
+   "detail_en": "Transmission to the Cameroonian health authority: allowed for public health protection (minimum necessary)."
+  },
+  {
+   "id": "ENTRAINEMENT-IA",
+   "si": {
+    "finalite": "entrainement_ia",
+    "anonymise": {
+     "pas": true
+    }
+   },
+   "niveau": "A_REVOIR",
+   "base": "LOI",
+   "fiches": [
+    "CM24-A9",
+    "CM24-SENSIBLES"
+   ],
+   "lacune": "L06",
+   "detail": "Entraîner une IA avec des données de santé non anonymisées : consentement exprès et base légale à établir.",
+   "detail_en": "Training an AI on non-anonymised health data: express consent and legal basis to be established."
+  },
+  {
+   "id": "PUBLICATION-NOMINATIVE",
+   "si": {
+    "destinataire_type": "public",
+    "anonymise": false
+   },
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "CM90-A4",
+    "CM24-SENSIBLES",
+    "CM-CP-310"
+   ],
+   "detail": "Publication nominative de données de santé : violation du secret professionnel, interdite.",
+   "detail_en": "Publishing named health data: breach of professional secrecy, prohibited."
+  },
+  {
+   "id": "PUBLICATION-ANONYME",
+   "si": {
+    "destinataire_type": "public",
+    "anonymise": true,
+    "lieu": "dans_le_pays"
+   },
+   "niveau": "CONFORME",
+   "base": "LOI",
+   "fiches": [
+    "CM24-SENSIBLES"
+   ],
+   "detail": "Chiffres anonymisés : publication possible.",
+   "detail_en": "Anonymised figures: may be published."
+  },
+  {
+   "id": "PUBLICATION-ANONYMISATION-INCONNUE",
+   "si": {
+    "destinataire_type": "public",
+    "anonymise": {
+     "absent": true
+    }
+   },
+   "niveau": "PREUVES_INSUFFISANTES",
+   "base": "LOI",
+   "fiches": [
+    "CM90-A4"
+   ],
+   "detail": "Publication : anonymisation non établie.",
+   "detail_en": "Publication: anonymisation not established."
+  }
+ ],
+ "regle_partage_non_couvert": {
+  "niveau": "PREUVES_INSUFFISANTES",
+  "base": "-",
+  "fiches": [
+   "CM24-SENSIBLES"
+  ],
+  "detail": "Aucune règle ne couvre cette demande : à soumettre à un humain.",
+  "detail_en": "No rule covers this request: refer to a human."
+ },
+ "regles_envoi_patient": [
+  {
+   "id": "ENVOI-NON-VALIDE",
+   "si": {
+    "valideur_autorise": {
+     "pas": true
+    }
+   },
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "CM90-A2",
+    "CM90-A16-17"
+   ],
+   "detail": "Message au patient non validé par un médecin inscrit : un diagnostic ou un traitement ne peut venir que d'un médecin inscrit.",
+   "detail_en": "Message to the patient not validated by a registered physician: diagnosis or treatment may only come from a registered physician."
+  },
+  {
+   "id": "ENVOI-PRESCRIPTION-NON-CONFORME",
+   "si": {
+    "statut_prescription_liee": {
+     "hors": [
+      "CONFORME",
+      "MAINTENUE"
+     ]
+    }
+   },
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "CM90-A16-17"
+   ],
+   "detail": "Le traitement expliqué n'est pas (ou plus) validé : message bloqué.",
+   "detail_en": "The treatment explained is not (or no longer) validated: message blocked.",
+   "note": "Liste d'autorisation (et non liste d'exclusion) : tout statut autre que conforme ou maintenu bloque l'envoi. Défaut trouvé par la vérification formelle (outils/verifier_formel.py)."
+  },
+  {
+   "id": "ENVOI-TRAITEMENT-SANS-PRESCRIPTION",
+   "si": {
+    "contenu_type": "traitement",
+    "statut_prescription_liee": {
+     "absent": true
+    }
+   },
+   "niveau": "BLOQUE",
+   "base": "LOI",
+   "fiches": [
+    "CM90-A16-17"
+   ],
+   "detail": "Explication de traitement sans prescription du médecin : bloquée.",
+   "detail_en": "Treatment explanation without the physician's prescription: blocked.",
+   "piste": "Pour un traitement, passez par l'onglet Ordonnance (médicament, dose, posologie) : le juriste contrôle la prescription, puis le traducteur prépare l'explication pour le patient.",
+   "piste_en": "For a treatment, use the Prescription tab (medicine, dose, dosage): the jurist checks the prescription, then the translator prepares the explanation for the patient."
+  },
+  {
+   "id": "ENVOI-VALIDE",
+   "si": {
+    "valideur_autorise": true
+   },
+   "niveau": "CONFORME",
+   "base": "LOI",
+   "fiches": [
+    "CM90-A2"
+   ],
+   "detail": "Message validé par un médecin inscrit.",
+   "detail_en": "Message validated by a registered physician."
+  },
+  {
+   "id": "ENVOI-DIAGNOSTIC",
+   "si": {
+    "contenu_type": {
+     "dans": [
+      "diagnostic",
+      "traitement"
+     ]
+    }
+   },
+   "niveau": "OBLIGATION",
+   "base": "NORME",
+   "fiches": [
+    "CM-DEONTO",
+    "CM10-A32"
+   ],
+   "lacune": "L05",
+   "detail": "Diagnostic ou traitement : vérifier que le patient a compris (question de compréhension).",
+   "detail_en": "Diagnosis or treatment: check that the patient understood."
+  }
+ ],
+ "regles_etat": [
+  {
+   "id": "DECLARATION-A",
+   "si": {
+    "maladie_declarable_groupe": "A"
+   },
+   "niveau": "OBLIGATION",
+   "base": "ENGAGEMENT_INTERNATIONAL",
+   "fiches": [
+    "IHR-A6"
+   ],
+   "detail": "Maladie à potentiel épidémique : notification aux autorités sanitaires (Règlement sanitaire international) ; texte national de déclaration à ajouter à la base.",
+   "detail_en": "Disease with epidemic potential: notify health authorities (International Health Regulations); national notification text to be added."
+  },
+  {
+   "id": "DECLARATION-B",
+   "si": {
+    "maladie_declarable_groupe": "B"
+   },
+   "niveau": "OBLIGATION",
+   "base": "ENGAGEMENT_INTERNATIONAL",
+   "fiches": [
+    "IHR-A6"
+   ],
+   "detail": "Maladie à déclarer : notification selon les règles nationales de surveillance (à ajouter à la base).",
+   "detail_en": "Notifiable disease: notify under national surveillance rules (to be added)."
+  },
+  {
+   "id": "URGENCE-ACCESSIBLE",
+   "si": {
+    "urgence": true,
+    "moyen_communication": "pictogrammes"
+   },
+   "niveau": "OBLIGATION",
+   "base": "ENGAGEMENT_INTERNATIONAL",
+   "fiches": [
+    "CRPD-A11",
+    "CM10-A3"
+   ],
+   "lacune": "L09",
+   "detail": "Urgence chez un patient sourd : utiliser le jeu de pictogrammes d'urgence et ne pas retarder l'orientation vers les secours.",
+   "detail_en": "Emergency of a deaf patient: use the emergency pictogram set and do not delay referral."
+  }
+ ],
+ "regle_mode_inconnu": {
+  "niveau": "PREUVES_INSUFFISANTES",
+  "base": "NORME",
+  "fiches": [
+   "CM-DEONTO"
+  ],
+  "detail": "Mode de consultation inconnu (présentiel ou téléconsultation) : les règles de prescription à distance ne peuvent pas être vérifiées.",
+  "detail_en": "Consultation mode unknown (in person or telehealth): remote-prescribing rules cannot be checked."
+ },
+ "regle_mode_contradictoire": {
+  "niveau": "PREUVES_INSUFFISANTES",
+  "base": "NORME",
+  "fiches": [
+   "CM-DEONTO"
+  ],
+  "detail": "Le mode indiqué sur la prescription contredit le dossier du patient (présentiel / téléconsultation) : à clarifier.",
+  "detail_en": "The mode on the prescription contradicts the patient record (in person / telehealth): to be clarified."
+ }
+}

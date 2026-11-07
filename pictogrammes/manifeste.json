@@ -1,0 +1,519 @@
+{
+  "nom": "Bibliothèque de pictogrammes MEDIMCOM IA (équipe ShifaMiko)",
+  "version": "1.0",
+  "licence": "Icônes de démonstration générées par code pour le prototype ; les pictogrammes définitifs viennent de bases existantes, sous leurs licences.",
+  "statut": "À tester avec des personnes sourdes (docs/pictogrammes/PROTOCOLE_TESTS.md) ; libellés arabes à faire relire.",
+  "parametres": [
+    "CHIFFRE:<n>",
+    "DOSE:<valeur>",
+    "MEDICAMENT:<nom>"
+  ],
+  "pictogrammes": [
+    {
+      "id": "OUI",
+      "categorie": "reponse",
+      "fichier": "svg/OUI.svg",
+      "libelles": {
+        "fr": "oui",
+        "en": "yes",
+        "ar": "نعم"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "NON",
+      "categorie": "reponse",
+      "fichier": "svg/NON.svg",
+      "libelles": {
+        "fr": "non",
+        "en": "no",
+        "ar": "لا"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "NE_PAS",
+      "categorie": "reponse",
+      "fichier": "svg/NE_PAS.svg",
+      "libelles": {
+        "fr": "ne pas",
+        "en": "do not",
+        "ar": "لا تفعل"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "ACCORD",
+      "categorie": "reponse",
+      "fichier": "svg/ACCORD.svg",
+      "libelles": {
+        "fr": "d'accord",
+        "en": "agree",
+        "ar": "موافق"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "QUESTION",
+      "categorie": "reponse",
+      "fichier": "svg/QUESTION.svg",
+      "libelles": {
+        "fr": "question",
+        "en": "question",
+        "ar": "سؤال"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "COMPRENDRE",
+      "categorie": "reponse",
+      "fichier": "svg/COMPRENDRE.svg",
+      "libelles": {
+        "fr": "comprendre",
+        "en": "understand",
+        "ar": "أفهم"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "STOP",
+      "categorie": "reponse",
+      "fichier": "svg/STOP.svg",
+      "libelles": {
+        "fr": "stop",
+        "en": "stop",
+        "ar": "توقف"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "ATTENDRE",
+      "categorie": "reponse",
+      "fichier": "svg/ATTENDRE.svg",
+      "libelles": {
+        "fr": "attendre",
+        "en": "wait",
+        "ar": "انتظر"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "VOUS",
+      "categorie": "personne",
+      "fichier": "svg/VOUS.svg",
+      "libelles": {
+        "fr": "vous",
+        "en": "you",
+        "ar": "أنت"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "MOI",
+      "categorie": "personne",
+      "fichier": "svg/MOI.svg",
+      "libelles": {
+        "fr": "moi",
+        "en": "me",
+        "ar": "أنا"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "MEDECIN",
+      "categorie": "personne",
+      "fichier": "svg/MEDECIN.svg",
+      "libelles": {
+        "fr": "médecin",
+        "en": "doctor",
+        "ar": "طبيب"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "BEBE",
+      "categorie": "personne",
+      "fichier": "svg/BEBE.svg",
+      "libelles": {
+        "fr": "bébé",
+        "en": "baby",
+        "ar": "طفل رضيع"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "ENCEINTE",
+      "categorie": "personne",
+      "fichier": "svg/ENCEINTE.svg",
+      "libelles": {
+        "fr": "enceinte",
+        "en": "pregnant",
+        "ar": "حامل"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "TETE",
+      "categorie": "corps",
+      "fichier": "svg/TETE.svg",
+      "libelles": {
+        "fr": "tête",
+        "en": "head",
+        "ar": "رأس"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "POITRINE",
+      "categorie": "corps",
+      "fichier": "svg/POITRINE.svg",
+      "libelles": {
+        "fr": "poitrine",
+        "en": "chest",
+        "ar": "صدر"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "VENTRE",
+      "categorie": "corps",
+      "fichier": "svg/VENTRE.svg",
+      "libelles": {
+        "fr": "ventre",
+        "en": "belly",
+        "ar": "بطن"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "DOULEUR",
+      "categorie": "symptome",
+      "fichier": "svg/DOULEUR.svg",
+      "libelles": {
+        "fr": "douleur",
+        "en": "pain",
+        "ar": "ألم"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "FIEVRE",
+      "categorie": "symptome",
+      "fichier": "svg/FIEVRE.svg",
+      "libelles": {
+        "fr": "fièvre",
+        "en": "fever",
+        "ar": "حمّى"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "TOUX",
+      "categorie": "symptome",
+      "fichier": "svg/TOUX.svg",
+      "libelles": {
+        "fr": "toux",
+        "en": "cough",
+        "ar": "سعال"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "VOMIR",
+      "categorie": "symptome",
+      "fichier": "svg/VOMIR.svg",
+      "libelles": {
+        "fr": "vomir",
+        "en": "vomit",
+        "ar": "تقيؤ"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "RESPIRER",
+      "categorie": "symptome",
+      "fichier": "svg/RESPIRER.svg",
+      "libelles": {
+        "fr": "respirer",
+        "en": "breathe",
+        "ar": "تنفّس"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "SANG",
+      "categorie": "symptome",
+      "fichier": "svg/SANG.svg",
+      "libelles": {
+        "fr": "sang",
+        "en": "blood",
+        "ar": "دم"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "ALLERGIE",
+      "categorie": "symptome",
+      "fichier": "svg/ALLERGIE.svg",
+      "libelles": {
+        "fr": "allergie",
+        "en": "allergy",
+        "ar": "حساسية"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "MEDICAMENT",
+      "categorie": "soin",
+      "fichier": "svg/MEDICAMENT.svg",
+      "libelles": {
+        "fr": "médicament",
+        "en": "medicine",
+        "ar": "دواء"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "COMPRIME",
+      "categorie": "soin",
+      "fichier": "svg/COMPRIME.svg",
+      "libelles": {
+        "fr": "comprimé",
+        "en": "tablet",
+        "ar": "قرص"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "PRENDRE",
+      "categorie": "soin",
+      "fichier": "svg/PRENDRE.svg",
+      "libelles": {
+        "fr": "prendre (avaler)",
+        "en": "take (swallow)",
+        "ar": "تناول"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "HOPITAL",
+      "categorie": "soin",
+      "fichier": "svg/HOPITAL.svg",
+      "libelles": {
+        "fr": "hôpital",
+        "en": "hospital",
+        "ar": "مستشفى"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "URGENCE",
+      "categorie": "soin",
+      "fichier": "svg/URGENCE.svg",
+      "libelles": {
+        "fr": "urgence",
+        "en": "emergency",
+        "ar": "طوارئ"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "ANALYSE",
+      "categorie": "soin",
+      "fichier": "svg/ANALYSE.svg",
+      "libelles": {
+        "fr": "analyse",
+        "en": "test (lab)",
+        "ar": "تحليل"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "EXAMEN",
+      "categorie": "soin",
+      "fichier": "svg/EXAMEN.svg",
+      "libelles": {
+        "fr": "examen",
+        "en": "examination",
+        "ar": "فحص"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "MANGER",
+      "categorie": "soin",
+      "fichier": "svg/MANGER.svg",
+      "libelles": {
+        "fr": "manger",
+        "en": "eat",
+        "ar": "أكل"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "BOIRE",
+      "categorie": "soin",
+      "fichier": "svg/BOIRE.svg",
+      "libelles": {
+        "fr": "boire",
+        "en": "drink",
+        "ar": "شرب"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "EAU",
+      "categorie": "soin",
+      "fichier": "svg/EAU.svg",
+      "libelles": {
+        "fr": "eau",
+        "en": "water",
+        "ar": "ماء"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "DORMIR",
+      "categorie": "soin",
+      "fichier": "svg/DORMIR.svg",
+      "libelles": {
+        "fr": "dormir",
+        "en": "sleep",
+        "ar": "نوم"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "MATIN",
+      "categorie": "temps",
+      "fichier": "svg/MATIN.svg",
+      "libelles": {
+        "fr": "matin",
+        "en": "morning",
+        "ar": "صباح"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "MIDI",
+      "categorie": "temps",
+      "fichier": "svg/MIDI.svg",
+      "libelles": {
+        "fr": "midi",
+        "en": "noon",
+        "ar": "ظهر"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "SOIR",
+      "categorie": "temps",
+      "fichier": "svg/SOIR.svg",
+      "libelles": {
+        "fr": "soir",
+        "en": "evening",
+        "ar": "مساء"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "NUIT",
+      "categorie": "temps",
+      "fichier": "svg/NUIT.svg",
+      "libelles": {
+        "fr": "nuit",
+        "en": "night",
+        "ar": "ليل"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "JOUR",
+      "categorie": "temps",
+      "fichier": "svg/JOUR.svg",
+      "libelles": {
+        "fr": "jour",
+        "en": "day",
+        "ar": "يوم"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "SEMAINE",
+      "categorie": "temps",
+      "fichier": "svg/SEMAINE.svg",
+      "libelles": {
+        "fr": "semaine",
+        "en": "week",
+        "ar": "أسبوع"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "FOIS",
+      "categorie": "nombre",
+      "fichier": "svg/FOIS.svg",
+      "libelles": {
+        "fr": "fois (répéter)",
+        "en": "times (repeat)",
+        "ar": "مرة"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "PLUS",
+      "categorie": "nombre",
+      "fichier": "svg/PLUS.svg",
+      "libelles": {
+        "fr": "plus (davantage)",
+        "en": "more",
+        "ar": "أكثر"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "MOINS",
+      "categorie": "nombre",
+      "fichier": "svg/MOINS.svg",
+      "libelles": {
+        "fr": "moins (réduire)",
+        "en": "less",
+        "ar": "أقل"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "MAXIMUM",
+      "categorie": "nombre",
+      "fichier": "svg/MAXIMUM.svg",
+      "libelles": {
+        "fr": "au maximum (jusqu'à)",
+        "en": "at most (up to)",
+        "ar": "كحد أقصى"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "AVANT",
+      "categorie": "temps",
+      "fichier": "svg/AVANT.svg",
+      "libelles": {
+        "fr": "avant",
+        "en": "before",
+        "ar": "قبل"
+      },
+      "statut": "a_tester"
+    },
+    {
+      "id": "APRES",
+      "categorie": "temps",
+      "fichier": "svg/APRES.svg",
+      "libelles": {
+        "fr": "après",
+        "en": "after",
+        "ar": "بعد"
+      },
+      "statut": "a_tester"
+    }
+  ]
+}

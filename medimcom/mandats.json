@@ -1,0 +1,31 @@
+{
+  "avertissement": "Institutions FICTIVES de la simulation de crise, construites sur le modèle des autorités des Émirats. Les bases légales citées sont des fiches de la base de connaissances (texte officiel lu). Ce qui n'a pas été vérifié est marqué « à confirmer ».",
+  "institutions": {
+    "autorite_sante": {
+      "intitule": "Autorité de santé (fictive, sur le modèle du ministère de la Santé et des autorités sanitaires des émirats)",
+      "mandat": "Surveiller l'épidémie, ordonner les mesures prévues par la loi, informer la population sans exposer les malades.",
+      "bases_legales": ["CD14-A10", "CD14-A18", "CD14-A5", "ICT19-A16"],
+      "peut": ["ouvrir une enquête et isoler les contacts", "déclarer une zone infectée et restreindre les rassemblements",
+               "demander les cas suspects pour la surveillance", "publier des chiffres anonymisés"],
+      "ne_peut_pas": ["lire le dossier d'un patient", "publier l'identité des malades"],
+      "contacts": ["hopital", "cellule_crise", "juriste"]
+    },
+    "hopital": {
+      "intitule": "Hôpital de référence (fictif)",
+      "mandat": "Accueillir et isoler les cas graves, coopérer avec l'autorité de santé, assurer une communication accessible.",
+      "bases_legales": ["CD14-A10", "CD14-A5", "DHATH-12.4", "POD06-A7"],
+      "peut": ["réserver un lit d'isolement", "demander au médecin les pictogrammes d'urgence", "informer l'autorité de santé"],
+      "ne_peut_pas": ["lire le dossier du patient avant son arrivée", "publier des informations sur les malades"],
+      "contacts": ["autorite_sante", "medecin", "juriste"]
+    },
+    "cellule_crise": {
+      "intitule": "Cellule de crise (fictive)",
+      "mandat": "Coordonner les institutions, suivre les incidents (y compris d'IA), relayer les demandes du public et de la presse.",
+      "bases_legales": [],
+      "a_confirmer": "Le mandat légal de l'autorité nationale de gestion des crises des Émirats n'est pas encore dans la base : la cellule n'enregistre donc aucune mesure contraignante, seulement des incidents.",
+      "peut": ["enregistrer un incident", "transmettre une information à l'autorité de santé", "consulter le juriste"],
+      "ne_peut_pas": ["prendre une mesure contraignante", "lire le dossier d'un patient"],
+      "contacts": ["autorite_sante", "hopital", "juriste"]
+    }
+  }
+}

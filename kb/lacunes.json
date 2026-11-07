@@ -1,0 +1,311 @@
+{
+  "name": "MEDIMCOM IA - policy and standards gap catalogue",
+  "version": "1.0",
+  "checked_on": "2026-10-16",
+  "method": "A gap is recorded when the jurist agent meets a situation that no binding text in the knowledge base settles, or that texts settle only in general terms. Each gap lists what UAE texts already say, what is missing, and global examples that address it. Per the hackathon brief, these are domain-specific gaps with global policy examples, not recommendations to a single country.",
+  "gaps": [
+    {
+      "id": "L01",
+      "domain": "Liability and accountability",
+      "title": "Who answers for an AI suggestion that a clinician validated?",
+      "title_fr": "Qui répond d'une suggestion de l'IA validée par le médecin ?",
+      "situation": "The assistant agent proposes an alternative treatment; the doctor accepts it; it later proves wrong.",
+      "existing_texts": [
+        {
+          "fiche": "ML16-A6",
+          "says": "Defines the practitioner's medical error; silent on AI-generated suggestions."
+        },
+        {
+          "fiche": "DOH18-SUPPORT",
+          "says": "A human makes the final decision and is responsible for actions taken by the technology."
+        },
+        {
+          "fiche": "DHA21-4.2",
+          "says": "Accountability for outcomes must be agreed; developers accountable to end users; appeals procedure."
+        }
+      ],
+      "missing": "No binding rule allocating liability between clinician, software developer and facility when a validated AI suggestion causes harm, and no rule on the evidential value of AI logs in a dispute.",
+      "global_examples": [
+        {
+          "fiche": "PLD24-SW",
+          "how": "Software is a product; disclosure of evidence and presumption of defect ease the claimant's burden."
+        },
+        {
+          "fiche": "AIA-A14",
+          "how": "Oversight duties include awareness of automation bias and the ability to override."
+        }
+      ],
+      "medimcom_response": "Every AI suggestion carries its author agent, sources and status; overriding an A_REVOIR verdict requires a named doctor; the hash-chained journal can be produced as evidence.",
+      "triggers": [
+        "suggestion_ia_validee"
+      ]
+    },
+    {
+      "id": "L02",
+      "domain": "Regulatory status of software",
+      "title": "When is a decision-support or communication assistant a medical device?",
+      "title_fr": "Quand un assistant de décision ou de communication est-il un dispositif médical ?",
+      "situation": "MEDIMCOM translates, suggests and checks; none of its agents prescribes, but its outputs influence decisions.",
+      "existing_texts": [
+        {
+          "fiche": "MP24-A1-EQ",
+          "says": "Medical equipment includes operating software and AI-based products."
+        },
+        {
+          "fiche": "RAI25-3.3.1.2.2",
+          "says": "Risk classes; high-risk systems need conformity assessment (Abu Dhabi)."
+        }
+      ],
+      "missing": "The decree-law text read does not set criteria separating regulated decision-support software from non-device tools (communication aids, compliance checkers); executive regulations or EDE guidance on software to be checked.",
+      "global_examples": [
+        {
+          "fiche": "FDA26-CDS",
+          "how": "Four criteria; the clinician must be able to review the basis of each recommendation."
+        },
+        {
+          "fiche": "MDR-R11",
+          "how": "Decision-support software is at least class IIa."
+        },
+        {
+          "fiche": "MHRA-AIRLOCK",
+          "how": "Regulatory sandbox to test AI medical devices before rules are final."
+        }
+      ],
+      "medimcom_response": "Designed to meet the 'reviewable basis' test: every suggestion and verdict shows its source text; the doctor decides.",
+      "triggers": [
+        "statut_logiciel"
+      ]
+    },
+    {
+      "id": "L03",
+      "domain": "Accessible health communication",
+      "title": "No operational standard for meeting deaf patients' communication needs in care",
+      "title_fr": "Aucune norme opérationnelle pour répondre aux besoins de communication des patients sourds",
+      "situation": "A deaf patient with limited literacy consults without a sign-language interpreter.",
+      "existing_texts": [
+        {
+          "fiche": "POD06-A7",
+          "says": "Right to information and expression through sign language and other means."
+        },
+        {
+          "fiche": "DHATH-14.1.5",
+          "says": "Telehealth must make provision for People of Determination; language easily understood (Dubai)."
+        },
+        {
+          "fiche": "CRPD-A21",
+          "says": "Accept and facilitate augmentative and alternative communication in official interactions."
+        }
+      ],
+      "missing": "No federal operational standard requiring providers to identify, record and flag a patient's communication need, nor rules on which alternative means (pictograms, easy-read, sign avatars) are acceptable in a clinical encounter.",
+      "global_examples": [
+        {
+          "fiche": "NHS-AIS",
+          "how": "Identify, record, flag, share and meet communication needs - a legal requirement in England since 2016."
+        }
+      ],
+      "medimcom_response": "The communication need is stored in the patient state and travels with the record; the translator agent adapts every message; the doctor validates each pictogram sequence.",
+      "triggers": [
+        "besoin_communication"
+      ]
+    },
+    {
+      "id": "L04",
+      "domain": "Informed consent",
+      "title": "Is consent given through pictograms valid informed consent?",
+      "title_fr": "Un consentement donné en pictogrammes est-il un consentement éclairé valable ?",
+      "situation": "The patient agrees to a treatment by selecting pictograms.",
+      "existing_texts": [
+        {
+          "fiche": "ML16-A5-1",
+          "says": "No treatment without consent, except emergencies."
+        },
+        {
+          "fiche": "ML16-A8-1c",
+          "says": "Written consent for surgery."
+        },
+        {
+          "fiche": "DHATH-10",
+          "says": "Consent documented at each encounter; electronic consent accepted (Dubai telehealth)."
+        }
+      ],
+      "missing": "No provision recognises consent expressed through augmentative and alternative communication, defines how comprehension is checked, or how such consent is documented.",
+      "global_examples": [
+        {
+          "fiche": "CRPD-A12",
+          "how": "Support in exercising legal capacity."
+        },
+        {
+          "fiche": "CRPD-A25",
+          "how": "Care of the same quality on the basis of free and informed consent."
+        },
+        {
+          "fiche": "CRPD-A21",
+          "how": "Alternative communication accepted in official interactions."
+        }
+      ],
+      "medimcom_response": "Consent is recorded with its means of expression, a comprehension check (teach-back with pictograms) and the doctor's attestation, all in the journal.",
+      "triggers": [
+        "consentement_pictogrammes"
+      ]
+    },
+    {
+      "id": "L05",
+      "domain": "Standards",
+      "title": "No validation standard for medical pictograms",
+      "title_fr": "Aucune norme de validation des pictogrammes médicaux",
+      "situation": "Pictograms are generated or chosen by a model and shown to patients.",
+      "existing_texts": [],
+      "missing": "No UAE standard found on testing the comprehensibility of health pictograms or of AI-generated images used to inform patients.",
+      "global_examples": [
+        {
+          "fiche": "ISO9186",
+          "how": "Standard method for testing what proportion of people understand a symbol."
+        }
+      ],
+      "medimcom_response": "Pictogram library tested with deaf users following the ISO 9186-1 method before use; every sequence validated by the doctor.",
+      "triggers": [
+        "pictogramme_non_valide"
+      ]
+    },
+    {
+      "id": "L06",
+      "domain": "Data governance and innovation",
+      "title": "Strict health-data localisation versus cloud AI and international sandboxes",
+      "title_fr": "Localisation stricte des données de santé contre IA en nuage et bacs à sable internationaux",
+      "situation": "A model or vector store hosted outside the UAE (e.g. an international sandbox) would process consultation content.",
+      "existing_texts": [
+        {
+          "fiche": "ICT19-A13",
+          "says": "No storage or processing of health data outside the State, except by resolution."
+        },
+        {
+          "fiche": "RES51-EXC",
+          "says": "Listed exceptions (research, foreign labs, insurers, etc.) - none explicitly for AI inference or model training."
+        },
+        {
+          "fiche": "RAI25-3.1.4.5.1",
+          "says": "Compute and storage in the UAE (Abu Dhabi)."
+        }
+      ],
+      "missing": "No explicit pathway for AI testing in cross-border or international sandboxes, and no statement on whether synthetic or de-identified data falls outside the localisation rule.",
+      "global_examples": [
+        {
+          "fiche": "AIA-A57-59",
+          "how": "Sandboxes with strict conditions; anonymised or synthetic data preferred."
+        },
+        {
+          "fiche": "MHRA-AIRLOCK",
+          "how": "National sandbox for AI medical devices."
+        }
+      ],
+      "medimcom_response": "Local models only; synthetic data in the prototype; the jurist blocks any outbound transfer without an exception and its conditions.",
+      "triggers": [
+        "transfert_hors_eau"
+      ]
+    },
+    {
+      "id": "L07",
+      "domain": "Human oversight and traceability",
+      "title": "Oversight rules do not address multi-agent systems",
+      "title_fr": "Les règles de supervision ne visent pas les systèmes multi-agents",
+      "situation": "Several AI agents exchange messages and act on a shared record before a human sees the result.",
+      "existing_texts": [
+        {
+          "fiche": "RAI25-3.1.7.1.3",
+          "says": "All decisions logged and traceable to a responsible party."
+        },
+        {
+          "fiche": "DHA21-4.4",
+          "says": "AI supervised by end users and can be overridden."
+        },
+        {
+          "fiche": "DHA21-4.3.1",
+          "says": "Failures traced, diagnosed and controlled."
+        }
+      ],
+      "missing": "No requirement on agent-to-agent communication, limits of agent autonomy, tool permissions, or tamper-evident logs.",
+      "global_examples": [
+        {
+          "fiche": "AIA-A12",
+          "how": "Automatic logging over the lifetime of the system."
+        },
+        {
+          "fiche": "AIA-A14",
+          "how": "Effective human oversight including automation bias."
+        }
+      ],
+      "medimcom_response": "Typed messages between agents, per-agent tool permissions, deterministic verdicts, SHA-256 chained journal.",
+      "triggers": [
+        "multi_agents"
+      ]
+    },
+    {
+      "id": "L08",
+      "domain": "Crisis coordination",
+      "title": "No unified channel for AI incidents in health across emirates",
+      "title_fr": "Pas de canal unifié pour les incidents d'IA en santé entre émirats",
+      "situation": "During a crisis an AI component fails or gives harmful output in several facilities.",
+      "existing_texts": [
+        {
+          "fiche": "DHA21-4.8",
+          "says": "Report AI incidents to DHA (Dubai)."
+        },
+        {
+          "fiche": "RAI25-3.1.7.1.2.3",
+          "says": "Report adverse outcomes to governance bodies (Abu Dhabi)."
+        },
+        {
+          "fiche": "CD14-A4",
+          "says": "24-hour notification model exists for communicable diseases."
+        }
+      ],
+      "missing": "Incident reporting duties are emirate-specific; no federal time limit or shared format for AI incidents found in the knowledge base.",
+      "global_examples": [
+        {
+          "fiche": "AIA-A73",
+          "how": "Serious incidents reported within 15 days, shorter for widespread or fatal ones."
+        },
+        {
+          "fiche": "IHR-A6",
+          "how": "Time-bound notification through a single national focal point."
+        }
+      ],
+      "medimcom_response": "The journal exports an incident record (what, when, which agent, which sources); the jurist reminds the time limits that do exist.",
+      "triggers": [
+        "incident_ia"
+      ]
+    },
+    {
+      "id": "L09",
+      "domain": "Accessible emergency communication",
+      "title": "Emergency protocols do not guarantee equivalent access for deaf people",
+      "title_fr": "Les protocoles d'urgence ne garantissent pas un accès équivalent aux personnes sourdes",
+      "situation": "In an emergency the usual voice channels and interpreters are unavailable.",
+      "existing_texts": [
+        {
+          "fiche": "DHATH-12.4",
+          "says": "Tested emergency protocols in telehealth, no accessibility requirement."
+        },
+        {
+          "fiche": "POD06-A7",
+          "says": "General right to communicate through other means."
+        },
+        {
+          "fiche": "CRPD-A11",
+          "says": "Protection in situations of risk."
+        }
+      ],
+      "missing": "No requirement found that health emergency protocols provide equivalent non-voice access for deaf patients.",
+      "global_examples": [
+        {
+          "fiche": "EECC-A109-5",
+          "how": "Equivalent access to emergency services for end-users with disabilities."
+        }
+      ],
+      "medimcom_response": "Emergency pictogram set always available offline; urgent alerts are prioritised by the assistant agent.",
+      "triggers": [
+        "urgence_communication"
+      ]
+    }
+  ]
+}

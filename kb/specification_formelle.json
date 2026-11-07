@@ -1,0 +1,758 @@
+{
+ "description": "Spécification formelle de MEDIMCOM IA : exigences de haut niveau que les règles du juriste DOIVENT satisfaire pour TOUTES les entrées possibles. Elle est écrite indépendamment des fichiers de règles (comme une loi l'est de son application) et vérifiée par outils/verifier_formel.py, par énumération exhaustive sur le moteur réel et par preuve SMT (Z3) sur l'encodage des règles. Langage des conditions : celui des règles (voir docs/technique/METHODES_FORMELLES.md), évalué ici en logique à deux valeurs sur la valeur donnée (une valeur absente vaut null). « au_moins » : verdict minimal exigé (sûreté : ce qui doit être empêché) ; « au_plus » : verdict maximal permis (utilité : ce qui doit rester possible, pour qu'un système qui refuse tout ne passe pas pour correct) ; « jamais » : verdicts interdits.",
+ "treillis": [
+  "CONFORME",
+  "PREUVES_INSUFFISANTES",
+  "A_REVOIR",
+  "BLOQUE"
+ ],
+ "exigences": [
+  {
+   "id": "S-PA-HORS-PAYS-AE",
+   "pays": [
+    "AE"
+   ],
+   "famille": "partage",
+   "enonce": "Des données de santé envoyées hors des Émirats sans exception réglementaire sont bloquées.",
+   "si": {
+    "lieu": "hors_du_pays",
+    "exception_res51": {
+     "absent": true
+    }
+   },
+   "au_moins": "BLOQUE",
+   "fiches": [
+    "ICT19-A13"
+   ]
+  },
+  {
+   "id": "S-PA-HORS-PAYS-CM",
+   "pays": [
+    "CM"
+   ],
+   "famille": "partage",
+   "enonce": "Des données de santé envoyées hors du Cameroun sans autorisation établie de l'autorité de protection des données sont bloquées.",
+   "si": {
+    "lieu": "hors_du_pays",
+    "autorisation_autorite": {
+     "pas": true
+    }
+   },
+   "au_moins": "BLOQUE",
+   "fiches": [
+    "CM24-TRANSFERT"
+   ]
+  },
+  {
+   "id": "S-PA-HORS-PAYS-JAMAIS-CONFORME",
+   "pays": [
+    "AE",
+    "CM"
+   ],
+   "famille": "partage",
+   "enonce": "Un transfert hors du pays n'est jamais conforme d'office : au mieux, il est à revoir par un humain.",
+   "si": {
+    "lieu": "hors_du_pays"
+   },
+   "jamais": [
+    "CONFORME"
+   ],
+   "fiches": [
+    "ICT19-A13",
+    "CM24-TRANSFERT"
+   ]
+  },
+  {
+   "id": "S-PA-COMMERCIAL",
+   "pays": [
+    "AE",
+    "CM"
+   ],
+   "famille": "partage",
+   "enonce": "Un usage commercial ou publicitaire sans consentement écrit est bloqué.",
+   "si": {
+    "finalite": {
+     "dans": [
+      "commerciale",
+      "publicite"
+     ]
+    },
+    "consentement_ecrit": false
+   },
+   "au_moins": "BLOQUE",
+   "fiches": [
+    "ICT19-A16",
+    "CM24-A9"
+   ]
+  },
+  {
+   "id": "S-PA-COMMERCIAL-JAMAIS-CONFORME",
+   "pays": [
+    "AE",
+    "CM"
+   ],
+   "famille": "partage",
+   "enonce": "Un usage commercial ou publicitaire n'est jamais conforme d'office.",
+   "si": {
+    "finalite": {
+     "dans": [
+      "commerciale",
+      "publicite"
+     ]
+    }
+   },
+   "jamais": [
+    "CONFORME"
+   ],
+   "fiches": [
+    "ICT19-A16",
+    "CM24-A9"
+   ]
+  },
+  {
+   "id": "S-PA-PUBLICATION-NOMINATIVE",
+   "pays": [
+    "AE",
+    "CM"
+   ],
+   "famille": "partage",
+   "enonce": "Publier des données non anonymisées est bloqué.",
+   "si": {
+    "destinataire_type": "public",
+    "anonymise": false
+   },
+   "au_moins": "BLOQUE",
+   "fiches": [
+    "ICT19-A16",
+    "CM24-SENSIBLES"
+   ]
+  },
+  {
+   "id": "S-PA-RECHERCHE-IDENTIFIANTE",
+   "pays": [
+    "AE",
+    "CM"
+   ],
+   "famille": "partage",
+   "enonce": "Une recherche sur des données identifiantes sans consentement est bloquée.",
+   "si": {
+    "finalite": "recherche",
+    "anonymise": false,
+    "consentement_ecrit": false
+   },
+   "au_moins": "BLOQUE",
+   "fiches": [
+    "ICT19-A16",
+    "CM24-A9"
+   ]
+  },
+  {
+   "id": "S-PA-LIEU-INCONNU",
+   "pays": [
+    "AE",
+    "CM"
+   ],
+   "famille": "partage",
+   "enonce": "Sans savoir où vont les données, rien n'est conforme.",
+   "si": {
+    "lieu": {
+     "absent": true
+    }
+   },
+   "jamais": [
+    "CONFORME"
+   ],
+   "fiches": [
+    "ICT19-A13",
+    "CM24-TRANSFERT"
+   ]
+  },
+  {
+   "id": "S-EN-VALIDATION-HUMAINE",
+   "pays": [
+    "AE",
+    "CM"
+   ],
+   "famille": "envoi_patient",
+   "enonce": "Aucun message n'est conforme sans la validation d'un médecin autorisé et actif.",
+   "si": {
+    "valideur_autorise": {
+     "pas": true
+    }
+   },
+   "au_moins": "BLOQUE",
+   "fiches": [
+    "DHA21-4.4",
+    "CM90-A2"
+   ]
+  },
+  {
+   "id": "S-EN-TRAITEMENT-PRESCRIPTION",
+   "pays": [
+    "AE",
+    "CM"
+   ],
+   "famille": "envoi_patient",
+   "enonce": "Un message de traitement n'est conforme que s'il explique une prescription conforme ou maintenue par le médecin.",
+   "si": {
+    "contenu_type": "traitement",
+    "statut_prescription_liee": {
+     "hors": [
+      "CONFORME",
+      "MAINTENUE"
+     ]
+    }
+   },
+   "au_moins": "BLOQUE",
+   "fiches": [
+    "ML16-A4-2",
+    "CM90-A2"
+   ]
+  },
+  {
+   "id": "S-EN-TRAITEMENT-SANS-PRESCRIPTION",
+   "pays": [
+    "AE",
+    "CM"
+   ],
+   "famille": "envoi_patient",
+   "enonce": "Un message de traitement sans prescription liée est bloqué.",
+   "si": {
+    "contenu_type": "traitement",
+    "statut_prescription_liee": {
+     "absent": true
+    }
+   },
+   "au_moins": "BLOQUE",
+   "fiches": [
+    "ML16-A4-2",
+    "CM90-A2"
+   ]
+  },
+  {
+   "id": "U-PA-SOINS",
+   "pays": [
+    "AE",
+    "CM"
+   ],
+   "famille": "partage",
+   "type": "utilite",
+   "enonce": "Partager pour les soins avec un hôpital ou le médecin traitant du pays reste possible : conforme quand tout est connu.",
+   "si": {
+    "finalite": "soins",
+    "destinataire_type": {
+     "dans": [
+      "medecin_traitant",
+      "etablissement_sante",
+      "hopital"
+     ]
+    },
+    "lieu": "dans_le_pays",
+    "consentement_ecrit": {
+     "present": true
+    },
+    "anonymise": {
+     "present": true
+    }
+   },
+   "au_plus": "CONFORME",
+   "fiches": [
+    "ICT19-A4",
+    "ICT19-A16",
+    "CM24-SENSIBLES",
+    "CM90-A4"
+   ]
+  },
+  {
+   "id": "U-PA-RECHERCHE-ANONYME",
+   "pays": [
+    "AE",
+    "CM"
+   ],
+   "famille": "partage",
+   "type": "utilite",
+   "enonce": "La recherche sur données anonymisées dans le pays reste possible.",
+   "si": {
+    "finalite": "recherche",
+    "anonymise": true,
+    "lieu": "dans_le_pays",
+    "destinataire_type": {
+     "dans": [
+      "hopital",
+      "etablissement_sante",
+      "universite"
+     ]
+    },
+    "consentement_ecrit": {
+     "present": true
+    }
+   },
+   "au_plus": "CONFORME",
+   "fiches": [
+    "ICT19-A16"
+   ]
+  },
+  {
+   "id": "U-PA-AUTORITE-SANTE",
+   "pays": [
+    "AE",
+    "CM"
+   ],
+   "famille": "partage",
+   "type": "utilite",
+   "enonce": "Transmettre à l'autorité de santé du pays pour la santé publique reste possible (déclaration obligatoire).",
+   "si": {
+    "destinataire_type": "autorite_sante",
+    "finalite": "sante_publique",
+    "lieu": "dans_le_pays",
+    "consentement_ecrit": {
+     "present": true
+    },
+    "anonymise": {
+     "present": true
+    }
+   },
+   "au_plus": "CONFORME",
+   "fiches": [
+    "ICT19-A16",
+    "CM24-SENSIBLES"
+   ]
+  },
+  {
+   "id": "U-PA-PUBLICATION-ANONYME",
+   "pays": [
+    "AE",
+    "CM"
+   ],
+   "famille": "partage",
+   "type": "utilite",
+   "enonce": "Publier des données anonymisées (information du public) reste possible.",
+   "si": {
+    "destinataire_type": "public",
+    "anonymise": true,
+    "lieu": "dans_le_pays",
+    "finalite": "information_publique",
+    "consentement_ecrit": {
+     "present": true
+    }
+   },
+   "au_plus": "CONFORME",
+   "fiches": [
+    "ICT19-A16",
+    "CD14-A29"
+   ]
+  },
+  {
+   "id": "U-PA-ASSURANCE-AE",
+   "pays": [
+    "AE"
+   ],
+   "famille": "partage",
+   "type": "utilite",
+   "enonce": "Aux Émirats, la transmission à l'assureur santé dans le pays reste possible.",
+   "si": {
+    "finalite": "assurance",
+    "destinataire_type": "assureur",
+    "lieu": "dans_le_pays",
+    "consentement_ecrit": {
+     "present": true
+    },
+    "anonymise": {
+     "present": true
+    }
+   },
+   "au_plus": "CONFORME",
+   "fiches": [
+    "ICT19-A16"
+   ]
+  },
+  {
+   "id": "U-PA-JUSTICE-AE",
+   "pays": [
+    "AE"
+   ],
+   "famille": "partage",
+   "type": "utilite",
+   "enonce": "Aux Émirats, la transmission à une autorité judiciaire du pays reste possible.",
+   "si": {
+    "destinataire_type": "autorite_judiciaire",
+    "finalite": "justice",
+    "lieu": "dans_le_pays",
+    "consentement_ecrit": {
+     "present": true
+    },
+    "anonymise": {
+     "present": true
+    }
+   },
+   "au_plus": "CONFORME",
+   "fiches": [
+    "ICT19-A16"
+   ]
+  },
+  {
+   "id": "U-PA-SANTE-PUBLIQUE-AE",
+   "pays": [
+    "AE"
+   ],
+   "famille": "partage",
+   "type": "utilite",
+   "enonce": "Aux Émirats, l'usage pour la santé publique dans le pays reste possible.",
+   "si": {
+    "finalite": "sante_publique",
+    "destinataire_type": "service_de_sante_publique",
+    "lieu": "dans_le_pays",
+    "consentement_ecrit": {
+     "present": true
+    },
+    "anonymise": {
+     "present": true
+    }
+   },
+   "au_plus": "CONFORME",
+   "fiches": [
+    "ICT19-A16",
+    "CD14-A10",
+    "CD14-A29"
+   ]
+  },
+  {
+   "id": "S-PA-HORS-PAYS-GARANTIES-AE",
+   "pays": [
+    "AE"
+   ],
+   "famille": "partage",
+   "enonce": "Hors des Émirats avec exception, consentement, chiffrement et copie locale : ni conforme d'office, ni bloqué ; un humain décide (à revoir).",
+   "si": {
+    "lieu": "hors_du_pays",
+    "exception_res51": {
+     "present": true
+    },
+    "consentement_ecrit": true,
+    "chiffrement": true,
+    "copie_eau": true,
+    "finalite": "soins",
+    "destinataire_type": "laboratoire",
+    "anonymise": {
+     "present": true
+    }
+   },
+   "au_moins": "A_REVOIR",
+   "au_plus": "A_REVOIR",
+   "fiches": [
+    "RES51-EXC",
+    "RES51-COND",
+    "ICT19-A13"
+   ]
+  },
+  {
+   "id": "S-PA-HORS-PAYS-SANS-GARANTIE-AE",
+   "pays": [
+    "AE"
+   ],
+   "famille": "partage",
+   "enonce": "Hors des Émirats, l'absence de consentement, de chiffrement ou de copie locale bloque, même avec une exception.",
+   "si": {
+    "lieu": "hors_du_pays",
+    "exception_res51": {
+     "present": true
+    },
+    "consentement_ecrit": {
+     "dans": [
+      false
+     ]
+    }
+   },
+   "au_moins": "BLOQUE",
+   "fiches": [
+    "ICT19-A13",
+    "RES51-COND"
+   ]
+  },
+  {
+   "id": "S-PA-HORS-PAYS-CHIFFREMENT-AE",
+   "pays": [
+    "AE"
+   ],
+   "famille": "partage",
+   "enonce": "Hors des Émirats sans chiffrement : bloqué.",
+   "si": {
+    "lieu": "hors_du_pays",
+    "exception_res51": {
+     "present": true
+    },
+    "chiffrement": false
+   },
+   "au_moins": "BLOQUE",
+   "fiches": [
+    "ICT19-A13",
+    "RES51-COND"
+   ]
+  },
+  {
+   "id": "S-PA-HORS-PAYS-COPIE-AE",
+   "pays": [
+    "AE"
+   ],
+   "famille": "partage",
+   "enonce": "Hors des Émirats sans copie conservée aux Émirats : bloqué.",
+   "si": {
+    "lieu": "hors_du_pays",
+    "exception_res51": {
+     "present": true
+    },
+    "copie_eau": false
+   },
+   "au_moins": "BLOQUE",
+   "fiches": [
+    "ICT19-A13",
+    "RES51-COND"
+   ]
+  },
+  {
+   "id": "S-PA-HORS-PAYS-AUTORISE-CM",
+   "pays": [
+    "CM"
+   ],
+   "famille": "partage",
+   "enonce": "Hors du Cameroun avec l'autorisation de l'autorité : ni conforme d'office, ni bloqué ; un humain décide (à revoir).",
+   "si": {
+    "lieu": "hors_du_pays",
+    "autorisation_autorite": true,
+    "finalite": "soins",
+    "destinataire_type": "laboratoire",
+    "consentement_ecrit": true,
+    "anonymise": {
+     "present": true
+    }
+   },
+   "au_moins": "A_REVOIR",
+   "au_plus": "A_REVOIR",
+   "fiches": [
+    "CM24-TRANSFERT",
+    "CM24-A9"
+   ]
+  },
+  {
+   "id": "S-PA-ENTRAINEMENT-IA",
+   "pays": [
+    "AE",
+    "CM"
+   ],
+   "famille": "partage",
+   "enonce": "Entraîner une IA sur des données dont l'anonymisation n'est pas établie demande toujours une décision humaine (au moins à revoir).",
+   "si": {
+    "finalite": "entrainement_ia",
+    "anonymise": {
+     "pas": true
+    },
+    "lieu": "dans_le_pays"
+   },
+   "au_moins": "A_REVOIR",
+   "fiches": [
+    "ICT19-A16",
+    "AIA-A57-59",
+    "CM24-A9",
+    "CM24-SENSIBLES"
+   ]
+  },
+  {
+   "id": "S-PA-RECHERCHE-IDENTIFIANTE-ACCORD-AE",
+   "pays": [
+    "AE"
+   ],
+   "famille": "partage",
+   "enonce": "Recherche sur données identifiantes avec consentement : décision humaine (à revoir).",
+   "si": {
+    "finalite": "recherche",
+    "anonymise": false,
+    "consentement_ecrit": true,
+    "lieu": "dans_le_pays"
+   },
+   "au_moins": "A_REVOIR",
+   "fiches": [
+    "ICT19-A16"
+   ]
+  },
+  {
+   "id": "S-EN-PROPOS-DANGEREUX",
+   "pays": [
+    "AE"
+   ],
+   "famille": "envoi_patient",
+   "enonce": "Un message qui incite le patient à se faire du mal (ou l'injurie) est bloqué, même validé par le médecin.",
+   "si": {
+    "incitation_au_mal": true
+   },
+   "au_moins": "BLOQUE",
+   "fiches": [
+    "ML16-A3",
+    "DHA21-4.4"
+   ]
+  },
+  {
+   "id": "S-EN-PRODUIT-CONTROLE",
+   "pays": [
+    "AE"
+   ],
+   "famille": "envoi_patient",
+   "enonce": "Une consigne de prise d'un produit contrôlé sans prescription liée est bloquée.",
+   "si": {
+    "medicament_controle": true,
+    "statut_prescription_liee": {
+     "absent": true
+    }
+   },
+   "au_moins": "BLOQUE",
+   "fiches": [
+    "MP24-A55"
+   ]
+  },
+  {
+   "id": "U-EN-MESSAGE-VALIDE",
+   "pays": [
+    "AE",
+    "CM"
+   ],
+   "famille": "envoi_patient",
+   "type": "utilite",
+   "enonce": "Un message validé par un médecin autorisé, sans traitement en jeu et sans propos dangereux, peut partir au patient.",
+   "si": {
+    "valideur_autorise": true,
+    "contenu_type": {
+     "dans": [
+      "question",
+      "information"
+     ]
+    },
+    "statut_prescription_liee": {
+     "absent": true
+    },
+    "incitation_au_mal": {
+     "pas": true
+    },
+    "medicament_controle": {
+     "pas": true
+    }
+   },
+   "au_plus": "CONFORME",
+   "fiches": [
+    "DHA21-4.4",
+    "CM90-A2"
+   ]
+  },
+  {
+   "id": "U-EN-TRAITEMENT-CONFORME",
+   "pays": [
+    "AE",
+    "CM"
+   ],
+   "famille": "envoi_patient",
+   "type": "utilite",
+   "enonce": "L'explication validée d'une prescription conforme ou maintenue peut partir au patient.",
+   "si": {
+    "valideur_autorise": true,
+    "contenu_type": "traitement",
+    "statut_prescription_liee": {
+     "dans": [
+      "CONFORME",
+      "MAINTENUE"
+     ]
+    },
+    "incitation_au_mal": {
+     "pas": true
+    }
+   },
+   "au_plus": "CONFORME",
+   "fiches": [
+    "DHA21-4.4",
+    "CM90-A2"
+   ]
+  },
+  {
+   "id": "S-PA-PERMISSION-DANS-LE-PAYS",
+   "pays": [
+    "AE",
+    "CM"
+   ],
+   "famille": "partage",
+   "enonce": "Rien n'est conforme d'office si les données ne restent pas dans le pays (lieu établi : dans le pays).",
+   "si": {
+    "lieu": {
+     "hors": [
+      "dans_le_pays"
+     ]
+    }
+   },
+   "jamais": [
+    "CONFORME"
+   ],
+   "fiches": [
+    "ICT19-A13",
+    "CM24-TRANSFERT"
+   ]
+  },
+  {
+   "id": "S-PA-FINALITE-NON-PREVUE",
+   "pays": [
+    "AE",
+    "CM"
+   ],
+   "famille": "partage",
+   "enonce": "Limitation des finalités : une finalité que les textes ne prévoient pas n'est jamais conforme d'office (sauf transmission à une autorité ou publication anonyme, régies par leurs propres règles).",
+   "si": {
+    "finalite": {
+     "hors": [
+      "soins",
+      "recherche",
+      "assurance",
+      "sante_publique"
+     ]
+    },
+    "destinataire_type": {
+     "hors": [
+      "autorite_judiciaire",
+      "autorite_sante",
+      "public"
+     ]
+    }
+   },
+   "jamais": [
+    "CONFORME"
+   ],
+   "fiches": [
+    "ICT19-A16",
+    "CM24-A9"
+   ]
+  },
+  {
+   "id": "S-PA-SOINS-DESTINATAIRE",
+   "pays": [
+    "AE",
+    "CM"
+   ],
+   "famille": "partage",
+   "enonce": "Pour les soins, seuls les soignants (médecin traitant, établissement de santé, hôpital) ou les autorités reçoivent les données d'office.",
+   "si": {
+    "finalite": "soins",
+    "destinataire_type": {
+     "hors": [
+      "medecin_traitant",
+      "etablissement_sante",
+      "hopital",
+      "autorite_judiciaire",
+      "autorite_sante",
+      "public"
+     ]
+    }
+   },
+   "jamais": [
+    "CONFORME"
+   ],
+   "fiches": [
+    "ICT19-A16",
+    "CM24-SENSIBLES"
+   ]
+  }
+ ]
+}

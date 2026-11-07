@@ -1,0 +1,4 @@
+# Recherche par le sens (facultatif) : modèle d'encodage local, sans PyTorch ni clé d'API
+# pip install -r requirements-vecteurs.txt
+numpy>=1.24
+fastembed>=0.5
