@@ -68,6 +68,24 @@ class Orchestrateur:
             print(f"  {'✖' if r.startswith('Refusé') else '✔'} {r}")
         elif t == "rejet":
             print(f"  ✖ {self._rejeter(evt)}")
+        elif t == "poser_question":
+            # Le médecin choisit, dans l'onglet Assistant, une question proposée par l'assistant : elle est traduite ; s'il a
+            # cliqué « Envoyer » après avoir vu l'aperçu, elle part dès que le juriste l'a jugée conforme.
+            q = next((q for q in d.questions_a_poser if q["id"] == int(evt["question_id"])), None)
+            if not q or q["statut"] != "en_attente":
+                print("  ✖ Refusé : question introuvable ou déjà traitée.")
+            else:
+                q["autorisee"] = True
+                if not evt.get("modifier"):
+                    q["valider_auto_par"] = evt.get("medecin")
+                d._changer("medecin", "question_choisie", {"id": q["id"], "par": evt.get("medecin"),
+                                                           "envoi": "après modification" if evt.get("modifier") else "direct"})
+                print(f"  ✔ Question #{q['id']} choisie : traduction en cours.")
+        elif t == "refus_question":
+            q = next((q for q in d.questions_a_poser if q["id"] == int(evt["question_id"])), None)
+            if q and q["statut"] == "en_attente":
+                d.statut_question("medecin", q["id"], "refusee", evt.get("raison", "refusée par le médecin"))
+                print(f"  ✔ Question #{q['id']} refusée.")
         elif t == "retrait_message":
             r = self._retirer(evt)
             print(f"  {'✖' if r.startswith('Refusé') else '✔'} {r}")
@@ -251,6 +269,18 @@ class Orchestrateur:
                     juriste._penser(raisonnement)
                     juriste.executer(outil, args)
                 n += 1
+        # Questions choisies par le médecin dans l'onglet Assistant avec « Envoyer » : validées en son nom dès que le
+        # juriste a jugé le contenu conforme (il a vu l'aperçu en pictogrammes avant de cliquer) ; sinon elles restent
+        # dans la conversation, à valider à la main.
+        for dec in list(d.decisions.values()):
+            q = next((q for q in d.questions_a_poser if q["id"] == dec.get("source_question")), None)
+            if dec.get("type") == "envoi_patient" and dec["statut"] == "attente_validation" and q and q.get("valider_auto_par") \
+                    and precontrole_a_jour(dec, d):
+                medecin = q.pop("valider_auto_par")
+                if (dec.get("precontrole") or {}).get("verdict") == "CONFORME" and dec.get("pictogrammes"):
+                    r = self._valider({"auteur": "medecin", "medecin": medecin, "decision_id": dec["id"]})
+                    print(f"  {'✖' if r.startswith('Refusé') else '✔'} {r} (depuis l'onglet Assistant)")
+                    n += 1
         # Veille clinique de l'assistant (déterministe, instantanée) : une prescription risquée est signalée au
         # médecin avec son alternative sourcée, sans attendre le modèle en ligne.
         assistant = next((a for a in self.agents if a.nom == "assistant"), None)

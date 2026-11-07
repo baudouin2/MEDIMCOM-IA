@@ -140,6 +140,11 @@ class Application:
             if self.demo:
                 self.ctx.journal.ajouter("coordinateur", "scenario", {"titre": self.demo["titre"]})
             self.orch.apres_tour = self._photographier     # l'écran se met à jour après chaque action d'un agent
+            # Écran médecin : les questions de l'assistant restent dans l'onglet Assistant jusqu'à ce que le médecin les
+            # choisisse (sauf dans un scénario de démonstration, qui les valide pas à pas)
+            self.ctx.questions_assistant_auto = bool(self.demo)
+            self.messages_masques = set()
+            self.documents, self._octets_documents = [], {}         # documents du patient joints par le médecin
             # Agents « lents » : ceux qui interrogent un modèle en ligne. En mode asynchrone, ils jouent APRÈS les agents
             # rapides et cèdent la place dès qu'un humain clique : un clic n'attend jamais la réflexion du modèle.
             self.lents = frozenset(a.nom for a in self.agents if not isinstance(a.cerveau, CerveauSimule)) if self.asynchrone else frozenset()
@@ -312,6 +317,7 @@ class Application:
                 "mode": next((a.cerveau.nom for a in self.agents if not isinstance(a.cerveau, CerveauSimule)), self.agents[0].cerveau.nom),
                 "modele": self._etat_modele(),
                 "langue": getattr(self.ctx, "langue_medecin", "fr"),
+                "documents": getattr(self, "documents", []),
                 "ordonnances": self._ordonnances(),
                 "dictee": "xai" if __import__("os").environ.get("XAI_API_KEY") else "navigateur",
                 "journal": c.journal.verifier(), "lignes": len(c.journal.lignes),
@@ -321,7 +327,7 @@ class Application:
                 "suggestions": list(d.suggestions.values()),
                 "verdicts": d.verdicts[-30:],
                 "messages": [{"id": m.id, "de": m.de, "type": m.type, "contenu": m.contenu}
-                             for m in c.messagerie.historique if m.a == "medecin"][-40:],
+                             for m in c.messagerie.historique if m.a == "medecin" and m.id not in getattr(self, "messages_masques", ())][-40:],
                 "lacunes": d.lacunes,
                 "mesures": c.crise.mesures, "incidents": c.crise.incidents,
                 "prescripteurs": {k: v["nom"] for k, v in c.regles.kb["prescripteurs"].items() if v.get("actif")},
@@ -331,6 +337,39 @@ class Application:
                          "etape": self.demo_index, "total": len(self.demo["evenements"]) if self.demo else 0,
                          "prochaine": prochaine},
             }
+
+    def ajouter_document(self, nom: str, type_doc: str, mime: str, contenu: str) -> str:
+        from medimcom.documents import nouveau
+        with self.verrou:
+            doc, octets = nouveau(nom, type_doc, mime, contenu, len(self.documents) + 1)
+            self.documents.append(doc)
+            self._octets_documents[doc["id"]] = octets
+            self.ctx.journal.ajouter("medecin", "document_ajoute", {k: doc[k] for k in ("id", "nom", "type", "mime", "taille", "sha256")})
+        threading.Thread(target=self._lire_document, args=(doc,), daemon=True, name=f"document-{doc['id']}").start()
+        return f"Document « {doc['nom']} » joint au dossier : lecture en cours."
+
+    def _lire_document(self, doc: dict):
+        """Lecture hors verrou (le modèle peut prendre plusieurs secondes) ; les faits extraits entrent ensuite dans le
+        dossier comme NON confirmés, et les agents les vérifient (risques du médicament pour ce patient…)."""
+        from medimcom.documents import faits_du_document, lire
+        cerveau = next((a.cerveau for a in self.agents if not isinstance(a.cerveau, CerveauSimule)), None)
+        session = self.session
+        try:
+            ex = lire(doc, self._octets_documents.get(doc["id"], b""), cerveau, self.ctx.regles.kb.get("medicaments", {}))
+        except Exception as e:  # noqa: BLE001
+            ex = {**doc["extraction"], "statut": "erreur", "resume": f"Lecture impossible : {e.__class__.__name__}"}
+        if session != self.session:
+            return                                          # nouvelle consultation entre-temps : on n'écrit rien
+        doc["extraction"] = ex
+        with self.verrou:
+            self.ctx.journal.ajouter("assistant", "document_lu", {"id": doc["id"], "statut": ex["statut"], "par": ex.get("par"),
+                                                                  "medicaments": [m["nom"] for m in ex.get("medicaments", [])],
+                                                                  "erreur_modele": ex.get("erreur_modele")})
+        donnees = faits_du_document(doc)
+        if donnees:
+            self.evenement({"type": "echange", "auteur": "document", "confirme": False,
+                            "texte": f"Lecture du document « {doc['nom']} » ({ex.get('par')}) : à confirmer par le médecin.",
+                            "donnees": donnees})
 
     def _ordonnances(self) -> list[dict]:
         from medimcom.ordonnance import ordonnances
@@ -524,6 +563,12 @@ class Gestionnaire(BaseHTTPRequestHandler):
             return self._page("medecin")
         if chemin == "/api/medecin":
             return self._repondre(200, self.app.vue_medecin())
+        if chemin == "/api/medecin/document":          # le médecin rouvre un document joint
+            ident = int((parse_qs(urlparse(self.path).query).get("id", ["0"])[0] or "0"))
+            doc = next((d for d in getattr(self.app, "documents", []) if d["id"] == ident), None)
+            if not doc:
+                return self._repondre(404, {"erreur": "document introuvable"})
+            return self._repondre(200, self.app._octets_documents[ident], doc["mime"])
         if chemin == "/api/fiche":                  # lire le texte de loi (ou la référence) cité par le juriste
             q = parse_qs(urlparse(self.path).query).get("q", [""])[0].strip()
             with self.app.verrou:
@@ -568,6 +613,8 @@ class Gestionnaire(BaseHTTPRequestHandler):
             return self._repondre(403, {"erreur": "jeton médecin manquant ou invalide"})
         try:
             n = int(self.headers.get("Content-Length") or 0)
+            if n > (12 * 1024 * 1024 if chemin == "/api/medecin/document" else 1024 * 1024):
+                return self._repondre(413, {"erreur": "requête trop lourde"})
             corps = json.loads(self.rfile.read(n) or b"{}")
             if not isinstance(corps, dict):
                 raise ValueError("le corps doit être un objet JSON")
@@ -640,6 +687,25 @@ class Gestionnaire(BaseHTTPRequestHandler):
             return {"retour": app.evenement({"type": "echange", "auteur": "medecin", "confirme": True,
                                              "texte": f"Urgence prise en charge par {app.ctx.regles.kb['prescripteurs'].get(medecin, {}).get('nom', medecin)}.",
                                              "donnees": {"urgence": False}})}
+        if chemin == "/api/medecin/poser_question":
+            return {"retour": app.evenement({"type": "poser_question", "auteur": "medecin", "medecin": medecin,
+                                             "question_id": int(c["question_id"]), "modifier": bool(c.get("modifier"))})}
+        if chemin == "/api/medecin/refuser_question":
+            return {"retour": app.evenement({"type": "refus_question", "auteur": "medecin", "question_id": int(c["question_id"])})}
+        if chemin == "/api/medecin/apercu":          # aperçu en pictogrammes, sans rien proposer ni envoyer
+            t = texte("texte")
+            with app.verrou:
+                r = app.ctx.pictogrammeur.traduire(t) if t else {"pictogrammes": [], "non_traduits": []}
+            return {"pictogrammes": r["pictogrammes"], "non_traduits": r["non_traduits"]}
+        if chemin == "/api/medecin/masquer_agent":   # message d'un agent écarté par le médecin (journalisé)
+            mid = int(c["message_id"])
+            with app.verrou:
+                app.messages_masques.add(mid)
+                app.ctx.journal.ajouter("medecin", "message_agent_masque", {"message": mid, "par": medecin})
+            return {"retour": "Message masqué."}
+        if chemin == "/api/medecin/document":        # photo d'ordonnance, facture, boîte, radio, analyse… (lue en arrière-plan)
+            return {"retour": app.ajouter_document(texte("nom") or "document", texte("type") or "autre",
+                                                   str(c.get("mime", ""))[:60], str(c.get("contenu", "")))}
         if chemin == "/api/medecin/retirer":
             return {"retour": app.evenement({"type": "retrait_message", "auteur": "medecin", "medecin": medecin,
                                              "decision_id": int(c["decision_id"]), "raison": texte("raison")})}

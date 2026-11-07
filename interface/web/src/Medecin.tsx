@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import {
   combinable, envoyer, ErreurApi, jetonMedecin, lire, urlPicto,
-  type Decision, type Echange, type MessageAgent, type Verdict, type VueMedecin,
+  type Decision, type DocumentPatient, type Echange, type MessageAgent, type Verdict, type VueMedecin,
 } from "./api";
 import { Bouton, Case, Champ, champ, ContexteLangue, cx, Dialogue, Panneau, Pastille, Picto, Statut, useLibelle, useRechercheSens, useNotifier, useSondage, Vide } from "./ui";
 import { Marque } from "./Marque";
@@ -99,6 +99,7 @@ const AGENTS: Record<string, { nom: string; icone: ReactNode }> = {
   autorite_sante: { nom: "Autorité de santé", icone: <Building2 size={15} /> },
   hopital: { nom: "Hôpital", icone: <Building2 size={15} /> },
   cellule_crise: { nom: "Cellule de crise", icone: <Building2 size={15} /> },
+  document: { nom: "Document du patient", icone: <FileText size={15} /> },
 };
 const agent = (cle: string) => AGENTS[cle] ?? { nom: cle.charAt(0).toUpperCase() + cle.slice(1).replace(/_/g, " "), icone: <Bot size={15} /> };
 
@@ -218,6 +219,74 @@ export default function EcranMedecin() {
   );
 }
 
+// ------------------------------------------------------------------ documents du patient
+const TYPES_DOC: [string, string][] = [["ordonnance", "Ordonnance (même manuscrite)"], ["facture", "Facture de pharmacie"],
+  ["traitement", "Boîte ou notice de médicament"], ["radio", "Radiographie, imagerie"], ["analyse", "Résultat d'analyse"],
+  ["compte_rendu", "Compte rendu médical"], ["autre", "Autre"]];
+
+function DocumentsPatient({ vue, occupe, poster }: { vue: VueMedecin; occupe: boolean; poster: Poster }) {
+  const jeton = useMemo(jetonMedecin, []);
+  const [type, setType] = useState("ordonnance");
+  const [envoi, setEnvoi] = useState(false);
+  const docs: DocumentPatient[] = vue.documents ?? [];
+  const ajouter = async (fichiers: FileList | null) => {
+    if (!fichiers) return;
+    setEnvoi(true);
+    for (const f of Array.from(fichiers)) {
+      const contenu = await new Promise<string>((ok, ko) => { const r = new FileReader(); r.onload = () => ok(String(r.result)); r.onerror = ko; r.readAsDataURL(f); });
+      await poster("/api/medecin/document", { nom: f.name, type, mime: f.type || "application/octet-stream", contenu });
+    }
+    setEnvoi(false);
+  };
+  const ouvrir = async (d: DocumentPatient) => {
+    const r = await fetch(`/api/medecin/document?id=${d.id}`, { headers: { "X-Jeton": jeton } });
+    if (r.ok) window.open(URL.createObjectURL(await r.blob()), "_blank", "noopener");
+  };
+  const confirmer = (d: DocumentPatient) => {
+    const donnees: Record<string, unknown> = {};
+    if (d.extraction.medicaments.length) donnees.medicaments_declares = d.extraction.medicaments.map((m) => m.nom).join(", ");
+    if (d.extraction.maladies.length) donnees.antecedents = d.extraction.maladies.join(", ");
+    if (d.extraction.allergies.length) donnees.allergies = d.extraction.allergies.join(", ");
+    poster("/api/medecin/faits", { donnees });
+  };
+  return (
+    <Panneau titre="Documents du patient" aide="Photo d'ordonnance (même manuscrite), facture, boîte de médicament, radio, analyse… Les agents la lisent ; ce qu'ils en tirent reste « à confirmer ».">
+      <div className="flex flex-col gap-2.5">
+        <div className="flex gap-2">
+          <select aria-label="Type de document" value={type} onChange={(e) => setType(e.target.value)} className={cx(champ, "h-9 flex-1")}>
+            {TYPES_DOC.map(([k, l]) => <option key={k} value={k}>{l}</option>)}
+          </select>
+          <label className={cx("inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg bg-brand px-3 text-sm font-medium text-white", (occupe || envoi) && "opacity-50")}>
+            <FileText size={15} />{envoi ? "Envoi…" : "Ajouter"}
+            <input id="documentPatient" type="file" accept="image/*,application/pdf,text/plain" capture="environment" multiple className="sr-only"
+              disabled={occupe || envoi} onChange={(e) => { ajouter(e.target.files); e.target.value = ""; }} />
+          </label>
+        </div>
+        <p className="text-2xs text-ink-muted">Une photo est envoyée au modèle en ligne pour être lue : patients fictifs uniquement. Sans modèle, elle est jointe au dossier et vous la lisez.</p>
+        {docs.slice().reverse().map((d) => (
+          <article key={d.id} className="rounded-lg border border-line p-2.5 text-xs" data-document={d.id}>
+            <div className="flex items-start justify-between gap-2">
+              <button className="text-left font-medium text-ink underline decoration-dotted underline-offset-2" onClick={() => ouvrir(d)}>{d.nom}</button>
+              <Pastille ton={d.extraction.statut === "lu" ? "ok" : d.extraction.statut === "en_cours" ? "action" : "warn"}>
+                {d.extraction.statut === "lu" ? "Lu" : d.extraction.statut === "en_cours" ? "Lecture…" : "Non lu"}</Pastille>
+            </div>
+            <p className="mt-1 text-ink-muted">{TYPES_DOC.find(([k]) => k === d.type)?.[1]}{d.extraction.par ? ` · lu par ${d.extraction.par}` : ""}</p>
+            {d.extraction.resume && <p className="mt-1 text-ink-soft">{d.extraction.resume}</p>}
+            {d.extraction.medicaments.length > 0 && <p className="mt-1 text-ink"><b>Médicaments :</b> {d.extraction.medicaments.map((m) => `${nomMedicament(m.nom)} ${m.dose} ${m.posologie}`.trim()).join(" ; ")}</p>}
+            {d.extraction.maladies.length > 0 && <p className="mt-0.5 text-ink"><b>Maladies :</b> {d.extraction.maladies.join(", ")}</p>}
+            {d.extraction.allergies.length > 0 && <p className="mt-0.5 text-ink"><b>Allergies :</b> {d.extraction.allergies.join(", ")}</p>}
+            {d.extraction.statut === "lu" && (d.extraction.medicaments.length + d.extraction.maladies.length + d.extraction.allergies.length) > 0 && (
+              <div className="mt-2 flex justify-end">
+                <Bouton taille="sm" variante="secondary" data-confirmer-document={d.id} disabled={occupe} icone={<Check size={14} />} onClick={() => confirmer(d)}>Confirmer dans la fiche</Bouton>
+              </div>
+            )}
+          </article>
+        ))}
+      </div>
+    </Panneau>
+  );
+}
+
 // ------------------------------------------------------------------ textes de loi cités par le juriste
 const ContexteLoi = createContext<(q: string) => void>(() => {});
 
@@ -297,7 +366,11 @@ function BarreHaute({ vue, jeton, medecin, setMedecin, onReinit, onLangue }:
               </span>
             </Pastille>
           ) : (
-            <Pastille ton="brand" icone={<Bot size={13} />}>{vue.mode === "simulé" ? "Agents en mode simulé" : `Agents : ${vue.mode}`}</Pastille>
+            <Pastille ton="brand" icone={<Bot size={13} />}>
+              <span id="modeAgents" title="Les agents (traducteur, juriste, assistant…) sont ceux de MEDIMCOM IA, avec leurs règles et leurs garde-fous. Le modèle de langage en ligne n'est qu'un outil de l'assistant : il ne décide rien seul.">
+                {vue.modele ? `Agents MEDIMCOM · modèle ${vue.modele.modele} (xAI)` : "Agents MEDIMCOM · règles écrites, sans modèle en ligne"}
+              </span>
+            </Pastille>
           )}
           {vue.reflexion_en_cours ? (
             <Pastille ton="brand" icone={<Loader2 size={13} className="animate-spin" />}>
@@ -405,6 +478,7 @@ function DossierPatient({ vue, occupe, poster }: { vue: VueMedecin; occupe: bool
         </div>
       </Panneau>
       <FichePatient occupe={occupe} poster={poster} />
+      <DocumentsPatient vue={vue} occupe={occupe} poster={poster} />
     </>
   );
 }
@@ -908,11 +982,13 @@ type Onglet = "agents" | "assistant" | "ordonnance" | "droit" | "crise";
 function Inspecteur({ vue, occupe, poster, medecin, onMaintenir }:
   { vue: VueMedecin; occupe: boolean; poster: Poster; medecin: string; onMaintenir: (id: number) => void }) {
   const suggestions = vue.suggestions.filter((s) => s.statut === "proposee_au_medecin");
+  const questionsAssistant = vue.questions.filter((q) => q.auteur !== "medecin" && q.statut === "en_attente").length;
   const alertes = vue.messages.filter((m) => m.type === "alerte").length;
+  const [brouillonRx, setBrouillonRx] = useState<null | { medicament: string; dose: string; posologie: string; n: number }>(null);
   const crise = vue.mesures.length + vue.incidents.length > 0;
   const onglets: { cle: Onglet; nom: string; icone: ReactNode; nombre?: number; ton?: "danger" }[] = [
     { cle: "agents", nom: tr("Agents"), icone: <Bot size={15} />, nombre: alertes || undefined, ton: "danger" },
-    { cle: "assistant", nom: tr("Assistant"), icone: <Sparkles size={15} />, nombre: suggestions.length || undefined },
+    { cle: "assistant", nom: tr("Assistant"), icone: <Sparkles size={15} />, nombre: (suggestions.length + questionsAssistant) || undefined },
     { cle: "ordonnance", nom: tr("Ordonnance"), icone: <Pill size={15} /> },
     { cle: "droit", nom: tr("Droit"), icone: <Gavel size={15} />, nombre: vue.lacunes.length || undefined },
     ...(crise ? [{ cle: "crise" as Onglet, nom: tr("Crise"), icone: <Siren size={15} /> }] : []),
@@ -935,8 +1011,10 @@ function Inspecteur({ vue, occupe, poster, medecin, onMaintenir }:
       </nav>
       <div className="flex-1 overflow-y-auto barre-fine xl:min-h-0">
         {onglet === "agents" && <OngletAgents vue={vue} occupe={occupe} poster={poster} />}
-        {onglet === "assistant" && <OngletAssistant vue={vue} occupe={occupe} poster={poster} />}
-        {onglet === "ordonnance" && <OngletOrdonnance vue={vue} occupe={occupe} poster={poster} medecin={medecin} onMaintenir={onMaintenir} />}
+        {onglet === "assistant" && <OngletAssistant vue={vue} occupe={occupe} poster={poster} medecin={medecin}
+          onPreremplir={(p) => { setBrouillonRx((b) => ({ ...p, n: (b?.n ?? 0) + 1 })); setOnglet("ordonnance"); }} />}
+        {onglet === "ordonnance" && <OngletOrdonnance vue={vue} occupe={occupe} poster={poster} medecin={medecin} onMaintenir={onMaintenir}
+          brouillon={brouillonRx} onPreremplir={(p) => setBrouillonRx((b) => ({ ...p, n: (b?.n ?? 0) + 1 }))} />}
         {onglet === "droit" && <OngletDroit vue={vue} />}
         {onglet === "crise" && <OngletCrise vue={vue} />}
       </div>
@@ -972,7 +1050,7 @@ function TexteAgent({ texte }: { texte: string }) {
   );
 }
 
-function CarteMessage({ m }: { m: MessageAgent }) {
+function CarteMessage({ m, onMasquer }: { m: MessageAgent; onMasquer?: () => void }) {
   const t = TYPE_MESSAGE[m.type] ?? TYPE_MESSAGE.information;
   const a = agent(m.de);
   const { entete, texte, refs, piste } = analyserMessage(m.contenu);
@@ -981,6 +1059,10 @@ function CarteMessage({ m }: { m: MessageAgent }) {
       <div className="mb-1.5 flex items-center gap-2">
         <span className="grid h-6 w-6 place-items-center rounded-md bg-canvas text-ink-soft">{a.icone}</span>
         <span className="text-[13px] font-semibold text-ink">{a.nom}</span>
+        {onMasquer && (
+          <button data-masquer-agent={m.id} onClick={onMasquer} title="Masquer ce message (enregistré au journal)" aria-label="Masquer ce message"
+            className="order-last rounded-md p-1 text-ink-faint hover:bg-canvas hover:text-ink"><X size={14} /></button>
+        )}
         <Pastille ton={t.ton} icone={t.icone} className="ml-auto">{t.nom}</Pastille>
       </div>
       {entete && <p className="text-xs font-semibold text-ink">{entete.replace(/#(\d+)/, "n° $1").replace(/,\s*$/, "")}</p>}
@@ -999,11 +1081,13 @@ function CarteMessage({ m }: { m: MessageAgent }) {
 
 function OngletAgents({ vue, occupe, poster }: { vue: VueMedecin; occupe: boolean; poster: Poster }) {
   const [q, setQ] = useState("");
-  const messages = vue.messages.slice().reverse();
+  const [caches, setCaches] = useState<Set<number>>(new Set());
+  const messages = vue.messages.filter((m) => !caches.has(m.id)).slice().reverse();
+  const masquer = (id: number) => { setCaches((c) => new Set(c).add(id)); poster("/api/medecin/masquer_agent", { message_id: id }); };
   return (
     <div className="flex flex-col">
       <div id="messages">
-        {messages.length ? messages.map((m) => <CarteMessage key={m.id} m={m} />)
+        {messages.length ? messages.map((m) => <CarteMessage key={m.id} m={m} onMasquer={() => masquer(m.id)} />)
           : <Vide icone={<Bot size={20} />} titre="Aucun message des agents" texte="Le juriste, l'assistant et le traducteur vous écrivent ici quand une décision les concerne." />}
       </div>
       <div className="sticky bottom-0 border-t border-line bg-surface p-4">
@@ -1020,16 +1104,32 @@ function OngletAgents({ vue, occupe, poster }: { vue: VueMedecin; occupe: boolea
   );
 }
 
-function OngletAssistant({ vue, occupe, poster }: { vue: VueMedecin; occupe: boolean; poster: Poster }) {
+function ApercuPictos({ texte }: { texte: string }) {
+  const jeton = useMemo(jetonMedecin, []);
+  const [r, setR] = useState<{ pictogrammes: string[]; non_traduits: string[] } | null>(null);
+  useEffect(() => { envoyer<{ pictogrammes: string[]; non_traduits: string[] }>("/api/medecin/apercu", { texte }, jeton).then(setR).catch(() => setR(null)); }, [texte, jeton]);
+  if (!r) return <p className="text-xs text-ink-faint">…</p>;
+  return (
+    <div className="mt-2">
+      <div className="flex flex-wrap gap-1.5">{r.pictogrammes.map((p, i) => <Picto key={i} id={p} taille={40} legende />)}</div>
+      {r.non_traduits.length > 0 && <p className="mt-1 text-2xs text-warn">Sans pictogramme : {r.non_traduits.join(", ")}</p>}
+    </div>
+  );
+}
+
+function OngletAssistant({ vue, occupe, poster, medecin, onPreremplir }:
+  { vue: VueMedecin; occupe: boolean; poster: Poster; medecin: string; onPreremplir: (p: { medicament: string; dose: string; posologie: string }) => void }) {
+  const [caches, setCaches] = useState<Set<number>>(new Set());
   // Alertes d'abord, puis les plus récentes
   const RANG: Record<string, number> = { alerte_urgence: 0, traitement_alternatif: 1, traitement: 2, question_manquante: 3, reponse: 4 };
-  const suggestions = vue.suggestions.filter((s) => s.statut === "proposee_au_medecin")
+  const suggestions = vue.suggestions.filter((s) => s.statut === "proposee_au_medecin" && !caches.has(s.id))
     .sort((a, b) => (RANG[a.type] ?? 5) - (RANG[b.type] ?? 5) || b.id - a.id);
-  // Questions que l'ASSISTANT veut faire poser (les vôtres sont dans la conversation)
-  const questions = vue.questions.filter((q) => q.auteur !== "medecin" && !["rejetee", "annulee"].includes(q.statut)).reverse();
-  const STATUT_Q: Record<string, { texte: string; ton: "ok" | "action" | "neutre" }> = {
-    en_attente: { texte: "À poser", ton: "action" }, posee: { texte: "Posée", ton: "neutre" }, repondue: { texte: "Répondue", ton: "ok" },
-  };
+  const ignorer = (id: number) => { setCaches((c) => new Set(c).add(id)); poster("/api/medecin/ignorer", { suggestion_id: id }); };
+  // Questions que l'ASSISTANT propose : elles attendent ici, le médecin les envoie ou les refuse (la conversation reste lisible)
+  const [qCaches, setQCaches] = useState<Set<number>>(new Set());
+  const aPoser = vue.questions.filter((q) => q.auteur !== "medecin" && q.statut === "en_attente" && !qCaches.has(q.id)).reverse();
+  const faites = vue.questions.filter((q) => q.auteur !== "medecin" && ["posee", "repondue"].includes(q.statut)).reverse().slice(0, 6);
+  const agirQ = (id: number, url: string, corps: object) => { setQCaches((c) => new Set(c).add(id)); poster(url, { question_id: id, medecin, ...corps }); };
   const horsLigne = vue.modele && !vue.modele.disponible;
   return (
     <div className="flex flex-col gap-5 p-4">
@@ -1038,39 +1138,67 @@ function OngletAssistant({ vue, occupe, poster }: { vue: VueMedecin; occupe: boo
         <span>{horsLigne
           ? <>L'assistant est actif en <b>mode règles</b> : {vue.modele?.modele} ne répond pas. Il surveille quand même chaque message, prescription et réponse du patient au regard de sa fiche ; nouvel essai du modèle toutes les 90 s.
               <details className="mt-1"><summary className="cursor-pointer font-medium">Pourquoi le modèle ne répond pas</summary>{vue.modele?.message}</details></>
-          : <>L'assistant suit la consultation en temps réel : chaque message, prescription et réponse du patient est confronté à sa fiche.</>}</span>
+          : <>L'assistant suit la consultation en temps réel : chaque message, prescription, document et réponse du patient est confronté à sa fiche.</>}</span>
       </p>
       <div>
-        <h3 className="mb-2 text-[13px] font-semibold text-ink">{tr('Suggestions')}</h3>
-        <p className="mb-3 text-xs text-ink-muted">L'assistant propose, vous décidez. Ignorer une suggestion est enregistré.</p>
+        <h3 className="mb-2 text-[13px] font-semibold text-ink">{tr("Questions à poser")}</h3>
+        <p className="mb-2 text-xs text-ink-muted">Proposées par l'assistant. Rien n'arrive dans la conversation tant que vous ne les envoyez pas.</p>
+        {aPoser.length ? (
+          <ul id="questionsAssistant" className="flex flex-col gap-2.5">
+            {aPoser.map((q) => (
+              <li key={q.id} className="rounded-xl border border-line p-3" data-question={q.id}>
+                <p className="text-[13px] font-medium text-ink">{q.question}</p>
+                <p className="text-xs text-ink-muted">{q.raison}</p>
+                <ApercuPictos texte={q.question} />
+                <div className="mt-2.5 flex flex-wrap justify-end gap-1.5">
+                  <Bouton taille="sm" variante="ghost" data-refuser-question={q.id} disabled={occupe} icone={<X size={14} />}
+                    onClick={() => agirQ(q.id, "/api/medecin/refuser_question", {})}>Refuser</Bouton>
+                  <Bouton taille="sm" variante="secondary" data-modifier-question={q.id} disabled={occupe} icone={<Languages size={14} />}
+                    title="La traduction arrive dans la conversation : vous la modifiez puis la validez"
+                    onClick={() => agirQ(q.id, "/api/medecin/poser_question", { modifier: true })}>Modifier d'abord</Bouton>
+                  <Bouton taille="sm" variante="success" data-envoyer-question={q.id} disabled={occupe} icone={<Send size={14} />}
+                    title="Envoyée en votre nom avec ces pictogrammes, après le contrôle du juriste"
+                    onClick={() => agirQ(q.id, "/api/medecin/poser_question", {})}>Envoyer</Bouton>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : <p className="text-[13px] text-ink-muted">L'assistant n'a pas de question en attente.</p>}
+        {faites.length > 0 && (
+          <ul className="mt-2 flex flex-col divide-y divide-line rounded-xl border border-line">
+            {faites.map((q) => (
+              <li key={q.id} className="flex items-center justify-between gap-3 px-3 py-2 text-xs">
+                <span className="text-ink-soft">{q.question}</span>
+                <Pastille ton={q.statut === "repondue" ? "ok" : "neutre"}>{q.statut === "repondue" ? "Répondue" : "Posée"}</Pastille>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <div>
+        <h3 className="mb-2 text-[13px] font-semibold text-ink">{tr("Suggestions")}</h3>
+        <p className="mb-3 text-xs text-ink-muted">L'assistant propose, vous décidez. « Ignorer » masque aussitôt la suggestion (enregistré au journal).</p>
         <div id="suggestions" className="flex flex-col gap-2.5">
           {suggestions.length ? suggestions.map((s) => {
             const [source] = s.source.split(" — ").slice(-1);
             return (
-              <article key={s.id} className="rounded-xl border border-line p-3.5">
+              <article key={s.id} className={cx("rounded-xl border p-3.5", s.type === "alerte_urgence" ? "border-danger/40 bg-danger-50/40" : "border-line")}>
                 <p className="whitespace-pre-line text-sm font-medium leading-snug text-ink">{s.texte}</p>
                 <p className="mt-1 text-[13px] text-ink-muted">{s.raison}</p>
-                <div className="mt-2.5 flex items-end justify-between gap-3">
-                  <p className="flex items-start gap-1.5 text-xs text-ink-muted"><BookOpen size={13} className="mt-px shrink-0" />{source}</p>
-                  <Bouton taille="sm" variante="ghost" data-ignorer={s.id} disabled={occupe} onClick={() => poster("/api/medecin/ignorer", { suggestion_id: s.id })}>{tr('Ignorer')}</Bouton>
+                <div className="mt-2.5 flex flex-wrap items-end justify-between gap-2">
+                  <p className="flex items-start gap-1.5 text-xs text-ink-muted"><BookOpen size={13} className="mt-px shrink-0" /><Refs texte={source} /></p>
+                  <div className="flex gap-1.5">
+                    {s.prescription && (
+                      <Bouton taille="sm" variante="secondary" data-preremplir={s.id} disabled={occupe} icone={<Pill size={14} />}
+                        onClick={() => s.prescription && onPreremplir(s.prescription)}>Préremplir l'ordonnance</Bouton>
+                    )}
+                    <Bouton taille="sm" variante="ghost" data-ignorer={s.id} disabled={occupe} icone={<X size={14} />} onClick={() => ignorer(s.id)}>{tr("Ignorer")}</Bouton>
+                  </div>
                 </div>
               </article>
             );
           }) : <Vide icone={<Sparkles size={20} />} titre="Aucune suggestion en cours" />}
         </div>
-      </div>
-      <div>
-        <h3 className="mb-2 text-[13px] font-semibold text-ink">{tr('Questions à poser')}</h3>
-        {questions.length ? (
-          <ul className="flex flex-col divide-y divide-line rounded-xl border border-line">
-            {questions.map((q) => (
-              <li key={q.id} className="flex items-start justify-between gap-3 px-3.5 py-2.5">
-                <div className="min-w-0"><p className="text-[13px] font-medium text-ink">{q.question}</p><p className="text-xs text-ink-muted">{q.raison}</p></div>
-                <Pastille ton={(STATUT_Q[q.statut] ?? STATUT_Q.en_attente).ton}>{(STATUT_Q[q.statut] ?? STATUT_Q.en_attente).texte}</Pastille>
-              </li>
-            ))}
-          </ul>
-        ) : <p className="text-[13px] text-ink-muted">L'assistant n'a pas de question en attente.</p>}
       </div>
     </div>
   );
@@ -1099,15 +1227,32 @@ function DetailVerdict({ v }: { v?: Verdict }) {
   );
 }
 
-function OngletOrdonnance({ vue, occupe, poster, medecin, onMaintenir }:
-  { vue: VueMedecin; occupe: boolean; poster: Poster; medecin: string; onMaintenir: (id: number) => void }) {
+function OngletOrdonnance({ vue, occupe, poster, medecin, onMaintenir, brouillon, onPreremplir }:
+  { vue: VueMedecin; occupe: boolean; poster: Poster; medecin: string; onMaintenir: (id: number) => void;
+    brouillon: null | { medicament: string; dose: string; posologie: string; n: number };
+    onPreremplir: (p: { medicament: string; dose: string; posologie: string }) => void }) {
   const [f, setF] = useState({ medicament: "", dose: "", posologie: "", mode: "presentiel", remplace: "", suggestion: false });
+  useEffect(() => {                         // « Préremplir l'ordonnance » depuis une proposition de l'assistant
+    if (brouillon) setF((x) => ({ ...x, medicament: brouillon.medicament, dose: brouillon.dose, posologie: brouillon.posologie, suggestion: true }));
+  }, [brouillon]);
+  const propositions = vue.suggestions.filter((s) => s.statut === "proposee_au_medecin" && s.prescription);
   const maj = (k: keyof typeof f) => (v: string | boolean) => setF((x) => ({ ...x, [k]: v }));
   const prescriptions = vue.decisions.filter((d) => d.type === "prescription" || d.type === "partage_donnees").slice().reverse();
   const actives = vue.decisions.filter((d) => d.type === "prescription" && d.statut !== "annulee");
   const verdictDe = (id: number) => vue.verdicts.filter((v) => v.decision_id === id).slice(-1)[0];
   return (
     <div className="flex flex-col gap-5 p-4">
+      {propositions.length > 0 && (
+        <div id="propositionsAssistant" className="rounded-xl bg-action-50/60 p-3 ring-1 ring-action/20">
+          <p className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-action"><Sparkles size={13} />Proposition de l'assistant (contrôlée par le juriste pour ce patient)</p>
+          {propositions.map((s) => s.prescription && (
+            <div key={s.id} className="flex flex-wrap items-center justify-between gap-2 py-1 text-[13px]">
+              <span className="text-ink">{nomMedicament(s.prescription.medicament)} {s.prescription.dose}{s.prescription.posologie ? `, ${s.prescription.posologie}` : ""}</span>
+              <Bouton taille="sm" variante="secondary" data-preremplir={s.id} disabled={occupe} onClick={() => s.prescription && onPreremplir(s.prescription)}>Préremplir</Bouton>
+            </div>
+          ))}
+        </div>
+      )}
       <div className="rounded-xl border border-line p-3.5">
         <div className="flex flex-col gap-3">
           <div className="grid grid-cols-[1fr_120px] gap-3">

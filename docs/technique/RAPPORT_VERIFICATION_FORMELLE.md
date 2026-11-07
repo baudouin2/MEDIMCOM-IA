@@ -1,6 +1,6 @@
 # Rapport de vérification formelle — MEDIMCOM IA
 
-Généré par `outils/verifier_formel.py` le 2026-11-07 en 171 s. Méthodes, sémantique et références : [`METHODES_FORMELLES.md`](METHODES_FORMELLES.md).
+Généré par `outils/verifier_formel.py` le 2026-11-07 en 167 s. Méthodes, sémantique et références : [`METHODES_FORMELLES.md`](METHODES_FORMELLES.md).
 
 **Résultat : toutes les propriétés sont vérifiées.**
 
@@ -100,7 +100,7 @@ Généré par `outils/verifier_formel.py` le 2026-11-07 en 171 s. Méthodes, sé
 | ✅ | `U-EN-TRAITEMENT-CONFORME (SMT)` | L'explication validée d'une prescription conforme ou maintenue peut partir au patient. | preuve SMT (Z3), domaine non borné | ∞ | fiches DHA21-4.4, CM90-A2 |
 | ✅ | `envoi_patient.X` | Validation croisée : l'encodage logique et le moteur réel rendent le même verdict | comparaison sur 648 entrées | 648 | N-version / double implémentation |
 
-**Exploration du système réel** : 600 suites, 6006 événements (dont des tentatives d'abus), 61347 lignes de journal, 181 messages envoyés au patient, 23 maintiens acceptés et 252 refusés ; verdicts : A_REVOIR 372, BLOQUE 1720, CONFORME 446, PREUVES_INSUFFISANTES 225. Aucune violation des propriétés du moniteur.
+**Exploration du système réel** : 600 suites, 5979 événements (dont des tentatives d'abus), 60282 lignes de journal, 186 messages envoyés au patient, 23 maintiens acceptés et 247 refusés ; verdicts : A_REVOIR 354, BLOQUE 1688, CONFORME 423, PREUVES_INSUFFISANTES 221. Aucune violation des propriétés du moniteur.
 
 ## Cameroun (kb/regles_cm.json)
 
@@ -180,7 +180,7 @@ Généré par `outils/verifier_formel.py` le 2026-11-07 en 171 s. Méthodes, sé
 | ✅ | `U-EN-TRAITEMENT-CONFORME (SMT)` | L'explication validée d'une prescription conforme ou maintenue peut partir au patient. | preuve SMT (Z3), domaine non borné | ∞ | fiches DHA21-4.4, CM90-A2 |
 | ✅ | `envoi_patient.X` | Validation croisée : l'encodage logique et le moteur réel rendent le même verdict | comparaison sur 648 entrées | 648 | N-version / double implémentation |
 
-**Exploration du système réel** : 600 suites, 5861 événements (dont des tentatives d'abus), 59922 lignes de journal, 166 messages envoyés au patient, 33 maintiens acceptés et 214 refusés ; verdicts : A_REVOIR 476, BLOQUE 1527, CONFORME 350, PREUVES_INSUFFISANTES 253. Aucune violation des propriétés du moniteur.
+**Exploration du système réel** : 600 suites, 5824 événements (dont des tentatives d'abus), 58741 lignes de journal, 169 messages envoyés au patient, 34 maintiens acceptés et 213 refusés ; verdicts : A_REVOIR 454, BLOQUE 1496, CONFORME 336, PREUVES_INSUFFISANTES 235. Aucune violation des propriétés du moniteur.
 
 ## Propriétés du moniteur (journal)
 

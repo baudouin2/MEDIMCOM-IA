@@ -18,6 +18,7 @@ import json
 from pathlib import Path
 
 from medimcom.journal import Journal
+from medimcom.responsabilites import rapport
 
 COULEURS = {"traducteur": "#2A6F97", "assistant": "#3C8A5A", "juriste": "#C2571A", "medecin": "#5B4B8A",
             "autorite_sante": "#8A3B5B", "hopital": "#2F7F7F", "cellule_crise": "#7A6A1F", "coordinateur": "#56656D"}
@@ -59,6 +60,42 @@ def corps_ligne(l: dict) -> str:
     if isinstance(c, str):
         return e(_court(c, 800))
     return f"<code>{e(_court(c, 500))}</code>"
+
+
+def _humain(h: dict) -> str:
+    just = f" : « {e(str(h['justification']))} »" if h.get("justification") else ""
+    return f"<div class='ref'>l.{h['ligne']} {e(str(h['par']))} {e(h['action'])}{just}</div>"
+
+
+def html_rapport(r: dict) -> str:
+    """Rapport de responsabilités (medimcom/responsabilites.py), en tête du journal."""
+    b = r["bilan"]
+    cartes = "".join(f"<div class='k'><b>{v}</b><span>{e(t)}</span></div>" for t, v in (
+        ("décisions suivies", b["decisions"]), ("envoyées au patient", b["envoyes"]), ("bloquées par le juriste", b["bloques_par_le_juriste"]),
+        ("décisions humaines signées", b["decisions_humaines"]), ("défaillances de l'IA", b["defaillances"]),
+        ("actions refusées par un garde-fou", b["actions_refusees"]), ("lacunes du droit", b["lacunes"]), ("événements de crise", b["evenements_de_crise"])))
+    lignes = "".join(
+        f"<tr><td>#{d['id']}</td><td>{e(str(d['type']))}</td><td>{e(_court(str(d['texte'] or ''), 70))}</td><td>{e(str(d['auteur']))}</td>"
+        f"<td>{e(d['dernier_verdict']['verdict']) if d['dernier_verdict'] else '—'}"
+        f"<div class='ref'>{e(', '.join(d['dernier_verdict']['bases'])) if d['dernier_verdict'] else ''}"
+        f"{(' · ' + e(' ; '.join(d['dernier_verdict']['references']))) if d['dernier_verdict'] and d['dernier_verdict']['references'] else ''}</div></td>"
+        f"<td>{e(d['responsabilite'])}{''.join(_humain(h) for h in d['humains'])}</td>"
+        f"<td>{e(d['fin'] or '—')}</td></tr>" for d in r["chaines"])
+    defs = "".join(f"<li><span class='n'>l.{x['ligne']}</span> <b>{e(x['quoi'])}</b> ({e(x['agent'])}) {e(x['detail'])}</li>" for x in r["defaillances"][:60])
+    refus = "".join(f"<li><b>{e(a)}</b> : {n} action(s) refusée(s) — ex. {e(r['exemples_refus'].get(a, ''))}</li>" for a, n in r["refus_par_agent"].items())
+    lac = "".join(f"<li><span class='n'>l.{x['ligne']}</span> <b>{e(str(x['id'] or ''))} {e(str(x['sujet'] or ''))}</b> — {e(x['detail'])}</li>" for x in r["lacunes"])
+    cri = "".join(f"<li><span class='n'>l.{x['ligne']}</span> <b>{e(x['agent'])}</b> {e(x['type'])} : {e(x['detail'])}</li>" for x in r["crise"][:40])
+    return f"""<section class="rapport"><h2>Responsabilités et défaillances</h2>
+<p class="ref">Calculé à partir du journal chaîné ci-dessous (numéros de ligne « l. ») : rien n'est ajouté ni résumé à la main.
+Aucun message n'atteint le patient sans la validation nommée d'un médecin ; le juriste peut bloquer, jamais envoyer.</p>
+<div class="kpi">{cartes}</div>
+<h3>Chaîne de décision (proposé par → jugé par le juriste → décidé par)</h3>
+<div class="tab"><table><tr><th>#</th><th>Objet</th><th>Contenu</th><th>Proposé par</th><th>Juriste (base, textes)</th><th>Responsabilité</th><th>Issue</th></tr>{lignes or '<tr><td colspan=7>Aucune décision.</td></tr>'}</table></div>
+<h3>Défaillances de l'IA</h3><ul>{defs or '<li>Aucune.</li>'}</ul>
+<h3>Actions des agents refusées par un garde-fou</h3><ul>{refus or '<li>Aucune.</li>'}</ul>
+<h3>Lacunes du droit (situations qu'aucun texte lu ne règle)</h3><ul>{lac or '<li>Aucune.</li>'}</ul>
+<h3>Crise : mesures, incidents, refus faute de base légale</h3><ul>{cri or '<li>Aucun événement de crise.</li>'}</ul>
+</section>"""
 
 
 def exporter(chemin: Path, sortie: Path) -> str:
@@ -106,11 +143,17 @@ h1{{font-size:22px;margin:4px 0 8px}} h2{{font-size:15px;margin:18px 0 6px;color
 .t{{color:var(--doux);font-size:12px}} .c ul{{margin:4px 0 0 18px;padding:0}} .ref{{color:var(--doux);font-size:12px}}
 .v{{font-weight:700}} .tag{{background:#EEF2F4;border-radius:4px;padding:0 5px;font-size:12px}} .obl{{color:#4A5A62}}
 code{{font-size:12px;background:#EEF2F4;border-radius:4px;padding:0 3px;word-break:break-word}}
+.rapport{{background:var(--carte);border:1px solid var(--trait);border-radius:8px;padding:10px 14px;margin:10px 0}}
+.rapport h3{{font-size:13.5px;margin:14px 0 4px}} .kpi{{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}}
+.k{{background:var(--fond);border-radius:6px;padding:6px 8px}} .k b{{display:block;font-size:18px}} .k span{{font-size:12px;color:var(--doux)}}
+.tab{{overflow-x:auto}} table{{border-collapse:collapse;width:100%;font-size:12.5px}} th,td{{border-bottom:1px solid var(--trait);padding:4px 6px;text-align:left;vertical-align:top}}
 @media (max-width:700px){{.l{{grid-template-columns:32px 1fr;}} .t{{grid-column:2}} .c{{grid-column:1/3}}}}
 </style></head><body><main>
 <h1>Journal MEDIMCOM IA</h1>
 <div class="etat">{'✔' if ok else '✘'} {e(etat)} — {len(j.lignes)} lignes chaînées par empreintes SHA-256 ({e(chemin.name)})</div>
 <div class="conf"><b>Configuration :</b> <code>{e(json.dumps(conf, ensure_ascii=False)) if conf else 'non enregistrée'}</code></div>
+{html_rapport(rapport(j.lignes))}
+<h2>Journal complet</h2>
 <div class="filtres"><div><button id="resume">Vue résumée</button> <button id="tout">Tout afficher</button></div>
 <div><b>Agents :</b> {filtres}</div><div><b>Types :</b> {filtres_t}</div></div>
 {''.join(h)}

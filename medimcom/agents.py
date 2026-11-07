@@ -42,6 +42,9 @@ class Contexte:
     reessai_s: float = 90.0             # un modèle hors service est réessayé après ce délai (clé corrigée, réseau revenu)
     etat_modele: dict = field(default_factory=dict)          # modèle -> {"disponible": bool, "message": str}
     langue_medecin: str = "fr"          # langue d'expression choisie par le médecin (fr, en, ar)
+    # Questions de l'assistant : traduites d'office dans la conversation (scénarios, tests) ou seulement quand le médecin
+    # les choisit dans l'onglet Assistant (écran médecin : la conversation reste lisible)
+    questions_assistant_auto: bool = True
     pictogrammeur: object = field(default_factory=LexiquePictogrammes)
     corpus: object = None               # textes officiels complets et fiches OMS de base_v2 (medimcom.base_v2.Corpus), si présents
     interrompre: object = None          # fonction : vrai si un humain attend (l'agent en ligne cède alors la place)
@@ -173,14 +176,19 @@ class Agent:
             if erreur:
                 res = f"Refusé : {erreur}"
             else:
+                garde = self.garde_fou_outil(outil, args)
                 try:
-                    res = self.outils[outil][0](**args)
+                    res = garde or self.outils[outil][0](**args)
                 except (TypeError, ValueError) as e:
                     res = f"Refusé : arguments invalides pour {outil} ({e})."
         self.ctx.journal.ajouter(self.nom, "action", {"outil": outil, "arguments": args, "resultat": res})
         if self.ctx.verbeux and outil not in ("lire_dossier", "terminer"):
             print(f"      ↳ {outil}({_court(args)}) → {_court(res)}")
         return res
+
+    def garde_fou_outil(self, outil: str, args: dict) -> str | None:
+        """Contrôle déterministe d'une action avant qu'elle ne s'exécute (surchargé par les agents) : None = permis."""
+        return None
 
     # ------------------------------------------------------------------ boucle
     def tour(self) -> bool:
@@ -334,7 +342,11 @@ class Agent:
                     self.ctx.journal.ajouter(self.nom, "boucle_detectee", {"outil": nom, "arguments": args})
                     fin = True
                 else:
-                    res = self.executer(nom, args)
+                    self._par_modele = True       # garde-fous propres aux actions décidées par le modèle en ligne
+                    try:
+                        res = self.executer(nom, args)
+                    finally:
+                        self._par_modele = False
                     agi = agi or (nom not in self.LECTURE_SEULE and not str(res).startswith("Refusé"))
                 messages.append({"role": "tool", "tool_call_id": i, "name": nom, "content": _court(res, 3000)})
                 fin = fin or nom == "terminer"
@@ -409,7 +421,12 @@ TES MESSAGES AU MÉDECIN sont lus pendant la consultation : CLAIRS ET COURTS. Pr
 savoir ou faire (moins de 20 mots) ; au plus deux phrases ensuite pour le pourquoi. Pas de répétition d'une alerte
 déjà envoyée. Le juriste bloque lui-même, avant toute validation, les messages dangereux (incitation à se faire du
 mal, injures) et les consignes de médicament sans ordonnance : ne répète pas son blocage ; ajoute seulement ce qui
-est utile cliniquement. Numéro d'urgence : 998 (ambulance) aux Émirats ; dans un autre pays, n'en cite aucun."""
+est utile cliniquement. Numéro d'urgence : 998 (ambulance) aux Émirats ; dans un autre pays, n'en cite aucun.
+NE REDEMANDE JAMAIS une information CONFIRMÉE dans l'état du patient (marquée confirmé) et ne la remplace pas. Ne parle
+pas de grossesse à un homme, ni à une patiente dont la non-grossesse est confirmée.
+PROPOSE DES TRAITEMENTS : à partir des symptômes, de la fiche et des documents du patient, propose au médecin une piste
+de traitement SOURCÉE (outil suggerer_au_medecin, type traitement), en indiquant médicament, dose et rythme ; le juriste la
+contrôle pour ce patient et le médecin décide."""
 
     def _outils_propres(self):
         d = self.ctx.dossier
@@ -423,14 +440,71 @@ est utile cliniquement. Numéro d'urgence : 998 (ambulance) aux Émirats ; dans 
                                           _schema("demander_question_patient",
                                                   "Faire poser une question au patient (traduite en pictogrammes, validée par le médecin).",
                                                   {"question": S, "raison": S, "cle": S}, ["question", "raison"])),
-            "suggerer_au_medecin": (lambda type, texte, raison, source: d.ajouter_suggestion(self.nom, type, texte, raison, source),
-                                    _schema("suggerer_au_medecin", "Proposer une suggestion au médecin (il valide ou ignore).",
+            "suggerer_au_medecin": (self._suggerer,
+                                    _schema("suggerer_au_medecin", "Proposer une suggestion au médecin (il valide ou ignore). Pour un "
+                                            "traitement, joindre « prescription » (médicament, dose, rythme) : le médecin peut "
+                                            "préremplir l'ordonnance, que le juriste contrôle.",
                                             {"type": {"type": "string", "enum": ["alerte_urgence", "question_manquante", "reponse", "traitement", "traitement_alternatif"]},
-                                             "texte": S, "raison": S, "source": S}, ["type", "texte", "raison", "source"])),
+                                             "texte": S, "raison": S, "source": S,
+                                             "prescription": {"type": "object", "properties": {"medicament": S, "dose": S, "posologie": S}}},
+                                            ["type", "texte", "raison", "source"])),
             "retirer_suggestion": (lambda id, raison: d.retirer_suggestion(self.nom, id, raison),
                                    _schema("retirer_suggestion", "Retirer une de tes suggestions devenue inutile ou dangereuse.",
                                            {"id": I, "raison": S}, ["id", "raison"])),
         }
+
+    def _suggerer(self, type, texte, raison, source, prescription=None):
+        res = self.ctx.dossier.ajouter_suggestion(self.nom, type, texte, raison, source)
+        if isinstance(prescription, dict) and prescription.get("medicament"):
+            s = self.ctx.dossier.suggestions[max(self.ctx.dossier.suggestions)]
+            s["prescription"] = {k: str(prescription.get(k) or "")[:120] for k in ("medicament", "dose", "posologie")}
+        return res
+
+    # Piste de traitement symptomatique, en premier choix puis en alternative ; chacune est contrôlée par le moteur du
+    # juriste pour CE patient (âge, grossesse, allergies, maladies) avant d'être proposée. Doses de l'adulte seulement.
+    PISTES_SYMPTOMES = [
+        ("paracetamol", "500 mg", "toutes les 6 heures si besoin, 4 fois par jour au maximum"),
+        ("ibuprofene", "400 mg", "toutes les 8 heures au cours d'un repas, 3 fois par jour au maximum"),
+    ]
+
+    def _piste_traitement(self):
+        """Douleur ou fièvre et aucune prescription : piste de traitement sourcée, contrôlée par le juriste."""
+        d = self.ctx.dossier
+        if not (self.val("douleur") is True or self.val("fievre") is True):
+            return
+        if any(x.get("type") == "prescription" and x["statut"] != "annulee" for x in d.decisions.values()):
+            return
+        cle = ("piste", d.etat_version)
+        if cle in self._veilles or any(s["type"] == "traitement" and s["statut"] == "proposee_au_medecin" and s["auteur"] == self.nom
+                                       for s in d.suggestions.values()):
+            return
+        self._veilles.add(cle)
+        age = self.val("age")
+        ecartes = []
+        for nom, dose, rythme in self.PISTES_SYMPTOMES:
+            r = self.ctx.regles.risques_medicament(nom, d.etat)
+            motifs = [c for c in r["constats"] if c["niveau"] in ("BLOQUE", "A_REVOIR")]
+            if motifs:
+                ecartes.append(f"{nom} écarté : " + motifs[0]["detail"].split(". ")[0].rstrip("."))
+                continue
+            fiches = r.get("fiches_dose_max") or []
+            source = " ; ".join(self.ctx.regles.base.citer_court(f) for f in fiches) or "-"
+            enfant = isinstance(age, (int, float)) and age < 12
+            symptome = "douleur" if self.val("douleur") is True else "fièvre"
+            texte = (f"Piste de traitement pour la {symptome} : {nom}"
+                     + (f" {dose}, {rythme}" if not enfant else " (enfant : dose selon le poids, à fixer par vous)")
+                     + (f" ; sans dépasser {r['dose_max_mg']} mg par jour chez l'adulte" if r.get("dose_max_mg") and not enfant else "")
+                     + ".\nContrôlé par le moteur du juriste pour ce patient : aucune contre-indication connue."
+                     + ("\n" + " ; ".join(ecartes) + "." if ecartes else "")
+                     + "\nVous décidez : « Préremplir l'ordonnance » pour l'ajuster et la prescrire.")
+            yield (f"Le patient signale une {symptome} et rien n'est prescrit : je propose une piste sourcée, contrôlée pour lui.",
+                   "suggerer_au_medecin", {"type": "traitement", "texte": texte, "raison": self._raison_fiche(), "source": source,
+                                           "prescription": {"medicament": nom, "dose": "" if enfant else dose, "posologie": "" if enfant else rythme}})
+            return
+        if ecartes:
+            yield ("Aucun antalgique simple n'est sans risque pour ce patient : je le dis au médecin.", "suggerer_au_medecin",
+                   {"type": "traitement", "texte": "Aucun antalgique simple sans contre-indication pour ce patient.\n• " + "\n• ".join(ecartes)
+                    + ".\nAvis médical ; traitement non médicamenteux à envisager.", "raison": self._raison_fiche(), "source": "-"})
 
     def veille_clinique(self):
         """Veille DÉTERMINISTE (sans modèle, instantanée), indépendante de Grok : l'assistant suit TOUT ce qui passe et
@@ -460,7 +534,7 @@ est utile cliniquement. Numéro d'urgence : 998 (ambulance) aux Émirats ; dans 
                 manque = ", ".join(CHAMPS_LISIBLES.get(m, m.replace("_", " ")) for m in manquants) or "des informations"
                 a_demander = [m for m in manquants if m in QUESTIONS_CHAMPS]
                 texte = (f"Avant de prescrire {med}, il manque : {manque}.\n"
-                         + ("Je fais poser la question au patient (à valider dans la conversation) ; vous pouvez aussi remplir la fiche."
+                         + ("J'ai préparé la question pour le patient (onglet Assistant, « Questions à poser ») ; vous pouvez aussi remplir la fiche."
                             if a_demander else "Complétez la fiche ; je revérifie aussitôt."))
                 raison = f"Le juriste ne peut pas conclure sans ces informations (prescription #{did})."
                 for m in a_demander:          # l'assistant obtient l'information lui-même, auprès du patient
@@ -602,6 +676,8 @@ est utile cliniquement. Numéro d'urgence : 998 (ambulance) aux Émirats ; dans 
                            "risqué pour lui : je le signale.", "suggerer_au_medecin",
                            {"type": "traitement_alternatif", "texte": texte, "raison": self._raison_fiche(),
                             "source": " ; ".join(dict.fromkeys(c["reference_courte"] for c in motifs)) or "-"})
+        # 10. Douleur ou fièvre sans traitement : piste de traitement sourcée et contrôlée
+        yield from self._piste_traitement()
         # 4. Traitement en cours sans nom de médicament : impossible de vérifier les interactions
         tt = self.val("traitements_en_cours")
         if isinstance(tt, str) and tt.strip() and normaliser_simple(tt) not in ("aucun", "non", "rien", "neant", "none"):
@@ -649,9 +725,31 @@ est utile cliniquement. Numéro d'urgence : 998 (ambulance) aux Émirats ; dans 
                           + (f" (maximum {maxi} mg par jour chez l'adulte)." if maxi else "."))
         return texte
 
+    GROSSESSE = re.compile(r"grossesse|enceinte|pregnan|test de grossesse|β-?hcg|beta-?hcg|حمل", re.I)
+
+    def garde_fou_outil(self, outil, args):
+        """Le modèle en ligne ne doit pas insister sur une question réglée : parler de grossesse à un homme, ou à une
+        patiente dont la non-grossesse est confirmée, est inutile et blessant (retour d'usage du 7 novembre)."""
+        if not getattr(self, "_par_modele", False) or outil not in ("suggerer_au_medecin", "demander_question_patient", "envoyer_message"):
+            return None
+        texte = " ".join(str(args.get(k, "")) for k in ("texte", "question", "contenu"))
+        if not self.GROSSESSE.search(texte):
+            return None
+        sexe, g = self.ctx.dossier.etat.get("sexe"), self.ctx.dossier.etat.get("grossesse")
+        if sexe and sexe["valeur"] == "M":
+            return "Refusé : le patient est un homme ; ne pas parler de grossesse."
+        if g and g["confirme"] and g["valeur"] is False:
+            return "Refusé : la patiente n'est pas enceinte (information confirmée) ; ne pas insister sur la grossesse."
+        return None
+
     def _maj_etat(self, cle, valeur, source, confirme=False):
-        """Garde-fou : l'assistant ne peut pas « confirmer » lui-même un fait que personne n'a rapporté."""
+        """Garde-fou : l'assistant ne peut pas « confirmer » lui-même un fait que personne n'a rapporté, ni remplacer
+        par une valeur NON confirmée un fait que le médecin ou le patient a confirmé."""
         d = self.ctx.dossier
+        actuel = d.etat.get(cle)
+        if actuel and actuel["confirme"] and not confirme and str(actuel["valeur"]).lower() != str(valeur).lower():
+            return (f"Refusé : « {cle} » est déjà confirmé ({actuel['valeur']!r}, source : {actuel.get('source', '?')}). "
+                    "Une valeur non confirmée ne le remplace pas ; signalez la contradiction au médecin si besoin.")
         rapporte = any(e["confirme"] and str(e["donnees"].get(cle)).lower() == str(valeur).lower()
                        for e in d.fil if cle in e["donnees"])
         res = d.maj_etat(self.nom, cle, valeur, source, bool(confirme) and rapporte)
@@ -1250,6 +1348,8 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
                 yield from self._signaler_manques()
         # 1. Questions de l'assistant ou du médecin à faire traduire
         for q in d.questions_a_poser:
+            if q.get("auteur") != "medecin" and not self.ctx.questions_assistant_auto and not q.get("autorisee"):
+                continue                       # le médecin la choisira (ou la refusera) dans l'onglet Assistant
             if q["statut"] == "en_attente" and not any(x.get("source_question") == q["id"] and x["statut"] not in ("rejete",) for x in envois):
                 yield (f"L'assistant veut poser « {q['question']} » : je la traduis et la soumets au médecin.",
                        "proposer_au_medecin", {"texte": q["question"], "contenu_type": "question", "question_id": q["id"]})

@@ -152,6 +152,23 @@ Un message sans aucun pictogramme ne part jamais (le patient ne verrait rien).
 - Traduction : mots collés (« enpharmacie »), fautes sur les mots longs (« erghotherapeute »), « ou » de choix
   distingué de « où » de lieu.
 
+## Retour d'usage (7 novembre, 3) : ce qui a changé
+
+- **Grossesse** : le modèle en ligne ne peut plus parler de grossesse à un homme ni à une patiente dont la non-grossesse
+  est confirmée (garde-fou sur ses actions), ni remplacer un fait confirmé par le médecin par une valeur « à confirmer ».
+- **Questions de l'assistant** : elles restent dans l'onglet Assistant, avec leur aperçu en pictogrammes ; le médecin
+  les envoie (validées en son nom après le contrôle du juriste), les modifie d'abord, ou les refuse. La conversation reste lisible.
+- **Propositions de traitement** : douleur ou fièvre sans traitement -> piste sourcée (paracétamol, sinon ibuprofène),
+  contrôlée par le moteur du juriste pour ce patient ; « Préremplir l'ordonnance ». Enfant : dose selon le poids, fixée
+  par le médecin (aucune fiche pédiatrique dans la base).
+- **Documents du patient** : photo d'ordonnance manuscrite, facture, boîte, radio, analyse, PDF. Lus par le modèle en
+  ligne (images) ou directement (texte, PDF) ; les informations extraites entrent « à confirmer » et sont vérifiées par
+  l'assistant (risques pour ce patient). Seule l'empreinte SHA-256 du document est inscrite au journal.
+- **Masquer** un message d'un agent ou une suggestion : un clic, effet immédiat, enregistré au journal.
+- **Journal** : rapport « Responsabilités et défaillances » en tête (chaîne proposé -> jugé -> décidé, décisions humaines
+  signées, défaillances de l'IA, actions refusées par un garde-fou, lacunes du droit, événements de crise).
+- **Bandeau** : « Agents MEDIMCOM · modèle grok-4.7 (xAI) » : les agents sont ceux de MEDIMCOM IA ; le modèle n'est qu'un outil.
+
 ## Limites (à dire au jury)
 
 - **Références étrangères** : ce sont des notices américaines. Un déploiement aux Émirats doit les remplacer par les notices

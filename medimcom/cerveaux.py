@@ -149,6 +149,16 @@ class CerveauSecours:
             messages.append(f"{c.nom} : {m}")
         return False, " ; ".join(messages)
 
+    def lire_document(self, *a, **k) -> str:
+        erreurs = []
+        for c in self.cerveaux:
+            if hasattr(c, "lire_document"):
+                try:
+                    return c.lire_document(*a, **k)
+                except Exception as e:  # noqa: BLE001
+                    erreurs.append(f"{c.nom} : {e}")
+        raise RuntimeError("aucun fournisseur n'a pu lire le document — " + " | ".join(erreurs))
+
     def chat(self, messages: list[dict], outils: list[dict]) -> dict:
         erreurs = []
         for c in self.cerveaux:
@@ -283,6 +293,24 @@ class CerveauOpenAI:
                 return True, f"Modèle « {demande} » indisponible pour cette clé : « {remplacant} » utilisé à la place."
             return False, f"Modèle « {self.modele} » introuvable chez {self.base}. Disponibles : {', '.join(noms[:20])}"
         return True, "ok"
+
+    def lire_document(self, octets: bytes | None, mime: str, consigne: str, texte: str = "") -> str:
+        """Lecture d'un document du patient : image (photo d'ordonnance, boîte, facture) envoyée au modèle s'il accepte
+        les images, ou texte. Renvoie la réponse brute du modèle (JSON attendu par la consigne)."""
+        import base64
+        contenu = [{"type": "text", "text": consigne + (f"\n\nTEXTE DU DOCUMENT :\n{texte[:12000]}" if texte else "")}]
+        if octets:
+            contenu.append({"type": "image_url", "image_url": {"url": f"data:{mime};base64,{base64.b64encode(octets).decode()}",
+                                                               "detail": "high"}})
+        demande = {"model": self.modele, "messages": [{"role": "user", "content": contenu}], "temperature": 0}
+        entetes = {"Content-Type": "application/json"}
+        if self.cle:
+            entetes["Authorization"] = f"Bearer {self.cle}"
+        try:
+            rep = self._poster(json.dumps(demande).encode("utf-8"), entetes)
+        except urllib.error.HTTPError as e:
+            raise RuntimeError(f"HTTP {e.code} : {lire_erreur(e) or e.reason}") from None
+        return separer_reflexion(rep["choices"][0]["message"].get("content") or "")[0]
 
     def chat(self, messages: list[dict], outils: list[dict]) -> dict:
         demande = {"model": self.modele, "messages": self._convertir(messages), "tools": outils,

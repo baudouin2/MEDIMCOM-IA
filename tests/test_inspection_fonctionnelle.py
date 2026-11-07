@@ -38,10 +38,12 @@ def test_informations_manquantes_obtenues_aupres_du_patient():
     assert {"allergies", "traitements_en_cours"} <= set(questions), "l'assistant fait poser les questions manquantes"
     sugg = [s for s in d.suggestions.values() if s["statut"] == "proposee_au_medecin"]
     assert any("traitements en cours" in s["texte"] and "traitements_en_cours" not in s["texte"] for s in sugg), "libellés lisibles"
-    # le patient répond NON aux deux questions -> la prescription est revérifiée et devient conforme
+    assert not [x for x in d.decisions.values() if x.get("type") == "envoi_patient"], "rien dans la conversation sans le médecin"
+    # le médecin clique « Envoyer » dans l'onglet Assistant ; le patient répond NON -> la prescription devient conforme
     for cle in ("allergies", "traitements_en_cours"):
+        app.evenement({"type": "poser_question", "auteur": "medecin", "medecin": "DR-001", "question_id": questions[cle]["id"]})
         p = next(x for x in d.decisions.values() if x.get("source_question") == questions[cle]["id"])
-        _valider(app, p)
+        assert p["statut"] == "envoye" and p["valide_par"] == "DR-001", p["statut"]
         app.evenement({"type": "reponse_patient", "pictogrammes": ["NON"]})
     assert d.etat["allergies"]["valeur"] == "aucune" and d.etat["traitements_en_cours"]["valeur"] == "aucun"
     assert rx["statut"] == "CONFORME", rx["statut"]
@@ -123,12 +125,20 @@ def test_propositions_et_alertes_perimees_retirees():
     app.evenement({"type": "prescription", "auteur": "medecin", "prescripteur": "DR-001", "medicament": "paracetamol",
                    "dose": "1 g", "posologie": "3 fois par jour", "mode": "presentiel", "texte": "x"})
     d = app.ctx.dossier
+    qid = next(q["id"] for q in d.questions_a_poser if q.get("cle") == "allergies")
+    app.evenement({"type": "poser_question", "auteur": "medecin", "medecin": "DR-001", "question_id": qid, "modifier": True})
     attente = [x for x in d.decisions.values() if x.get("type") == "envoi_patient" and x["statut"] == "attente_validation"]
-    assert len(attente) == 2
-    # le médecin remplit la fiche lui-même : les deux questions au patient deviennent inutiles et sont retirées
+    assert len(attente) == 1
+    # le médecin remplit la fiche lui-même : la question devient inutile ; la proposition est retirée, l'autre question aussi
     app.evenement({"type": "echange", "auteur": "medecin", "confirme": True, "texte": "fiche",
                    "donnees": {"allergies": "aucune", "traitements_en_cours": "aucun"}})
     assert all(x["statut"] == "annulee" for x in attente), [x["statut"] for x in attente]
+    assert all(q["statut"] == "repondue" for q in d.questions_a_poser if q.get("cle") in ("allergies", "traitements_en_cours"))
+    # le médecin refuse une question de l'assistant : elle disparaît
+    d.ajouter_question("assistant", "Avez-vous de la fièvre ?", "test", "fievre")
+    q = d.questions_a_poser[-1]
+    app.evenement({"type": "refus_question", "auteur": "medecin", "question_id": q["id"]})
+    assert q["statut"] == "refusee"
     # urgence prise en charge : l'alerte de l'assistant est retirée
     app.evenement({"type": "reponse_patient", "pictogrammes": ["URGENCE"]})
     assert any(s["type"] == "alerte_urgence" and s["statut"] == "proposee_au_medecin" for s in d.suggestions.values())

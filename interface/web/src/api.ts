@@ -25,7 +25,11 @@ export type Verdict = {
   objet: string; verdict: string; decision_id?: number; message?: string; constats: Constat[];
   obligations: Constat[]; informations: Constat[]; depassement_possible?: boolean; informations_manquantes?: string[];
 };
-export type Suggestion = { id: number; type: string; texte: string; raison: string; source: string; statut: string; auteur: string };
+export type Suggestion = { id: number; type: string; texte: string; raison: string; source: string; statut: string; auteur: string;
+  prescription?: { medicament: string; dose: string; posologie: string } };
+export type DocumentPatient = { id: number; nom: string; type: string; mime: string; taille: number; date: string;
+  extraction: { statut: string; par?: string | null; resume: string; medicaments: { nom: string; dose: string; posologie: string }[];
+    maladies: string[]; allergies: string[]; lisibilite?: string | null; erreur_modele?: string } };
 export type Question = { id: number; question: string; raison: string; cle?: string | null; statut: string; auteur: string };
 export type MessageAgent = { id: number; de: string; type: string; contenu: string };
 export type Lacune = { id?: string; sujet: string; detail?: string };
@@ -37,6 +41,7 @@ export type VueMedecin = {
   modele?: { disponible: boolean; message: string; modele: string } | null;
   langue?: string;
   ordonnances?: { id: number; medicament: string }[];
+  documents?: DocumentPatient[];
   session: string; mode: string; journal: string; lignes: number;
   etat: Record<string, Fait>; fil: Echange[]; questions: Question[]; decisions: Decision[];
   suggestions: Suggestion[]; verdicts: Verdict[]; messages: MessageAgent[]; lacunes: Lacune[];

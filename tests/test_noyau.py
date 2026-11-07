@@ -1119,8 +1119,12 @@ def test_interface_parcours_complet_par_l_api():
         _http(u + "/api/medecin/faits", {"donnees": {"sexe": "F", "age": "25", "allergies": "aucune", "traitements_en_cours": "aucun",
                                                      "moyen_communication": "pictogrammes", "informe_usage_ia": True}})
         v = _http(u + "/api/medecin")
+        q = next(q for q in v["questions"] if q.get("cle") == "grossesse")             # l'assistant a préparé la question…
+        assert not [d for d in v["decisions"] if d["statut"] == "attente_validation"], "…sans encombrer la conversation"
+        _http(u + "/api/medecin/poser_question", {"question_id": q["id"], "modifier": True, "medecin": "DR-001"})
+        v = _http(u + "/api/medecin")
         prop = [d for d in v["decisions"] if d["statut"] == "attente_validation"]
-        assert prop and prop[0]["pictogrammes"] == ["VOUS", "ENCEINTE", "QUESTION"]      # l'assistant a demandé, l'agent 1 a traduit
+        assert prop and prop[0]["pictogrammes"] == ["VOUS", "ENCEINTE", "QUESTION"]      # le médecin l'a choisie, l'agent 1 a traduit
         assert _http(u + "/api/patient")["messages"] == []                              # rien ne part sans validation
         _http(u + "/api/medecin/valider", {"decision_id": prop[0]["id"], "medecin": "DR-001"})
         p = _http(u + "/api/patient")

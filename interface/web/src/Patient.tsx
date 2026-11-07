@@ -12,6 +12,8 @@ const ICONES_ONGLETS: Record<string, string> = {
   temps: "MATIN", nombres: "CHIFFRE:3", urgence: "URGENCE", droits: "CONSENTEMENT", autres: "QUESTION",
   general: "MAISON",
 };
+// Pictogrammes toujours dessinés par l'application (même sans base installée)
+const IMAGES_SURES = new Set(["DOULEUR", "QUESTION", "VOUS", "MEDICAMENT", "PLUS", "AVANT", "HEURE", "JOUR", "SEMAINE", "MOIS", "AN", "VOMIR", "FIEVRE", "TOUX"]);
 const NOMS_ONGLETS: Record<string, Record<"fr" | "en" | "ar", string>> = {
   reponses: { fr: "Réponses", en: "Answers", ar: "إجابات" }, questions: { fr: "Questions", en: "Questions", ar: "أسئلة" },
   corps: { fr: "Corps", en: "Body", ar: "الجسم" }, localisation: { fr: "Où ?", en: "Where?", ar: "أين؟" },
@@ -425,12 +427,19 @@ function GuideDouleur({ palette, etiquette, dir, langue, medicaments, libelleFr,
     ...(palette.soins ?? []).filter((id) => id.startsWith("MEDICAMENT:"))]));
   const NOMBRES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 30];
   const etapes = [
-    { cle: "ou", titre: T("Où avez-vous mal ?", "Where does it hurt?", "أين تشعر بالألم؟"), ids: [...(palette.corps ?? []), ...(palette.localisation ?? [])], max: 2 },
-    { cle: "comment", titre: T("Comment est la douleur ?", "What is the pain like?", "كيف هو الألم؟"), ids: palette.douleur ?? [], max: 1 },
-    { cle: "combien", titre: T("Combien avez-vous mal ? (0 = pas du tout, 10 = le pire)", "How much does it hurt? (0 = none, 10 = worst)", "ما شدة الألم؟ (0 لا شيء، 10 الأسوأ)"), ids: Array.from({ length: 11 }, (_, i) => `CHIFFRE:${i}`), max: 1 },
-    { cle: "duree", titre: T("Depuis combien de temps ? Choisissez un nombre, puis jours, semaines, mois…", "For how long? Pick a number, then days, weeks, months…", "منذ متى؟ اختر رقمًا ثم أيام أو أسابيع أو أشهر…"), ids: [], max: 1 },
-    { cle: "symptomes", titre: T("Avez-vous aussi… ? (plusieurs choix possibles)", "Do you also have…? (several choices)", "هل لديك أيضًا…؟ (عدة اختيارات)"), ids: symptomes, max: 6 },
-    { cle: "traitement", titre: T("Prenez-vous déjà un médicament ? (plusieurs choix possibles)", "Are you already taking a medicine? (several choices)", "هل تتناول دواءً بالفعل؟ (عدة اختيارات)"), ids: soins, max: 4 },
+    // « images » : la question elle-même en pictogrammes, pour le patient qui ne lit pas
+    { cle: "ou", titre: T("Où avez-vous mal ?", "Where does it hurt?", "أين تشعر بالألم؟"), ids: [...(palette.corps ?? []), ...(palette.localisation ?? [])], max: 2,
+      images: ["OU", "DOULEUR", "QUESTION"] },
+    { cle: "comment", titre: T("Comment est la douleur ?", "What is the pain like?", "كيف هو الألم؟"), ids: palette.douleur ?? [], max: 1,
+      images: ["DOULEUR", "QUESTION"] },
+    { cle: "combien", titre: T("Combien avez-vous mal ? (0 = pas du tout, 10 = le pire)", "How much does it hurt? (0 = none, 10 = worst)", "ما شدة الألم؟ (0 لا شيء، 10 الأسوأ)"), ids: Array.from({ length: 11 }, (_, i) => `CHIFFRE:${i}`), max: 1,
+      images: ["DOULEUR", "CHIFFRE:0", "CHIFFRE:10", "QUESTION"] },
+    { cle: "duree", titre: T("Depuis combien de temps ? Choisissez un nombre, puis jours, semaines, mois…", "For how long? Pick a number, then days, weeks, months…", "منذ متى؟ اختر رقمًا ثم أيام أو أسابيع أو أشهر…"), ids: [], max: 1,
+      images: [parLibelle.get("depuis") ?? "AVANT", "HEURE", "JOUR", "SEMAINE", "MOIS", "QUESTION"] },
+    { cle: "symptomes", titre: T("Avez-vous aussi… ? (plusieurs choix possibles)", "Do you also have…? (several choices)", "هل لديك أيضًا…؟ (عدة اختيارات)"), ids: symptomes, max: 6,
+      images: ["PLUS", ...symptomes.slice(0, 3), "QUESTION"] },
+    { cle: "traitement", titre: T("Prenez-vous déjà un médicament ? (plusieurs choix possibles)", "Are you already taking a medicine? (several choices)", "هل تتناول دواءً بالفعل؟ (عدة اختيارات)"), ids: soins, max: 4,
+      images: ["VOUS", "MEDICAMENT", "QUESTION"] },
   ];
   const [n, setN] = useState(0);
   const [choix, setChoix] = useState<Record<string, string[]>>({});
@@ -493,7 +502,14 @@ function GuideDouleur({ palette, etiquette, dir, langue, medicaments, libelleFr,
           ))}</div>
           <button onClick={onFermer} aria-label="Fermer" className="rounded-xl px-3 py-1 text-2xl leading-none text-ink-muted hover:bg-canvas">×</button>
         </div>
-        <h2 dir={dir} className="mt-3 text-[20px] font-semibold text-ink sm:text-[22px]">{etape.titre}</h2>
+        <div className="mt-3 flex flex-wrap items-center gap-2" aria-hidden data-guide-images={etape.cle}>
+          {etape.images.filter((id) => id.startsWith("CHIFFRE:") || tous.includes(id) || IMAGES_SURES.has(id)).map((id, i) => (
+            id.startsWith("CHIFFRE:")
+              ? <span key={i} className="grid h-14 w-14 place-items-center rounded-xl bg-slate-700 text-2xl font-bold text-white sm:h-16 sm:w-16">{id.slice(8)}</span>
+              : <img key={i} src={urlPicto(id)} alt="" width={64} height={64} className="h-14 w-14 rounded-xl bg-surface ring-1 ring-line sm:h-16 sm:w-16" />
+          ))}
+        </div>
+        <h2 dir={dir} className="mt-2 text-[18px] font-semibold text-ink sm:text-[20px]">{etape.titre}</h2>
         <div className="mt-3 flex-1 overflow-y-auto pb-2">
           {etape.cle === "duree" ? (
             <div className="flex flex-col gap-4">
