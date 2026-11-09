@@ -1,4 +1,4 @@
-// Accès à l'API du serveur Python (interface/serveur.py). Aucune donnée ne quitte l'ordinateur.
+// Access to the Python server's API (interface/serveur.py).
 
 export type Fait = { valeur: unknown; source?: string; confirme: boolean };
 export type Echange = {
@@ -27,7 +27,7 @@ export type Verdict = {
 };
 export type Suggestion = { id: number; type: string; texte: string; raison: string; source: string; statut: string; auteur: string;
   prescription?: { medicament: string; dose: string; posologie: string } };
-export type DocumentPatient = { id: number; nom: string; type: string; mime: string; taille: number; date: string;
+export type DocumentPatient = { id: number; nom: string; type: string; mime: string; taille: number; date: string; auteur?: string;
   extraction: { statut: string; par?: string | null; resume: string; medicaments: { nom: string; dose: string; posologie: string }[];
     maladies: string[]; allergies: string[]; lisibilite?: string | null; erreur_modele?: string } };
 export type Question = { id: number; question: string; raison: string; cle?: string | null; statut: string; auteur: string };
@@ -35,10 +35,10 @@ export type MessageAgent = { id: number; de: string; type: string; contenu: stri
 export type Lacune = { id?: string; sujet: string; detail?: string };
 
 export type VueMedecin = {
-  dictee?: "xai" | "navigateur";
+  dictee?: "xai" | "groq" | "navigateur";
   reflexion_en_cours?: boolean;
   duree_modele?: number | null;
-  modele?: { disponible: boolean; message: string; modele: string } | null;
+  modele?: { disponible: boolean; message: string; modele: string; fournisseur?: string } | null;
   langue?: string;
   ordonnances?: { id: number; medicament: string }[];
   documents?: DocumentPatient[];
@@ -56,10 +56,11 @@ export type VuePatient = {
   ordonnances?: { id: number; medicament: string; dose: string; posologie: string; prescripteur: string; valide_par: string;
     date: string; statut: string; pictogrammes: string[]; en_images: string; empreinte: string }[];
   messages: { id: number; pictogrammes: string[]; contenu_type?: string | null; texte?: string }[];
+  documents?: { id: number; type: string; lu: boolean }[];
 };
 export type Libelles = Record<"fr" | "en" | "ar", Record<string, string>>;
 
-/** Jeton de l'écran médecin : lu dans le lien privé (?jeton=…), gardé pour la durée de l'onglet. */
+/** Doctor-screen token: read from the private link (?jeton=…), kept for the life of the tab. */
 export function jetonMedecin(): string {
   const q = new URLSearchParams(window.location.search).get("jeton");
   try {
@@ -91,8 +92,8 @@ export async function envoyer<T = { retour?: string }>(url: string, corps: unkno
   return j as T;
 }
 
-// Mêmes règles que le serveur (medimcom/bibliotheque.py) : 3 éléments au plus, sans doublon,
-// et jamais la négation, la limite, l'urgence ou STOP en médaillon.
+// Same rules as the server (medimcom/bibliotheque.py): 3 elements at most, no duplicate,
+// and never negation, limit, emergency or STOP as a badge.
 const JAMAIS_COMBINE = ["NE_PAS", "MAXIMUM", "URGENCE", "STOP"];
 export function combinable(a: string, b: string): boolean {
   const parts = [...a.split("+"), ...b.split("+")];

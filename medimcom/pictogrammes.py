@@ -1,17 +1,16 @@
-"""Traduction texte ⇄ pictogrammes : INTERFACE + implémentation de démonstration.
+"""Text ⇄ pictogram translation: INTERFACE + demo implementation.
 
-L'agent 1 (traducteur) n'utilise que deux méthodes ; n'importe quel moteur peut les fournir :
+Agent 1 (translator) only uses two methods; any engine can provide them:
 
     traduire(texte: str) -> {"pictogrammes": [str], "non_traduits": [str], "couverture": float}
     interpreter(pictogrammes: list[str]) -> str
 
-`LexiquePictogrammes` est une version minimale par dictionnaire, sans IA, pour faire tourner
-les scénarios. Le coéquipier qui développe l'agent 1 la remplace par son modèle (sélection
-ou génération de pictogrammes) en gardant ces deux méthodes : voir docs/technique/CONTRAT_AGENT1.md.
-Un pictogramme est désigné par un identifiant, par exemple « DOULEUR » ou
-« MEDICAMENT:paracetamol » (pictogramme générique + étiquette). Plusieurs pictogrammes peuvent former UNE
-image combinée : « TETE+DOULEUR » (le premier en grand, les suivants en médaillon). La négation, la limite
-« au maximum » et l'urgence ne sont jamais combinées : elles restent toujours des pictogrammes entiers.
+`LexiquePictogrammes` is a minimal dictionary-based version, without AI, to run the scenarios. The team-mate who
+develops agent 1 replaces it with their model (pictogram selection or generation) while keeping these two
+methods: see docs/technique/CONTRAT_AGENT1.md.
+A pictogram is designated by an identifier, e.g. "DOULEUR" or "MEDICAMENT:paracetamol" (generic pictogram +
+label). Several pictograms can form ONE combined image: "TETE+DOULEUR" (the first one large, the others as
+badges). Negation, the "at most" limit and emergency are never combined: they always stay whole pictograms.
 """
 import re
 import unicodedata
@@ -29,7 +28,7 @@ def _norm(m: str) -> str:
 
 
 MOTS = {
-    # corps et symptômes
+    # body and symptoms
     "douleur": "DOULEUR", "mal": "DOULEUR", "ventre": "VENTRE", "tete": "TETE", "poitrine": "POITRINE",
     "fievre": "FIEVRE", "toux": "TOUX", "vomir": "VOMIR", "nausee": "VOMIR", "nausees": "VOMIR",
     "respirer": "RESPIRER", "respiration": "RESPIRER", "sang": "SANG", "allergie": "ALLERGIE", "allergies": "ALLERGIE",
@@ -42,14 +41,14 @@ MOTS = {
     # temps
     "matin": "MATIN", "midi": "MIDI", "soir": "SOIR", "nuit": "NUIT", "jour": "JOUR", "jours": "JOUR",
     "semaine": "SEMAINE", "fois": "FOIS", "par": None, "plus": "PLUS", "moins": "MOINS", "maximum": "MAXIMUM", "max": "MAXIMUM", "avant": "AVANT", "apres": "APRES",
-    # négation : jamais supprimée
+    # negation: never removed
     "pas": "NE_PAS", "jamais": "NE_PAS", "aucun": "NE_PAS", "aucune": "NE_PAS", "sans": "NE_PAS", "rien": "NE_PAS",
-    # échange
+    # exchange
     "oui": "OUI", "non": "NON", "vous": "VOUS", "je": "MOI", "moi": "MOI", "accord": "ACCORD", "pendant": None, "a": None, "comprendre": "COMPRENDRE",
     "compris": "COMPRENDRE", "stop": "STOP", "attendre": "ATTENDRE",
 }
-# Vocabulaire médical des bases existantes (pictogrammes/bases/vocabulaire_medical.json) : utilisé seulement
-# si l'image correspondante est disponible ; sinon le mot est signalé au médecin comme « sans pictogramme ».
+# Medical vocabulary of the existing databases (pictogrammes/bases/vocabulaire_medical.json): used only if the matching
+# image is available; otherwise the word is reported to the doctor as "without pictogram".
 MOTS_BASES = {
     "gorge": "GORGE", "oreille": "OREILLE", "oreilles": "OREILLE", "oeil": "OEIL", "yeux": "OEIL", "dent": "DENT", "dents": "DENT",
     "dos": "DOS", "bras": "BRAS", "jambe": "JAMBE", "jambes": "JAMBE", "pied": "PIED", "pieds": "PIED", "main": "MAIN",
@@ -75,14 +74,14 @@ MEDICAMENTS = {"paracetamol", "ibuprofene", "misoprostol", "tramadol", "amoxicil
 
 
 class LexiquePictogrammes:
-    """Démonstration : un mot → un pictogramme, les nombres en chiffres, les médicaments étiquetés."""
+    """Demo: one word → one pictogram, numbers as digits, medicines labelled."""
 
     def traduire(self, texte: str) -> dict:
         pictos, manquants = [], []
         texte = re.sub(r"(\d+)\s*(mg|g|ml|mcg|µg)\b", r"\1\2", texte, flags=re.IGNORECASE)   # « 500 mg » -> « 500mg »
         for brut in re.findall(r"[\w'’]+|\?", texte):
             m0 = _norm(brut).replace("’", "'")
-            if m0.startswith("jusqu"):                       # « jusqu'à 3 fois » : une limite, jamais perdue
+            if m0.startswith("jusqu"):                       # "jusqu'à 3 fois" (up to 3 times): a limit, never lost
                 pictos.append("MAXIMUM")
                 continue
             m = re.sub(r"^(d|l|qu|j|s|n|c)'", "", m0)
@@ -104,7 +103,7 @@ class LexiquePictogrammes:
                 pass
             else:
                 manquants.append(brut)
-        # « pas plus de 4 » = au maximum 4 (et non « ne pas » + « davantage »)
+        # "pas plus de 4" = at most 4 (not "do not" + "more")
         i = 0
         while i < len(pictos) - 1:
             if pictos[i] == "NE_PAS" and pictos[i + 1] == "PLUS":
@@ -126,8 +125,8 @@ SIGNES = {"DOULEUR", "SANG"}
 
 
 def combiner_automatiquement(pictos: list[str]) -> list[str]:
-    """Fusionne en une image les paires qui se lisent mieux ensemble : partie du corps + douleur (ou sang),
-    dans un sens ou dans l'autre (« mal au ventre », « ventre douloureux »). Tout le reste est laissé tel quel."""
+    """Merges into one image the pairs that read better together: body part + pain (or blood), in either
+    order ("mal au ventre", "ventre douloureux"). Everything else is left as is."""
     from .bibliotheque import combinaison_valide
     sortie, i = [], 0
     while i < len(pictos):

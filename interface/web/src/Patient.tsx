@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Delete, SendHorizontal } from "lucide-react";
+import type { ReactNode } from "react";
+import { Bone, Camera, Check, Delete, File as IconeFichier, FileText, Pill, Receipt, SendHorizontal, TestTube, Upload } from "lucide-react";
 import { combinable, envoyer, lire, urlPicto, type VuePatient } from "./api";
 import { cx, useLibelle, useRechercheSens, useSondage } from "./ui";
 import { Marque } from "./Marque";
@@ -12,7 +13,7 @@ const ICONES_ONGLETS: Record<string, string> = {
   temps: "MATIN", nombres: "CHIFFRE:3", urgence: "URGENCE", droits: "CONSENTEMENT", autres: "QUESTION",
   general: "MAISON",
 };
-// Pictogrammes toujours dessinés par l'application (même sans base installée)
+// Pictograms always drawn by the application (even without an installed base)
 const IMAGES_SURES = new Set(["DOULEUR", "QUESTION", "VOUS", "MEDICAMENT", "PLUS", "AVANT", "HEURE", "JOUR", "SEMAINE", "MOIS", "AN", "VOMIR", "FIEVRE", "TOUX"]);
 const NOMS_ONGLETS: Record<string, Record<"fr" | "en" | "ar", string>> = {
   reponses: { fr: "Réponses", en: "Answers", ar: "إجابات" }, questions: { fr: "Questions", en: "Questions", ar: "أسئلة" },
@@ -53,25 +54,26 @@ export default function EcranPatient() {
   const [sansImage, setSansImage] = useState<string[]>([]);
   const [guide, setGuide] = useState(false);
   const [ordonnance, setOrdonnance] = useState(false);
+  const [documents, setDocuments] = useState(false);
   const session = useRef<string | null>(null);
 
-  const setLangue = (l: Langue) => { setLangueEtat(l); try { localStorage.setItem("medimcom-langue", l); } catch { /* stockage indisponible */ } };
+  const setLangue = (l: Langue) => { setLangueEtat(l); try { localStorage.setItem("medimcom-langue", l); } catch { /* storage unavailable */ } };
   const etiquette = useCallback((id: string) => (langue ? libelleDe(id, langue) : ""), [langue, libelleDe]);
 
-  useEffect(() => {                       // nouvelle consultation : on repart de zéro
+  useEffect(() => {                       // new consultation: start from scratch
     if (!vue) return;
     if (session.current !== null && vue.session !== session.current) setChoix([]);
     session.current = vue.session;
   }, [vue]);
 
   const envoyerReponse = async (liste: string[]) => {
-    if (envoi === "en_cours") return;              // un seul envoi à la fois : pas de double message
+    if (envoi === "en_cours") return;              // one sending at a time: no duplicate message
     setEnvoi("en_cours");
     try {
       await envoyer("/api/patient/reponse", { pictogrammes: liste });
       setEnvole((n) => n + 1);
       setDernierEnvoi(liste);
-    } catch { setEnvoi("repos"); return; }        // le serveur refuse : rien n'est envoyé, le choix reste affiché
+    } catch { setEnvoi("repos"); return; }        // the server refuses: nothing is sent, the choice stays displayed
     setChoix([]);
     setEnvoi("repos");
     rafraichir();
@@ -84,7 +86,7 @@ export default function EcranPatient() {
       setChoix((c) => [...c, ...r.pictogrammes].slice(0, MAX));
       setSansImage(r.non_traduits);
       setMots("");
-    } catch { /* rien */ }
+    } catch { /* nothing */ }
   };
   const combiner = () => setChoix((c) => {
     if (c.length < 2) return c;
@@ -101,11 +103,11 @@ export default function EcranPatient() {
   const parSens = useRechercheSens(recherche);
   const directs = q.length < 2 ? null : tousPatient.filter((id) =>
     (["fr", "en", "ar"] as const).some((lg) => debutDeMot(libelleDe(id, lg), q)) || debutDeMot(id.replace(/_/g, " "), q));
-  // d'abord les pictogrammes dont un mot commence par la saisie, puis ceux trouvés par le sens ou malgré une faute
+  // first the pictograms with a word starting with the input, then those found by meaning or despite a typo
   const presents = useMemo(() => new Set(tousPatient), [tousPatient]);
   const resultats = directs === null ? null : [...directs, ...parSens.filter((id) => presents.has(id) && !directs.includes(id))];
   const grilleComplete = resultats ?? palette[ongletActif] ?? [];
-  // Des milliers d'images possibles (catalogue complet) : on en affiche 96, puis « Afficher plus ».
+  // Thousands of possible images (full catalogue): 96 are shown, then "Show more".
   const [nbAffiches, setNbAffiches] = useState(96);
   useEffect(() => setNbAffiches(96), [ongletActif, recherche]);
   const grille = grilleComplete.slice(0, nbAffiches);
@@ -123,6 +125,13 @@ export default function EcranPatient() {
               {{ "": "", fr: "Mon ordonnance", en: "My prescription", ar: "وصفتي الطبية" }[langue]}
             </button>
           )}
+          {/* send the doctor a useful photo or file: prescription, receipt, medicine box, X-ray… */}
+          <button id="envoyerDocument" onClick={() => setDocuments(true)} dir={dir} aria-label="Envoyer un document au médecin"
+            className="flex items-center gap-2 rounded-xl bg-surface py-1.5 pl-2 pr-3 text-sm font-semibold text-brand shadow-panel ring-1 ring-line">
+            <Camera size={22} aria-hidden="true" />
+            {{ "": "", fr: "Envoyer un document", en: "Send a document", ar: "إرسال مستند" }[langue]}
+            {(vue?.documents?.length ?? 0) > 0 && <span className="rounded-full bg-ok-50 px-1.5 text-xs text-ok">{vue?.documents?.length}</span>}
+          </button>
         </div>
         <div role="group" aria-label="Langue des étiquettes" className="flex rounded-xl bg-surface p-1 shadow-panel">
           {([["", "Images seules"], ["fr", "FR"], ["en", "EN"], ["ar", "عربي"]] as [Langue, string][]).map(([l, t]) => (
@@ -224,6 +233,7 @@ export default function EcranPatient() {
           {dernierEnvoi.map((id, i) => <img key={i} src={urlPicto(id)} alt={etiquette(id) || id} width={34} height={34} className="rounded-md bg-surface shadow-panel" />)}
         </div>
       )}
+      {documents && <EnvoiDocument langue={langue} dir={dir} envoyes={vue?.documents ?? []} onFermer={() => setDocuments(false)} onEnvoye={rafraichir} />}
       {ordonnance && vue?.ordonnances && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-3 sm:items-center" onMouseDown={() => setOrdonnance(false)}>
           <div role="dialog" aria-modal="true" aria-label="ordonnance" onMouseDown={(e) => e.stopPropagation()} dir={dir}
@@ -261,7 +271,7 @@ export default function EcranPatient() {
         libelleFr={(id: string) => libelleDe(id, "fr")}
         onFermer={() => setGuide(false)} onAjouter={(ids) => { setChoix((c) => [...c, ...ids].slice(0, MAX)); setGuide(false); }} />}
 
-      {/* plateau de réponse */}
+      {/* answer tray */}
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface/95 shadow-[0_-8px_24px_-12px_rgba(16,24,40,.18)] backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2 px-3 py-2.5 sm:flex-nowrap sm:gap-3 sm:px-6 sm:py-3" style={{ paddingBottom: "max(10px, env(safe-area-inset-bottom))" }}>
           <div id="choisis" dir={dir} aria-label="Ma réponse" className="flex min-h-[64px] w-full items-center gap-2 overflow-x-auto rounded-2xl bg-canvas px-2.5 py-2 ring-1 ring-inset ring-line barre-fine sm:min-h-[84px] sm:w-auto sm:flex-1">
@@ -368,7 +378,7 @@ function MessageRecu({ vue, etiquette, dir, nomMedecin, incompris, langue }:
                   <img src={urlPicto("QUESTION")} alt="à vous de répondre" width={44} height={44} className="animate-battement" />
                 </span>
               )}
-              {/* « Je ne comprends pas » : un geste, sans avoir à chercher les pictogrammes ; le médecin est conseillé */}
+              {/* "I don't understand": one gesture, without searching the pictograms; the doctor is advised */}
               <button id="incompris" onClick={incompris} dir={dir}
                 className="flex items-center gap-2 rounded-2xl bg-warn-50 py-1.5 pl-1.5 pr-3 ring-1 ring-warn/30 active:scale-[.97]"
                 aria-label={{ "": "je ne comprends pas", fr: "je ne comprends pas", en: "I don't understand", ar: "لا أفهم" }[langue]}>
@@ -399,9 +409,9 @@ function MessageRecu({ vue, etiquette, dir, nomMedecin, incompris, langue }:
 }
 
 
-// ------------------------------------------------------------------ guide « Décrire ma douleur »
-// Quatre questions simples, une à la fois : où, comment, combien, depuis quand. Chaque étape peut être passée.
-// Libellés (français) recherchés dans toute la base du patient : les identifiants changent d'une base à l'autre
+// ------------------------------------------------------------------ "Describe my pain" guide
+// Simple questions, one at a time: where, how, how much, since when, symptoms, treatment. Each step can be skipped.
+// (French) labels searched in the patient's whole base: identifiers change from one base to another
 const UNITES = [["heure", "heures"], ["jour", "jours"], ["semaine", "semaines"], ["mois"], ["an", "ans", "année", "années", "an (année)"]];
 const SYMPTOMES = ["vomir", "vomissement", "nausée", "nausées", "diarrhée", "vertige", "vertiges", "fièvre", "fatigue", "frissons",
   "toux", "selles", "caca", "selles molles", "selles pâteuses", "constipation", "sang", "mal de tête", "essoufflement",
@@ -427,7 +437,7 @@ function GuideDouleur({ palette, etiquette, dir, langue, medicaments, libelleFr,
     ...(palette.soins ?? []).filter((id) => id.startsWith("MEDICAMENT:"))]));
   const NOMBRES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 30];
   const etapes = [
-    // « images » : la question elle-même en pictogrammes, pour le patient qui ne lit pas
+    // "images": the question itself in pictograms, for the patient who does not read
     { cle: "ou", titre: T("Où avez-vous mal ?", "Where does it hurt?", "أين تشعر بالألم؟"), ids: [...(palette.corps ?? []), ...(palette.localisation ?? [])], max: 2,
       images: ["OU", "DOULEUR", "QUESTION"] },
     { cle: "comment", titre: T("Comment est la douleur ?", "What is the pain like?", "كيف هو الألم؟"), ids: palette.douleur ?? [], max: 1,
@@ -460,7 +470,7 @@ function GuideDouleur({ palette, etiquette, dir, langue, medicaments, libelleFr,
     const cote = ou.filter((x) => !(palette.corps ?? []).includes(x));
     const douleur = comment[0] ?? "DOULEUR";
     const ids: string[] = [];
-    if (corps[0] && combinable(corps[0], douleur)) {          // une image : partie du corps + type de douleur (+ côté)
+    if (corps[0] && combinable(corps[0], douleur)) {          // one image: body part + type of pain (+ side)
       const image = cote[0] && combinable(`${corps[0]}+${douleur}`, cote[0]) ? `${corps[0]}+${douleur}+${cote[0]}` : `${corps[0]}+${douleur}`;
       ids.push(image, ...corps.slice(1));
       if (cote[0] && !image.includes(cote[0])) ids.push(cote[0]);
@@ -468,7 +478,7 @@ function GuideDouleur({ palette, etiquette, dir, langue, medicaments, libelleFr,
       ids.push(...corps, douleur, ...cote.slice(0, 1));
     }
     if (choix.combien?.[0]) ids.push(choix.combien[0]);
-    // durée : « 3 » puis « semaine » (le traducteur lit « depuis 3 semaines ») ; ou un moment (hier, ce matin…)
+    // duration: "3" then "week" (the translator reads "for 3 weeks"); or a moment (yesterday, this morning…)
     if (nombre !== null && unite) {
       const depuis = parLibelle.get("depuis");
       if (depuis) ids.push(depuis);
@@ -543,6 +553,107 @@ function GuideDouleur({ palette, etiquette, dir, langue, medicaments, libelleFr,
             ? <button id="guideSuivant" onClick={() => setN(n + 1)} className="rounded-2xl bg-brand px-6 py-3 text-[16px] font-semibold text-white">{termine(etape.cle) ? T("Suivant", "Next", "التالي") : T("Passer", "Skip", "تخطَّ")}</button>
             : <button id="guideTerminer" onClick={terminer} className="rounded-2xl bg-ok px-6 py-3 text-[16px] font-semibold text-white">{T("Ajouter à ma réponse", "Add to my answer", "أضف إلى ردي")}</button>}
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------ document sent by the patient
+const TYPES_DOCUMENT: { id: string; icone: ReactNode; fr: string; en: string; ar: string }[] = [
+  { id: "ordonnance", icone: <FileText size={40} />, fr: "Ordonnance", en: "Prescription", ar: "وصفة طبية" },
+  { id: "traitement", icone: <Pill size={40} />, fr: "Boîte de médicament", en: "Medicine box", ar: "علبة الدواء" },
+  { id: "facture", icone: <Receipt size={40} />, fr: "Facture", en: "Receipt", ar: "فاتورة" },
+  { id: "radio", icone: <Bone size={40} />, fr: "Radio, imagerie", en: "X-ray, scan", ar: "أشعة" },
+  { id: "analyse", icone: <TestTube size={40} />, fr: "Analyse", en: "Lab test", ar: "تحليل" },
+  { id: "autre", icone: <IconeFichier size={40} />, fr: "Autre", en: "Other", ar: "آخر" },
+];
+
+/** Photo taken with a phone: reduced (2000 px, JPEG) before sending, for slow connections. */
+async function lireFichier(f: globalThis.File): Promise<{ contenu: string; mime: string }> {
+  const brut = await new Promise<string>((ok, ko) => { const r = new FileReader(); r.onload = () => ok(String(r.result)); r.onerror = ko; r.readAsDataURL(f); });
+  if (!f.type.startsWith("image/") || f.size < 1_500_000) return { contenu: brut, mime: f.type || "application/octet-stream" };
+  try {
+    const img = await new Promise<HTMLImageElement>((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = brut; });
+    const k = Math.min(1, 2000 / Math.max(img.width, img.height));
+    const c = document.createElement("canvas");
+    c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+    c.getContext("2d")?.drawImage(img, 0, 0, c.width, c.height);
+    return { contenu: c.toDataURL("image/jpeg", 0.85), mime: "image/jpeg" };
+  } catch { return { contenu: brut, mime: f.type }; }
+}
+
+function EnvoiDocument({ langue, dir, envoyes, onFermer, onEnvoye }: {
+  langue: Langue; dir?: "rtl"; envoyes: { id: number; type: string; lu: boolean }[]; onFermer: () => void; onEnvoye: () => void;
+}) {
+  const [type, setType] = useState<string | null>(null);
+  const [etat, setEtat] = useState<"repos" | "envoi" | "ok" | "erreur">("repos");
+  const [erreur, setErreur] = useState("");
+  const t = (o: { fr: string; en: string; ar: string }) => (langue ? o[langue] : "");
+  const envoyerFichier = async (f?: globalThis.File) => {
+    if (!f || !type) return;
+    setEtat("envoi"); setErreur("");
+    try {
+      const { contenu, mime } = await lireFichier(f);
+      await envoyer("/api/patient/document", { nom: f.name.slice(0, 80), type, mime, contenu });
+      setEtat("ok"); setType(null); onEnvoye();
+    } catch (e) {
+      setEtat("erreur"); setErreur(e instanceof Error ? e.message : "");
+    }
+  };
+  const libelleType = (id: string) => TYPES_DOCUMENT.find((x) => x.id === id) ?? TYPES_DOCUMENT[5];
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-3 sm:items-center" onMouseDown={onFermer}>
+      <div role="dialog" aria-modal="true" aria-label="Envoyer un document au médecin" onMouseDown={(e) => e.stopPropagation()} dir={dir}
+        className="flex max-h-[92dvh] w-full max-w-2xl flex-col gap-4 overflow-y-auto rounded-3xl bg-surface p-5 shadow-pop">
+        <div className="flex items-center justify-between">
+          <h2 className="flex items-center gap-2 text-[22px] font-semibold text-ink">
+            <Upload size={30} aria-hidden="true" className="text-brand" />
+            {t({ fr: "Envoyer un document au médecin", en: "Send a document to the doctor", ar: "إرسال مستند إلى الطبيب" })}
+          </h2>
+          <button onClick={onFermer} aria-label="Fermer" className="rounded-xl px-3 py-1 text-2xl leading-none text-ink-muted hover:bg-canvas">×</button>
+        </div>
+        {etat === "ok" && (
+          <p role="status" className="flex items-center gap-2 rounded-2xl bg-ok-50 p-3 text-[17px] font-semibold text-ok">
+            <Check size={28} aria-hidden="true" />{t({ fr: "Envoyé : le médecin l'a reçu.", en: "Sent: the doctor has it.", ar: "تم الإرسال: وصل إلى الطبيب." })}
+          </p>
+        )}
+        {/* 1. which document? (images first: the patient may not read) */}
+        <div className="grid grid-cols-3 gap-2">
+          {TYPES_DOCUMENT.map((d) => (
+            <button key={d.id} data-type-document={d.id} aria-pressed={type === d.id} onClick={() => { setType(d.id); setEtat("repos"); }}
+              aria-label={d.fr}
+              className={cx("flex flex-col items-center gap-1 rounded-2xl p-3 ring-1 transition-colors",
+                type === d.id ? "bg-brand text-white ring-brand" : "bg-canvas text-ink ring-line hover:bg-surface")}>
+              {d.icone}<span className="text-center text-sm font-medium">{t(d)}</span>
+            </button>
+          ))}
+        </div>
+        {/* 2. photo or file */}
+        <div className={cx("grid grid-cols-2 gap-2", !type && "pointer-events-none opacity-40")} aria-disabled={!type}>
+          <label className="flex cursor-pointer flex-col items-center gap-1 rounded-2xl bg-brand p-4 text-white">
+            <Camera size={40} aria-hidden="true" />
+            <span className="text-[15px] font-semibold">{t({ fr: "Prendre une photo", en: "Take a photo", ar: "التقاط صورة" })}</span>
+            <input id="photoDocument" type="file" accept="image/*" capture="environment" className="sr-only" disabled={!type || etat === "envoi"}
+              onChange={(e) => { void envoyerFichier(e.target.files?.[0]); e.target.value = ""; }} />
+          </label>
+          <label className="flex cursor-pointer flex-col items-center gap-1 rounded-2xl bg-surface p-4 text-brand ring-2 ring-brand">
+            <IconeFichier size={40} aria-hidden="true" />
+            <span className="text-[15px] font-semibold">{t({ fr: "Choisir un fichier", en: "Choose a file", ar: "اختيار ملف" })}</span>
+            <input id="fichierDocument" type="file" accept="image/*,application/pdf" className="sr-only" disabled={!type || etat === "envoi"}
+              onChange={(e) => { void envoyerFichier(e.target.files?.[0]); e.target.value = ""; }} />
+          </label>
+        </div>
+        {etat === "envoi" && <p role="status" className="text-center text-[15px] text-ink-muted">{t({ fr: "Envoi…", en: "Sending…", ar: "جارٍ الإرسال…" }) || "…"}</p>}
+        {etat === "erreur" && <p role="alert" className="text-center text-[15px] text-danger">✖ {erreur}</p>}
+        {envoyes.length > 0 && (
+          <ul className="flex flex-wrap gap-2" aria-label="Documents déjà envoyés">
+            {envoyes.map((d) => (
+              <li key={d.id} className="flex items-center gap-1.5 rounded-xl bg-ok-50 px-2 py-1 text-sm text-ok">
+                <Check size={16} aria-hidden="true" />{t(libelleType(d.type)) || libelleType(d.type).icone}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

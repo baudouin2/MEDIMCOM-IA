@@ -1,10 +1,10 @@
-"""Télécharge les textes officiels listés dans kb/sources.json et fige leur empreinte SHA-256.
+"""Downloads the official texts listed in kb/sources.json and pins their SHA-256 fingerprint.
 
-    python kb/outils/telecharger_sources.py              # télécharge ce qui manque, enregistre les empreintes
-    python kb/outils/telecharger_sources.py --verifier   # recalcule les empreintes et signale tout changement
+    python kb/outils/telecharger_sources.py              # downloads what is missing, records the fingerprints
+    python kb/outils/telecharger_sources.py --verifier   # recomputes the fingerprints and reports any change
 
-Les fichiers vont dans kb/originaux/ (non versionnés) ; les empreintes dans kb/originaux/empreintes.json.
-Si un texte officiel change en ligne, --verifier le signale : il faut alors relire les fiches concernées.
+Files go to kb/originaux/ (not versioned); fingerprints to kb/originaux/empreintes.json.
+If an official text changes online, --verifier reports it: the related provisions must then be reread.
 """
 import argparse
 import hashlib
@@ -73,7 +73,7 @@ def main(argv=None):
                 empreintes[s["id"]] = {"url": s["download_url"], "fichier": chemin.name, "sha256": sha256(chemin),
                                        "octets": chemin.stat().st_size, "date": date.today().isoformat()}
                 print(f"+  {s['id']} : {chemin.name} ({chemin.stat().st_size} octets)")
-        except Exception as e:  # réseau, 404, délai…
+        except Exception as e:  # network, 404, timeout…
             print(f"xx {s['id']} : échec ({e.__class__.__name__}: {e})")
             problemes += 1
     fichier_empreintes.write_text(json.dumps(empreintes, ensure_ascii=False, indent=2), encoding="utf-8")

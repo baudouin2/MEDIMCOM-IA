@@ -1,11 +1,11 @@
-"""Agents autonomes de MEDIMCOM IA.
+"""Autonomous agents of MEDIMCOM IA.
 
-Chaque agent a : un BUT, des OUTILS (avec leurs droits), et une BOUCLE de décision.
-- En mode Ollama, le modèle de langage choisit lui-même quels outils appeler.
-- En mode simulé, une politique écrite à la main joue ce rôle (pour tester sans IA).
+Each agent has: a GOAL, TOOLS (with their permissions), and a decision LOOP.
+- With a language model (Ollama or an online API), the model itself chooses which tools to call.
+- In simulated mode, a hand-written policy plays that role (to test without AI).
 
-Les garde-fous sont dans les outils : un agent ne peut appeler que SES outils,
-et le verdict juridique est toujours calculé par le moteur de règles (déterministe).
+The safeguards live in the tools: an agent can only call ITS tools,
+and the legal verdict is always computed by the (deterministic) rule engine.
 """
 import json
 import re
@@ -25,7 +25,7 @@ from .regles import MoteurRegles
 
 
 class Interrompu(Exception):
-    """Un humain attend (clic du médecin ou du patient) : l'agent remet sa réflexion à plus tard."""
+    """A human is waiting (doctor's or patient's click): the agent postpones its reasoning."""
 
 
 @dataclass
@@ -35,26 +35,26 @@ class Contexte:
     journal: Journal
     regles: MoteurRegles
     verbeux: bool = True
-    repli_sans_ia: bool = True          # dégradation gracieuse : si le modèle tombe, politique écrite à la main
-    echecs_modele: dict = field(default_factory=dict)   # échecs consécutifs, par modèle
-    seuil_echecs: int = 3               # au-delà : ce modèle est déclaré hors service (les autres continuent)
-    disjoncteur_depuis: dict = field(default_factory=dict)   # modèle -> heure de la mise hors service
-    reessai_s: float = 90.0             # un modèle hors service est réessayé après ce délai (clé corrigée, réseau revenu)
-    etat_modele: dict = field(default_factory=dict)          # modèle -> {"disponible": bool, "message": str}
-    langue_medecin: str = "fr"          # langue d'expression choisie par le médecin (fr, en, ar)
-    # Questions de l'assistant : traduites d'office dans la conversation (scénarios, tests) ou seulement quand le médecin
-    # les choisit dans l'onglet Assistant (écran médecin : la conversation reste lisible)
+    repli_sans_ia: bool = True          # graceful degradation: if the model fails, hand-written policy
+    echecs_modele: dict = field(default_factory=dict)   # consecutive failures, per model
+    seuil_echecs: int = 3               # beyond this: the model is declared out of service (the others go on)
+    disjoncteur_depuis: dict = field(default_factory=dict)   # model -> time it was put out of service
+    reessai_s: float = 90.0             # an out-of-service model is retried after this delay (key fixed, network back)
+    etat_modele: dict = field(default_factory=dict)          # model -> {"disponible": bool, "message": str}
+    langue_medecin: str = "fr"          # language chosen by the doctor (fr, en, ar)
+    # Assistant questions: translated automatically in the conversation (scenarios, tests) or only when the doctor picks
+    # them in the Assistant tab (doctor screen: the conversation stays readable)
     questions_assistant_auto: bool = True
     pictogrammeur: object = field(default_factory=LexiquePictogrammes)
-    corpus: object = None               # textes officiels complets et fiches OMS de base_v2 (medimcom.base_v2.Corpus), si présents
-    interrompre: object = None          # fonction : vrai si un humain attend (l'agent en ligne cède alors la place)
-    derniere_duree_modele: float | None = None   # durée (s) de la dernière réponse du modèle en ligne
-    attente_modele: object = None       # gestionnaire de contexte : rend le verrou de l'interface pendant l'attente du modèle
+    corpus: object = None               # full official texts and WHO fact sheets of base_v2 (medimcom.base_v2.Corpus), if present
+    interrompre: object = None          # function: true if a human is waiting (the online agent then gives way)
+    derniere_duree_modele: float | None = None   # duration (s) of the online model's last answer
+    attente_modele: object = None       # context manager: releases the interface lock while waiting for the model
     crise: "RegistreCrise" = field(default_factory=lambda: RegistreCrise())
 
 
 class RegistreCrise:
-    """Tableau de crise partagé par les institutions (sans données nominatives des patients)."""
+    """Crisis board shared by the institutions (no patient-identifying data)."""
 
     def __init__(self):
         self.mesures: list[dict] = []
@@ -68,12 +68,12 @@ def _schema(nom, description, proprietes=None, requis=None):
 
 
 class ModeleHorsService(RuntimeError):
-    """Le modèle a échoué trop de fois de suite."""
+    """The model failed too many times in a row."""
 
 
 def conformer(schema: dict, args: dict) -> tuple[dict, str | None]:
-    """Adapte les arguments d'un modèle au schéma de l'outil : types convertis (\"3\" -> 3, \"oui\" -> True),
-    arguments inconnus ignorés, arguments obligatoires vérifiés."""
+    """Adapts a model's arguments to the tool schema: types converted ("3" -> 3, "oui" -> True),
+    unknown arguments ignored, required arguments checked."""
     p = schema["function"]["parameters"]
     props, sortie = p.get("properties", {}), {}
     for k, v in args.items():
@@ -113,8 +113,8 @@ class Agent:
     def __init__(self, ctx: Contexte, cerveau):
         self.ctx = ctx
         self.cerveau = cerveau
-        self.vu = 0  # dernière version du dossier lue
-        self._reportes = ([], [])  # messages et changements d'un tour interrompu, repris au tour suivant
+        self.vu = 0  # last version of the record read
+        self._reportes = ([], [])  # messages and changes of an interrupted turn, resumed at the next turn
         self.outils = {**self._outils_communs(), **self._outils_propres()}
 
     # ------------------------------------------------------------------ outils
@@ -152,7 +152,7 @@ class Agent:
         fiches = self.ctx.regles.base.chercher(question, k=int(nombre))
         if not self.ctx.corpus:
             return fiches
-        # base_v2 branchée : on ajoute les extraits des textes officiels complets et des fiches de l'OMS, avec leur lien
+        # base_v2 plugged in: excerpts of the full official texts and WHO fact sheets are added, with their link
         return {"fiches": fiches, "extraits": self.ctx.corpus.chercher(question, k=int(nombre))}
 
     IDENTIFIANTS = ("nom", "prenom", "identifiant", "emirates_id", "telephone", "adresse", "date_naissance", "dossier_medical")
@@ -187,12 +187,12 @@ class Agent:
         return res
 
     def garde_fou_outil(self, outil: str, args: dict) -> str | None:
-        """Contrôle déterministe d'une action avant qu'elle ne s'exécute (surchargé par les agents) : None = permis."""
+        """Deterministic check of an action before it runs (overridden by the agents): None = allowed."""
         return None
 
     # ------------------------------------------------------------------ boucle
     def tour(self) -> bool:
-        """Une activation : l'agent regarde ses messages et ce qui a changé, puis décide."""
+        """One activation: the agent reads its messages and what changed, then decides."""
         nouveaux = self.ctx.messagerie.lire(self.nom)
         self._recevoir(nouveaux)
         msgs = self._reportes[0] + nouveaux
@@ -205,11 +205,11 @@ class Agent:
         try:
             agi = self._decider(msgs, changements)
         except Interrompu:
-            self._reportes = (msgs, changements)      # rien n'a été fait : tout est repris au prochain tour
+            self._reportes = (msgs, changements)      # nothing was done: everything is resumed at the next turn
             self.ctx.journal.ajouter(self.nom, "reflexion_reportee", {"raison": "un humain attend : son action passe d'abord"})
             return False
         if self.ctx.attente_modele:
-            # Pendant que le modèle répondait, le médecin ou le patient a pu agir : ces changements restent à lire.
+            # While the model was answering, the doctor or the patient may have acted: these changes remain to be read.
             pendant = [c for c in self.ctx.dossier.changements_depuis(debut) if c["auteur"] in ("medecin", "patient")]
             if pendant:
                 self._reportes = ([], pendant)
@@ -231,35 +231,35 @@ class Agent:
         if isinstance(self.cerveau, CerveauSimule):
             return self._politique(msgs, changements)
         cle = getattr(self.cerveau, "modele", self.cerveau.nom)
-        if self.ctx.echecs_modele.get(cle, 0) >= self.ctx.seuil_echecs:      # disjoncteur : on n'insiste pas…
+        if self.ctx.echecs_modele.get(cle, 0) >= self.ctx.seuil_echecs:      # circuit breaker: no insisting…
             if not self.ctx.repli_sans_ia:
                 raise ModeleHorsService(f"modèle {cle} hors service ({self.ctx.echecs_modele[cle]} échecs)")
             depuis = self.ctx.disjoncteur_depuis.setdefault(cle, time.time())
-            if time.time() - depuis < self.ctx.reessai_s:                    # … sauf de temps en temps (demi-ouvert)
+            if time.time() - depuis < self.ctx.reessai_s:                    # … except from time to time (half-open)
                 if not getattr(self, "_repli_signale", False):
                     self.ctx.journal.ajouter(self.nom, "degradation", {"erreur": "modèle déclaré hors service",
                                                                       "message": (self.ctx.etat_modele.get(cle) or {}).get("message"),
                                                                       "repli": "politique écrite à la main (veille clinique active)"})
-                    self._repli_signale = True     # une seule ligne au journal, pas une par tour
+                    self._repli_signale = True     # a single journal line, not one per turn
                 return self._politique(msgs, changements)
             self.ctx.journal.ajouter(self.nom, "nouvel_essai_modele", {"modele": cle})
-            self.ctx.echecs_modele[cle] = self.ctx.seuil_echecs - 1         # un échec de plus le referme aussitôt
+            self.ctx.echecs_modele[cle] = self.ctx.seuil_echecs - 1         # one more failure closes it again at once
         try:
             agi = self._boucle_llm(msgs, changements)
             if self.ctx.echecs_modele.get(cle):
                 self.ctx.journal.ajouter(self.nom, "modele_retabli", {"modele": cle})
             self.ctx.echecs_modele[cle] = 0
             self.ctx.disjoncteur_depuis.pop(cle, None)
-            self.ctx.etat_modele[cle] = {"disponible": True, "message": "en ligne"}
+            self.ctx.etat_modele[cle] = {"disponible": True, "message": "prêt" if getattr(self.cerveau, "nom", "") == "ollama" else "en ligne"}
             self._repli_signale = False
             return agi
         except Interrompu:
             raise
-        except Exception as e:  # serveur arrêté, délai dépassé, réponse illisible…
+        except Exception as e:  # server stopped, timeout, unreadable answer…
             self.ctx.echecs_modele[cle] = self.ctx.echecs_modele.get(cle, 0) + 1
             if self.ctx.echecs_modele[cle] >= self.ctx.seuil_echecs:
                 self.ctx.disjoncteur_depuis[cle] = time.time()
-                self.ctx.etat_modele[cle] = {"disponible": False, "message": str(e)[:300]}
+                self.ctx.etat_modele[cle] = {"disponible": False, "message": __import__("medimcom.cerveaux", fromlist=["x"]).expliquer(e)[:300]}
             if not self.ctx.repli_sans_ia:
                 raise
             self.ctx.journal.ajouter(self.nom, "degradation", {"erreur": repr(e)[:300], "repli": "politique écrite à la main"})
@@ -299,16 +299,16 @@ class Agent:
         agi, vus, n_appel = False, {}, 0
         interrompre = getattr(self.ctx, "interrompre", None)
         for iteration in range(self.max_iterations):
-            if interrompre and interrompre():     # un clic attend : il passe avant la suite de la réflexion
+            if interrompre and interrompre():     # a click is waiting: it goes before the rest of the reasoning
                 if iteration == 0:
                     raise Interrompu()
                 self.ctx.journal.ajouter(self.nom, "reflexion_abregee", {"raison": "un humain attend", "apres_appels": iteration})
                 break
             debut = time.time()
-            with (self.ctx.attente_modele or nullcontext)():      # les clics sont traités pendant que le modèle répond
+            with (self.ctx.attente_modele or nullcontext)():      # clicks are handled while the model answers
                 try:
                     rep = self.cerveau.chat(messages, schemas)
-                except Exception:            # une seconde chance (délai ponctuel), puis l'erreur remonte
+                except Exception:            # a second chance (one-off delay), then the error is raised
                     time.sleep(self.PAUSE_AVANT_NOUVEL_ESSAI)
                     rep = self.cerveau.chat(messages, schemas)
             duree = round(time.time() - debut, 2)
@@ -342,7 +342,7 @@ class Agent:
                     self.ctx.journal.ajouter(self.nom, "boucle_detectee", {"outil": nom, "arguments": args})
                     fin = True
                 else:
-                    self._par_modele = True       # garde-fous propres aux actions décidées par le modèle en ligne
+                    self._par_modele = True       # safeguards specific to actions decided by the online model
                     try:
                         res = self.executer(nom, args)
                     finally:
@@ -355,7 +355,7 @@ class Agent:
         return agi
 
     def _recevoir(self, msgs) -> None:
-        """Point d'accroche : un agent peut garder trace de certains messages reçus."""
+        """Hook: an agent may keep track of some received messages."""
 
     def _contexte_llm(self, chg: str) -> str:
         return f"CHANGEMENTS DANS LE DOSSIER :\n{chg}\n\nDOSSIER ACTUEL :\n{self.ctx.dossier.resume()}"
@@ -460,15 +460,15 @@ contrôle pour ce patient et le médecin décide."""
             s["prescription"] = {k: str(prescription.get(k) or "")[:120] for k in ("medicament", "dose", "posologie")}
         return res
 
-    # Piste de traitement symptomatique, en premier choix puis en alternative ; chacune est contrôlée par le moteur du
-    # juriste pour CE patient (âge, grossesse, allergies, maladies) avant d'être proposée. Doses de l'adulte seulement.
+    # Symptomatic treatment option, first choice then alternative; each is checked by the jurist's engine for THIS
+    # patient (age, pregnancy, allergies, diseases) before being proposed. Adult doses only.
     PISTES_SYMPTOMES = [
         ("paracetamol", "500 mg", "toutes les 6 heures si besoin, 4 fois par jour au maximum"),
         ("ibuprofene", "400 mg", "toutes les 8 heures au cours d'un repas, 3 fois par jour au maximum"),
     ]
 
     def _piste_traitement(self):
-        """Douleur ou fièvre et aucune prescription : piste de traitement sourcée, contrôlée par le juriste."""
+        """Pain or fever and no prescription: sourced treatment option, checked by the jurist."""
         d = self.ctx.dossier
         if not (self.val("douleur") is True or self.val("fievre") is True):
             return
@@ -507,14 +507,13 @@ contrôle pour ce patient et le médecin décide."""
                     + ".\nAvis médical ; traitement non médicamenteux à envisager.", "raison": self._raison_fiche(), "source": "-"})
 
     def veille_clinique(self):
-        """Veille DÉTERMINISTE (sans modèle, instantanée), indépendante de Grok : l'assistant suit TOUT ce qui passe et
-        prévient le médecin, en clair, avec une alternative sourcée et contrôlée par le moteur du juriste :
-          1. une prescription jugée risquée par le juriste ;
-          2. un message au patient qui conseille un médicament risqué pour CE patient, ou en quantité imprécise ;
-          3. un médicament que le patient déclare prendre (réponse en pictogrammes) et qui est risqué pour lui ;
-          4. un traitement en cours décrit sans nom de médicament (« contre le diabète ») : impossible de vérifier
-             les interactions.
-        Le modèle (s'il est branché) peut compléter, jamais retarder."""
+        """DETERMINISTIC watch (no model, instant), independent of the online model: the assistant follows EVERYTHING
+        and warns the doctor, plainly, with a sourced alternative checked by the jurist's engine:
+          1. a prescription the jurist judged risky;
+          2. a message to the patient advising a medicine that is risky for THIS patient, or in an imprecise quantity;
+          3. a medicine the patient says they take (pictogram answer) that is risky for them;
+          4. a current treatment described without a medicine name ("for diabetes"): interactions cannot be checked.
+        The model (if plugged in) may add to it, never delay it."""
         if not hasattr(self, "_veilles"):
             self._veilles = set()
         d = self.ctx.dossier
@@ -537,7 +536,7 @@ contrôle pour ce patient et le médecin décide."""
                          + ("J'ai préparé la question pour le patient (onglet Assistant, « Questions à poser ») ; vous pouvez aussi remplir la fiche."
                             if a_demander else "Complétez la fiche ; je revérifie aussitôt."))
                 raison = f"Le juriste ne peut pas conclure sans ces informations (prescription #{did})."
-                for m in a_demander:          # l'assistant obtient l'information lui-même, auprès du patient
+                for m in a_demander:          # the assistant gets the information itself, from the patient
                     yield (f"Information manquante ({CHAMPS_LISIBLES.get(m, m)}) : je fais poser la question au patient.",
                            "demander_question_patient", {"question": QUESTIONS_CHAMPS[m], "raison": f"Nécessaire avant de prescrire {med}.", "cle": m})
             else:
@@ -548,11 +547,11 @@ contrôle pour ce patient et le médecin décide."""
             sources = " ; ".join(dict.fromkeys(c["reference_courte"] for c in v.get("constats", [])
                                                if c["niveau"] in ("BLOQUE", "A_REVOIR", "PREUVES_INSUFFISANTES") and c["reference_courte"] != "-")) or "analyse du juriste"
             if any(s["statut"] == "proposee_au_medecin" and s["texte"] == texte for s in d.suggestions.values()):
-                continue                       # même conseil déjà affiché : pas de doublon
+                continue                       # same advice already shown: no duplicate
             yield (f"Prescription #{did} ({med}) jugée « {v['verdict']} » : je préviens le médecin tout de suite et je propose une alternative sourcée.",
                    "suggerer_au_medecin", {"type": "traitement_alternatif" if v["verdict"] != "PREUVES_INSUFFISANTES" else "question_manquante",
                                            "texte": texte, "raison": raison, "source": sources})
-        # 2. Messages au patient qui conseillent un médicament (bloqués par le juriste : l'assistant dit QUOI faire à la place)
+        # 2. Messages to the patient advising a medicine (blocked by the jurist: the assistant says WHAT to do instead)
         for dec in list(d.decisions.values()):
             pc = dec.get("precontrole") or {}
             if dec.get("type") != "envoi_patient" or not pc.get("constats"):
@@ -571,7 +570,7 @@ contrôle pour ce patient et le médecin décide."""
             yield (f"Le message #{dec['id']} conseille {', '.join(meds)} : risqué pour ce patient. Je dis au médecin pourquoi et quoi faire.",
                    "suggerer_au_medecin", {"type": "traitement_alternatif", "texte": texte, "raison": self._raison_fiche(),
                                            "source": " ; ".join(dict.fromkeys(c["reference_courte"] for c in cliniques if c.get("reference_courte"))) or "analyse du juriste"})
-        # 2 bis. Message contraire à l'éthique : le juriste le bloque ; je dis au médecin la pratique attendue
+        # 2 bis. Unethical message: the jurist blocks it; I tell the doctor the expected practice
         for dec in list(d.decisions.values()):
             pc = dec.get("precontrole") or {}
             eth = [c for c in pc.get("constats", []) if str(c.get("regle", "")).startswith("ETHIQUE-")]
@@ -585,7 +584,7 @@ contrôle pour ce patient et le médecin décide."""
                    "suggerer_au_medecin", {"type": "alerte_urgence", "texte": texte,
                                            "raison": "Lecture du message par le juriste et l'assistant.",
                                            "source": " ; ".join(dict.fromkeys(c["reference_courte"] for c in eth))})
-        # 3. Médicaments que le patient déclare prendre
+        # 3. Medicines the patient says they take
         declares = str(self.val("medicaments_declares") or "")
         for brut in [m.strip() for m in declares.split(",") if m.strip()]:
             r = self.ctx.regles.risques_medicament(brut, d.etat)
@@ -600,7 +599,7 @@ contrôle pour ce patient et le médecin décide."""
                    {"type": "alerte_urgence" if any(c["niveau"] == "BLOQUE" for c in motifs) else "traitement_alternatif",
                     "texte": texte, "raison": self._raison_fiche(),
                     "source": " ; ".join(dict.fromkeys(c["reference_courte"] for c in motifs if c.get("reference_courte"))) or "-"})
-        # 0. Conseils périmés : urgence prise en charge, prescription corrigée, fiche complétée -> je retire mes suggestions
+        # 0. Outdated advice: emergency handled, prescription corrected, record completed -> I withdraw my suggestions
         if self.val("urgence") is False:
             for sg in list(d.suggestions.values()):
                 if sg["auteur"] == self.nom and sg["statut"] == "proposee_au_medecin" and sg["type"] == "alerte_urgence" \
@@ -614,7 +613,7 @@ contrôle pour ce patient et le médecin décide."""
                 if dec.get("statut") not in ("PREUVES_INSUFFISANTES",):
                     yield (f"La prescription #{dec.get('id')} n'attend plus d'information : je retire ma suggestion.",
                            "retirer_suggestion", {"id": sg["id"], "raison": "information obtenue ou prescription modifiée"})
-        # 7. Le patient ne comprend pas un message : je conseille le médecin
+        # 7. The patient does not understand a message: I advise the doctor
         for i, e in enumerate(d.fil):
             if e.get("incompris") and ("incompris", i) not in self._veilles:
                 self._veilles.add(("incompris", i))
@@ -626,7 +625,7 @@ contrôle pour ce patient et le médecin décide."""
                                                         "si cela ne suffit pas, faites appel à un interprète en langue des signes.",
                                                "raison": "Réponse du patient : « je ne comprends pas ».",
                                                "source": f"DHATH-12.4 — {self.ctx.regles.base.citer_court('DHATH-12.4')}" if self.ctx.regles.pays == "AE" else "-"})
-        # 8. Le patient refuse l'aide de l'IA : son choix est respecté
+        # 8. The patient refuses the help of the AI: their choice is respected
         if self.val("informe_usage_ia") is False and ("refus_ia",) not in self._veilles:
             self._veilles.add(("refus_ia",))
             yield ("Le patient refuse que l'IA aide à la consultation : je le dis au médecin.", "suggerer_au_medecin",
@@ -635,7 +634,7 @@ contrôle pour ce patient et le médecin décide."""
                              "signes ou un autre moyen qu'il accepte. Ce refus est enregistré au journal.",
                     "raison": "Réponse du patient au message d'accueil.",
                     "source": f"DHA21-4.4 — {self.ctx.regles.base.citer_court('DHA21-4.4')}" if self.ctx.regles.pays == "AE" else "-"})
-        # 9. Le patient dit OUI (allergies, traitements) sans dire lesquels : le médecin précise
+        # 9. The patient says YES (allergies, treatments) without saying which: the doctor specifies
         for cle, nom in (("allergies", "des allergies"), ("traitements_en_cours", "des traitements en cours")):
             if "préciser" in str(self.val(cle) or "") and ("preciser", cle) not in self._veilles:
                 self._veilles.add(("preciser", cle))
@@ -644,7 +643,7 @@ contrôle pour ce patient et le médecin décide."""
                         "texte": f"Le patient dit avoir {nom}. Demandez lesquels (montrez-lui les pictogrammes de médicaments, ou "
                                  "son ordonnance, sa boîte) et écrivez-les dans la fiche.",
                         "raison": "Réponse OUI à la question, sans détail.", "source": "-"})
-        # 5. Le patient exprime une idée de mort POUR LUI-MÊME (pas un récit sur un tiers) : alerte immédiate
+        # 5. The patient expresses a thought of death FOR THEMSELF (not a story about someone else): immediate alert
         from .lecture import risque_suicidaire
         for i, e in enumerate(d.fil):
             texte_patient = e.get("interpretation") if e.get("pictogrammes") else None
@@ -658,7 +657,7 @@ contrôle pour ce patient et le médecin décide."""
                                                         f"Restez avec lui, demandez-lui directement s'il pense à se faire du mal ; si le danger est immédiat : {urgence}.",
                                                "raison": "Lecture de la réponse du patient : " + ", ".join(r["indices"]) + ".",
                                                "source": "Lecture du contexte par MEDIMCOM IA"})
-        # 6. Un message évoque (récit) un médicament pris par le patient lui-même, risqué pour lui : à vérifier
+        # 6. A message mentions (narrative) a medicine taken by the patient themself, risky for them: to be checked
         for dec in list(d.decisions.values()):
             a = ((dec.get("precontrole") or {}).get("analyse") or {}) if dec.get("type") == "envoi_patient" else {}
             ctx_lu = a.get("contexte") or {}
@@ -676,9 +675,9 @@ contrôle pour ce patient et le médecin décide."""
                            "risqué pour lui : je le signale.", "suggerer_au_medecin",
                            {"type": "traitement_alternatif", "texte": texte, "raison": self._raison_fiche(),
                             "source": " ; ".join(dict.fromkeys(c["reference_courte"] for c in motifs)) or "-"})
-        # 10. Douleur ou fièvre sans traitement : piste de traitement sourcée et contrôlée
+        # 10. Pain or fever without treatment: sourced and checked treatment option
         yield from self._piste_traitement()
-        # 4. Traitement en cours sans nom de médicament : impossible de vérifier les interactions
+        # 4. Current treatment without a medicine name: interactions cannot be checked
         tt = self.val("traitements_en_cours")
         if isinstance(tt, str) and tt.strip() and normaliser_simple(tt) not in ("aucun", "non", "rien", "neant", "none"):
             connus = analyser_medicaments(tt, self.ctx.regles.kb.get("medicaments", {}))
@@ -701,13 +700,13 @@ contrôle pour ce patient et le médecin décide."""
             f"{noms[k]} : {lisible(x['valeur'])}" for k, x in d.etat.items() if k in noms) + "."
 
     def _conseil(self, tete, motifs, alt, prescripteur, mode, ref) -> str:
-        """Message clair : quoi (1re ligne), pourquoi (puces), alternative contrôlée par le moteur du juriste."""
+        """Clear message: what (1st line), why (bullets), alternative checked by the jurist's engine."""
         d = self.ctx.dossier
         pourquoi = list(dict.fromkeys(c["detail"].replace("Pour ce patient : ", "").split(". ")[0].rstrip(".") for c in motifs))
         texte = f"{tete}.\nPourquoi :\n• " + "\n• ".join(pourquoi) + "."
         if alt:
-            # L'alternative est d'abord soumise au moteur de règles du juriste, pour CE patient (contre-indications,
-            # allergies) : on ne propose jamais une alternative qui serait elle-même à revoir sans le dire.
+            # The alternative is first submitted to the jurist's rule engine, for THIS patient (contraindications,
+            # allergies): we never propose an alternative that would itself need review without saying so.
             avis = self.ctx.regles.verifier_prescription(
                 {"medicament": alt["medicament"], "prescripteur": prescripteur, "auteur": "medecin", "mode": mode}, d.etat)
             risques = [c for c in avis["constats"] if c["niveau"] in ("BLOQUE", "A_REVOIR")
@@ -728,8 +727,8 @@ contrôle pour ce patient et le médecin décide."""
     GROSSESSE = re.compile(r"grossesse|enceinte|pregnan|test de grossesse|β-?hcg|beta-?hcg|حمل", re.I)
 
     def garde_fou_outil(self, outil, args):
-        """Le modèle en ligne ne doit pas insister sur une question réglée : parler de grossesse à un homme, ou à une
-        patiente dont la non-grossesse est confirmée, est inutile et blessant (retour d'usage du 7 novembre)."""
+        """The online model must not insist on a settled question: talking about pregnancy to a man, or to a
+        patient whose non-pregnancy is confirmed, is useless and hurtful (field feedback of 7 November)."""
         if not getattr(self, "_par_modele", False) or outil not in ("suggerer_au_medecin", "demander_question_patient", "envoyer_message"):
             return None
         texte = " ".join(str(args.get(k, "")) for k in ("texte", "question", "contenu"))
@@ -743,8 +742,8 @@ contrôle pour ce patient et le médecin décide."""
         return None
 
     def _maj_etat(self, cle, valeur, source, confirme=False):
-        """Garde-fou : l'assistant ne peut pas « confirmer » lui-même un fait que personne n'a rapporté, ni remplacer
-        par une valeur NON confirmée un fait que le médecin ou le patient a confirmé."""
+        """Safeguard: the assistant cannot itself "confirm" a fact nobody reported, nor replace with an
+        UNconfirmed value a fact the doctor or the patient confirmed."""
         d = self.ctx.dossier
         actuel = d.etat.get(cle)
         if actuel and actuel["confirme"] and not confirme and str(actuel["valeur"]).lower() != str(valeur).lower():
@@ -759,7 +758,7 @@ contrôle pour ce patient et le médecin décide."""
 
     def politique_simulee(self, msgs, changements):
         d, base = self.ctx.dossier, self.ctx.regles.base
-        # 1. Intégrer les faits nouveaux rapportés par le traducteur ou le médecin
+        # 1. Integrate the new facts reported by the translator or the doctor
         for c in changements:
             if c["type"] == "echange":
                 for cle, valeur in c["contenu"]["donnees"].items():
@@ -773,7 +772,7 @@ contrôle pour ce patient et le médecin décide."""
             yield ("Signe d'urgence dans l'état du patient : j'alerte le médecin en priorité.", "suggerer_au_medecin",
                    {"type": "alerte_urgence", "texte": "Urgence : utiliser le jeu de pictogrammes d'urgence et orienter sans délai.",
                     "raison": "urgence = vrai dans l'état du patient", "source": "DHATH-12.4"})
-        # 3. Repérer de moi-même une information indispensable manquante
+        # 3. Spot on my own a missing piece of essential information
         sexe, age = self.val("sexe"), self.val("age")
         if sexe == "F" and age is not None and 12 <= age <= 50 and "grossesse" not in d.etat:
             if not any(q.get("cle") == "grossesse" for q in d.questions_a_poser):
@@ -784,7 +783,7 @@ contrôle pour ce patient et le médecin décide."""
                 yield ("Je préviens aussi le médecin.", "suggerer_au_medecin",
                        {"type": "question_manquante", "texte": "Vérifier une éventuelle grossesse avant tout traitement.",
                         "raison": f"Patiente de {age} ans ; grossesse non renseignée.", "source": f"ML16-A4-2 — {base.citer_court('ML16-A4-2')}"})
-        # 4. Répondre aux autres agents
+        # 4. Answer the other agents
         for m in msgs:
             if m.de == "juriste" and m.type == "demande":
                 en_attente = [q for q in d.questions_a_poser if q["statut"] == "en_attente"]
@@ -800,7 +799,7 @@ contrôle pour ce patient et le médecin décide."""
                        "suggerer_au_medecin",
                        {"type": "traitement_alternatif", "texte": "Envisager un antalgique compatible avec la grossesse (la source cite le paracétamol), selon votre jugement.",
                         "raison": m.contenu[:140], "source": f"FDA20-NSAID — {base.citer_court('FDA20-NSAID')}"})
-        # 5. Retirer de moi-même ce qui est devenu inutile
+        # 5. Withdraw on my own what has become useless
         if self.val("grossesse") is not None:
             for s in list(d.suggestions.values()):
                 if s["auteur"] == self.nom and s["statut"] == "proposee_au_medecin" and s["type"] == "question_manquante" and "grossesse" in s["texte"]:
@@ -809,8 +808,8 @@ contrôle pour ce patient et le médecin décide."""
 
 
 def precontrole_a_jour(dec: dict, dossier) -> bool:
-    """Le contrôle du contenu d'une proposition vaut pour un texte ET un état du patient : si le médecin saisit
-    « enceinte » après coup, « et du tramadol » doit être recontrôlé."""
+    """The check of a proposal's content holds for one text AND one patient state: if the doctor enters
+    "pregnant" afterwards, "et du tramadol" must be checked again."""
     pc = dec.get("precontrole") or {}
     return pc.get("texte") == dec.get("texte") and pc.get("etat_version") == dossier.etat_version
 
@@ -880,7 +879,7 @@ changer ; tu cites toujours la fiche et le texte ; sans texte applicable, tu le 
         return self._enregistrer(d, self.ctx.regles.verifier_prescription({k: d.get(k) for k in champs}, self.ctx.dossier.etat))
 
     def _precontroler_envoi(self, decision_id):
-        """Contrôle du contenu AVANT la validation : un message dangereux ne doit même pas pouvoir être validé."""
+        """Content check BEFORE validation: a dangerous message must not even be validatable."""
         d = self._decision(decision_id, "envoi_patient")
         if not d:
             return f"Décision {decision_id} introuvable ou pas un message au patient."
@@ -894,12 +893,12 @@ changer ; tu cites toujours la fiche et le texte ; sans texte applicable, tu le 
         d["precontrole"] = {"verdict": v["verdict"], "texte": d.get("texte"), "analyse": v.get("analyse_contenu", {}),
                             "etat_version": self.ctx.dossier.etat_version, "alternatives": v.get("alternatives", []),
                             "constats": [{k: c.get(k) for k in garder} for c in motifs],
-                            # ce que le juriste a compris du message (récit, question…) et les fautes corrigées
+                            # what the jurist understood of the message (narrative, question…) and the corrected typos
                             "lecture": [{k: c.get(k) for k in garder} for c in v.get("informations", [])
                                         if str(c.get("regle", "")).startswith(("LECTURE", "CONTEXTE"))]}
         self.ctx.dossier._changer(self.nom, "precontrole", {"id": d["id"], "verdict": v["verdict"], "motifs": [c["regle"] for c in motifs]})
         if v["verdict"] == "BLOQUE":
-            # Verdict enregistré (journal, onglet Droit) : la proposition passe au statut BLOQUE et ne peut plus être validée.
+            # Verdict recorded (journal, Law tab): the proposal becomes BLOQUE and can no longer be validated.
             self._enregistrer(d, {**v, "precontrole": True})
             self.verdict_precedent[d["id"]] = "BLOQUE"
         return {"decision_id": d["id"], "verdict": v["verdict"], "motifs": [c["detail"] for c in motifs]}
@@ -909,8 +908,8 @@ changer ; tu cites toujours la fiche et le texte ; sans texte applicable, tu le 
         if not d:
             return f"Décision {decision_id} introuvable ou pas un message au patient."
         if d["statut"] == "attente_validation":
-            # Contrôler maintenant bloquerait définitivement la proposition (« non validé ») avant même que le médecin
-            # l'ait vue : défaut observé avec un vrai modèle. Le contrôle se fait après la validation du médecin.
+            # Checking now would block the proposal for good ("not validated") before the doctor has even seen it:
+            # defect observed with a real model. The check happens after the doctor's validation.
             return (f"Refusé : la proposition #{d['id']} attend encore la validation du médecin ; "
                     "je la contrôlerai quand il l'aura validée (aucun verdict enregistré).")
         if d["statut"] not in ("a_verifier", "CONFORME", "BLOQUE"):
@@ -933,7 +932,7 @@ changer ; tu cites toujours la fiche et le texte ; sans texte applicable, tu le 
         self.lacunes_signalees.add(lacune_id or sujet)
         return self.ctx.dossier.ajouter_lacune(self.nom, sujet, detail, lacune_id)
 
-    # ------------------------------------------------------------------ politique sans IA
+    # ------------------------------------------------------------------ policy without AI
     def politique_simulee(self, msgs, changements):
         d = self.ctx.dossier
         for dec in list(d.decisions.values()):
@@ -959,7 +958,7 @@ changer ; tu cites toujours la fiche et le texte ; sans texte applicable, tu le 
                 quoi = "Message destiné au patient" if t == "envoi_patient" else "Demande de partage de données"
                 yield (f"{quoi} #{dec['id']} : je le contrôle.", outil, {"decision_id": dec["id"]})
                 yield from self._reagir(self.dernier_verdict, dec)
-        # Obligations nées de l'état du patient (ex. déclaration d'une maladie transmissible)
+        # Obligations arising from the patient's state (e.g. notification of a communicable disease)
         nouvelles = [o for o in self.ctx.regles.obligations_etat(d.etat) if o["regle"] not in self.obligations_signalees]
         if nouvelles:
             yield ("L'état du patient fait naître des obligations légales : je les rappelle au médecin avec leurs sources.",
@@ -975,7 +974,7 @@ changer ; tu cites toujours la fiche et le texte ; sans texte applicable, tu le 
                 yield (f"Question de {m.de} : je cherche les textes applicables dans la base avant de répondre.",
                        "consulter_base", {"question": m.contenu, "nombre": 5})
                 res = [r for r in self.ctx.regles.base.chercher(m.contenu, k=12)
-                       if self.ctx.regles.applicable(r["fiche"])][:5]          # textes du pays choisi + références mondiales
+                       if self.ctx.regles.applicable(r["fiche"])][:5]          # texts of the chosen country + global references
                 lac = self.ctx.regles.base.lacunes_liees([r["fiche"] for r in res[:3]], minimum=2)
                 reponse = " | ".join(f"{r['fiche']} ({r['base']}) {r['titre']} — {self.ctx.regles.base.citer_court(r['fiche'])}" for r in res)
                 note = f" Lacunes liées : {', '.join(lac)}." if lac else ""
@@ -998,7 +997,7 @@ changer ; tu cites toujours la fiche et le texte ; sans texte applicable, tu le 
         self._alertes_pc.add(cle)
         analyse = pc.get("analyse") or {}
         if analyse.get("evocation") or analyse.get("a_confirmer"):
-            # Les agents se disent ce qu'ils ont compris : l'assistant sait que ce n'est pas une consigne
+            # The agents tell each other what they understood: the assistant knows it is not an instruction
             lu = analyse.get("evocation") or analyse.get("a_confirmer")
             yield (f"Message #{dec['id']} : {lu}. Je dis à l'assistant ce que j'ai compris : il suit la consultation.",
                    "envoyer_message", {"destinataire": "assistant", "type": "information",
@@ -1131,9 +1130,9 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
                 {"decision_id": I}, ["decision_id"])),
         }
 
-    MAX_LIBRES = 3      # messages sans question ni prescription liée, en attente de validation
+    MAX_LIBRES = 3      # messages with no question or linked prescription, awaiting validation
 
-    # éléments que l'agent ne peut jamais retirer d'une traduction : ce qui change le sens ou la sécurité
+    # elements the agent can never remove from a translation: what changes the meaning or safety
     INDISPENSABLES = ("NE_PAS", "MAXIMUM", "URGENCE", "STOP")
     PREFIXES_INDISPENSABLES = ("DOSE:", "CHIFFRE:", "MEDICAMENT:")
 
@@ -1141,7 +1140,7 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
         return [x for p in pictos for x in p.split("+")]
 
     def _verifier_choix(self, auto, choix):
-        """Contrôle le choix de pictogrammes fait par l'agent ; renvoie un motif de refus, ou None."""
+        """Checks the pictogram choice made by the agent; returns a reason for refusal, or None."""
         if not isinstance(choix, list) or not 1 <= len(choix) <= 12:
             return "il faut entre 1 et 12 pictogrammes"
         choix = [str(x) for x in choix]
@@ -1151,7 +1150,7 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
         from collections import Counter
         garder = Counter(x for x in self._elements(auto) if x in self.INDISPENSABLES or x.startswith(self.PREFIXES_INDISPENSABLES))
         dispo = Counter(self._elements(choix))
-        manquants = [x for x, n in garder.items() if dispo[x] < n]     # compté : deux limites restent deux limites
+        manquants = [x for x, n in garder.items() if dispo[x] < n]     # counted: two limits stay two limits
         if manquants:
             return f"élément indispensable retiré de la traduction : {', '.join(manquants)}"
         return None
@@ -1176,7 +1175,7 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
         demande_accord = (contenu_type == "traitement" and prescription_id) or (q and q.get("cle") in ("consentement_traitement", "informe_usage_ia"))
         if demande_accord and not any(x in self.ACCORD for p in t["pictogrammes"] for x in p.split("+")):
             accord = next((a for a in self.ACCORD if picto_connu(a)), None)
-            if accord:          # la question d'accord doit être VUE par le patient, sinon son OUI ne vaut pas accord
+            if accord:          # the consent question must be SEEN by the patient, otherwise their YES is not consent
                 pos = t["pictogrammes"].index("QUESTION") if "QUESTION" in t["pictogrammes"] else len(t["pictogrammes"])
                 t["pictogrammes"] = t["pictogrammes"][:pos] + [accord] + t["pictogrammes"][pos:]
                 t["non_traduits"] = [m for m in t["non_traduits"] if "accord" not in m.lower()]
@@ -1185,8 +1184,8 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
             if motif:
                 return f"Refusé : {motif}. Traduction automatique proposée : {' '.join(t['pictogrammes'])}."
             t["pictogrammes"], choisi_par = [str(x) for x in pictogrammes], "choix de l'agent traducteur"
-        rapproches = t.get("rapproches") or {}      # mots inconnus rapprochés en arrière-plan (faute, conjugaison, sens)
-        for mot, corrige in (t.get("corrections") or {}).items():   # fautes de frappe ou de dictée corrigées
+        rapproches = t.get("rapproches") or {}      # unknown words matched in the background (typo, conjugation, meaning)
+        for mot, corrige in (t.get("corrections") or {}).items():   # typing or dictation errors corrected
             rapproches.setdefault(mot, f"lu comme « {corrige} »")
         did = self.ctx.dossier.ajouter_decision(self.nom, {
             "type": "envoi_patient", "texte": texte, "contenu_type": contenu_type, "valide_par": None,
@@ -1200,10 +1199,10 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
         return f"Proposition #{did} soumise au médecin : {' '.join(t['pictogrammes'])}.{manque}"
 
     FAITS_OUI_NON = {"grossesse", "urgence", "consentement_traitement", "informe_usage_ia", "nausees", "fievre", "douleur"}
-    # Questions à réponse OUI / NON qui portent sur une LISTE : NON = « aucune » ; OUI = à préciser (le juriste et
-    # l'assistant ne considèrent pas le champ comme renseigné tant que le médecin n'a pas écrit lesquelles)
+    # YES / NO questions about a LIST: NO = "none"; YES = to be specified (the jurist and the assistant do not consider
+    # the field filled until the doctor has written which ones)
     FAITS_LISTE = {"allergies": "aucune", "traitements_en_cours": "aucun"}
-    # Un accord n'est un consentement que si la question d'accord a vraiment été MONTRÉE en pictogrammes
+    # An agreement is consent only if the consent question was really SHOWN in pictograms
     ACCORD = ("D_ACCORD", "ACCEPTER", "ACCORD", "CONSENTEMENT")
 
     def _recevoir(self, msgs):
@@ -1215,8 +1214,8 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
                     pass
 
     def _question_ouverte(self):
-        """La question visée est le DERNIER message envoyé au patient, s'il attend encore une réponse.
-        Renvoie (decision, cle, libelle) ou (None, None, None)."""
+        """The question concerned is the LAST message sent to the patient, if it still awaits an answer.
+        Returns (decision, key, label) or (None, None, None)."""
         d = self.ctx.dossier
         envoyes = [x for x in d.decisions.values() if x.get("type") == "envoi_patient" and x["statut"] == "envoye"]
         if not envoyes or envoyes[-1]["id"] in self.repondus:
@@ -1242,8 +1241,8 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
         oui = pictos[0] in ("OUI", "D_ACCORD") if oui_non else None
         if cle in ("consentement_traitement", "informe_usage_ia") and oui_non and dec is not None \
                 and not any(x in self.ACCORD for p in dec.get("pictogrammes") or [] for x in p.split("+")):
-            # Garde-fou éthique : « vous ? » n'est pas « êtes-vous d'accord ? ». Sans pictogramme d'accord montré, le OUI
-            # n'est pas enregistré comme consentement ; le médecin est prévenu.
+            # Ethical safeguard: "you?" is not "do you agree?". Without an agreement pictogram shown, the YES is not
+            # recorded as consent; the doctor is warned.
             details["accord_non_valable"] = True
             self.ctx.messagerie.envoyer(self.nom, "medecin", "alerte",
                                         f"Réponse « {pictos[0].lower()} » au message #{dec['id']} NON enregistrée comme accord : la question "
@@ -1255,12 +1254,12 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
             donnees[cle] = self.FAITS_LISTE[cle] if not oui else "oui, à préciser"
         elements_reponse = {x for p in pictos for x in p.split("+")}
         if "COMPRENDRE" in elements_reponse and elements_reponse & {"NE_PAS", "NON"}:
-            details["incompris"] = True            # « je ne comprends pas » : l'assistant conseille le médecin
-        if "URGENCE" in pictos:          # le bouton d'urgence du patient prime sur tout le reste
+            details["incompris"] = True            # "I don't understand": the assistant advises the doctor
+        if "URGENCE" in pictos:          # the patient's emergency button takes precedence over everything else
             donnees["urgence"] = True
         donnees.update(self._faits_douleur(pictos))
-        # Médicament montré par le patient (« qu'avez-vous pris ? » -> MEDICAMENT:TRAMADOL) : un fait que l'assistant et
-        # le juriste confrontent à sa fiche (grossesse, âge, allergies…). Rien n'est déduit d'une réponse niée.
+        # Medicine shown by the patient ("what did you take?" -> MEDICAMENT:TRAMADOL): a fact the assistant and the
+        # jurist check against their record (pregnancy, age, allergies…). Nothing is inferred from a negated answer.
         elements = [x for p in pictos for x in p.split("+")]
         meds = [x.split(":", 1)[1].lower() for x in elements if x.startswith("MEDICAMENT:")]
         if meds and not {"NON", "NE_PAS"} & set(elements):
@@ -1279,10 +1278,10 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
 
     @staticmethod
     def _faits_douleur(pictos):
-        """Lecture structurée d'une douleur ou de symptômes signalés par le patient : TETE+DOULEUR (ou TETE puis DOULEUR),
-        un chiffre de 0 à 10 (intensité) et une DURÉE (« 3 » suivi de « semaine » = depuis 3 semaines) -> douleur,
-        localisation, intensité, durée. Rien n'est déduit si la réponse contient NON ou NE_PAS (sens ambigu : le médecin
-        lit alors la réponse telle quelle)."""
+        """Structured reading of pain or symptoms reported by the patient: HEAD+PAIN (or HEAD then PAIN),
+        a number from 0 to 10 (intensity) and a DURATION ("3" followed by "week" = for 3 weeks) -> pain,
+        location, intensity, duration. Nothing is inferred if the answer contains NO or DO_NOT (ambiguous meaning:
+        the doctor then reads the answer as it is)."""
         elements = [x for p in pictos for x in p.split("+")]
         if {"NON", "NE_PAS"} & set(elements):
             return {}
@@ -1301,7 +1300,7 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
         faits["douleur"] = True
         lieux = [x for p in combiner_automatiquement(pictos) if "+" in p and "DOULEUR" in p.split("+")
                  for x in p.split("+") if x in PARTIES_DU_CORPS]
-        if len(lieux) == 1 and sum(x in PARTIES_DU_CORPS for x in elements) == 1:   # plusieurs parties du corps : ambigu
+        if len(lieux) == 1 and sum(x in PARTIES_DU_CORPS for x in elements) == 1:   # several body parts: ambiguous
             faits["localisation_douleur"] = picto_libelle(lieux[0])
         if len(intensites) == 1 and 0 <= intensites[0] <= 10:
             faits["intensite_douleur"] = intensites[0]
@@ -1336,25 +1335,25 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
     def politique_simulee(self, msgs, changements):
         d = self.ctx.dossier
         envois = [x for x in d.decisions.values() if x.get("type") == "envoi_patient"]
-        # 0. Réponses du patient (il choisit des pictogrammes ; je les rapporte sans les interpréter au-delà)
+        # 0. Patient answers (they choose pictograms; I report them without interpreting further)
         for r in list(self.reponses_patient):
             yield (f"Le patient a répondu par pictogrammes {r} : je rapporte sa réponse dans le dossier.",
                    "rapporter_reponse_patient", {"pictogrammes": r})
-        # 0 bis. Informations que le médecin veut transmettre au patient
+        # 0 bis. Information the doctor wants to pass on to the patient
         for m in msgs:
             if m.de == "medecin" and m.type == "demande":
                 yield ("Le médecin veut informer le patient : je traduis son texte et le lui soumets pour validation.",
                        "proposer_au_medecin", {"texte": m.contenu, "contenu_type": "information"})
                 yield from self._signaler_manques()
-        # 1. Questions de l'assistant ou du médecin à faire traduire
+        # 1. Assistant or doctor questions to translate
         for q in d.questions_a_poser:
             if q.get("auteur") != "medecin" and not self.ctx.questions_assistant_auto and not q.get("autorisee"):
-                continue                       # le médecin la choisira (ou la refusera) dans l'onglet Assistant
+                continue                       # the doctor will pick it (or refuse it) in the Assistant tab
             if q["statut"] == "en_attente" and not any(x.get("source_question") == q["id"] and x["statut"] not in ("rejete",) for x in envois):
                 yield (f"L'assistant veut poser « {q['question']} » : je la traduis et la soumets au médecin.",
                        "proposer_au_medecin", {"texte": q["question"], "contenu_type": "question", "question_id": q["id"]})
                 yield from self._signaler_manques()
-        # 2. Décisions du médecin jugées conformes : expliquer le traitement
+        # 2. Doctor decisions judged compliant: explain the treatment
         for p in list(d.decisions.values()):
             if p.get("type") == "prescription" and p["statut"] in ("CONFORME", "MAINTENUE") \
                     and not any(x.get("source_prescription") == p["id"] for x in envois):
@@ -1363,13 +1362,13 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
                        "question d'accord (consentement), pour validation par le médecin.",
                        "proposer_au_medecin", {"texte": texte, "contenu_type": "traitement", "prescription_id": p["id"]})
                 yield from self._signaler_manques()
-        # 2 bis. Question devenue inutile (le médecin a rempli la fiche entre-temps) : je retire ma proposition
+        # 2 bis. Question that became useless (the doctor filled in the record meanwhile): I withdraw my proposal
         for x in envois:
             q = next((q for q in d.questions_a_poser if q["id"] == x.get("source_question")), None)
             if x["auteur"] == self.nom and x["statut"] == "attente_validation" and q and q.get("cle") and q["statut"] == "repondue":
                 yield (f"La réponse à « {q['question']} » est déjà dans la fiche : je retire la proposition #{x['id']}, devenue inutile.",
                        "retirer_proposition", {"decision_id": x["id"], "raison": "information déjà obtenue"})
-        # 3. Messages validés et jugés conformes : envoyer
+        # 3. Validated messages judged compliant: send
         for x in envois:
             if x["auteur"] == self.nom and x["statut"] == "CONFORME" and x.get("valide_par"):
                 yield (f"Le message #{x['id']} est validé par {x['valide_par']} et conforme : je l'envoie au patient.",
@@ -1382,7 +1381,7 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
             from .surete import analyser_message
             a = analyser_message(d.get("texte", ""), self.ctx.regles.kb.get("medicaments", {}))
             if a["incitation_au_mal"] or (a["consigne_medicament"] and not d.get("source_prescription")):
-                self.derniere = None       # le juriste va bloquer ce message : inutile de parler de pictogrammes
+                self.derniere = None       # the jurist will block this message: no point talking about pictograms
                 return
             yield ("Certains mots n'ont pas de pictogramme : je préviens le médecin plutôt que d'inventer.", "envoyer_message",
                    {"destinataire": "medecin", "type": "information",
@@ -1394,12 +1393,12 @@ tu n'ajoutes aucune information médicale qui n'est pas dans le texte du médeci
 INSTITUTIONS = {"autorite_sante", "hopital", "cellule_crise"}
 MANDATS = json.loads((Path(__file__).parent / "mandats.json").read_text(encoding="utf-8"))
 BASES_CONTRAIGNANTES = {"LOI", "NORME"}
-# Thèmes des fiches qui fondent un pouvoir d'agir (et pas seulement un droit ou un secret).
+# Themes of provisions that ground a power to act (not just a right or a secret).
 THEMES_POUVOIRS = {"emergency powers", "outbreak response", "isolation", "institutional cooperation", "crisis governance", "emergency use"}
 
 
 def refus_base_de_mesure(institution: str, base_legale: str, base) -> str | None:
-    """Raison du refus d'une base légale pour une mesure, ou None si elle est acceptable."""
+    """Reason for refusing a legal basis for a measure, or None if it is acceptable."""
     f = base.fiches.get(base_legale)
     if not f:
         return f"« {base_legale} » n'est pas une fiche de la base. Demandez la base légale au juriste."
@@ -1419,7 +1418,7 @@ def refus_base_de_mesure(institution: str, base_legale: str, base) -> str | None
 
 
 class Institution(Agent):
-    """Participant institutionnel : ne voit que SES messages (information fragmentée), jamais le dossier du patient."""
+    """Institutional participant: sees only ITS messages (fragmented information), never the patient record."""
     mandat = ""
 
     def __init__(self, ctx, cerveau):
@@ -1473,7 +1472,7 @@ class Institution(Agent):
         return f"Mesure enregistrée : {mesure} [{m['citation']}]"
 
     def _demande(self, finalite, destinataire_type, lieu, texte, anonymise=None, consentement_ecrit=None):
-        # Une institution demande pour elle-même (ou pour publier) : elle ne peut pas se faire passer pour une autre.
+        # An institution asks for itself (or to publish): it cannot pose as another one.
         destinataire_type = "public" if destinataire_type == "public" else self.nom
         demande = {"finalite": finalite, "destinataire_type": destinataire_type, "lieu": lieu}
         if anonymise is not None:

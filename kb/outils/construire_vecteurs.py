@@ -1,13 +1,12 @@
-"""Construit la base vectorielle à partir des morceaux de la base (kb/index/chunks.jsonl).
+"""Builds the vector store from the chunks of the base (kb/index/chunks.jsonl).
 
-    ollama pull bge-m3                                            # une fois (modèle d'encodage multilingue, local)
+    ollama pull bge-m3                                            # once (multilingual embedding model, local)
     python kb/outils/construire_vecteurs.py                       # -> kb/index/vecteurs_ollama-bge-m3.jsonl
-    python kb/outils/construire_vecteurs.py --encodeur hachage    # sans modèle (repli, recherche par mots)
+    python kb/outils/construire_vecteurs.py --encodeur hachage    # without a model (fallback, keyword search)
 
-Le fichier produit contient, pour chaque morceau, le texte, les métadonnées (source, article, lien officiel,
-niveau de vérification) et le vecteur : il se charge tel quel dans Chroma, Qdrant, FAISS, pgvector ou la base
-vectorielle de l'UIT (voir kb/README.md). Les morceaux sont d'abord régénérés depuis la base, pour que l'index
-corresponde toujours aux fiches actuelles.
+The file produced contains, for each chunk, the text, the metadata (source, article, official link, verification
+level) and the vector: it loads as is into Chroma, Qdrant, FAISS, pgvector or the ITU vector store (see
+kb/README.md). The chunks are first regenerated from the base, so that the index always matches the current provisions.
 """
 import argparse
 import json

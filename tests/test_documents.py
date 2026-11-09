@@ -1,5 +1,5 @@
-"""Documents du patient : texte lu directement ; photo lue par le modèle en ligne (faux serveur compatible OpenAI) ;
-sans modèle, la photo est jointe et le médecin est prévenu. Les faits extraits sont NON confirmés et vérifiés."""
+"""Patient documents: text read directly; photo read by the online model (fake OpenAI-compatible server);
+without a model, the photo is attached and the doctor is warned. Extracted facts are UNconfirmed and checked."""
 import base64
 import json
 import sys

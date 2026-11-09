@@ -1,15 +1,15 @@
-"""Analyse des tests de compréhension des pictogrammes (voir docs/pictogrammes/PROTOCOLE_TESTS.md).
+"""Analysis of the pictogram comprehension tests (see docs/pictogrammes/PROTOCOLE_TESTS.md).
 
-    python pictogrammes/analyse_tests.py reponses.csv                     # clé par défaut : pictogrammes/test/cle_livret.csv
+    python pictogrammes/analyse_tests.py reponses.csv                     # default key: pictogrammes/test/cle_livret.csv
     python pictogrammes/analyse_tests.py reponses.csv --seuil-accepte 0.85
 
-Codes des juges : C = correct, P = partiellement correct, F = faux, N = « je ne sais pas » / pas de réponse.
-Sortie : un tableau par item (taux de réponses correctes, intervalle de confiance à 95 %, décision), l'accord
-entre les deux juges (kappa de Cohen), et les réponses où les juges ne sont pas d'accord.
-Désaccord : les juges se réunissent et écrivent le code retenu dans la colonne code_consensus ; la réponse est alors
-comptée avec ce code (le kappa reste calculé sur les codes indépendants). Sans consensus, elle n'est pas comptée.
-Les seuils de décision sont un CHOIX DE L'ÉQUIPE (paramétrables), pas ceux d'une norme. Avec moins de 20 réponses
-pour un item, la décision est marquée « provisoire » (intervalle de confiance large).
+Judges' codes: C = correct, P = partly correct, F = wrong, N = "I don't know" / no answer.
+Output: a table per item (rate of correct answers, 95 % confidence interval, decision), the agreement
+between the two judges (Cohen's kappa), and the answers on which the judges disagree.
+Disagreement: the judges meet and write the chosen code in the code_consensus column; the answer is then
+counted with this code (kappa is still computed on the independent codes). Without consensus, it is not counted.
+The decision thresholds are a TEAM CHOICE (configurable), not those of a standard. With fewer than 20 answers
+for an item, the decision is marked "provisional" (wide confidence interval).
 """
 import sys as _sys
 for _flux in (_sys.stdout, _sys.stderr):
@@ -64,7 +64,7 @@ def analyser(reponses: list[dict], cle: dict, seuil_accepte=0.8, seuil_revoir=0.
                 desaccords.append({"ligne": i, "participant": r.get("participant"), "item": r["item"], "juge1": j1, "juge2": j2,
                                    "consensus": consensus if consensus in CODES else "", "reponse": r.get("reponse_transcrite", "")})
                 if consensus not in CODES:
-                    continue                               # à trancher : pas compté tant qu'il n'y a pas de consensus
+                    continue                               # to settle: not counted until there is a consensus
                 j1 = consensus
         par_item[r["item"]].append(j1)
     items = []

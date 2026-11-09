@@ -1,29 +1,29 @@
-"""Constitue sur votre ordinateur une base de connaissances MEDIMCOM IA plus volumineuse, filtrée et rangée
-selon les exigences du hackathon UIT AI for Good.
+"""Builds on your computer a larger MEDIMCOM IA knowledge base, filtered and organised according to the
+requirements of the ITU AI for Good hackathon.
 
-    python outils/constituer_base_v2.py                                   # tout -> ~/MEDIMCOM_base_v2
-    python outils/constituer_base_v2.py --ancienne-base ~/MEDIMCOM_base   # facultatif : reprend aussi les PDF déposés dans une ancienne base
-    python outils/constituer_base_v2.py --audit-pictos                    # inventaire des étiquettes ARASAAC, sans images
-    python outils/constituer_base_v2.py --etapes juridique                # une seule étape : juridique, pictogrammes, donnees
-    python outils/constituer_base_v2.py --sans-reseau                     # rangement + fichiers déposés à la main uniquement
+    python outils/constituer_base_v2.py                                   # everything -> ~/MEDIMCOM_base_v2
+    python outils/constituer_base_v2.py --ancienne-base ~/MEDIMCOM_base   # optional: also takes the PDFs dropped in an older base
+    python outils/constituer_base_v2.py --audit-pictos                    # inventory of ARASAAC labels, without images
+    python outils/constituer_base_v2.py --etapes juridique                # one step only: juridique, pictogrammes, donnees
+    python outils/constituer_base_v2.py --sans-reseau                     # filing + manually dropped files only
 
-Ce que fait le script
+What the script does
 
-1. Base juridique (catalogue : kb/corpus/catalogue_sources.json, 87 documents officiels et ouverts)
-   Cameroun d'abord (santé, handicap, numérique, cybersécurité, données, institutions), puis ONU, OMS, UNESCO, OCDE,
-   Conseil de l'Europe, Union africaine et pays hôte. Pour chaque document : téléchargement (ou recherche du PDF dans
-   la page officielle), empreinte SHA-256, extraction du texte, découpage par article, fiche de métadonnées et morceaux
-   prêts pour la recherche (RAG). Ce qui ne se télécharge pas est listé dans a_telecharger_a_la_main.md ; déposez le
-   fichier dans entrees_manuelles/<ID>.pdf et relancez.
-2. Pictogrammes de consultation (vocabulaire : kb/corpus/vocabulaire_consultation.json, tri :
-   kb/corpus/filtres_pictogrammes.json). ARASAAC par correspondance exacte de mot-clé pour chaque notion, plus les
-   pictogrammes dont les étiquettes relèvent de la santé ; liste noire (animaux, plantes, lieux d'Aragon, loisirs,
-   maquillage…) ; Mulberry (catégories santé) et OpenMoji (santé, corps, visages malades). Tout refus est tracé.
-3. Références médicales construites de zéro : fiches OMS fr / en / ar, MedlinePlus, lexique Wikidata (base_v2_references.py).
-4. Jeu de données de l'assistant (cas fictifs) et jeux d'entraînement avec fiche de données (base_v2_entrainement.py).
-   Aucune ancienne base n'est nécessaire ; --ancienne-base reprend seulement, en plus, ce qui y avait été déposé à la main.
+1. Legal base (catalogue: kb/corpus/catalogue_sources.json, 87 official and open documents)
+   Cameroon first (health, disability, digital, cybersecurity, data, institutions), then UN, WHO, UNESCO, OECD,
+   Council of Europe, African Union and host country. For each document: download (or search for the PDF in the
+   official page), SHA-256 fingerprint, text extraction, split by article, metadata record and chunks ready for
+   retrieval (RAG). What cannot be downloaded is listed in a_telecharger_a_la_main.md; drop the file in
+   entrees_manuelles/<ID>.pdf and run again.
+2. Consultation pictograms (vocabulary: kb/corpus/vocabulaire_consultation.json, filters:
+   kb/corpus/filtres_pictogrammes.json). ARASAAC by exact keyword match for each concept, plus the pictograms
+   whose labels relate to health; block list (animals, plants, places in Aragon, leisure, make-up…); Mulberry
+   (health categories) and OpenMoji (health, body, sick faces). Every rejection is traced.
+3. Medical references built from scratch: WHO fact sheets fr / en / ar, MedlinePlus, Wikidata lexicon (base_v2_references.py).
+4. Assistant data set (fictitious cases) and training sets with a datasheet (base_v2_entrainement.py).
+   No older base is needed; --ancienne-base only adds what had been dropped there by hand.
 
-Relancer le script reprend là où il s'était arrêté : rien n'est retéléchargé si le fichier et son empreinte sont là.
+Running the script again resumes where it stopped: nothing is downloaded again if the file and its fingerprint are there.
 """
 import argparse
 import csv
@@ -109,12 +109,12 @@ def ecrire_csv(chemin: Path, entetes, lignes) -> None:
 
 
 class Reseau:
-    """Téléchargements polis : nouvelles tentatives, pause entre requêtes, aucun accès si désactivé."""
+    """Polite downloads: retries, pause between requests, no access if disabled."""
 
     def __init__(self, actif: bool = True, pause: float = 0.4, essais: int = 3, delai: int = 60):
         self.actif, self.pause, self.essais, self.delai = actif, pause, essais, delai
         self.requetes = 0
-        self.pannes = {}   # hôte -> échecs réseau consécutifs (au-delà de 4, l'hôte est considéré injoignable pour l'exécution)
+        self.pannes = {}   # host -> consecutive network failures (beyond 4, the host is considered unreachable for this run)
 
     def get(self, url: str) -> tuple[bytes, str, str]:
         if not self.actif:
@@ -135,7 +135,7 @@ class Reseau:
             except urllib.error.HTTPError as e:
                 derniere = f"HTTP {e.code}"
                 if e.code < 500:
-                    self.pannes[hote] = 0   # le serveur répond : ce document-là seulement est absent ou refusé
+                    self.pannes[hote] = 0   # the server answers: only this document is missing or refused
                     break
             except Exception as e:  # noqa: BLE001 — coupure, délai, DNS : on réessaie
                 derniere = f"{type(e).__name__}: {e}"
@@ -161,7 +161,7 @@ class Journal:
         ecrire(self.chemin, json.dumps(self.d, ensure_ascii=False, indent=1) + "\n")
 
 
-# ============================================================================================ extraction de texte
+# ============================================================================================ text extraction
 class _TexteHTML(HTMLParser):
     BLOCS = {"p", "div", "br", "li", "tr", "h1", "h2", "h3", "h4", "h5", "h6", "section", "article", "table", "dd", "dt"}
     IGNORER = {"script", "style", "nav", "header", "footer", "noscript", "svg", "form", "button"}
@@ -254,7 +254,7 @@ def est_html(donnees: bytes, type_contenu: str = "") -> bool:
 
 
 def decouper_articles(texte: str) -> list[dict]:
-    """Découpe en articles (« Article 12 », « Art. 3 », « Article premier ») ; sinon en sections de taille régulière."""
+    """Splits into articles ("Article 12", "Art. 3", "Article premier"); otherwise into regular-size sections."""
     positions = [(m.start(), m.group(1)) for m in RE_ARTICLE.finditer(texte)]
     articles = []
     if len(positions) >= 3:
@@ -266,7 +266,7 @@ def decouper_articles(texte: str) -> list[dict]:
             num = "1" if num.lower() in ("premier", "1er") else re.sub(r"\s+", " ", num)
             articles.append({"numero": num, "texte": corps})
         vus = {}
-        for a in articles:  # « Article 5 » cité dans un autre article : on numérote les doublons
+        for a in articles:  # "Article 5" cited in another article: duplicates are numbered
             vus[a["numero"]] = vus.get(a["numero"], 0) + 1
             if vus[a["numero"]] > 1:
                 a["numero"] = f"{a['numero']} ({vus[a['numero']]})"
@@ -301,7 +301,7 @@ def morceaux(texte: str, taille: int = 1800, recouvrement: int = 200) -> list[st
 
 # ============================================================================================ 1. base juridique
 def chercher_pdf_dans_page(donnees: bytes, url_page: str, source: dict) -> list[str]:
-    """Liens candidats vers le document dans une page officielle (dépôt OMS, bibliothèque ONU, UA…), du plus probable au moins probable."""
+    """Candidate links to the document in an official page (WHO repository, UN library, AU…), most likely first."""
     p = analyser_html(donnees)
     candidats = {}
     for nom in ("citation_pdf_url", "dc.identifier", "og:document"):
@@ -333,7 +333,7 @@ def chercher_pdf_dans_page(donnees: bytes, url_page: str, source: dict) -> list[
 
 
 def obtenir_document(source: dict, dossier_doc: Path, manuels: Path, reseau: Reseau, journal: Journal, forcer: bool):
-    """Renvoie (octets, extension, origine, url) ou lève RuntimeError avec la liste des tentatives."""
+    """Returns (bytes, extension, origin, url) or raises RuntimeError with the list of attempts."""
     for f in sorted(manuels.glob(f"{source['id']}.*")):
         if f.suffix.lower() in (".pdf", ".html", ".htm", ".txt", ".md"):
             return f.read_bytes(), f.suffix.lower().lstrip("."), "dépôt manuel", str(f)
@@ -449,7 +449,7 @@ def etape_juridique(sortie: Path, reseau: Reseau, journal: Journal, forcer: bool
                              str((dossier_doc / f"original.{ext}").relative_to(sortie))])
         journal.sauver()
     if seulement:
-        # Quelques documents seulement (--documents) : on GARDE les autres morceaux et lignes d'index déjà construits.
+        # Only some documents (--documents): the other chunks and index lines already built are KEPT.
         ancien_rag = base / "corpus_rag.jsonl"
         if ancien_rag.exists():
             gardes = [json.loads(l) for l in ancien_rag.read_text(encoding="utf-8").splitlines() if l.strip()]
@@ -577,7 +577,7 @@ def charger_vocabulaire() -> tuple[list[dict], dict]:
     notions, vus = [], set()
     for cat, c in v["categories"].items():
         for entree in c["notions"]:
-            # « fr|en », « fr|en|alias fr/…|alias en/… » (formes cherchées) ou « fr|en|=ID+ID » (notion composée d'autres notions)
+            # "fr|en", "fr|en|alias fr/…|alias en/…" (searched forms) or "fr|en|=ID+ID" (concept made of other concepts)
             champs = [x.strip() for x in entree.split("|")]
             fr, en = champs[0], champs[1]
             nid = slug(fr)
@@ -626,7 +626,7 @@ def _mots(item: dict) -> list[str]:
 
 
 def verdict_arasaac(item: dict, regles: dict, mots_en: list[str]) -> tuple[str, str]:
-    """('noire'|'blanche'|'neutre', détail). La liste noire l'emporte, sauf motif d'exception (« medical », « health »…)."""
+    """('noire'|'blanche'|'neutre', detail). The block list wins, except for an exception pattern ("medical", "health"…)."""
     for drapeau in regles.get("exclure_drapeaux", []):
         if item.get(drapeau):
             return "noire", f"drapeau {drapeau}"
@@ -678,7 +678,7 @@ def charger_arasaac_tout(sortie: Path, reseau: Reseau, langue: str) -> list[dict
 
 
 def chercher_arasaac(reseau: Reseau, langue: str, terme: str):
-    """Liste des résultats ; [] si aucun résultat (404) ; None si le serveur est injoignable."""
+    """List of results; [] if no result (404); None if the server is unreachable."""
     try:
         r = reseau.json(f"{ARASAAC_API}/pictograms/{langue}/search/{urllib.parse.quote(terme)}")
         return r if isinstance(r, list) else []
@@ -694,7 +694,7 @@ def etape_pictogrammes(sortie: Path, reseau: Reseau, journal: Journal, max_image
     regles = filtres["arasaac"]
     notions, titres = charger_vocabulaire()
     dossier = sortie / "02_pictogrammes"
-    choisis = {}   # clé "source:id" -> entrée de catalogue
+    choisis = {}   # key "source:id" -> catalogue entry
     rejets = []
 
     def ajouter(source, ident, cat, url, ext, mots_fr, mots_en, notion=None, raison="", rang=99, etiquettes=()):
@@ -732,7 +732,7 @@ def etape_pictogrammes(sortie: Path, reseau: Reseau, journal: Journal, max_image
         if not candidats:
             for terme in no["recherche_en"]:
                 candidats += index_en.get(normaliser(terme), [])
-        if not candidats and not tout_fr and pannes < 5:   # repli : API de recherche, correspondance exacte d'abord
+        if not candidats and not tout_fr and pannes < 5:   # fallback: search API, exact match first
             for terme in no["recherche_fr"]:
                 resultats = chercher_arasaac(reseau, "fr", terme)
                 if resultats is None:
@@ -756,10 +756,10 @@ def etape_pictogrammes(sortie: Path, reseau: Reseau, journal: Journal, max_image
                 rejets.append(["arasaac", i, f"notion {no['id']} : {detail}", ", ".join(_jetons(it))])
                 continue
             gardes.append(i)
-        # Classement : le bon sens du mot d'abord. « jambe » peut désigner une patte de cheval : une image dont les étiquettes
-        # relèvent de la liste noire (animal, plante…) passe après les autres, et disparaît pour le corps, la douleur et les
-        # symptômes dès qu'une image convenable existe. Puis : étiquette de la même catégorie, mot-clé principal de l'image,
-        # dessin non schématique, popularité.
+        # Ranking: the right meaning of the word first. "jambe" (leg) may mean a horse's leg: an image whose labels are
+        # on the block list (animal, plant…) comes after the others, and disappears for body, pain and symptoms as soon
+        # as a suitable image exists. Then: label of the same category, main keyword of the image, non-schematic
+        # drawing, popularity.
         termes = {normaliser(t) for t in no["recherche_fr"] + no["recherche_en"]}
 
         def score(i):
@@ -791,7 +791,7 @@ def etape_pictogrammes(sortie: Path, reseau: Reseau, journal: Journal, max_image
             if f"arasaac:{it['_id']}" in choisis:
                 continue
             v, detail = verdict_arasaac(it, regles, mots_en_par_id.get(it["_id"], []))
-            if v == "noire":   # chaque exclusion est tracée (auditabilité)
+            if v == "noire":   # each exclusion is traced (auditability)
                 rejets.append(["arasaac", it["_id"], detail, ", ".join(_jetons(it))])
                 continue
             if v == "blanche":
@@ -804,7 +804,7 @@ def etape_pictogrammes(sortie: Path, reseau: Reseau, journal: Journal, max_image
             reserve_cat[cat] = liste[regles.get("max_par_categorie", 450):]
     print(f"  ARASAAC : {sum(1 for c in choisis.values() if c['source'] == 'arasaac')} pictogrammes retenus")
 
-    # --- notions par libellé anglais exact (pour Mulberry et OpenMoji)
+    # --- concepts by exact English label (for Mulberry and OpenMoji)
     notion_en = {}
     for no in notions:
         for t in no["recherche_en"]:
@@ -872,14 +872,14 @@ def etape_pictogrammes(sortie: Path, reseau: Reseau, journal: Journal, max_image
             ajouter("openmoji", x["hexcode"], cat, OPENMOJI + f"color/618x618/{x['hexcode']}.png", "png", [],
                     [x.get("annotation", "")] + [t.strip() for t in x.get("tags", "").split(",")],
                     raison=f"OpenMoji {x.get('group')}/{x.get('subgroups')}")
-        elif tous:   # le reste en SVG (léger, net à toutes les tailles)
+        elif tous:   # the rest as SVG (light, sharp at every size)
             ajouter("openmoji", x["hexcode"], "91_emojis_symboles", OPENMOJI + f"color/svg/{x['hexcode']}.svg", "svg", [],
                     [x.get("annotation", "")] + [t.strip() for t in x.get("tags", "").split(",")],
                     raison=f"OpenMoji {x.get('group')}/{x.get('subgroups')} (tout le catalogue)",
                     etiquettes=[str(x.get("group", "")), str(x.get("subgroups", ""))])
     print(f"  OpenMoji : {sum(1 for c in choisis.values() if c['source'] == 'openmoji')} pictogrammes retenus")
 
-    # --- reclassement par motif du nom (Mulberry, OpenMoji)
+    # --- reclassification by name pattern (Mulberry, OpenMoji)
     for c in choisis.values():
         if c["source"] != "arasaac" and not c.get("par_notion"):
             nom = (c["id"] + " " + " ".join(c["mots_en"][:1])).lower()
@@ -888,11 +888,11 @@ def etape_pictogrammes(sortie: Path, reseau: Reseau, journal: Journal, max_image
                     c["categorie"] = cat
                     break
 
-    # --- objectif de volume : si la sélection stricte ne suffit pas, on élargit par paliers, toujours dans le domaine santé
+    # --- volume target: if the strict selection is not enough, it is widened step by step, always within health
     paliers = []
     if objectif and len(choisis) < objectif and tout_fr:
         avant = len(choisis)
-        for _ in range(5):   # palier 1 : plus de variantes pour chaque notion (tour à tour, pour rester équilibré)
+        for _ in range(5):   # step 1: more variants for each concept (in turn, to stay balanced)
             for nid, (no, reste) in reserve_notions.items():
                 if reste and len(choisis) < objectif:
                     i = reste.pop(0)
@@ -907,7 +907,7 @@ def etape_pictogrammes(sortie: Path, reseau: Reseau, journal: Journal, max_image
                 for t in no["recherche_fr"]:
                     if len(normaliser(t)) >= 4:
                         termes.setdefault(normaliser(t), no)
-        for it in sorted(tout_fr, key=lambda it: -int(it.get("downloads", 0) or 0)):   # palier 2 : mot-clé qui contient une notion santé
+        for it in sorted(tout_fr, key=lambda it: -int(it.get("downloads", 0) or 0)):   # step 2: keyword containing a health concept
             if len(choisis) >= objectif:
                 break
             if f"arasaac:{it['_id']}" in choisis or verdict_arasaac(it, regles, mots_en_par_id.get(it["_id"], []))[0] == "noire":
@@ -919,16 +919,16 @@ def etape_pictogrammes(sortie: Path, reseau: Reseau, journal: Journal, max_image
                         mots_en_par_id.get(it["_id"], []), notion=no["id"], raison=f"mot-clé contenant « {no['fr']} » (objectif de volume)")
         paliers.append(f"mots-clés contenant une notion santé : +{len(choisis) - avant}")
         avant = len(choisis)
-        for cat, reste in reserve_cat.items():   # palier 3 : au-delà des plafonds par étiquette santé
+        for cat, reste in reserve_cat.items():   # step 3: beyond the per-health-label caps
             while reste and len(choisis) < objectif:
                 it = reste.pop(0)
                 ajouter("arasaac", it["_id"], cat, ARASAAC_IMG.format(id=it["_id"]), "png", _mots(it),
                         mots_en_par_id.get(it["_id"], []), raison="étiquette santé, au-delà du plafond (objectif de volume)")
         paliers.append(f"au-delà des plafonds : +{len(choisis) - avant}")
         print(f"  Objectif {objectif} : élargissement par paliers — " + " ; ".join(paliers) + f" → {len(choisis)}")
-    # --- TOUT le catalogue (--tous-pictos) : au-delà de la santé, tous les domaines. Les contenus marqués « sexualité » ou
-    # « violence » par ARASAAC sont gardés (utiles pour dire un abus, l'anatomie intime) mais rangés à part : jamais dans
-    # les onglets du patient, seulement par la recherche.
+    # --- the WHOLE catalogue (--tous-pictos): beyond health, every domain. Content marked "sexuality" or "violence" by
+    # ARASAAC is kept (useful to report abuse, intimate anatomy) but filed apart: never in the patient's tabs, only
+    # through search.
     if tous:
         avant = len(choisis)
         for nid, (no, reste) in reserve_notions.items():
@@ -958,7 +958,7 @@ def etape_pictogrammes(sortie: Path, reseau: Reseau, journal: Journal, max_image
         for it in reste:
             rejets.append(["arasaac", it["_id"], f"au-delà du plafond de {cat}", ", ".join(_jetons(it))])
 
-    # --- rattacher les symboles Mulberry/OpenMoji aux notions par mot anglais exact
+    # --- link Mulberry/OpenMoji symbols to concepts by exact English word
     par_en = {}
     for no in notions:
         for t in no["recherche_en"]:
@@ -970,8 +970,8 @@ def etape_pictogrammes(sortie: Path, reseau: Reseau, journal: Journal, max_image
                 if nid and nid not in c["notions"]:
                     c["notions"].append(nid)
 
-    # --- libellé français des symboles Mulberry et OpenMoji (noms anglais) : repris du mot français de l'image ARASAAC
-    # qui porte le même mot-clé anglais (« ambulance » -> « ambulance », « tooth » -> « dent »)
+    # --- French label of Mulberry and OpenMoji symbols (English names): taken from the French word of the ARASAAC image
+    # that carries the same English keyword ("ambulance" -> "ambulance", "tooth" -> "dent")
     en_vers_fr = {}
     for i, mots in mots_en_par_id.items():
         fr = _mots(par_id.get(i, {}))
@@ -983,7 +983,7 @@ def etape_pictogrammes(sortie: Path, reseau: Reseau, journal: Journal, max_image
             fr = [en_vers_fr[normaliser(m)] for m in c["mots_en"][:3] if normaliser(m) in en_vers_fr]
             c["mots_fr"] = list(dict.fromkeys(fr))[:4]
 
-    # --- téléchargement des images
+    # --- downloading the images
     liste = sorted(choisis.values(), key=lambda c: (c["categorie"], c["source"], c["id"]))
     if max_images:
         liste = liste[:max_images]
@@ -1000,7 +1000,7 @@ def etape_pictogrammes(sortie: Path, reseau: Reseau, journal: Journal, max_image
             c["sha256"] = prec["sha256"]
             continue
         if not chemin.exists():
-            anciens = [a for a in dossier.glob(f"*/{nom}") if a != chemin]   # catégorie changée : on déplace, sans retélécharger
+            anciens = [a for a in dossier.glob(f"*/{nom}") if a != chemin]   # category changed: moved, without downloading again
             if anciens and prec and prec.get("sha256") == sha256(anciens[0].read_bytes()):
                 chemin.parent.mkdir(parents=True, exist_ok=True)
                 anciens[0].replace(chemin)
@@ -1050,7 +1050,7 @@ def etape_pictogrammes(sortie: Path, reseau: Reseau, journal: Journal, max_image
     par_id_notion = {n["id"]: n for n in notions}
 
     def images_de(nid, profondeur=0):
-        """Images d'une notion ; pour une notion composée, la première image de chaque composant, dans l'ordre."""
+        """Images of a concept; for a compound concept, the first image of each component, in order."""
         n = par_id_notion.get(nid)
         if n and n["composition"] and profondeur < 3:
             sortie = []
@@ -1123,7 +1123,7 @@ def lisezmoi_pictos(r, titres, presents) -> str:
     return "\n".join(l)
 
 
-# ============================================================================================ 3. données et migration
+# ============================================================================================ 3. data and migration
 def etape_donnees(sortie: Path, variantes: int) -> dict:
     sys.path.insert(0, str(RACINE))
     sys.path.insert(0, str(RACINE / "outils"))
@@ -1141,7 +1141,7 @@ def etape_donnees(sortie: Path, variantes: int) -> dict:
 
 
 def etape_migration(ancienne: Path, sortie: Path) -> dict:
-    """Reprend de l'ancienne base ce qui reste utile ; les anciens pictogrammes ne sont pas repris (ils sont refaits filtrés)."""
+    """Takes from the older base what is still useful; old pictograms are not taken (they are rebuilt, filtered)."""
     cat = json.loads((CORPUS / "catalogue_sources.json").read_text(encoding="utf-8"))
     ids = sorted((s["id"] for s in cat["sources"]), key=len, reverse=True)
     manuels, a_classer = sortie / "entrees_manuelles", sortie / "01_base_juridique" / "E_anciens_a_classer"

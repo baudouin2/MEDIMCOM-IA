@@ -1,4 +1,4 @@
-"""Tests du noyau, des règles du juriste et de la base. Lancer : python -m pytest -q   (ou : python tests/test_noyau.py)"""
+"""Tests of the core, of the jurist's rules and of the knowledge base. Run: python -m pytest -q   (or: python tests/test_noyau.py)"""
 import io
 import json
 import os
@@ -12,7 +12,7 @@ from tempfile import TemporaryDirectory
 
 ICI = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ICI))
-os.environ.setdefault("MEDIMCOM_BASE", "aucune")   # tests indépendants de la base_v2 installée
+os.environ.setdefault("MEDIMCOM_BASE", "aucune")   # tests independent of the installed base_v2
 sys.path.insert(0, str(ICI / "kb" / "outils"))
 
 from medimcom.agents import (Assistant, AutoriteSante, CelluleCrise, Contexte, Hopital, Juriste,  # noqa: E402
@@ -44,13 +44,13 @@ def rx(medicament, prescripteur="DR-001", **kw):
     return d
 
 
-# ---------------------------------------------------------------- journal et messagerie
+# ---------------------------------------------------------------- journal and messaging
 def test_journal_detecte_une_modification():
     j = Journal()
     contenu = {"statut": "en_attente"}
     j.ajouter("a", "x", contenu)
     j.ajouter("b", "y", {"z": 2})
-    contenu["statut"] = "modifie_apres_coup"      # l'objet d'origine change : le journal ne doit pas bouger
+    contenu["statut"] = "modifie_apres_coup"      # the original object changes: the journal must not move
     assert j.verifier() == "Journal intact"
     j.lignes[0]["contenu"]["statut"] = "falsifie"  # falsification directe
     assert j.verifier() == "Ligne 1 modifiée"
@@ -63,7 +63,7 @@ def test_messagerie_refuse_type_et_destinataire_inconnus():
     assert m.envoyer("assistant", "juriste", "demande", "x").startswith("Message")
 
 
-# ---------------------------------------------------------------- base de connaissances
+# ---------------------------------------------------------------- knowledge base
 def test_base_coherente():
     import verifier_kb
     _, problemes = verifier_kb.controler()
@@ -146,7 +146,7 @@ def test_tramadol_bloque_seulement_a_distance():
     assert R.verifier_prescription(rx("tramadol", mode="presentiel"), e)["verdict"] == "CONFORME"
 
 
-# ---------------------------------------------------------------- données
+# ---------------------------------------------------------------- data
 def test_partage_commercial_sans_accord_bloque():
     v = R.verifier_partage_donnees({"finalite": "commerciale", "lieu": "EAU", "consentement_ecrit": False})
     assert v["verdict"] == "BLOQUE" and not v["depassement_possible"]
@@ -170,7 +170,7 @@ def test_partages_permis_et_non_couverts():
     assert R.verifier_partage_donnees({"finalite": "autre", "lieu": "EAU"})["verdict"] == "PREUVES_INSUFFISANTES"
 
 
-# ---------------------------------------------------------------- envoi au patient et état
+# ---------------------------------------------------------------- sending to the patient and state
 def test_message_au_patient_doit_etre_valide_par_le_medecin():
     assert R.verifier_envoi_patient({"texte": "x", "valide_par": None})["verdict"] == "BLOQUE"
     assert R.verifier_envoi_patient({"texte": "x", "valide_par": "DR-001"})["verdict"] == "CONFORME"
@@ -194,7 +194,7 @@ def test_langue_anglaise():
     assert v["constats"][0]["detail"].startswith("Non-health use")
 
 
-# ---------------------------------------------------------------- scénarios complets
+# ---------------------------------------------------------------- complete scenarios
 def _contexte():
     journal = Journal()
     return Contexte(Dossier(journal), Messagerie(journal, set(BOITES)), journal, R, verbeux=False)
@@ -222,12 +222,12 @@ def _lancer_ancien(nom):
 def test_scenario_grossesse():
     ctx = _lancer("grossesse.json")
     verdicts = [(v["objet"], v.get("medicament"), v["verdict"]) for v in ctx.dossier.verdicts]
-    assert verdicts == [("envoi_au_patient", None, "CONFORME"),                 # question validée puis envoyée
+    assert verdicts == [("envoi_au_patient", None, "CONFORME"),                 # question validated then sent
                         ("prescription", "ibuprofene", "PREUVES_INSUFFISANTES"),
                         ("prescription", "ibuprofene", "A_REVOIR"),
                         ("prescription", "paracetamol", "CONFORME"),
-                        ("envoi_au_patient", None, "BLOQUE"),                   # module externe sans validation
-                        ("envoi_au_patient", None, "CONFORME"),                 # explication validée par le médecin
+                        ("envoi_au_patient", None, "BLOQUE"),                   # external module without validation
+                        ("envoi_au_patient", None, "CONFORME"),                 # explanation validated by the doctor
                         ("partage_de_donnees", None, "BLOQUE"), ("partage_de_donnees", None, "BLOQUE")]
     envoyes = [d for d in ctx.dossier.decisions.values() if d["statut"] == "envoye"]
     assert len(envoyes) == 2 and all(d["auteur"] == "traducteur" and d["valide_par"] == "DR-001" for d in envoyes)
@@ -287,7 +287,7 @@ def test_publication_nominative_bloquee_avec_piste():
 
 
 class CerveauFactice:
-    """Imite un modèle de langage : appelle des outils (dont un interdit), puis termine."""
+    """Imitates a language model: calls tools (one of them forbidden), then finishes."""
     nom = "factice"
 
     def __init__(self, appels):
@@ -318,7 +318,7 @@ def test_boucle_llm_du_juriste_et_garde_fous():
     assert ctx.dossier.etat["grossesse"]["valeur"] is True
 
 
-# ---------------------------------------------------------------- cas limites (revue indépendante)
+# ---------------------------------------------------------------- edge cases (independent review)
 def test_validation_par_un_non_medecin_refusee():
     for qui in ("assistant", "DR-002", "n'importe qui"):
         assert R.verifier_envoi_patient({"texte": "x", "valide_par": qui})["verdict"] == "BLOQUE", qui
@@ -337,7 +337,7 @@ def test_partage_information_manquante_jamais_bloquee_a_tort():
     assert R.verifier_partage_donnees({"finalite": "commerciale"})["verdict"] == "PREUVES_INSUFFISANTES"
     assert R.verifier_partage_donnees({"finalite": "recherche", "anonymise": True})["verdict"] == "PREUVES_INSUFFISANTES"
     ok = {"finalite": "soins", "lieu": "hors_EAU", "exception_res51": "x", "consentement_ecrit": True, "chiffrement": True}
-    assert R.verifier_partage_donnees(ok)["verdict"] == "PREUVES_INSUFFISANTES"     # copie_eau non renseignée
+    assert R.verifier_partage_donnees(ok)["verdict"] == "PREUVES_INSUFFISANTES"     # copie_eau not filled in
 
 
 def test_mode_contradictoire_et_entrees_libres():
@@ -371,7 +371,7 @@ def test_l_assistant_ne_peut_pas_confirmer_seul_un_fait():
 def test_filet_de_securite_si_le_juriste_ne_controle_pas():
     ctx = _contexte()
     journal = ctx.journal
-    paresseux = Juriste(ctx, CerveauFactice([]))          # ne fait que « terminer »
+    paresseux = Juriste(ctx, CerveauFactice([]))          # only "finishes"
     o = Orchestrateur(ctx, [paresseux])
     evt = {"type": "partage_donnees", "auteur": "x", "demande": {"finalite": "commerciale", "lieu": "EAU", "consentement_ecrit": False}}
     with redirect_stdout(io.StringIO()):
@@ -404,7 +404,7 @@ def test_institution_en_mode_llm_ne_voit_que_ses_messages():
 
 
 def _moteur_pictogrammes():
-    """Moteur testé : celui de MEDIMCOM_PICTOGRAMMES=paquet.module:Classe, sinon le lexique de démonstration."""
+    """Engine under test: the one of MEDIMCOM_PICTOGRAMMES=package.module:Class, otherwise the demo lexicon."""
     import importlib
     import os
     from medimcom.pictogrammes import LexiquePictogrammes
@@ -424,7 +424,7 @@ def test_moteur_pictogrammes_respecte_le_contrat():
         assert all(isinstance(p, str) and p.split(":")[0] == p.split(":")[0].upper() for p in r["pictogrammes"]), r
         assert isinstance(r["non_traduits"], list) and 0.0 <= r["couverture"] <= 1.0
     assert isinstance(m.interpreter(["OUI"]), str) and isinstance(m.interpreter(["NON"]), str)
-    assert "OUI" not in m.traduire("xyzzy")["pictogrammes"]        # un mot inconnu n'est pas inventé
+    assert "OUI" not in m.traduire("xyzzy")["pictogrammes"]        # an unknown word is not invented
     neg, pos = m.traduire("Ne prenez pas ce médicament"), m.traduire("Prenez ce médicament")
     assert neg["pictogrammes"] != pos["pictogrammes"] or neg["non_traduits"], "la négation ne doit jamais disparaître"
 
@@ -440,14 +440,14 @@ def _avec_question_envoyee(cle="grossesse", question="Êtes-vous enceinte ?"):
 
 def test_le_traducteur_ne_rapporte_que_ce_que_le_patient_a_choisi():
     ctx, t, _ = _avec_question_envoyee()
-    assert t.executer("rapporter_reponse_patient", {"pictogrammes": ["NON"]}).startswith("Refusé")   # aucun message du patient
+    assert t.executer("rapporter_reponse_patient", {"pictogrammes": ["NON"]}).startswith("Refusé")   # no message from the patient
     t._recevoir([type("M", (), {"de": "patient", "contenu": '{"pictogrammes": ["OUI", "NON"]}'})()])
     t.executer("rapporter_reponse_patient", {"pictogrammes": ["OUI", "NON"]})
-    assert "grossesse" not in ctx.dossier.fil[-1]["donnees"]                                          # réponse ambiguë
+    assert "grossesse" not in ctx.dossier.fil[-1]["donnees"]                                          # ambiguous answer
     ctx2, t2, _ = _avec_question_envoyee("allergies", "Avez-vous des allergies ?")
     t2._recevoir([type("M", (), {"de": "patient", "contenu": '{"pictogrammes": ["OUI"]}'})()])
     t2.executer("rapporter_reponse_patient", {"pictogrammes": ["OUI"]})
-    # pas de « allergies = vrai » : OUI sans détail = « à préciser », qui ne vaut pas allergies renseignées
+    # no "allergies = true": YES without detail = "to be specified", which does not count as allergies filled in
     assert ctx2.dossier.fil[-1]["donnees"] in ({}, {"allergies": "oui, à préciser"})
     t2._recevoir([type("M", (), {"de": "patient", "contenu": '{"pictogrammes": ["NON"]}'})()])
     t2.executer("rapporter_reponse_patient", {"pictogrammes": ["NON"]})
@@ -459,14 +459,14 @@ def test_pictogrammes_combines_en_une_image():
     from medimcom.pictogrammes import LexiquePictogrammes
     assert combinaison_valide("TETE+DOULEUR") and combinaison_valide("TETE+DOULEUR+CHIFFRE:8")
     for refus in ("PRENDRE+NE_PAS", "DOSE:500mg+MAXIMUM", "TETE+URGENCE", "TETE+TETE", "TETE+INCONNU", "A+B+C+D", "GEN:x+TETE"):
-        assert not connu(refus), refus                                   # négation, limite, urgence : jamais en médaillon
+        assert not connu(refus), refus                                   # negation, limit, emergency: never as a badge
     racine = ET.fromstring(svg("TETE+DOULEUR"))
     assert racine.tag.endswith("svg") and svg("TETE+DOULEUR").count("<circle") >= 1 and "?" not in libelle("TETE+DOULEUR")
-    assert ">?<" in svg("PRENDRE+NE_PAS")                                # combinaison refusée : jamais une image inventée
+    assert ">?<" in svg("PRENDRE+NE_PAS")                                # combination refused: never an invented image
     lex = LexiquePictogrammes()
     assert lex.traduire("Avez-vous mal au ventre ?")["pictogrammes"] == ["VOUS", "VENTRE+DOULEUR", "QUESTION"]
     neg = lex.traduire("Ne prenez pas d'ibuprofène")["pictogrammes"]
-    assert "NE_PAS" in neg and not any("+" in x for x in neg)           # la négation reste un pictogramme entier
+    assert "NE_PAS" in neg and not any("+" in x for x in neg)           # the negation stays a whole pictogram
 
 
 def test_le_traducteur_choisit_ou_combine_ses_pictogrammes_sous_controle():
@@ -477,18 +477,18 @@ def test_le_traducteur_choisit_ou_combine_ses_pictogrammes_sous_controle():
     assert r.startswith("Proposition"), r
     d = list(ctx.dossier.decisions.values())[-1]
     assert d["pictogrammes"] == ["VOUS", "TETE+DOULEUR", "QUESTION"] and d["pictogrammes_choisis_par"] == "choix de l'agent traducteur"
-    assert d["statut"] == "attente_validation"                           # le médecin valide toujours
-    # l'agent ne peut pas retirer une négation, une dose ni un nom de médicament, ni inventer une combinaison
+    assert d["statut"] == "attente_validation"                           # the doctor always validates
+    # the agent cannot remove a negation, a dose or a medicine name, nor invent a combination
     assert "NE_PAS" in t.executer("proposer_au_medecin", {"texte": "Ne prenez pas d'ibuprofène", "contenu_type": "information",
                                                            "pictogrammes": ["PRENDRE", "MEDICAMENT:ibuprofene"]})
     assert t.executer("proposer_au_medecin", {"texte": "paracetamol 500 mg le soir", "contenu_type": "information",
                                                "pictogrammes": ["MEDICAMENT:paracetamol", "SOIR"]}).startswith("Refusé")
-    # deux limites dans le texte : en retirer une est refusé (comptage, pas simple présence)
+    # two limits in the text: removing one is refused (counting, not mere presence)
     assert t.executer("proposer_au_medecin", {"texte": "jusqu'à 3 fois par jour, pas plus de 4 comprimés", "contenu_type": "information",
                                                "pictogrammes": ["MAXIMUM", "CHIFFRE:3", "FOIS", "JOUR", "CHIFFRE:4", "COMPRIME"]}).startswith("Refusé")
     assert t.executer("proposer_au_medecin", {"texte": "Ne mangez pas", "contenu_type": "information",
                                                "pictogrammes": ["MANGER+NE_PAS"]}).startswith("Refusé")
-    # réponse du patient combinée -> faits structurés (douleur, localisation, intensité)
+    # combined patient answer -> structured facts (pain, location, intensity)
     ctx2, t2, _ = _avec_question_envoyee()
     t2._recevoir([type("M", (), {"de": "patient", "contenu": '{"pictogrammes": ["TETE+DOULEUR", "CHIFFRE:8"]}'})()])
     t2.executer("rapporter_reponse_patient", {"pictogrammes": ["TETE+DOULEUR", "CHIFFRE:8"]})
@@ -496,7 +496,7 @@ def test_le_traducteur_choisit_ou_combine_ses_pictogrammes_sous_controle():
     ctx3, t3, _ = _avec_question_envoyee()
     t3._recevoir([type("M", (), {"de": "patient", "contenu": '{"pictogrammes": ["NON", "VENTRE+DOULEUR"]}'})()])
     t3.executer("rapporter_reponse_patient", {"pictogrammes": ["NON", "VENTRE+DOULEUR"]})
-    assert "douleur" not in ctx3.dossier.fil[-1]["donnees"]               # sens ambigu : rien n'est déduit
+    assert "douleur" not in ctx3.dossier.fil[-1]["donnees"]               # ambiguous meaning: nothing is inferred
 
 
 def test_image_nouvelle_fournie_par_le_moteur_est_controlee():
@@ -509,12 +509,12 @@ def test_image_nouvelle_fournie_par_le_moteur_est_controlee():
               "GEN:style": '<svg xmlns="http://www.w3.org/2000/svg"><style>@import url(https://x.invalid/a.css);</style></svg>',
               "GEN:entite": '<!DOCTYPE svg [<!ENTITY a "aaaa">]><svg xmlns="http://www.w3.org/2000/svg"><text>&a;</text></svg>'}
     try:
-        assert not B.connu("GEN:pansement")                              # aucun moteur branché : inconnu
+        assert not B.connu("GEN:pansement")                              # no engine plugged in: unknown
         B.brancher_images(images.get)
         assert B.connu("GEN:pansement") and B.svg("GEN:pansement") == propre
         for refus in ("GEN:piege", "GEN:lien", "GEN:anim", "GEN:style", "GEN:entite", "GEN:absent"):
-            assert not B.connu(refus), refus                             # liste blanche : formes et texte seulement
-        assert ">?<" in B.svg("GEN:piege") and not B.connu("GEN:pansement+TETE")    # jamais combinée
+            assert not B.connu(refus), refus                             # allow-list: forms and text only
+        assert ">?<" in B.svg("GEN:piege") and not B.connu("GEN:pansement+TETE")    # never combined
         ctx = _contexte()
         t = Traducteur(ctx, CerveauSimule())
         r = t.executer("proposer_au_medecin", {"texte": "Gardez le pansement", "contenu_type": "information",
@@ -539,13 +539,13 @@ def test_base_vectorielle_et_recherche_hybride(tmp_path):
     lignes = chemin.read_text(encoding="utf-8").splitlines()
     tete = json.loads(lignes[0])["_index"]
     assert tete["dimension"] == 256 and tete["morceaux"] == len(ms) == len(lignes) - 1
-    assert {"id", "text", "metadata", "embedding"} <= set(json.loads(lignes[1]))        # format d'échange standard
+    assert {"id", "text", "metadata", "embedding"} <= set(json.loads(lignes[1]))        # standard exchange format
     relu = IndexVectoriel.charger(chemin)
     assert relu.empreinte == idx.empreinte and abs(sum(x * x for x in relu.vecteurs[0]) - 1) < 1e-3
     base.brancher_vecteurs(relu, enc)
     for m in ("bm25", "vecteurs", "hybride"):
         r = base.chercher("Can health data be stored outside the UAE?", k=3, methode=m)
-        assert len(r) == 3 and all(x["fiche"] in base.fiches for x in r), m              # jamais une lacune ni un id inconnu
+        assert len(r) == 3 and all(x["fiche"] in base.fiches for x in r), m              # never a gap nor an unknown id
     assert base.chercher("misoprostol", k=5, mode="crise", methode="vecteurs") == [] or all(
         "crise" in base.fiches[x["fiche"]]["modes"] for x in base.chercher("misoprostol", k=5, mode="crise", methode="vecteurs"))
     assert fusion_rangs(["a", "b"], ["b", "c"])[0][0] == "b"
@@ -555,7 +555,7 @@ def test_base_vectorielle_et_recherche_hybride(tmp_path):
         assert False, "un index périmé doit être refusé"
     except ValueError:
         pass
-    # une session complète tourne avec la recherche hybride (index de repli livré dans kb/index/)
+    # a complete session runs with hybrid search (fallback index shipped in kb/index/)
     ctx = _lancer("crise.json", recherche="hachage")
     assert ctx.journal.verifier() == "Journal intact"
 
@@ -584,17 +584,17 @@ def test_pictogrammes_des_bases_existantes(tmp_path, monkeypatch):
         "DOS": {"base": "arasaac", "fichier": "../../../etc/passwd"}}}
     (d / "manifeste_externe.json").write_text(json.dumps(man), encoding="utf-8")
     try:
-        assert B.charger_bases(d) == 2                                   # INCONNU (hors vocabulaire) et DOS (hors dossier) écartés
+        assert B.charger_bases(d) == 2                                   # INCONNU (outside the vocabulary) and DOS (outside the record) discarded
         assert B.connu("GORGE") and "data:image/png;base64," in B.svg("GORGE") and B.libelle("GORGE", "ar") == "حلق"
-        assert "data:image" not in B.svg("TETE")                         # faux PNG : on garde l'icône de démonstration
+        assert "data:image" not in B.svg("TETE")                         # fake PNG: the demo icon is kept
         assert B.connu("GORGE+DOULEUR") and "data:image/png" in B.svg("GORGE+DOULEUR")
         t = LexiquePictogrammes().traduire("Avez-vous mal à la gorge ? Avez-vous peur ?")
-        assert t["pictogrammes"][1] == "GORGE+DOULEUR" and t["non_traduits"] == ["peur"]   # pas d'image : signalé, pas inventé
+        assert t["pictogrammes"][1] == "GORGE+DOULEUR" and t["non_traduits"] == ["peur"]   # no image: reported, not invented
         assert [c["pictogramme"] for c in B.credits()] == ["GORGE", "TETE"] and B.credits()[0]["attribution"] == "ARASAAC"
         monkeypatch.setenv("MEDIMCOM_PICTOS", "demo")
-        assert B.charger_bases(d) == 0 and not B.connu("GORGE")         # retour aux icônes de démonstration
+        assert B.charger_bases(d) == 0 and not B.connu("GORGE")         # back to the demo icons
         monkeypatch.delenv("MEDIMCOM_PICTOS")
-        # import manuel : SantéBD refusée sans accord écrit, SVG dangereux refusé, Tawasol accepté
+        # manual import: SantéBD refused without written agreement, dangerous SVG refused, Tawasol accepted
         sys.path.insert(0, str(d))
         import importlib
         imp = importlib.import_module("importer_fichiers")
@@ -648,7 +648,7 @@ def test_juriste_en_droit_camerounais():
     from medimcom.regles import MoteurRegles
     cm = MoteurRegles(ICI / "kb" / "regles_cm.json")
     base = cm.base
-    # principe : une règle ne BLOQUE qu'en citant une loi dont le contenu a été lu (jamais une source « à confirmer » seule)
+    # principle: a rule only BLOCKS by citing a law whose content was read (never a "to confirm" source alone)
     def lue(fid):
         f = base.fiches[fid]
         return f["basis"] in ("LOI", "NORME") and base.sources[f["source"]]["verification"] != "to_confirm"
@@ -656,22 +656,22 @@ def test_juriste_en_droit_camerounais():
     for r in regles:
         if r.get("niveau") == "BLOQUE":
             assert any(lue(f) for f in r["fiches"]), r
-    # chaque pays n'applique que ses propres textes (plus les références mondiales)
+    # each country applies only its own texts (plus global references)
     ae = MoteurRegles(ICI / "kb" / "regles_uae.json", base)
     assert cm.applicable("CM90-A2") and not cm.applicable("ICT19-A13") and cm.applicable("CRPD-A21")
     assert ae.applicable("ICT19-A13") and not ae.applicable("CM90-A2") and not ae.applicable("CM-2024")
-    # transferts hors du Cameroun
+    # transfers outside Cameroon
     assert cm.verifier_partage_donnees({"lieu": "Émirats", "finalite": "soins"})["verdict"] == "BLOQUE"
     assert cm.verifier_partage_donnees({"lieu": "hors du pays", "finalite": "soins", "autorisation_autorite": "oui"})["verdict"] == "A_REVOIR"
     assert cm.verifier_partage_donnees({"lieu": "Cameroun", "finalite": "soins", "destinataire_type": "hopital"})["verdict"] == "CONFORME"
-    # médicament sans autorisation connue : à vérifier, pas bloqué sur un texte non lu
+    # medicine with no known approval: to check, not blocked on a text that was not read
     v = cm.verifier_prescription({**rx("medicament_fictif_x")}, {"sexe": {"valeur": "M", "confirme": True},
                                  "allergies": {"valeur": "aucune", "confirme": True}, "traitements_en_cours": {"valeur": "aucun", "confirme": True}})
     assert v["verdict"] == "PREUVES_INSUFFISANTES"
-    # les scénarios de consultation tournent avec le droit camerounais
+    # the consultation scenarios run with Cameroonian law
     ctx = _lancer("grossesse.json", pays="CM")
     assert ctx.journal.verifier() == "Journal intact"
-    assert "regles_cm.json" in json.dumps(ctx.journal.lignes[0], ensure_ascii=False)          # configuration journalisée
+    assert "regles_cm.json" in json.dumps(ctx.journal.lignes[0], ensure_ascii=False)          # configuration logged
 
 
 def test_message_d_une_prescription_devenue_non_conforme_n_est_pas_envoye():
@@ -729,7 +729,7 @@ def test_institutions_limitees():
     assert R.verifier_partage_donnees({"finalite": "soins", "destinataire_type": "hopital", "lieu": "EAU"})["verdict"] == "CONFORME"
 
 
-# ---------------------------------------------------------------- robustesse de la boucle LLM et moteurs
+# ---------------------------------------------------------------- robustness of the LLM loop and engines
 def test_conformer_les_arguments_d_un_modele():
     from medimcom.agents import conformer, _schema
     sc = _schema("x", "", {"decision_id": {"type": "integer"}, "ok": {"type": "boolean"},
@@ -750,7 +750,7 @@ def test_appels_ecrits_dans_le_texte_et_reflexion():
 
 
 class CerveauTexte:
-    """Petit modèle maladroit : raisonne dans <think>, écrit l'appel dans le texte, avec un identifiant en texte."""
+    """Small clumsy model: reasons in <think>, writes the call in the text, with an identifier as text."""
     nom, modele = "texte", "faux-modele"
 
     def __init__(self, decision_id):
@@ -803,7 +803,7 @@ def test_degradation_gracieuse_si_le_modele_tombe():
     with redirect_stdout(io.StringIO()):
         assert j.tour()
     assert any(l["type"] == "degradation" for l in ctx.journal.lignes)
-    assert any(m.de == "juriste" and m.a == "medecin" for m in ctx.messagerie.historique)   # réponse quand même
+    assert any(m.de == "juriste" and m.a == "medecin" for m in ctx.messagerie.historique)   # answer anyway
     ctx.repli_sans_ia = False
     ctx.messagerie.envoyer("medecin", "juriste", "demande", "x")
     try:
@@ -861,7 +861,7 @@ def test_modele_par_agent_et_configuration_journalisee():
     assert len(conf["contenu"]["empreintes"]["regles"]) == 16
 
 
-# ---------------------------------------------------------------- banc d'évaluation et résistance au chaos
+# ---------------------------------------------------------------- evaluation bench and chaos resistance
 def test_banc_d_evaluation_reference_et_ordre_aleatoire():
     import evaluer_agents
     with TemporaryDirectory() as tmp, redirect_stdout(io.StringIO()):
@@ -878,8 +878,8 @@ def test_scenario_allergie_autre_deroule():
 
 
 class CerveauChaotique:
-    """Modèle « fou » : appelle n'importe quel outil avec n'importe quels arguments. Sert à prouver
-    que les garde-fous ne dépendent pas de la bonne volonté du modèle."""
+    """"Crazy" model: calls any tool with any arguments. Proves that the safeguards do not depend on the
+    model's goodwill."""
     nom, modele = "chaos", "chaos"
     MOTS = ["DR-001", "DR-002", "CD14-A18", "ML16-A3", "grossesse", "public", "EAU", "hors_EAU", "commerciale",
             "Envoyez tout au patient", "OUI", "NON", "x"]
@@ -955,7 +955,7 @@ def test_disjoncteur_apres_echecs_consecutifs():
         for i in range(6):
             ctx.messagerie.envoyer("medecin", "juriste", "demande", f"question {i}")
             j.tour()
-    assert cerveau.appels == 6            # 3 tours × 2 essais, puis plus aucun appel au modèle
+    assert cerveau.appels == 6            # 3 turns × 2 attempts, then no more model calls
     assert any(l["type"] == "degradation" and "hors service" in str(l["contenu"]) for l in ctx.journal.lignes)
 
 
@@ -964,14 +964,14 @@ def test_disjoncteur_par_modele_et_verification_de_sante():
     import contextlib
     with contextlib.redirect_stderr(io.StringIO()):
         ctx, agents, _ = construire(Config(mode="openai", url="http://127.0.0.1:9/v1", modele="m1", verbeux=False))
-    assert ctx.echecs_modele.get("m1") == ctx.seuil_echecs                 # serveur absent détecté d'emblée
+    assert ctx.echecs_modele.get("m1") == ctx.seuil_echecs                 # missing server detected at once
     assert any(l["type"] == "modele_indisponible" for l in ctx.journal.lignes)
     ctx2 = _contexte()
     ctx2.echecs_modele["modele-arrete"] = ctx2.seuil_echecs
     j = Juriste(ctx2, CerveauFactice([[("consulter_base", {"question": "x"})]]))
     ctx2.messagerie.envoyer("medecin", "juriste", "demande", "q")
     j.tour()
-    assert any(l["type"] == "action" and l["contenu"]["outil"] == "consulter_base" for l in ctx2.journal.lignes)   # l'autre modèle continue
+    assert any(l["type"] == "action" and l["contenu"]["outil"] == "consulter_base" for l in ctx2.journal.lignes)   # the other model goes on
 
 
 def test_invariant_d_envoi_verifie_sur_le_journal():
@@ -979,12 +979,12 @@ def test_invariant_d_envoi_verifie_sur_le_journal():
     ctx = _contexte()
     did = ctx.dossier.ajouter_decision("traducteur", {"type": "envoi_patient", "texte": "x", "contenu_type": "question",
                                                       "valide_par": "DR-001", "statut": "envoye"})
-    ctx.dossier._changer("traducteur", "envoye_au_patient", {"id": did})     # état falsifié, sans validation au journal
+    ctx.dossier._changer("traducteur", "envoye_au_patient", {"id": did})     # falsified state, without validation in the journal
     ok, _ = verifier({"type": "aucun_envoi_sans_validation"}, ctx)
     assert not ok
     ctx2 = _contexte()
     ctx2.dossier.ajouter_decision("traducteur", {"type": "envoi_patient", "texte": "x", "contenu_type": "question",
-                                                 "valide_par": "DR-001", "statut": "envoye"})       # état modifié, rien au journal
+                                                 "valide_par": "DR-001", "statut": "envoye"})       # state modified, nothing in the journal
     assert not verifier({"type": "aucun_envoi_sans_validation"}, ctx2)[0]
 
 
@@ -997,7 +997,7 @@ def test_pas_de_proposition_en_double_ni_d_accumulation():
         t.executer("proposer_au_medecin", {"texte": f"info {i}", "contenu_type": "information"})
     libres = sum(1 for x in ctx.dossier.decisions.values() if x["statut"] == "attente_validation" and not x.get("source_question"))
     assert libres == Traducteur.MAX_LIBRES
-    ctx.dossier.ajouter_question("assistant", "Avez-vous des allergies ?", "x", "allergies")     # place réservée aux questions
+    ctx.dossier.ajouter_question("assistant", "Avez-vous des allergies ?", "x", "allergies")     # slot reserved for questions
     assert t.executer("proposer_au_medecin", {"texte": "Q3", "contenu_type": "question", "question_id": 3}).startswith("Proposition")
 
 
@@ -1025,10 +1025,10 @@ def test_evaluation_signale_un_serveur_absent():
             assert evaluer_agents.main(["--mode", "openai", "--url", "http://127.0.0.1:9/v1", "--sans-repli", "--scenarios",
                                         str(ICI / "scenarios" / "allergie.json"), "--sortie", tmp]) == 2
         r = json.loads((Path(tmp) / "evaluation.json").read_text(encoding="utf-8"))
-    assert "NON MESURÉE" in r["resume"]
+    assert "NOT MEASURED" in r["resume"]
 
 
-# ---------------------------------------------------------------- pictogrammes et interface
+# ---------------------------------------------------------------- pictograms and interface
 def test_bibliotheque_couvre_le_vocabulaire_et_produit_du_svg_valide():
     import xml.etree.ElementTree as ET
     from medimcom.bibliotheque import CATALOGUE, connu, libelle, svg
@@ -1037,7 +1037,7 @@ def test_bibliotheque_couvre_le_vocabulaire_et_produit_du_svg_valide():
     for t in ("paracetamol 500 mg, 3 fois par jour. Vous êtes d'accord ?", "Ne prenez pas d'ibuprofène", "Avez-vous mal à la tête ?"):
         assert all(connu(p) for p in LexiquePictogrammes().traduire(t)["pictogrammes"]), t
     lim = LexiquePictogrammes().traduire("jusqu'à 3 fois par jour, pas plus de 4 comprimés")["pictogrammes"]
-    assert lim.count("MAXIMUM") == 2 and "PLUS" not in lim          # une limite de dose n'est jamais perdue
+    assert lim.count("MAXIMUM") == 2 and "PLUS" not in lim          # a dose limit is never lost
     for ident in list(CATALOGUE) + ["CHIFFRE:10", "DOSE:500mg", "MEDICAMENT:paracetamol", "INCONNU", "DOSE:<script>"]:
         racine = ET.fromstring(svg(ident))
         assert racine.tag.endswith("svg")
@@ -1055,7 +1055,7 @@ def test_livret_de_test_ne_souffle_pas_les_reponses():
     corps = page.split("Consentement", 1)[1]
     for i in items[:len(CATALOGUE)]:
         assert f"<title>{i['sens_attendu']}</title>" not in corps and f'aria-label="{i["sens_attendu"]}"' not in corps
-    assert livret.plan(2026) == items and livret.plan(7) != items         # ordre fixe par graine
+    assert livret.plan(2026) == items and livret.plan(7) != items         # fixed order by seed
 
 
 def test_analyse_des_tests_de_comprehension():
@@ -1076,7 +1076,7 @@ def test_analyse_des_tests_de_comprehension():
     assert 0 < r["kappa_juges"] < 1
     lo, hi = analyse_tests.wilson(18, 20)
     assert 0.68 < lo < 0.70 and 0.97 < hi < 0.98
-    # désaccord tranché par consensus : compté avec le code retenu ; item vu par 12 personnes : décision provisoire
+    # disagreement settled by consensus: counted with the chosen code; item seen by 12 people: provisional decision
     rep2 = [{"participant": f"Y{k}", "item": "P01", "code_juge1": "C", "code_juge2": "C"} for k in range(11)]
     rep2 += [{"participant": "Y11", "item": "P01", "code_juge1": "C", "code_juge2": "P", "code_consensus": "c"}]
     r2 = {x["item"]: x for x in analyse_tests.analyser(rep2, cle)["items"]}
@@ -1100,7 +1100,7 @@ _JETON = ""
 
 
 def _http(url, corps=None, entetes=None, brut=None):
-    """Requête de test ; envoie le jeton médecin par défaut (entetes permet de le retirer ou d'en simuler d'autres)."""
+    """Test request; sends the doctor token by default (entetes can remove it or simulate others)."""
     import urllib.request
     h = {"Content-Type": "application/json", "X-Jeton": _JETON} if entetes is None else entetes
     data = brut if brut is not None else (json.dumps(corps).encode() if corps is not None else None)
@@ -1119,13 +1119,13 @@ def test_interface_parcours_complet_par_l_api():
         _http(u + "/api/medecin/faits", {"donnees": {"sexe": "F", "age": "25", "allergies": "aucune", "traitements_en_cours": "aucun",
                                                      "moyen_communication": "pictogrammes", "informe_usage_ia": True}})
         v = _http(u + "/api/medecin")
-        q = next(q for q in v["questions"] if q.get("cle") == "grossesse")             # l'assistant a préparé la question…
+        q = next(q for q in v["questions"] if q.get("cle") == "grossesse")             # the assistant prepared the question…
         assert not [d for d in v["decisions"] if d["statut"] == "attente_validation"], "…sans encombrer la conversation"
         _http(u + "/api/medecin/poser_question", {"question_id": q["id"], "modifier": True, "medecin": "DR-001"})
         v = _http(u + "/api/medecin")
         prop = [d for d in v["decisions"] if d["statut"] == "attente_validation"]
-        assert prop and prop[0]["pictogrammes"] == ["VOUS", "ENCEINTE", "QUESTION"]      # le médecin l'a choisie, l'agent 1 a traduit
-        assert _http(u + "/api/patient")["messages"] == []                              # rien ne part sans validation
+        assert prop and prop[0]["pictogrammes"] == ["VOUS", "ENCEINTE", "QUESTION"]      # the doctor picked it, agent 1 translated it
+        assert _http(u + "/api/patient")["messages"] == []                              # nothing is sent without validation
         _http(u + "/api/medecin/valider", {"decision_id": prop[0]["id"], "medecin": "DR-001"})
         p = _http(u + "/api/patient")
         assert p["messages"][-1]["pictogrammes"] == ["VOUS", "ENCEINTE", "QUESTION"] and p["attend_reponse"]
@@ -1168,11 +1168,11 @@ def test_interface_refuse_les_requetes_d_autres_pages():
         assert code(u + "/medecin?jeton=faux", entetes={}) == 403
         assert code(u + "/api/medecin/faits", {"donnees": {"age": 3}}, sans_jeton) == 403
         assert code(u + "/api/reinitialiser", {}, sans_jeton) == 403
-        # une autre page web : formulaire en text/plain, ou JSON avec une autre origine -> refusé, même avec le bon jeton
+        # another web page: text/plain form, or JSON from another origin -> refused, even with the right token
         assert code(u + "/api/patient/reponse", entetes={"Content-Type": "text/plain"}, brut=b'{"pictogrammes":["OUI"]}') == 403
         assert code(u + "/api/medecin/valider", {"decision_id": 1}, {"Content-Type": "application/json", "X-Jeton": _JETON,
                                                                    "Origin": "http://exemple.invalid"}) == 403
-        # DNS rebinding : un nom de domaine étranger comme Host est refusé, même pour la réponse du patient
+        # DNS rebinding: a foreign domain name as Host is refused, even for the patient's answer
         port = u.rsplit(":", 1)[1]
         assert code(u + "/api/patient/reponse", {"pictogrammes": ["URGENCE"]}, {"Content-Type": "application/json", "Host": f"evil.test:{port}",
                                                                               "Origin": f"http://evil.test:{port}"}) == 403
@@ -1185,7 +1185,7 @@ def test_interface_refuse_les_requetes_d_autres_pages():
         import urllib.request
         with urllib.request.urlopen(u + "/pictos/TETE%2BDOULEUR.svg", timeout=10) as r:
             assert "default-src 'none'" in r.headers["Content-Security-Policy"] and r.read().startswith(b"<svg")
-        # corps mal formés -> 400, pas de connexion coupée
+        # malformed bodies -> 400, no dropped connection
         assert code(u + "/api/medecin/faits", brut=b"[1, 2]") == 400
         assert code(u + "/api/medecin/faits", {"donnees": [1, 2]}) == 400
         assert code(u + "/api/patient/reponse", brut=b"pas du json") == 400
@@ -1222,7 +1222,7 @@ def test_interface_dans_un_vrai_navigateur():
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        return                                           # navigateur non installé : test sauté
+        return                                           # browser not installed: test skipped
     srv, u = _serveur_interface()
     erreurs = []
     try:
@@ -1242,7 +1242,7 @@ def test_interface_dans_un_vrai_navigateur():
             pt.goto(u + "/patient"); pt.wait_for_selector(".recu img", timeout=5000)
             pt.click("button[data-picto='OUI']"); pt.click("#envoyer"); pt.wait_for_timeout(500)
             assert _http(u + "/api/medecin")["etat"]["fievre"]["valeur"] is True
-            # le patient combine TÊTE + DOULEUR en une image, ajoute l'intensité 8 et envoie
+            # the patient combines HEAD + PAIN in one image, adds intensity 8 and sends
             pt.click("button[data-onglet='corps']"); pt.click("button[data-picto='TETE']")
             pt.click("button[data-onglet='symptomes']"); pt.click("button[data-picto='DOULEUR']")
             pt.click("#combiner"); assert pt.locator("#choisis img").count() == 1
@@ -1250,9 +1250,9 @@ def test_interface_dans_un_vrai_navigateur():
             pt.click("#envoyer"); pt.wait_for_timeout(600)
             etat = _http(u + "/api/medecin")["etat"]
             assert etat["localisation_douleur"]["valeur"] == "tête" and etat["intensite_douleur"]["valeur"] == 8
-            # urgence : bandeau rouge côté médecin
+            # emergency: red banner on the doctor side
             pt.click("#urgence"); pt.click("#urgOui"); m.wait_for_selector("#urgence:not([hidden])", timeout=5000)
-            # nouvelle consultation : le patient voit bien le PREMIER message de la nouvelle session (même id qu'avant)
+            # new consultation: the patient does see the FIRST message of the new session (same id as before)
             m.click("#reinit"); m.click("#confirmerReinit"); m.wait_for_timeout(600)
             assert m.input_value("#age") == "" and m.is_hidden("#urgence")
             pt.wait_for_selector(".attente", timeout=5000)
@@ -1271,7 +1271,7 @@ def test_interface_react_et_classique():
     srv, u = _serveur_interface()
     try:
         if not srv.RequestHandlerClass.app.react:
-            return                                       # interface React non compilée : rien à vérifier ici
+            return                                       # React interface not built: nothing to check here
         with urllib.request.urlopen(u + "/patient") as r:
             page = r.read().decode()
             assert '<div id="root">' in page and "script-src 'self'" in r.headers["Content-Security-Policy"]
@@ -1285,7 +1285,7 @@ def test_interface_react_et_classique():
                 raise AssertionError(chemin)
             except urllib.error.HTTPError as e:
                 assert e.code == 404
-        try:                                             # l'écran médecin reste protégé par son jeton
+        try:                                             # the doctor screen stays protected by its token
             urllib.request.urlopen(u + "/medecin")
             raise AssertionError("jeton")
         except urllib.error.HTTPError as e:
@@ -1301,7 +1301,7 @@ def test_interface_react_et_classique():
         srv.shutdown()
 
 
-# ---------------------------------------------------------------- script de téléchargement
+# ---------------------------------------------------------------- download script
 def test_telechargement_et_empreintes():
     import telecharger_sources
     with TemporaryDirectory() as tmp:
@@ -1340,26 +1340,26 @@ def test_jeu_de_donnees_assistant(tmp_path):
     assert (tmp_path / "a" / "cas.jsonl").read_bytes() == (tmp_path / "b" / "cas.jsonl").read_bytes()   # reproductible
     cas = [json.loads(l) for l in (tmp_path / "a" / "cas.jsonl").read_text(encoding="utf-8").splitlines()]
     doc = json.loads((ICI / "donnees" / "presentations_cliniques.json").read_text(encoding="utf-8"))
-    for p in doc["presentations"]:                                  # tous les pictogrammes existent dans le vocabulaire
+    for p in doc["presentations"]:                                  # every pictogram exists in the vocabulary
         for q in p["questions"] + p["alertes"]:
             assert all(y in B.VOCABULAIRE or B.connu(y) for x in q["pictogrammes"] for y in x.split("+")), (p["id"], q["cle"])
     for c in cas:
         s = c["sortie"]
         assert s["rappel"] == jeu.RAPPEL and "diagnostic" not in s and not any("diagnostic" in x["hypothese"].lower() for x in s["pistes_a_evoquer"])
         if s["signes_d_alerte"]:
-            assert s["orientation"].startswith("urgence")           # un signe d'alerte présent impose l'urgence
+            assert s["orientation"].startswith("urgence")           # a warning sign present makes it an emergency
         connus = set(c["entree"]["etat_connu"])
-        assert not connus & {q["cle"] for q in s["questions_complementaires"]}   # on ne redemande pas ce qui est connu
+        assert not connus & {q["cle"] for q in s["questions_complementaires"]}   # what is known is not asked again
         assert [q["priorite"] for q in s["questions_complementaires"]] == sorted(q["priorite"] for q in s["questions_complementaires"])
     assert all(c["sortie"]["orientation"].startswith("urgence") for c in cas if c["presentation"] == "DOULEUR_THORACIQUE")
-    # argument négatif : « ne boit pas » soutient la déshydratation ; « boit » ne la soutient pas
+    # negative argument: "does not drink" supports dehydration; "drinks" does not
     p = next(x for x in doc["presentations"] if x["id"] == "DIARRHEE")
     base = {"pays": "AE", "patient": {"sexe": "F", "age": 30}, "message_patient_pictogrammes": [], "motif": p["motif"]}
     deshy = lambda etat: [x for x in jeu.reponse_attendue(p, {**base, "etat_connu": etat})["pistes_a_evoquer"]
                           if "!boit" in str(next(h for h in p["pistes"] if h["hypothese"] == x["hypothese"]).get("arguments"))]
     assert deshy({"boit": False})[0]["arguments_presents"] == ["boit = non"]
     assert deshy({"boit": True})[0]["arguments_presents"] == []
-    # une piste contredite par une information connue est écartée ; au Cameroun, le contexte ajoute ses pistes
+    # an option contradicted by known information is discarded; in Cameroon, the context adds its own options
     f = next(x for x in doc["presentations"] if x["contexte_pays"].get("CM"))
     entree = {"pays": "CM", "patient": {"sexe": "M", "age": 40}, "etat_connu": {}, "message_patient_pictogrammes": [], "motif": f["motif"]}
     hyp_cm = {h["hypothese"] for h in f["contexte_pays"]["CM"]}
@@ -1406,7 +1406,7 @@ def test_constituer_base_avec_reseau_simule(tmp_path, monkeypatch):
         md = (sortie / "1_textes_juridiques" / "CM_Cameroun" / "CM-DCP-2024.md").read_text(encoding="utf-8")
         assert md.startswith("---\nid: CM-DCP-2024") and "CM24-A9" in md and "source secondaire" in md and "Règles du juriste" in md
         assert len(list((sortie / "1_textes_juridiques").rglob("*.md"))) == len(base.sources) + 1          # + index.md
-        # pictogrammes : par source (avec licence) et par idée (une image par source), SantéBD et SVG dangereux écartés
+        # pictograms: per source (with licence) and per idea (one image per source), SantéBD and dangerous SVG discarded
         p = sortie / "2_pictogrammes"
         assert (p / "par_source" / "arasaac" / "GORGE.png").exists() and "CC BY-NC-SA" in (p / "par_source" / "arasaac" / "LICENCE.md").read_text(encoding="utf-8")
         assert sorted(x.name for x in (p / "par_idee" / "3_corps" / "GORGE").iterdir()) == ["arasaac.png", "description.md", "tawasol.png"]
@@ -1417,7 +1417,7 @@ def test_constituer_base_avec_reseau_simule(tmp_path, monkeypatch):
         lignes = (p / "catalogue.csv").read_text(encoding="utf-8-sig").splitlines()
         assert len(lignes) == len(B.VOCABULAIRE) + 1 and "arasaac, tawasol" in next(l for l in lignes if l.startswith("GORGE;"))
         assert (sortie / "3_jeu_de_donnees_assistant" / "sft_test.jsonl").exists() and (sortie / "LISEZMOI.md").exists()
-        # relancer : rien n'est retéléchargé ni recopié
+        # running again: nothing is downloaded or copied again
         urls.clear()
         with redirect_stdout(io.StringIO()):
             assert cb.main(["--sortie", str(sortie), "--etapes", "juridique", "pictogrammes"]) == 0
@@ -1429,19 +1429,19 @@ def test_constituer_base_avec_reseau_simule(tmp_path, monkeypatch):
         B.charger_bases(ICI / "pictogrammes" / "bases")
 
 
-# ---------------------------------------------------------------- méthodes formelles
+# ---------------------------------------------------------------- formal methods
 def test_semantique_trois_valeurs_et_monde_ferme():
     from medimcom.regles import evaluer
     assert evaluer("soins", None) is None and evaluer({"dans": ["a"]}, None) is None      # factuel : inconnu
-    assert evaluer({"absent": True}, None) is True and evaluer({"pas": True}, None) is True   # épistémique : vrai/faux
+    assert evaluer({"absent": True}, None) is True and evaluer({"pas": True}, None) is True   # epistemic: true/false
     assert evaluer("soins", None, monde_ferme=True) is False and evaluer({"hors": ["CONFORME"]}, "rejete") is True
     assert evaluer({"inferieur_a": 12}, 8) is True and evaluer({"superieur_a": 50}, None) is None
-    # une permission ne vaut pas quand une information inconnue pourrait déclencher une interdiction
-    v = R.verifier_partage_donnees({"destinataire_type": "autorite_sante", "lieu": "EAU"})          # finalité inconnue
+    # a permission does not hold when unknown information could trigger a prohibition
+    v = R.verifier_partage_donnees({"destinataire_type": "autorite_sante", "lieu": "EAU"})          # unknown purpose
     assert v["verdict"] == "PREUVES_INSUFFISANTES" and any(c["regle"].endswith("?") and "finalite" in c["manquants"] for c in v["constats"])
     assert R.verifier_partage_donnees({"destinataire_type": "autorite_sante", "lieu": "EAU", "finalite": "sante_publique",
                                        "consentement_ecrit": False})["verdict"] == "CONFORME"
-    # jetons de lieu neutres : « EAU » est le pays pour les règles des Émirats, l'étranger pour celles du Cameroun
+    # neutral place tokens: "EAU" is the country for the UAE rules, abroad for the Cameroon rules
     cm = MoteurRegles(KB / "regles_cm.json", BASE)
     assert cm.verifier_partage_donnees({"finalite": "sante_publique", "destinataire_type": "autorite_sante", "lieu": "dans_le_pays"})["verdict"] == "CONFORME"
     assert cm.verifier_partage_donnees({"finalite": "soins", "destinataire_type": "hopital", "lieu": "EAU"})["verdict"] == "BLOQUE"
@@ -1454,7 +1454,7 @@ def test_axiomes_et_informations_contradictoires():
     assert v["verdict"] == "CONFORME" and not any("contre_indication" in c["regle"] for c in v["constats"])
     v = R.verifier_prescription(rx("ibuprofene"), {**homme, **etat(grossesse=True)})
     assert v["verdict"] != "CONFORME" and any(c["regle"].startswith("incoherence") for c in v["constats"])
-    # allergie déclarée à un médicament inconnu de la base : signalée quand même
+    # allergy declared to a medicine unknown to the base: reported anyway
     v = R.verifier_prescription(rx("dolipraneX"), etat(sexe="M", age=40, allergies="dolipranex", traitements_en_cours="aucun"))
     assert any(c["regle"].startswith("allergie") for c in v["constats"])
 
@@ -1463,10 +1463,10 @@ def test_verification_formelle_des_regles():
     from medimcom import formel
     for chemin in ("regles_uae.json", "regles_cm.json"):
         m = MoteurRegles(KB / chemin, BASE)
-        # partage et prescription (plusieurs centaines de milliers de cas) : outils/verifier_formel.py, lancé par la CI
+        # sharing and prescription (several hundred thousand cases): outils/verifier_formel.py, run by the CI
         res = formel.bonne_formation(m) + formel.verifier_famille(m, "envoi_patient") + formel.verifier_maintien(m)
         assert all(r["ok"] for r in res), [(r["id"], r["contre_exemples"][:1]) for r in res if not r["ok"]]
-    # la vérification détecte bien une faute : liste d'exclusion au lieu d'une liste d'autorisation
+    # the verification does catch a fault: exclusion list instead of an allow-list
     import copy
     m = copy.copy(MoteurRegles(KB / "regles_uae.json", BASE))
     m.kb = copy.deepcopy(m.kb)
@@ -1479,7 +1479,7 @@ def test_verification_formelle_des_regles():
 def test_preuves_smt():
     from medimcom import formel_smt
     if not formel_smt.disponible():
-        return                                          # z3-solver non installé : test sauté
+        return                                          # z3-solver not installed: test skipped
     import copy
     m = MoteurRegles(KB / "regles_uae.json", BASE)
     res = formel_smt.prouver(m, "partage") + formel_smt.prouver(m, "envoi_patient")
@@ -1489,14 +1489,14 @@ def test_preuves_smt():
     mut.kb = copy.deepcopy(m.kb)
     mut.kb["regles_partage"] = [r for r in mut.kb["regles_partage"] if r["id"] != "HORS-EAU-SANS-EXCEPTION"]
     echecs = {r["id"] for r in formel_smt.prouver(mut, "partage", rapide=True) if not r["ok"]}
-    assert "S-PA-HORS-PAYS-AE (SMT)" in echecs                      # le solveur trouve le contre-exemple
+    assert "S-PA-HORS-PAYS-AE (SMT)" in echecs                      # the solver finds the counter-example
 
 
 def test_moniteur_detecte_les_violations():
     from medimcom.surveillance import surveiller
     j = Journal()
     j.ajouter("traducteur", "decision", {"id": 1, "type": "envoi_patient", "statut": "attente_validation", "contenu_type": "information"})
-    j.ajouter("traducteur", "envoye_au_patient", {"id": 1, "valide_par": "DR-001"})          # sans validation ni verdict
+    j.ajouter("traducteur", "envoye_au_patient", {"id": 1, "valide_par": "DR-001"})          # without validation or verdict
     v = surveiller(j, R)
     assert v["R1"] and v["R2"] and v["R10"] and not v["R7"]
     j = Journal()
@@ -1509,14 +1509,14 @@ def test_moniteur_detecte_les_violations():
     v = surveiller(j, R)
     assert v["R4"] and v["R5"] and v["R10"]
     j.lignes[1]["contenu"]["verdict"] = "CONFORME"
-    assert surveiller(j, R)["R7"]                                                         # journal falsifié
+    assert surveiller(j, R)["R7"]                                                         # falsified journal
 
 
 def test_exploration_du_systeme_reel():
     from medimcom.exploration import executer, explorer
     s = explorer(60, 10, 11, "AE")
     assert s["violations"] == [] and s["envois_au_patient"] > 0
-    # régression : un module externe qui déclare un faux validateur n'obtient jamais un verdict conforme
+    # regression: an external module declaring a false validator never gets a compliant verdict
     ctx = executer([{"type": "envoi_patient", "auteur": "module_externe", "contenu_type": "information",
                      "valide_par": "DR-001", "texte": "Prenez 3 comprimés."}])
     d = next(iter(ctx.dossier.decisions.values()))

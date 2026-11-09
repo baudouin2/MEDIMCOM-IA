@@ -1,14 +1,14 @@
-"""Garde-fous ÉTHIQUES d'un message du médecin au patient (déterministes, expliqués, vérifiables).
+"""ETHICAL safeguards of a doctor-to-patient message (deterministic, explained, verifiable).
 
-Un message peut être conforme à la forme et grammaticalement anodin, mais contraire à l'éthique médicale :
-  - conseiller une drogue, l'alcool ou le tabac (« une femme enceinte doit se droguer ») ;
-  - proposer de vendre un enfant ou un organe (« je vais vous aider à vendre votre bébé ») ;
-  - tenir des propos sexuels au patient (« vous me plaisez, je veux vous enceinter ») ;
-  - proposer un avortement par message (encadré strictement par la loi : aux Émirats, art. 16 de la loi 4/2016) ;
-  - injurier, y compris avec une faute (« imbecil »).
-Le CONTEXTE compte (medimcom/lecture.py) : une question (« Prenez-vous de la drogue ? »), une mise en garde (« Pas
-d'alcool pendant la grossesse ») ou un récit (« On m'a proposé d'acheter mon bébé ») ne sont pas des conseils :
-ils restent permis. Chaque blocage dit POURQUOI et QUOI FAIRE à la place.
+A message may be correct in form and grammatically harmless, yet contrary to medical ethics:
+  - advising drugs, alcohol or tobacco ("une femme enceinte doit se droguer");
+  - offering to sell a child or an organ ("je vais vous aider à vendre votre bébé");
+  - making sexual remarks to the patient ("vous me plaisez, je veux vous enceinter");
+  - proposing an abortion by message (strictly regulated by law: in the UAE, Art. 16 of Law 4/2016);
+  - insulting, including with a typo ("imbecil").
+CONTEXT matters (medimcom/lecture.py): a question ("Prenez-vous de la drogue ?"), a warning ("Pas d'alcool
+pendant la grossesse") or a narrative ("On m'a proposé d'acheter mon bébé") is not advice: it stays allowed.
+Each block says WHY and WHAT TO DO instead.
 """
 from __future__ import annotations
 
@@ -16,12 +16,12 @@ import re
 
 from .lecture import distance, normaliser
 
-# Pratiques nuisibles qu'un soignant ne conseille jamais
+# Harmful practices a caregiver never advises
 NUISIBLES = re.compile(r"\b(?:se droguer|vous droguer|te droguer|droguer|drogues?|cannabis|marijuana|cocaine|heroine|crack|"
                        r"ecstasy|shit|alcool|alcools|biere|bieres|vin|whisky|vodka|boire de l'alcool|se souler|"
                        r"vous souler|fumer|cigarettes?|tabac|chicha|narguile|"
-                       r"drugs?|heroin|alcohol|beer|wine|smoke|smoking|get drunk)\b")      # et en anglais
-# Formes de CONSEIL ou d'injonction (en plus de la consigne directe lue par lecture.py)
+                       r"drugs?|heroin|alcohol|beer|wine|smoke|smoking|get drunk)\b")      # and in English
+# Forms of ADVICE or injunction (in addition to the direct instruction read by lecture.py)
 CONSEIL = re.compile(r"\b(?:doit|doivent|devez|dois|devrait|devriez|faut|il faut|conseill\w*|recommand\w*|pouvez|peux|peut|"
                      r"est bon|c'est bon|bon de|bien de|mieux de|n'hesitez pas a|essayez|continuez a|continuez de|"
                      r"je vais vous aider a|on va vous aider a|je vous aide a|"
@@ -41,7 +41,7 @@ INJURES = ["connard", "connasse", "salope", "salaud", "pute", "putain", "encule"
 
 
 def _injure(t: str) -> str | None:
-    """Injure, même mal écrite (« imbecil », « conard ») : à une faute près sur un mot d'au moins 6 lettres."""
+    """Insult, even misspelt ("imbecil", "conard"): one error away on a word of at least 6 letters."""
     for i in INJURES:
         if " " in i and i in t:
             return i
@@ -54,8 +54,8 @@ def _injure(t: str) -> str | None:
 
 
 def analyser(texte: str, intention: str) -> list[dict]:
-    """[{categorie, expression, motif, piste}] : ce qui est contraire à l'éthique dans le message, selon son intention
-    (consigne, question, récit…). Une question, une mise en garde ou un récit n'est pas un conseil."""
+    """[{categorie, expression, motif, piste}]: what is contrary to ethics in the message, according to its
+    intention (instruction, question, narrative…). A question, a warning or a narrative is not advice."""
     t = " " + normaliser(texte) + " "
     permis = intention in ("question", "mise_en_garde", "recit")
     sortie = []

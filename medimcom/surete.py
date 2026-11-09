@@ -1,14 +1,14 @@
-"""Lecture du CONTENU d'un message destiné au patient, avant tout envoi (déterministe, vérifiable).
+"""Reads the CONTENT of a message meant for the patient, before anything is sent (deterministic, verifiable).
 
-Le juriste ne contrôlait que la forme (« validé par un médecin autorisé ? ») : un message validé partait, quel que
-soit son contenu. Ce module repère deux contenus que le juriste doit bloquer AVANT que le médecin puisse valider :
+The jurist used to check only the form ("validated by an authorised doctor?"): a validated message was sent,
+whatever its content. This module spots two contents the jurist must block BEFORE the doctor can validate:
 
-1. une incitation à se faire du mal (« va te pendre », « tue-toi »…) ou des propos violents ou injurieux ;
-2. une consigne de prise de médicament (« prends du tramadol », « boire du paracétamol 3 fois par jour ») qui n'est
-   rattachée à aucune prescription contrôlée : seul le médecin prescrit, par écrit, avec dose et posologie
-   (loi fédérale 4/2016, art. 4-6), et un produit contrôlé n'est délivré que sur ordonnance (décret-loi 38/2024, art. 55).
+1. an incitement to self-harm ("va te pendre", "tue-toi"…) or violent or insulting statements;
+2. an instruction to take a medicine ("prends du tramadol", "boire du paracétamol 3 fois par jour") that is not
+   linked to any checked prescription: only the doctor prescribes, in writing, with dose and dosage
+   (Federal Law 4/2016, Art. 4-6), and a controlled product is only dispensed on prescription (Decree-Law 38/2024, Art. 55).
 
-Une question (« Prenez-vous du tramadol ? ») ou une mise en garde (« Ne prenez pas d'ibuprofène ») n'est PAS une consigne.
+A question ("Prenez-vous du tramadol ?") or a warning ("Ne prenez pas d'ibuprofène") is NOT an instruction.
 
     analyser_message("prend du tramadol", medicaments)
     -> {"incitation_au_mal": False, "consigne_medicament": True, "medicament": "tramadol", "medicament_controle": True, ...}
@@ -25,7 +25,7 @@ def normaliser(texte: str) -> str:
     return " " + re.sub(r"\s+", " ", t).strip() + " "
 
 
-# ------------------------------------------------------------------ 1. incitation au mal, violence, injures
+# ------------------------------------------------------------------ 1. incitement to harm, violence, insults
 _TOI = r"(?:toi|vous|te|t)"
 INCITATION = [
     (r"\b(?:va|vas|allez|aller)\s+(?:te|vous|t')\s*(?:pendre|tuer|suicider|jeter|noyer|faire du mal|bruler|couper|empoisonner)\b",
@@ -44,32 +44,32 @@ INCITATION = [
 ]
 _INCITATION = [(re.compile(m), motif) for m, motif in INCITATION]
 
-# Atteinte à soi évoquée à la 2e personne (« et vous pendre », « vous tuer ») : dangereuse, SAUF dans une question de
-# dépistage du risque suicidaire, que le médecin doit pouvoir poser (« Avez-vous des idées de vous tuer ? »).
+# Self-harm mentioned in the 2nd person ("et vous pendre", "vous tuer"): dangerous, EXCEPT in a suicide-risk screening
+# question, which the doctor must be able to ask ("Avez-vous des idées de vous tuer ?").
 ATTEINTE = re.compile(r"\b(?:vous|te|t'|se|s')\s*(?:pendre|tuer|suicider|noyer|empoisonner|egorger|etrangler|"
                       r"jeter (?:par|du|sous)|ouvrir les veines|faire du mal)\b")
 DEPISTAGE = re.compile(r"\?|\b(?:idees?|envie|pense[sz]?|pensez|penser|songe[sz]?|songez|voulu|voulez|veux|"
                        r"essaye|essaye[sz]?|tente|deja|risque|est[- ]ce)\b")
-# Message réduit à un mot de mort ou de violence (« pendre », « suicide ») : sans contexte, il ne part pas.
+# Message reduced to a word of death or violence ("pendre", "suicide"): without context, it is not sent.
 MOTS_DE_MORT = {"pendre", "pendez", "pends", "pendu", "pendaison", "suicide", "suicider", "suicidez", "tuer", "tue", "tuez",
                 "mourir", "meurs", "mourez", "crever", "creve", "crevez", "egorger", "poignarder", "empoisonner", "etrangler"}
 VIDES = {"et", "ou", "vous", "toi", "te", "se", "le", "la", "les", "de", "du", "des", "a", "au", "un", "une", "allez", "va", "aller"}
 
-# ------------------------------------------------------------------ 2. consigne de prise de médicament
+# ------------------------------------------------------------------ 2. instruction to take a medicine
 VERBES = (r"\b(?:prend|prends|prenez|prendre|prenne|bois|boit|buvez|boire|avale|avales|avalez|avaler|mets|mettez|mettre|"
           r"applique|appliquez|appliquer|injecte|injectez|injecter|utilise|utilisez|utiliser|"
           r"take|drink|swallow|apply|inject)\b")
 DOSE = r"\b\d+(?:[.,]\d+)?\s*(?:mg|g|ml|ui|gouttes?|comprimes?|gelules?|cuilleres?|sachets?|fois)\b"
-# Noms de médicaments et classes thérapeutiques : « prenez un antibiotique » est un choix de traitement. Les formes
-# seules (« prenez le comprimé après le repas ») ne désignent aucun produit : ce sont des consignes d'usage, permises.
+# Medicine names and therapeutic classes: "prenez un antibiotique" is a treatment choice. Forms alone ("prenez le
+# comprimé après le repas") name no product: they are usage instructions, allowed.
 NOMS = (r"\b(?:antibiotiques?|antidouleurs?|anti-inflammatoires?|antalgiques?|anxiolytiques?|somniferes?|"
         r"insuline|morphine|codeine|aspirine|amoxicilline|diclofenac|diazepam|tramadol|paracetamol|ibuprofene|"
         r"doliprane|efferalgan|dafalgan|advil|nurofen|metformine|artemether|coartem|quinine)\b")
-# Prescription annoncée au patient (« je vais vous prescrire du tramadol », « je vous donne du paracétamol »)
+# Prescription announced to the patient ("je vais vous prescrire du tramadol", "je vous donne du paracétamol")
 ANNONCE = re.compile(r"\b(?:je|on|nous)\s+(?:vais\s+|va\s+|allons\s+)?(?:vous\s+|te\s+|t')?"
                      r"(?:prescri\w*|donne\w*|conseill\w*|recommand\w*|mets|mettre|ajoute\w*)\b|"
                      r"\b(?:vous|te|t')\s*(?:prescri\w*|donne\w*|conseill\w*|recommand\w*)\b")
-# Quantité imprécise pour un médicament (« beaucoup de paracétamol ») : surdosage possible, jamais une consigne valable
+# Imprecise quantity for a medicine ("beaucoup de paracétamol"): possible overdose, never a valid instruction
 QUANTITE_VAGUE = re.compile(r"\b(?:beaucoup|plein|a volonte|autant que|le plus possible|tout le flacon|toute la boite|"
                             r"toute la plaquette|plusieurs boites|double dose|triple dose|une poignee|a fond|max|maximum)\b")
 NEGATION = re.compile(r"\bne\b[^.?!]{0,40}\b(?:pas|jamais|plus|aucun|aucune)\b|\bpas de\b|\bjamais\b|"
@@ -79,7 +79,7 @@ QUESTION = re.compile(r"\?|\best[- ]ce\b|\b(?:prenez|prends|buvez|bois|avez|as|u
 
 
 def _medicaments_connus(medicaments: dict) -> list[tuple[str, str, dict]]:
-    """(forme normalisée, nom, fiche) pour chaque médicament des règles et ses synonymes, du plus long au plus court."""
+    """(normalised form, name, provision) for each medicine of the rules and its synonyms, longest first."""
     sortie = []
     for nom, fiche in (medicaments or {}).items():
         for forme in [nom, *fiche.get("synonymes", [])]:
@@ -94,12 +94,12 @@ INJURES = re.compile(r"\b(?:connard|connasse|salope|salaud|pute|putain|encule|ba
 
 
 def analyser_message(texte: str, medicaments: dict | None = None) -> dict:
-    """Lecture d'un message du médecin au patient, EN CONTEXTE (medimcom/lecture.py) :
-      - incitation, menace ou injure ADRESSÉE au patient -> incitation_au_mal (bloqué) ;
-      - mot de mort dans un récit, une question de dépistage, une mise en garde -> simple évocation (permis, signalé) ;
-      - mot de mort sans contexte (« pendre ») ou citation d'une incitation -> a_confirmer (le médecin confirme) ;
-      - médicament : consigne (bloquée sans ordonnance) / question, mise en garde, récit, information (permis) ;
-      - fautes de frappe et de dictée corrigées et montrées (« tramadole » -> tramadol, « pandre » -> pendre)."""
+    """Reads a doctor-to-patient message IN CONTEXT (medimcom/lecture.py):
+      - incitement, threat or insult ADDRESSED to the patient -> incitation_au_mal (blocked);
+      - death word in a narrative, a screening question, a warning -> mere mention (allowed, reported);
+      - death word without context ("pendre") or quoted incitement -> a_confirmer (the doctor confirms);
+      - medicine: instruction (blocked without prescription) / question, warning, narrative, information (allowed);
+      - typing and dictation errors corrected and shown ("tramadole" -> tramadol, "pandre" -> pendre)."""
     from .lecture import INTENTIONS, MOTS_DE_MORT, corriger_mots_de_mort, lire_contexte, mots, trouver_medicaments
     corrige, corrections = corriger_mots_de_mort(texte or "")
     t = normaliser(corrige)
@@ -115,7 +115,7 @@ def analyser_message(texte: str, medicaments: dict | None = None) -> dict:
               "evocation": None, "a_confirmer": None}
     jetons = mots(corrige)
     morts = [w for w in jetons if w in MOTS_DE_MORT]
-    # 1. Atteinte à soi, violence, injure : selon le contexte (injure reconnue même mal écrite : « imbecil »)
+    # 1. Self-harm, violence, insult: depending on context (insult recognised even misspelt: "imbecil")
     from .ethique import _injure, analyser as analyser_ethique
     mot_injure = _injure(" " + t + " ")
     injure = re.search(re.escape(mot_injure), t) if mot_injure else None
@@ -130,9 +130,9 @@ def analyser_message(texte: str, medicaments: dict | None = None) -> dict:
                                      "c'est une incitation, une question ou un récit")
         else:
             sortie["evocation"] = f"« {' '.join(morts) or injure.group(0)} » cité dans {INTENTIONS[intention]}"
-    # 1 bis. Éthique : conseil nuisible (drogue, alcool), trafic d'enfant ou d'organe, propos sexuels, avortement
+    # 1 bis. Ethics: harmful advice (drugs, alcohol), child or organ trafficking, sexual remarks, abortion
     sortie["ethique"] = [e for e in analyser_ethique(corrige, intention) if e["categorie"] != "injure"]
-    # 2. Médicaments : consigne ou simple évocation ?
+    # 2. Medicines: instruction or mere mention?
     if noms:
         vides = {"et", "ou", "du", "de", "des", "le", "la", "les", "un", "une", "aussi", "encore", "puis", "avec", "vous", "pour"}
         lus = {w for m in meds for w in m["lu"].split()}

@@ -1,5 +1,5 @@
-"""Contenu des messages au patient : un message dangereux ou une consigne de médicament sans ordonnance est bloqué
-par le juriste DÈS la proposition, avant que le médecin puisse le valider ; rien n'arrive au patient."""
+"""Content of messages to the patient: a dangerous message or a medicine instruction without prescription is blocked
+by the jurist AS SOON AS it is proposed, before the doctor can validate it; nothing reaches the patient."""
 import json
 import sys
 from pathlib import Path
@@ -61,7 +61,7 @@ def test_garde_fou_de_surete_au_cameroun():
 
 
 def test_tramadol_patiente_enceinte_mineure_bloque_et_alternative():
-    """Le cas vu en démonstration : tramadol « 1 kg, 7 fois par jour » chez une patiente enceinte de 15 ans."""
+    """The case seen in a demo: tramadol "1 kg, 7 times a day" for a pregnant 15-year-old patient."""
     app = _app()
     d = app.ctx.dossier
     app.evenement({"type": "echange", "auteur": "medecin", "confirme": True, "texte": "Renseignements saisis par le médecin.",
@@ -75,12 +75,12 @@ def test_tramadol_patiente_enceinte_mineure_bloque_et_alternative():
     assert [x["statut"] for x in rx] == ["BLOQUE", "A_REVOIR"]
     regles = {c["regle"] for v in d.verdicts if v.get("decision_id") == rx[0]["id"] for c in v["constats"]}
     assert {"SURETE-DOSE", "contre_indication:tramadol:grossesse", "contre_indication:tramadol:age"} <= regles
-    # l'assistant le dit tout de suite (sans modèle), avec une alternative sourcée
+    # the assistant says it at once (without a model), with a sourced alternative
     sugg = list(d.suggestions.values()) if isinstance(d.suggestions, dict) else d.suggestions
     alt = [s for s in sugg if s.get("type") == "traitement_alternatif"]
     assert alt and "Ne pas prescrire Tramadol" in alt[0]["texte"] and "paracetamol" in alt[0]["texte"]
     assert "grossesse" in alt[0]["texte"] and "FDA" in alt[0]["source"]
-    # rien n'a été expliqué ni envoyé à la patiente
+    # nothing was explained or sent to the patient
     assert not any(x.get("source_prescription") for x in d.decisions.values())
     assert app.vue_patient()["messages"] == []
 

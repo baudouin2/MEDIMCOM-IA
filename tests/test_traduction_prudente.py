@@ -1,6 +1,6 @@
-"""Traduction PRUDENTE (retour d'usage du 7 novembre) : mieux vaut un mot « sans pictogramme », que le médecin voit et
-corrige, qu'une image fausse. Cas réels du journal : « pendre » -> « accrocher », « comme » -> un drapeau, « male » ->
-« mâle », « pris » -> « casser » (« bris »), « vais » -> « ça va »."""
+"""CAREFUL translation (field feedback of 7 November): better a word "without pictogram", which the doctor sees and
+corrects, than a wrong image. Real cases from the journal: "pendre" -> "accrocher", "comme" -> a flag, "male" ->
+"mâle", "pris" -> "casser" ("bris"), "vais" -> "ça va"."""
 import json
 import sys
 import tempfile
@@ -9,7 +9,7 @@ from pathlib import Path
 RACINE = Path(__file__).resolve().parent.parent
 sys.path[:0] = [str(RACINE), str(RACINE / "outils"), str(RACINE / "tests")]
 
-# (fichier, source, id, catégorie, mots_fr) : images du catalogue complet qui piégeaient la traduction automatique
+# (file, source, id, category, mots_fr): images of the full catalogue that trapped the automatic translation
 PIEGES = [
     ("90_vocabulaire_general/arasaac_28691.png", "arasaac", "28691", "90_vocabulaire_general", ["accrocher", "pendre", "suspendre"]),
     ("91_emojis_symboles/openmoji_1F1E6-1F1F8.svg", "openmoji", "1F1E6_1F1F8", "91_emojis_symboles", ["comme", "drapeau"]),
@@ -55,12 +55,13 @@ def test_pas_d_image_a_tout_prix():
             assert "IMG_ARASAAC_38895" not in r["pictogrammes"], "« male » sans accent n'est pas « mâle »"
             r = lx.traduire("Comment vous sentez-vous, où avez-vous mal ?")
             assert r["pictogrammes"].count("VOUS") <= 1 and "DOULEUR" in "".join(r["pictogrammes"]), "un seul « vous » par question"
-            # ce qui doit continuer à marcher
+            # what must keep working
             assert "IMG_ARASAAC_500" in lx.traduire("la voiture")["pictogrammes"], "libellé principal du catalogue : gardé"
             assert "IMG_ARASAAC_500" not in lx.traduire("une auto")["pictogrammes"], "mot-clé secondaire : pas d'office"
             r = lx.traduire("J'ai une doulleur")
             assert "DOULEUR" in r["pictogrammes"] and ("doulleur" in r["rapproches"] or "doulleur" in r["corrections"]), "faute évidente"
-            # la recherche du médecin (manuelle) trouve toujours tout, y compris les images écartées de la traduction d'office
+            # the doctor's (manual) search still finds everything, including the images kept out of automatic
+            # translation
             assert any(x["id"] == "IMG_ARASAAC_28691" for x in lx.chercher("pendre", 10))
     finally:
         B.VOCABULAIRE.clear(); B.VOCABULAIRE.update(sauve_v)

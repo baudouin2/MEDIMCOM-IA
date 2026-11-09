@@ -1,11 +1,11 @@
-"""Exporte un journal en page HTML lisible (frise par événement), pour l'audit, le jury ou la vidéo.
+"""Exports a journal as a readable HTML page (timeline per event), for audit, the jury or the video.
 
     python exporter_journal.py sortie/journal.json                 # -> sortie/journal.html
     python exporter_journal.py sortie/journal.json -o audit.html
 
-La page indique d'abord si le journal est intact (vérification des empreintes SHA-256), puis la
-configuration (modèles, empreintes des règles et de la base), puis chaque événement avec ce que
-chaque agent a pensé, fait, écrit et décidé. Filtres par agent et par type. Aucune dépendance.
+The page first says whether the journal is intact (SHA-256 fingerprints checked), then the configuration
+(models, fingerprints of the rules and the base), then each event with what each agent thought, did, wrote and
+decided. Filters by agent and by type. No dependency.
 """
 import sys as _sys
 for _flux in (_sys.stdout, _sys.stderr):
@@ -68,7 +68,7 @@ def _humain(h: dict) -> str:
 
 
 def html_rapport(r: dict) -> str:
-    """Rapport de responsabilités (medimcom/responsabilites.py), en tête du journal."""
+    """Responsibility report (medimcom/responsabilites.py), at the top of the journal."""
     b = r["bilan"]
     cartes = "".join(f"<div class='k'><b>{v}</b><span>{e(t)}</span></div>" for t, v in (
         ("décisions suivies", b["decisions"]), ("envoyées au patient", b["envoyes"]), ("bloquées par le juriste", b["bloques_par_le_juriste"]),
@@ -179,4 +179,4 @@ if __name__ == "__main__":
     a = p.parse_args()
     src = Path(a.chemin)
     dst = Path(a.sortie) if a.sortie else src.with_suffix(".html")
-    print(f"{exporter(src, dst)} · page écrite : {dst}")
+    print(f"{exporter(src, dst)} · page written: {dst}")

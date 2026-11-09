@@ -1,5 +1,5 @@
-"""Inspection fonctionnelle (7 novembre) : consentement valable, informations manquantes obtenues, refus de l'IA respecté,
-« je ne comprends pas », urgence prise en charge, filtres du journal."""
+"""Functional inspection (7 November): valid consent, missing information obtained, refusal of the AI respected,
+"I don't understand", emergency handled, journal filters."""
 import json
 import sys
 import threading
@@ -39,7 +39,7 @@ def test_informations_manquantes_obtenues_aupres_du_patient():
     sugg = [s for s in d.suggestions.values() if s["statut"] == "proposee_au_medecin"]
     assert any("traitements en cours" in s["texte"] and "traitements_en_cours" not in s["texte"] for s in sugg), "libellés lisibles"
     assert not [x for x in d.decisions.values() if x.get("type") == "envoi_patient"], "rien dans la conversation sans le médecin"
-    # le médecin clique « Envoyer » dans l'onglet Assistant ; le patient répond NON -> la prescription devient conforme
+    # the doctor clicks "Send" in the Assistant tab; the patient answers NO -> the prescription becomes compliant
     for cle in ("allergies", "traitements_en_cours"):
         app.evenement({"type": "poser_question", "auteur": "medecin", "medecin": "DR-001", "question_id": questions[cle]["id"]})
         p = next(x for x in d.decisions.values() if x.get("source_question") == questions[cle]["id"])
@@ -69,7 +69,7 @@ def test_consentement_seulement_si_l_accord_a_ete_montre():
                    "dose": "1 g", "posologie": "3 fois par jour", "mode": "presentiel", "texte": "x"})
     p = _derniere_proposition(app)
     assert any("ACCORD" in x for x in p["pictogrammes"]), p["pictogrammes"]
-    # le médecin retire l'image d'accord : la question devient « vous ? » -> un OUI n'est PAS un consentement
+    # the doctor removes the agreement image: the question becomes "you?" -> a YES is NOT consent
     app.evenement({"type": "modification_pictogrammes", "auteur": "medecin", "medecin": "DR-001", "decision_id": p["id"],
                    "pictogrammes": [x for x in p["pictogrammes"] if "ACCORD" not in x]})
     _valider(app, p)
@@ -129,17 +129,18 @@ def test_propositions_et_alertes_perimees_retirees():
     app.evenement({"type": "poser_question", "auteur": "medecin", "medecin": "DR-001", "question_id": qid, "modifier": True})
     attente = [x for x in d.decisions.values() if x.get("type") == "envoi_patient" and x["statut"] == "attente_validation"]
     assert len(attente) == 1
-    # le médecin remplit la fiche lui-même : la question devient inutile ; la proposition est retirée, l'autre question aussi
+    # the doctor fills in the record themself: the question becomes useless; the proposal is withdrawn, the other
+    # question too
     app.evenement({"type": "echange", "auteur": "medecin", "confirme": True, "texte": "fiche",
                    "donnees": {"allergies": "aucune", "traitements_en_cours": "aucun"}})
     assert all(x["statut"] == "annulee" for x in attente), [x["statut"] for x in attente]
     assert all(q["statut"] == "repondue" for q in d.questions_a_poser if q.get("cle") in ("allergies", "traitements_en_cours"))
-    # le médecin refuse une question de l'assistant : elle disparaît
+    # the doctor refuses an assistant question: it disappears
     d.ajouter_question("assistant", "Avez-vous de la fièvre ?", "test", "fievre")
     q = d.questions_a_poser[-1]
     app.evenement({"type": "refus_question", "auteur": "medecin", "question_id": q["id"]})
     assert q["statut"] == "refusee"
-    # urgence prise en charge : l'alerte de l'assistant est retirée
+    # emergency handled: the assistant's alert is withdrawn
     app.evenement({"type": "reponse_patient", "pictogrammes": ["URGENCE"]})
     assert any(s["type"] == "alerte_urgence" and s["statut"] == "proposee_au_medecin" for s in d.suggestions.values())
     app.evenement({"type": "echange", "auteur": "medecin", "confirme": True, "texte": "Urgence prise en charge.", "donnees": {"urgence": False}})

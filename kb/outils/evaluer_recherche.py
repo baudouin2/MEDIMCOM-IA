@@ -1,8 +1,8 @@
-"""Mesure la qualité de la recherche dans la base (rappel@k et MRR) sur kb/questions_test.jsonl.
+"""Measures the quality of search in the base (recall@k and MRR) on kb/questions_test.jsonl.
 
-    python kb/outils/evaluer_recherche.py            # résumé (BM25, recherche par mots)
-    python kb/outils/evaluer_recherche.py --details  # chaque question
-    python kb/outils/evaluer_recherche.py --comparer --encodeur ollama:bge-m3   # BM25 vs vecteurs vs hybride
+    python kb/outils/evaluer_recherche.py            # summary (BM25, keyword search)
+    python kb/outils/evaluer_recherche.py --details  # each question
+    python kb/outils/evaluer_recherche.py --comparer --encodeur ollama:bge-m3   # BM25 vs vectors vs hybrid
 """
 import argparse
 import json
@@ -49,8 +49,8 @@ if __name__ == "__main__":
         if not chemin.exists():
             raise SystemExit(f"Index absent : {chemin}. Le construire : python kb/outils/construire_vecteurs.py --encodeur {a.encodeur}")
         base.brancher_vecteurs(IndexVectoriel.charger(chemin), enc)
-        print(f"{len(qs)} questions · encodeur {enc.nom}")
-        print("| Méthode | rappel@1 | rappel@3 | rappel@5 | MRR |\n|---|---|---|---|---|")
+        print(f"{len(qs)} questions · encoder {enc.nom}")
+        print("| Method | recall@1 | recall@3 | recall@5 | MRR |\n|---|---|---|---|---|")
         for m in ("bm25", "vecteurs", "hybride"):
             r = evaluer(base, qs, methode=m)
             print(f"| {m} | {r['rappel']['rappel@1']} | {r['rappel']['rappel@3']} | {r['rappel']['rappel@5']} | {r['mrr']} |")
@@ -58,8 +58,8 @@ if __name__ == "__main__":
     r = evaluer(base, qs)
     print(f"{r['n']} questions · " + " · ".join(f"{k} = {v}" for k, v in r["rappel"].items()) + f" · MRR = {r['mrr']}")
     for lg, v in r["par_langue"].items():
-        print(f"  {lg} : {v['n']} questions, rappel@3 = {v['rappel@3']}")
+        print(f"  {lg}: {v['n']} questions, recall@3 = {v['rappel@3']}")
     if a.details or r["echecs"]:
-        print("Hors des 3 premiers :")
+        print("Not in the first 3:")
         for e in r["echecs"]:
-            print(f"  {e['id']} rang={e['rang']} attendu={e['attendu']} obtenu={e['obtenu']} — {e['question']}")
+            print(f"  {e['id']} rank={e['rang']} expected={e['attendu']} got={e['obtenu']} — {e['question']}")

@@ -1,4 +1,4 @@
-import{c as t,b as e,d as a}from"./index-vSVJOwaG.js";import{M as n}from"./Marque-fcK96Cb8.js";import{M as i,S as r}from"./stethoscope-D9MhM041.js";/**
+import{c as t,b as e,d as a}from"./index-BPpx9JV1.js";import{M as n}from"./Marque-BTzMKfU6.js";import{M as i,S as r}from"./stethoscope-BDDJsZVd.js";/**
  * @license lucide-react v0.460.0 - ISC
  *
  * This source code is licensed under the ISC license.

@@ -1,4 +1,4 @@
-/** Marque MEDIMCOM IA : deux cartes de pictogrammes qui se chevauchent (une phrase, une réponse). */
+/** MEDIMCOM IA logo: two overlapping pictogram cards (a sentence, an answer). */
 export function Marque({ taille = 30, texte = true }: { taille?: number; texte?: boolean }) {
   return (
     <span className="flex items-center gap-2.5">

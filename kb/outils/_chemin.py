@@ -1,4 +1,4 @@
-"""Rend le paquet `medimcom` importable depuis kb/outils/."""
+"""Makes the `medimcom` package importable from kb/outils/."""
 import sys
 from pathlib import Path
 

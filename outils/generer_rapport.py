@@ -1,11 +1,11 @@
-"""Génère le rapport technique (≤ 5 pages, en anglais) et l'annexe d'analyse des lacunes, à partir de la base réelle.
+"""Generates the technical report (≤ 5 pages, in English) and the gap-analysis annex, from the real base.
 
-    pip install playwright && python -m playwright install chromium     # une seule fois
+    pip install playwright && python -m playwright install chromium     # once
     python outils/generer_rapport.py                                     # -> docs/soumission/*.pdf
 
-Les chiffres (sources, dispositions, règles, tests, questions…) sont lus dans le dépôt : relancer après chaque
-modification de la base ou du code, puis vérifier que le rapport tient toujours en 5 pages (le script le contrôle).
-Police : Inter si elle est installée, sinon la police sans empattement du système (la mise en page peut varier).
+The figures (sources, provisions, rules, tests, questions…) are read from the repository: run again after each
+change of the base or the code, then check that the report still fits in 5 pages (the script checks it).
+Font: Inter if installed, otherwise the system's sans-serif font (the layout may vary).
 """
 import html
 import json
@@ -44,7 +44,7 @@ e = html.escape
 
 
 def cc(fid):
-    """Citation compacte : titre court sans la parenthèse descriptive, puis l'article."""
+    """Compact citation: short title without the descriptive parenthesis, then the article."""
     import re
     f = base.fiches[fid]
     t = base.sources[f["source"]]["short_title"]
@@ -312,7 +312,7 @@ def pdf(body, nom, titre):
 
 
 def liens_kb() -> str:
-    """Liste des liens de référence de tous les documents proposés à la base (exigence du hackathon)."""
+    """List of the reference links of every document proposed for the base (hackathon requirement)."""
     niveaux = {"official_text": "official text", "secondary_source": "secondary source", "to_confirm": "to confirm"}
     l = ["# MEDIMCOM IA — reference links of the materials proposed to the knowledge base", "",
          f"Team ShifaMiko · generated from `kb/sources.json` · {len(base.sources)} sources · {len(base.fiches)} provisions in `kb/fiches.jsonl`.",

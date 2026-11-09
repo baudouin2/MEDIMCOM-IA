@@ -1,5 +1,5 @@
-"""Les agents lisent le CONTEXTE (consigne, incitation, question, mise en garde, récit, information) et corrigent les
-fautes de frappe et de dictée. Et la sécurité clinique vaut pour tous les profils, pas seulement la grossesse."""
+"""The agents read the CONTEXT (instruction, incitement, question, warning, narrative, information) and correct
+typing and dictation errors. And clinical safety holds for every profile, not only pregnancy."""
 import json
 import sys
 from pathlib import Path
@@ -20,7 +20,7 @@ def test_lecture_du_contexte():
     bloques = ["Allez vous pendre", "et vous pendre", "Pendez-vous", "je vais vous tuer", "espèce d'idiot", "allez vous pandre"]
     for t in bloques:
         assert analyser_message(t, MEDS)["incitation_au_mal"], t
-    permis = {  # récit, question, information, mise en garde : on peut en parler
+    permis = {  # narrative, question, information, warning: it can be talked about
         "Il s'est pendu l'an dernier": "recit",
         "Votre frère a voulu se pendre, c'est ça qui vous inquiète": "recit",
         "Avez-vous des idées de vous tuer ?": "question",
@@ -101,10 +101,10 @@ def test_recit_permis_et_agents_informes():
     assert any("récit" in m.contenu for m in msgs), "le juriste dit à l'assistant ce qu'il a compris"
     app.evenement({"type": "validation", "auteur": "medecin", "medecin": "DR-001", "decision_id": d["id"]})
     assert d["statut"] == "envoye"
-    # sens incertain : part seulement avec la confirmation signée du médecin
+    # uncertain meaning: sent only with the doctor's signed confirmation
     d = _dire(app, "pendre")
     assert "Refusé" in app.evenement({"type": "validation", "auteur": "medecin", "medecin": "DR-001", "decision_id": d["id"]})
-    # « pendre » n'a (volontairement) aucun pictogramme : même confirmé, un message vide ne part jamais
+    # "pendre" (deliberately) has no pictogram: even confirmed, an empty message is never sent
     assert "aucun pictogramme" in app.evenement({"type": "validation", "auteur": "medecin", "medecin": "DR-001",
                                                   "decision_id": d["id"], "confirme_contexte": True})
     app.evenement({"type": "modification_pictogrammes", "auteur": "medecin", "medecin": "DR-001", "decision_id": d["id"],

@@ -1,13 +1,13 @@
-"""Vérification formelle de MEDIMCOM IA : règles du juriste, spécification, cycle de vie des décisions.
+"""Formal verification of MEDIMCOM IA: jurist rules, specification, decision life cycle.
 
-    python outils/verifier_formel.py                    # tout : énumération, preuves SMT, exploration, rapport
-    python outils/verifier_formel.py --mutations        # + analyse de mutation (quelques minutes)
-    python outils/verifier_formel.py --journal sortie/journal.json   # surveiller un journal existant
-    python outils/verifier_formel.py --rapide           # pour l'intégration continue (exploration réduite)
+    python outils/verifier_formel.py                    # everything: enumeration, SMT proofs, exploration, report
+    python outils/verifier_formel.py --mutations        # + mutation analysis (a few minutes)
+    python outils/verifier_formel.py --journal sortie/journal.json   # monitor an existing journal
+    python outils/verifier_formel.py --rapide           # for continuous integration (reduced exploration)
 
-Sortie : docs/technique/RAPPORT_VERIFICATION_FORMELLE.md (+ sortie/verification_formelle.json).
-Code de retour 1 si une propriété est violée : la vérification bloque l'intégration continue.
-Méthodes et références : docs/technique/METHODES_FORMELLES.md.
+Output: docs/technique/RAPPORT_VERIFICATION_FORMELLE.md (+ sortie/verification_formelle.json).
+Exit code 1 if a property is violated: the verification blocks continuous integration.
+Methods and references: docs/technique/METHODES_FORMELLES.md.
 """
 import argparse
 import json
@@ -53,20 +53,20 @@ def main(argv=None):
     debut, resultats, sections = time.time(), {}, []
     for pays, chemin in PAYS.items():
         m = MoteurRegles(chemin)
-        print(f"[{pays}] énumération exhaustive sur le moteur réel…")
+        print(f"[{pays}] exhaustive enumeration on the real engine…")
         res = formel.verifier_tout(m)
         if formel_smt.disponible():
-            print(f"[{pays}] preuves SMT (Z3) et validation croisée…")
+            print(f"[{pays}] SMT proofs (Z3) and cross-validation…")
             for fam in ("partage", "envoi_patient"):
                 res += formel_smt.prouver(m, fam) + [formel_smt.validation_croisee(m, fam, n=2000)]
         else:
-            print("  (z3-solver absent : preuves SMT sautées ; pip install z3-solver)")
+            print("  (z3-solver missing: SMT proofs skipped; pip install z3-solver)")
         mut = []
         if a.mutations and formel_smt.disponible():
-            print(f"[{pays}] analyse de mutation…")
+            print(f"[{pays}] mutation analysis…")
             mut = [formel_smt.analyse_mutations(m, fam, avec_prudence=True) for fam in ("partage", "envoi_patient")]
         n = 150 if a.rapide else 600
-        print(f"[{pays}] exploration de {n} suites d'événements sur les vrais agents…")
+        print(f"[{pays}] exploring {n} event sequences on the real agents…")
         exp = explorer(n, 14, 2026, pays)
         resultats[pays] = {"proprietes": res, "mutations": mut, "exploration": exp}
 
@@ -103,7 +103,7 @@ def main(argv=None):
                                                                   encoding="utf-8")
     for pays, r in echecs:
         print(f"✖ [{pays}] {r['id']}")
-    print(f"{'✔ Toutes les propriétés sont vérifiées' if not echecs else f'✖ {len(echecs)} violation(s)'} — rapport : {a.sortie}")
+    print(f"{'✔ All properties verified' if not echecs else f'✖ {len(echecs)} violation(s)'} — report: {a.sortie}")
     return 1 if echecs else 0
 
 

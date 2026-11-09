@@ -1,11 +1,11 @@
-"""Étape « references » de constituer_base_v2.py : références médicales construites de zéro, sources ouvertes et officielles.
+""""references" step of constituer_base_v2.py: medical references built from scratch, open and official sources.
 
-- Fiches d'information de l'OMS (« principaux faits », symptômes, traitement, prévention) en français, anglais et arabe ;
-- MedlinePlus (Bibliothèque nationale de médecine des États-Unis, domaine public) : résumés des sujets de santé, en anglais ;
-- Wikidata (CC0) : lexique multilingue fr / en / ar des maladies, symptômes, parties du corps et soins du vocabulaire,
-  avec code CIM-10 quand il existe.
+- WHO fact sheets ("key facts", symptoms, treatment, prevention) in French, English and Arabic;
+- MedlinePlus (US National Library of Medicine, public domain): summaries of health topics, in English;
+- Wikidata (CC0): multilingual fr / en / ar lexicon of the diseases, symptoms, body parts and care of the
+  vocabulary, with ICD-10 code when it exists.
 
-Chaque enregistrement garde son adresse, sa date et son empreinte SHA-256.
+Each record keeps its address, its date and its SHA-256 fingerprint.
 """
 import json
 import re
@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 
 import constituer_base_v2 as cb
 
-OMS_FICHES = [  # identifiant de fiche OMS -> notion du vocabulaire la plus proche
+OMS_FICHES = [  # WHO fact-sheet identifier -> closest vocabulary concept
     ("malaria", "PALUDISME"), ("diabetes", "DIABETE"), ("hypertension", "HYPERTENSION"), ("asthma", "ASTHME"),
     ("tuberculosis", "TUBERCULOSE"), ("hiv-aids", "VIH"), ("hepatitis-b", "HEPATITE"), ("hepatitis-c", "HEPATITE"),
     ("cholera", "CHOLERA"), ("typhoid", "TYPHOIDE"), ("measles", "ROUGEOLE"), ("deafness-and-hearing-loss", "SURDITE"),
