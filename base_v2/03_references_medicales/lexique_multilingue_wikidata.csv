@@ -1,0 +1,205 @@
+﻿notion;categorie;fr_vocabulaire;fr;en;ar;cim10;wikidata
+TETE;09_corps_anatomie;tête;tête;head;رأس;;Q23640
+VISAGE;09_corps_anatomie;visage;Faceted Application of Subject Terminology;Faceted Application of Subject Terminology;تطبيق متعدِد الأوجه لمصطلحات الموضوع;;Q3294867
+FRONT;09_corps_anatomie;front;front;forehead;جبهة;;Q41055
+TEMPE;09_corps_anatomie;tempe;Université Temple;Temple University;جامعة تمبل;;Q1420239
+OEIL;09_corps_anatomie;œil;Eye;Eye;;;Q777509
+PAUPIERE;09_corps_anatomie;paupière;paupière;eyelid;جفن;;Q48228
+OREILLE;09_corps_anatomie;oreille;Early Human Development;Early Human Development;;;Q5326666
+NEZ;09_corps_anatomie;nez;Nose;Nose;;;Q28750823
+JOUE;09_corps_anatomie;joue;Cheek;Cheek;;;Q16865511
+BOUCHE;09_corps_anatomie;bouche;embouchure;river mouth;مصب نهر;;Q1233637
+LEVRES;09_corps_anatomie;lèvres;lèvre;lip;شفة;;Q15173
+DENT;09_corps_anatomie;dent;Tooth;Tooth;;;Q110688728
+GENCIVE;09_corps_anatomie;gencive;Guam;Guam;غوام;;Q16635
+LANGUE;09_corps_anatomie;langue;Tongue;Tongue;;;Q37258562
+GORGE;09_corps_anatomie;gorge;cancer des voies aérodigestives supérieures;head and neck cancer;سرطان الرأس والعنق;C07 C14 C32 C33;Q1783924
+MACHOIRE;09_corps_anatomie;mâchoire;Wikipédia en japonais;Japanese Wikipedia;ويكيبيديا اليابانية;;Q177837
+MENTON;09_corps_anatomie;menton;Wikipédia en chinois;Chinese Wikipedia;ويكيبيديا الصينية;;Q30239
+COU;09_corps_anatomie;cou;Neck;Neck;;;Q37493495
+NUQUE;09_corps_anatomie;nuque;Nape;Nape;;;Q67583413
+NOMBRIL;09_corps_anatomie;nombril;Navel;Navel;;;Q1154544
+ESTOMAC;09_corps_anatomie;estomac;estomac;stomach;معدة;;Q1029907
+INTESTIN;09_corps_anatomie;intestin;intestin;intestine;أمعاء;;Q9639
+FOIE;09_corps_anatomie;foie;foie;liver;كبد;;Q9368
+REIN;09_corps_anatomie;rein;rein;kidney;كلية;;Q9377
+VESSIE;09_corps_anatomie;vessie;vessie;urinary bladder;مثانة;;Q9382
+UTERUS;09_corps_anatomie;utérus;utérus;uterus;رحم;;Q9612
+ORGANES_GENITAUX;09_corps_anatomie;organes génitaux;organe sexuel;sex organ;عضو جنسي;;Q4620674
+PENIS;09_corps_anatomie;pénis;pénis;penis;قضيب;;Q58
+VAGIN;09_corps_anatomie;vagin;vagin;vagina;مهبل;;Q5880
+VEINE;09_corps_anatomie;veine;veine;vein;وريد;;Q9609
+CERVEAU;09_corps_anatomie;cerveau;Brain;Brain;الدماغ;;Q897386
+NERF;09_corps_anatomie;nerf;nerf;nerve;عصب;;Q9620
+CHEVEUX;09_corps_anatomie;cheveux;Hair;Hair;;;Q1165499
+POILS;09_corps_anatomie;poils;pilosité humaine;androgenic hair;شعر الجسم;;Q2167872
+GORGE_SECHE;09_corps_anatomie;gorge sèche;gorge sèche;dry throat;;;Q21120220
+DOULEUR;11_douleur_description;douleur;Pain;Pain;;;Q37486727
+AVOIR_MAL;11_douleur_description;avoir mal;Hurt;Hurt;هرت;;Q21497552
+BRULURE;11_douleur_description;brûlure;combustion;combustion;احتراق;;Q133235
+DOULEUR_CONSTANTE;11_douleur_description;douleur constante;;Constant Pain Following Treatment of Herpes Esophagitis;;;Q127195495
+DOULEUR_QUI_IRRADIE;11_douleur_description;douleur qui irradie;;radiating pain;;;Q11498936
+DOULEUR_QUI_SE_DEPLACE;11_douleur_description;douleur qui se déplace;;moving painting;;;Q137411458
+DEBUT_BRUTAL;11_douleur_description;début brutal;syndrome de Harlequin;harlequin syndrome;متلازمة المهرج;;Q5658687
+DEBUT_PROGRESSIF;11_douleur_description;début progressif;;Gradual-onset surfing injuries in New Zealand : a retrospective epidemiological study;;;Q112934761
+DE_PLUS_EN_PLUS_FORT;11_douleur_description;de plus en plus fort;;Getting worse;;;Q118534047
+DE_MOINS_EN_MOINS_FORT;11_douleur_description;de moins en moins fort;Getting Better;Getting Better;;;Q17990795
+ECHELLE_DE_DOULEUR;11_douleur_description;échelle de douleur;échelle d'évaluation de la douleur;pain scale;;;Q1131635
+PAS_DE_DOULEUR;11_douleur_description;pas de douleur;;No Pain;;;Q137397308
+TOUX_SECHE;12_symptomes;toux sèche;toux sèche;dry cough;;;Q97464125
+CRACHER;12_symptomes;cracher;salive;saliva;لعاب;;Q155925
+RHUME;12_symptomes;rhume;broncho-pneumopathie chronique obstructive;chronic obstructive pulmonary disease;داء الانسداد الرئوي المزمن;J44;Q199804
+NEZ_BOUCHE;12_symptomes;nez bouché;congestion nasale;nasal congestion;احتقان الأنف;;Q3245488
+NEZ_QUI_COULE;12_symptomes;nez qui coule;rhinite;rhinitis;التهاب الأنف;J00 J30 J31.0;Q114085
+ETERNUER;12_symptomes;éternuer;;Sneeze;;;Q16259261
+ESSOUFFLEMENT;12_symptomes;essoufflement;dyspnée;dyspnea;ضيق النفس;R06.0;Q188008
+RESPIRATION_SIFFLANTE;12_symptomes;respiration sifflante;sibilance;wheeze;أزيز;;Q517104
+PALPITATIONS;12_symptomes;palpitations;palpitation;palpitation;خفقان;R00.2;Q1123260
+URINER_SOUVENT;12_symptomes;uriner souvent;pollakiurie;frequent urination;تكرار بولي;;Q352585
+SANG_DANS_LES_URINES;12_symptomes;sang dans les urines;;Blood in Urine: A Hard Nut to Crack;;;Q88692529
+ERUPTION;12_symptomes;éruption;;Rash;;;Q16875296
+BOUTONS;12_symptomes;boutons;;Pimples Dmel_CG5052;;;Q29817000
+PLAIE;12_symptomes;plaie;cicatrisation;wound healing;التئام الجروح;;Q1509074
+BRULURE_DE_LA_PEAU;12_symptomes;brûlure de la peau;;skin burn complication;;;Q12136175
+COUPURE;12_symptomes;coupure;Cut;Cut;كوت، ألبا;;Q16425245
+SAIGNEMENT;12_symptomes;saignement;hémorragie;bleeding;نزف;R58;Q166019
+YEUX_ROUGES;12_symptomes;yeux rouges;rouge;red;أحمر;;Q17126729
+YEUX_JAUNES;12_symptomes;yeux jaunes;jaune;yellow;صفرة;;Q27777837
+PERTE_D_AUDITION;12_symptomes;perte d'audition;déficience auditive;hearing loss;فقدان السمع;;Q16035842
+BOURDONNEMENT_D_OREILLE;12_symptomes;bourdonnement d'oreille;;Ringing in the ears;;;Q79330117
+INSOMNIE;12_symptomes;insomnie;insomnie;insomnia;أرق;F51.0 G47.0;Q1869874
+SOMNOLENCE;12_symptomes;somnolence;somnolence;somnolence;نعاس;R40.0;Q1077823
+PERTES_VAGINALES;12_symptomes;pertes vaginales;sécrétion vaginale;vaginal discharge;إفراز مهبلي;N89.8;Q778502
+REGLES_DOULOUREUSES;12_symptomes;règles douloureuses;;Painful Periods in the Adolescent Girl;;;Q91806619
+RETARD_DE_REGLES;12_symptomes;retard de règles;Basse époque égyptienne;Late Period of ancient Egypt;العصر المتأخر;;Q621917
+PALUDISME;13_maladies_antecedents;paludisme;paludisme;malaria;ملاريا;;Q12156
+ANEMIE;13_maladies_antecedents;anémie;Anemia;Anemia;فقيرة الدم;;Q3353348
+DREPANOCYTOSE;13_maladies_antecedents;drépanocytose;drépanocytose;sickle-cell disease;داء الخلايا المنجلية;;Q185034
+CANCER;13_maladies_antecedents;cancer;Cancer;Cancer;السرطان;;Q8849
+EPILEPSIE;13_maladies_antecedents;épilepsie;épilepsie;epilepsy;صرع;;Q41571
+AVC;13_maladies_antecedents;AVC;accident vasculaire cérébral;stroke;سكتة دماغية;;Q12202
+CRISE_CARDIAQUE;13_maladies_antecedents;crise cardiaque;infarctus du myocarde;myocardial infarction;نوبة قلبية;I21;Q12152
+INSUFFISANCE_CARDIAQUE;13_maladies_antecedents;insuffisance cardiaque;insuffisance cardiaque;heart failure;قصور القلب;I50;Q181754
+MALADIE_DES_REINS;13_maladies_antecedents;maladie des reins;néphropathie;kidney disease;اعتلال الكلية;;Q1054718
+ULCERE;13_maladies_antecedents;ulcère;abcès;abscess;خراج;L02;Q164655
+DEPRESSION;13_maladies_antecedents;dépression;dépression;major depressive disorder;اضطراب اكتئابي;;Q42844
+CHOLESTEROL;13_maladies_antecedents;cholestérol;cholestérol;cholesterol;كولسترول;;Q43656
+GOUTTE;13_maladies_antecedents;goutte;goutte;gout;نقرس;;Q133087
+ARTHROSE;13_maladies_antecedents;arthrose;arthrose;osteoarthritis;فصال عظمي;M15 M19 M47;Q62736
+RHUMATISME;13_maladies_antecedents;rhumatisme;rhumatisme;rheumatism;روماتزم;I00 I05;Q684924
+HERNIE;13_maladies_antecedents;hernie;Hernia : the journal of hernias and abdominal wall surgery;Hernia : the journal of hernias and abdominal wall surgery;;;Q26842781
+APPENDICITE;13_maladies_antecedents;appendicite;appendicite;appendicitis;التهاب الزائدة الدودية;;Q121041
+ANTECEDENTS;13_maladies_antecedents;antécédents;Medical History;Medical History;;;Q15762873
+ANTECEDENTS_FAMILIAUX;13_maladies_antecedents;antécédents familiaux;généalogie;Classical genealogy;علم الأنساب;;Q47307
+DEJA_OPERE;13_maladies_antecedents;déjà opéré;;Previous Surgery and Hypoglossal Nerve Stimulation for Obstructive Sleep Apnea;;;Q92992572
+DEJA_HOSPITALISE;13_maladies_antecedents;déjà hospitalisé;;Previous Hospitalization a Risk Factor for Drug-Resistant TB;;;Q127875782
+ANALYSE_D_URINE;15_examens_actes;analyse d'urine;examen de l'urine;Urine test;اختبار البول;;Q113213644
+ANALYSE_DE_SELLES;15_examens_actes;analyse de selles;examen des selles;stool test;فحص البراز;;Q2563658
+TEST_RAPIDE;15_examens_actes;test rapide;;Rapid Test for Detection of the Focus of Infection in Post Neurosurgical Patients.;;;Q66067921
+TEST_DE_PALUDISME;15_examens_actes;test de paludisme;;Malaria tests India's public health system;;;Q48011142
+TEST_VIH;15_examens_actes;test VIH;Test VIH;diagnosis of HIV/AIDS;تشخيص فيروس نقص المناعة البشرية;;Q337517
+TEST_DE_GROSSESSE;15_examens_actes;test de grossesse;test de grossesse;pregnancy test;اختبار الحمل;;Q1135142
+GLYCEMIE;15_examens_actes;glycémie;glycémie;blood glucose;سكر الدم;;Q275157
+FROTTIS;15_examens_actes;frottis;test PAP;Pap test;لطاخة بابانيكولاو;;Q942976
+PRELEVEMENT;15_examens_actes;prélèvement;Sample;Sample;;;Q20997795
+RADIOGRAPHIE;15_examens_actes;radiographie;source astrophysique de rayons X;astrophysical X-ray source;مصدر أشعة سينية فيزيائي فلكي;;Q2154519
+KINESITHERAPIE;15_examens_actes;kinésithérapie;Physiotherapy;Physiotherapy;;;Q15750416
+REEDUCATION;15_examens_actes;rééducation;restauration écologique;restoration ecology;ترميم بيئي;;Q2428433
+MASSAGE;15_examens_actes;massage;massage;massage;تدليك;;Q179415
+DIALYSE;15_examens_actes;dialyse;dialyse;renal dialysis;غسيل كلوي;;Q202301
+RESULTAT;15_examens_actes;résultat;résultat;result;نتيجة;;Q2995644
+RESULTAT_NORMAL;15_examens_actes;résultat normal;;Normal results of post-race thallium-201 myocardial perfusion imaging in marathon runners with elevated serum MB creatine kinase levels;;;Q93627538
+RESULTAT_ANORMAL;15_examens_actes;résultat anormal;;Abnormal results of dexamethasone suppression tests in nondepressed patients with diabetes mellitus;;;Q70666585
+DIAGNOSTIC;15_examens_actes;diagnostic;diagnostic;diagnosis;تشخيص;;Q16644043
+DEUXIEME_AVIS;15_examens_actes;deuxième avis;Second opinion (Park Ridge, Ill.);Second opinion (Park Ridge, Ill.);;;Q27713170
+ORDONNANCE;15_examens_actes;ordonnance;règle;rule;قاعدة;;Q1151067
+INJECTION;16_medicaments_posologie;injection;blessure par arme à feu;gunshot wound;إصابة بعيار ناري;T14.1 X95;Q2140674
+SUPPOSITOIRE;16_medicaments_posologie;suppositoire;suppositoire;suppository;تحاميل;;Q180799
+PATCH;16_medicaments_posologie;patch;correctif;patch;نقيلة;;Q208218
+SACHET;16_medicaments_posologie;sachet;Sachet;Sachet;;;Q25114295
+OVULE;16_medicaments_posologie;ovule;;Vaginal Pessary Versus Expectant Management for Placenta Previa;;;Q61969613
+INSULINE;16_medicaments_posologie;insuline;insuline;insulin;إنسولين;;Q50265665
+ANTIBIOTIQUE;16_medicaments_posologie;antibiotique;antibiotique;antibiotic;مضاد حيوي;;Q12187
+ANTIDOULEUR;16_medicaments_posologie;antidouleur;antalgique;analgesic;مسكن ألم;;Q173235
+PARACETAMOL;16_medicaments_posologie;paracétamol;paracétamol;paracetamol;باراسيتامول;;Q57055
+ANTI_INFLAMMATOIRE;16_medicaments_posologie;anti-inflammatoire;anti-inflammatoire;anti-inflammatory agent;مضاد التهاب;;Q581996
+SOUS_LA_LANGUE;16_medicaments_posologie;sous la langue;;Under the tongue;;;Q141496657
+SUR_LA_PEAU;16_medicaments_posologie;sur la peau;;On the Skin-Furrows of the Hand;;;Q55923633
+DANS_L_OEIL;16_medicaments_posologie;dans l'œil;In the Eyes of God;In the Eyes of God;;;Q17013885
+DANS_LE_NEZ;16_medicaments_posologie;dans le nez;;In the nose of the beholder: are olfactory influences on human mate choice driven by variation in immune system genes or sex hormone levels?;;;Q37799967
+DOSE;16_medicaments_posologie;dose;Dose;Dose;;;Q37529772
+CUILLERE;16_medicaments_posologie;cuillère;Spoon;Spoon;;;Q1155915
+CUILLERE_A_CAFE;16_medicaments_posologie;cuillère à café;cuillère à café;teaspoon;ملعقة شاي;;Q216425
+SERINGUE_DOSEUSE;16_medicaments_posologie;seringue doseuse;;Oral syringes: making better use of a crucial and economical risk-reduction strategy;;;Q36771534
+TRAITEMENT;16_medicaments_posologie;traitement;traitement taxinomique;taxonomic treatment;معالجة تصنيفية;;Q32945461
+PHARMACIE;16_medicaments_posologie;pharmacie;pharmacie;pharmacy;صيدلة;;Q614304
+OPERATION;17_chirurgie_operations;opération;chirurgie;surgery;جراحة;;Q40821
+OPERER;17_chirurgie_operations;opérer;Operate;Operate;;;Q7096677
+ANESTHESIE;17_chirurgie_operations;anesthésie;Anesthesia;Anesthesia;;;Q4761722
+ANESTHESIE_GENERALE;17_chirurgie_operations;anesthésie générale;anesthésie générale;general anaesthesia;تخدير عام;;Q166543
+ANESTHESIE_LOCALE;17_chirurgie_operations;anesthésie locale;anesthésie locale;local anesthesia;تخدير موضعي;;Q1455662
+ENDORMIR;17_chirurgie_operations;endormir;;Put to Sleep;;;Q48798291
+SE_REVEILLER;17_chirurgie_operations;se réveiller;Wake Up;Wake Up;;;Q22075257
+SALLE_DE_REVEIL;17_chirurgie_operations;salle de réveil;;Recovery room;;;Q75462444
+GLUCOMETRE;18_materiel_medical;glucomètre;glucomètre;glucose meter;مقياس السكر;;Q842840
+BALANCE;18_materiel_medical;balance;Scale;Scale;;;Q37488990
+TOISE;18_materiel_medical;toise;;height gauge;;;Q2283738
+GANTS;18_materiel_medical;gants;gant;glove;قفاز;;Q169031
+MASQUE;18_materiel_medical;masque;masque;mask;قناع;;Q161524
+BLOUSE;18_materiel_medical;blouse;robe;dress;فستان;;Q200539
+SERINGUE;18_materiel_medical;seringue;seringue;syringe;محقنة;;Q273318
+AIGUILLE;18_materiel_medical;aiguille;rocher;rock;صخرة;;Q1404150
+COTON;18_materiel_medical;coton;Cotton;Cotton;كوتن;;Q19607236
+COMPRESSE;18_materiel_medical;compresse;Gauze;Gauze;;;Q37555203
+DEFIBRILLATEUR;18_materiel_medical;défibrillateur;défibrillateur cardiaque;defibrillator;مزيل الرجفان;;Q1450682
+POT_A_URINE;18_materiel_medical;pot à urine;;Urine cup for collection of urine from cows;;;Q57138270
+BASSIN;18_materiel_medical;bassin;bassin de lit;bedpan;نونية السرير;;Q1940345
+COUCHE;18_materiel_medical;couche;couche-culotte;diaper;حفاظة;;Q187359
+CISEAUX;18_materiel_medical;ciseaux;paire de ciseaux;scissors;مقص;;Q40847
+MANGER;20_alimentation_regime;manger;alimentation;eating;أكل;;Q213449
+BOIRE;20_alimentation_regime;boire;alcoolisation;alcohol consumption;شرب الكحول;;Q2647488
+REPAS;20_alimentation_regime;repas;repas;meal;وجبة;;Q6460735
+PETIT_DEJEUNER;20_alimentation_regime;petit déjeuner;déjeuner;breakfast;إفطار;;Q80973
+DEJEUNER;20_alimentation_regime;déjeuner;;Lunch;;;Q63455858
+MANIOC;20_alimentation_regime;manioc;manioc;cassava;بفرة;;Q83124
+PLANTAIN;20_alimentation_regime;plantain;plantain;Plantago;لسان الحمل;;Q164686
+IGNAME;20_alimentation_regime;igname;Rén;Ren;رن;;Q7386141
+MAIS;20_alimentation_regime;maïs;Cornouailles;Cornwall;كورنوال;;Q23148
+MIL;20_alimentation_regime;mil;Millet;Millet;;;Q16877024
+PATES;20_alimentation_regime;pâtes;Pasta;Pasta;;;Q3897473
+POMME_DE_TERRE;20_alimentation_regime;pomme de terre;pomme de terre;potato;بطاطا;;Q10998
+HARICOTS;20_alimentation_regime;haricots;MDMA;MDMA;MDMA;;Q69488
+ARACHIDE;20_alimentation_regime;arachide;arachide;peanut;فول سوداني;;Q37383
+LEGUMES;20_alimentation_regime;légumes;légume;vegetable;خضار;;Q11004
+SUCRE;20_alimentation_regime;sucre;sucre;sugar;سكر;;Q11002
+PIMENT;20_alimentation_regime;piment;piment;chili pepper;فلفل حار;;Q165199
+BONBONS;20_alimentation_regime;bonbons;Attier;Annona squamosa;قشطة صدفية;;Q275620
+GATEAU;20_alimentation_regime;gâteau;Cake;Cake;كيك;;Q756704
+FRITURE;20_alimentation_regime;friture;aliment frit;fried food;طعام مقلي;;Q89809821
+BOUILLIE;20_alimentation_regime;bouillie;bouillie;porridge;حساء الشعير;;Q186817
+SOUPE;20_alimentation_regime;soupe;soupe;soup;حساء;;Q41415
+BIBERON;20_alimentation_regime;biberon;biberon;baby bottle;رضّاعة;;Q797906
+REGIME;20_alimentation_regime;régime;régime alimentaire;diet;حمية غذائية;;Q474191
+SANS_SEL;20_alimentation_regime;sans sel;;No salting-in of lysozyme chloride observed at low ionic strength over a large range of pH;;;Q42929078
+APPETIT;20_alimentation_regime;appétit;appétit;appetite;شهية;;Q28578
+ENCEINTE;23_grossesse_enfant_sexualite;enceinte;grossesse;pregnancy;حمل المرأة;Z33;Q11995
+GROSSESSE;23_grossesse_enfant_sexualite;grossesse;grossesse;pregnancy;حمل المرأة;Z33;Q11995
+CONSULTATION_PRENATALE;23_grossesse_enfant_sexualite;consultation prénatale;suivi de grossesse;prenatal care;مرحلة ما قبل الولادة;;Q3308829
+CONTRACTIONS;23_grossesse_enfant_sexualite;contractions;;Contractions;;;Q114465352
+PERTE_DES_EAUX;23_grossesse_enfant_sexualite;perte des eaux;rupture des membranes;rupture of membranes;تمزق السلى;;Q176918
+SAIGNEMENT_VAGINAL;23_grossesse_enfant_sexualite;saignement vaginal;saignement vaginal;vaginal bleeding;نزف المهبل;N93.8;Q244913
+NOUVEAU_NE;23_grossesse_enfant_sexualite;nouveau-né;nouveau-né;neonate;وليد;;Q576104
+ALLAITER;23_grossesse_enfant_sexualite;allaiter;allaitement;breastfeeding;رضاعة طبيعية;;Q174876
+MALENTENDANT;24_handicap_aides;malentendant;malentendant;hard of hearing person;;;Q69946825
+AVEUGLE;24_handicap_aides;aveugle;Blind;Blind;;;Q37040221
+MALVOYANT;24_handicap_aides;malvoyant;judo handisport;Para judo;الجودو البارالمبي;;Q2087929
+MUET;24_handicap_aides;muet;Mute Records;Mute Records;تسجيلات ميوت;;Q240804
+HANDICAP;24_handicap_aides;handicap;handicap;disability;إعاقة;;Q12131
+BRAILLE;24_handicap_aides;braille;Braille;Braille;;;Q104837051
+PICTOGRAMME;24_handicap_aides;pictogramme;pictogramme;pictogram;كتابة تصويرية;;Q52827
+TABLETTE;24_handicap_aides;tablette;tablette tactile;tablet computer;حاسوب لوحي;;Q155972
+AIDE_A_LA_COMMUNICATION;24_handicap_aides;aide à la communication;;Communication Aids for Disabled;;;Q73523154
+LECTURE_LABIALE;24_handicap_aides;lecture labiale;lecture labiale;lip reading;قراءة الشفاه;;Q1069953
+ACCOMPAGNER;24_handicap_aides;accompagner;backing band;backing band;;;Q814344
+RESPIRER;12_symptomes;respirer;Breathe;Breathe;;;Q2539096
+EXAMEN;15_examens_actes;examen;examen;exam;امتحان;;Q1355298

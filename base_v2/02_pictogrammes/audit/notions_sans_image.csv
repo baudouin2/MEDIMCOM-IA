@@ -1,0 +1,236 @@
+﻿notion;categorie;fr;en
+NORMAL;02_reponses_accord;normal;normal
+PEUT_ETRE;02_reponses_accord;peut-être;maybe
+PAS_DU_TOUT;02_reponses_accord;pas du tout;not at all
+QU_EST_CE_QUI_AGGRAVE;03_questions;qu'est-ce qui aggrave;what makes it worse
+LANGUE_PARLEE;04_comprehension_communication;langue parlée;spoken language
+C_EST_NORMAL;05_reassurance_soutien;c'est normal;it is normal
+RETENEZ_VOTRE_RESPIRATION;06_consignes_examen;retenez votre respiration;hold your breath
+OUVREZ_LA_BOUCHE;06_consignes_examen;ouvrez la bouche;open your mouth
+TIREZ_LA_LANGUE;06_consignes_examen;tirez la langue;stick out your tongue
+URINEZ_DANS_LE_POT;06_consignes_examen;urinez dans le pot;urinate in the cup
+TOURNEZ_LA_TETE;06_consignes_examen;tournez la tête;turn your head
+TENEZ_VOUS_DROIT;06_consignes_examen;tenez-vous droit;stand straight
+REVENIR_SI_CA_NE_VA_PAS_MIEUX;07_conseils_recommandations;revenir si ça ne va pas mieux;come back if not better
+CONTROLER_LA_GLYCEMIE;07_conseils_recommandations;contrôler la glycémie;check blood sugar
+FAIRE_UN_DEPISTAGE;07_conseils_recommandations;faire un dépistage;get screened
+CONSEIL;07_conseils_recommandations;conseil;advice
+RECOMMANDATION;07_conseils_recommandations;recommandation;recommendation
+AGENT_DE_SANTE_COMMUNAUTAIRE;08_personnes_soignants;agent de santé communautaire;community health worker
+TRADIPRATICIEN;08_personnes_soignants;tradipraticien;traditional healer
+LABORANTIN;08_personnes_soignants;laborantin;laboratory technician
+PERSONNE_AGEE;08_personnes_soignants;personne âgée;elderly person
+UTERUS;09_corps_anatomie;utérus;uterus
+ORGANES_GENITAUX;09_corps_anatomie;organes génitaux;genitals
+TESTICULES;09_corps_anatomie;testicules;testicles
+ANUS;09_corps_anatomie;anus;anus
+BAS_DU_DOS;09_corps_anatomie;bas du dos;lower back
+ORTEIL;09_corps_anatomie;orteil;toe
+NERF;09_corps_anatomie;nerf;nerve
+POILS;09_corps_anatomie;poils;body hair
+GORGE_SECHE;09_corps_anatomie;gorge sèche;dry throat
+PARTOUT;10_localisation_position;partout;everywhere
+LES_DEUX_COTES;10_localisation_position;les deux côtés;both sides
+A_LA_SURFACE;10_localisation_position;à la surface;on the surface
+EN_PROFONDEUR;10_localisation_position;en profondeur;deep inside
+D_UN_COTE;10_localisation_position;d'un côté;on one side
+UN_POINT_PRECIS;10_localisation_position;un point précis;one precise spot
+UNE_GRANDE_ZONE;10_localisation_position;une grande zone;a large area
+DOULEUR_QUI_IRRADIE;11_douleur_description;douleur qui irradie;radiating pain
+DOULEUR_QUI_SE_DEPLACE;11_douleur_description;douleur qui se déplace;moving pain
+DEBUT_BRUTAL;11_douleur_description;début brutal;sudden onset
+DEBUT_PROGRESSIF;11_douleur_description;début progressif;gradual onset
+DE_PLUS_EN_PLUS_FORT;11_douleur_description;de plus en plus fort;getting worse
+ECHELLE_DE_DOULEUR;11_douleur_description;échelle de douleur;pain scale
+DOULEUR_MOYENNE;11_douleur_description;douleur moyenne;moderate pain
+CA_ME_REVEILLE_LA_NUIT;11_douleur_description;ça me réveille la nuit;it wakes me up
+FRISSONS;12_symptomes;frissons;chills
+SUEURS_NOCTURNES;12_symptomes;sueurs nocturnes;night sweats
+TOUX_SECHE;12_symptomes;toux sèche;dry cough
+CRACHAT_AVEC_SANG;12_symptomes;crachat avec sang;blood in sputum
+NEZ_BOUCHE;12_symptomes;nez bouché;stuffy nose
+NEZ_QUI_COULE;12_symptomes;nez qui coule;runny nose
+ESSOUFFLEMENT;12_symptomes;essoufflement;shortness of breath
+RESPIRATION_SIFFLANTE;12_symptomes;respiration sifflante;wheezing
+PALPITATIONS;12_symptomes;palpitations;palpitations
+FAIBLESSE;12_symptomes;faiblesse;weakness
+PERTE_D_APPETIT;12_symptomes;perte d'appétit;loss of appetite
+PERTE_DE_POIDS;12_symptomes;perte de poids;weight loss
+PRISE_DE_POIDS;12_symptomes;prise de poids;weight gain
+VOMIR_DU_SANG;12_symptomes;vomir du sang;vomiting blood
+BALLONNEMENT;12_symptomes;ballonnement;bloating
+BRULURES_D_ESTOMAC;12_symptomes;brûlures d'estomac;heartburn
+SELLES_NOIRES;12_symptomes;selles noires;black stool
+URINER_SOUVENT;12_symptomes;uriner souvent;frequent urination
+BRULURE_EN_URINANT;12_symptomes;brûlure en urinant;burning urination
+SANG_DANS_LES_URINES;12_symptomes;sang dans les urines;blood in urine
+NE_PAS_POUVOIR_URINER;12_symptomes;ne pas pouvoir uriner;cannot urinate
+PLAIE;12_symptomes;plaie;wound
+BRULURE_DE_LA_PEAU;12_symptomes;brûlure de la peau;skin burn
+SAIGNEMENT;12_symptomes;saignement;bleeding
+GONFLEMENT;12_symptomes;gonflement;swelling
+JAMBES_GONFLEES;12_symptomes;jambes gonflées;swollen legs
+ENTORSE;12_symptomes;entorse;sprain
+PIQURE_D_INSECTE;12_symptomes;piqûre d'insecte;insect bite
+ENGOURDISSEMENT;12_symptomes;engourdissement;numbness
+PARALYSIE;12_symptomes;paralysie;paralysis
+PERTE_DE_MEMOIRE;12_symptomes;perte de mémoire;memory loss
+YEUX_ROUGES;12_symptomes;yeux rouges;red eyes
+YEUX_JAUNES;12_symptomes;yeux jaunes;yellow eyes
+PERTE_D_AUDITION;12_symptomes;perte d'audition;hearing loss
+BOURDONNEMENT_D_OREILLE;12_symptomes;bourdonnement d'oreille;ringing in the ears
+SOMNOLENCE;12_symptomes;somnolence;drowsiness
+PERTES_VAGINALES;12_symptomes;pertes vaginales;vaginal discharge
+REGLES_DOULOUREUSES;12_symptomes;règles douloureuses;painful periods
+RETARD_DE_REGLES;12_symptomes;retard de règles;late period
+COVID;13_maladies_antecedents;covid;covid
+TUBERCULOSE;13_maladies_antecedents;tuberculose;tuberculosis
+HEPATITE;13_maladies_antecedents;hépatite;hepatitis
+CHOLERA;13_maladies_antecedents;choléra;cholera
+TYPHOIDE;13_maladies_antecedents;typhoïde;typhoid
+ROUGEOLE;13_maladies_antecedents;rougeole;measles
+MENINGITE;13_maladies_antecedents;méningite;meningitis
+FIEVRE_JAUNE;13_maladies_antecedents;fièvre jaune;yellow fever
+DENGUE;13_maladies_antecedents;dengue;dengue
+PNEUMONIE;13_maladies_antecedents;pneumonie;pneumonia
+ANEMIE;13_maladies_antecedents;anémie;anemia
+DREPANOCYTOSE;13_maladies_antecedents;drépanocytose;sickle cell disease
+INSUFFISANCE_CARDIAQUE;13_maladies_antecedents;insuffisance cardiaque;heart failure
+ULCERE;13_maladies_antecedents;ulcère;ulcer
+GASTRO_ENTERITE;13_maladies_antecedents;gastro-entérite;gastroenteritis
+MALNUTRITION;13_maladies_antecedents;malnutrition;malnutrition
+DESHYDRATATION;13_maladies_antecedents;déshydratation;dehydration
+INFECTION_SEXUELLEMENT_TRANSMISSIBLE;13_maladies_antecedents;infection sexuellement transmissible;sexually transmitted infection
+MALADIE_DE_PEAU;13_maladies_antecedents;maladie de peau;skin disease
+GALE;13_maladies_antecedents;gale;scabies
+TEIGNE;13_maladies_antecedents;teigne;ringworm
+VERS_INTESTINAUX;13_maladies_antecedents;vers intestinaux;intestinal worms
+CECITE;13_maladies_antecedents;cécité;blindness
+OBESITE;13_maladies_antecedents;obésité;obesity
+CHOLESTEROL;13_maladies_antecedents;cholestérol;cholesterol
+ARTHROSE;13_maladies_antecedents;arthrose;osteoarthritis
+RHUMATISME;13_maladies_antecedents;rhumatisme;rheumatism
+HERNIE;13_maladies_antecedents;hernie;hernia
+ANTECEDENTS_FAMILIAUX;13_maladies_antecedents;antécédents familiaux;family history
+DEJA_OPERE;13_maladies_antecedents;déjà opéré;previous surgery
+DEJA_HOSPITALISE;13_maladies_antecedents;déjà hospitalisé;previous hospitalization
+MALADIE_CHRONIQUE;13_maladies_antecedents;maladie chronique;chronic disease
+CONTAGIEUX;13_maladies_antecedents;contagieux;contagious
+HEREDITAIRE;13_maladies_antecedents;héréditaire;hereditary
+CARNET_DE_VACCINATION;13_maladies_antecedents;carnet de vaccination;vaccination record
+ALLERGIE_AUX_MEDICAMENTS;13_maladies_antecedents;allergie aux médicaments;drug allergy
+ALLERGIE_ALIMENTAIRE;13_maladies_antecedents;allergie alimentaire;food allergy
+IMPATIENT;14_emotions_ressenti;impatient;impatient
+SE_SENTIR_PIRE;14_emotions_ressenti;se sentir pire;feel worse
+TEST_RAPIDE;15_examens_actes;test rapide;rapid test
+TEST_DE_PALUDISME;15_examens_actes;test de paludisme;malaria test
+TEST_VIH;15_examens_actes;test VIH;HIV test
+GLYCEMIE;15_examens_actes;glycémie;blood sugar
+FROTTIS;15_examens_actes;frottis;smear test
+PRELEVEMENT;15_examens_actes;prélèvement;sample
+TEST_D_AUDITION;15_examens_actes;test d'audition;hearing test
+NETTOYER_LA_PLAIE;15_examens_actes;nettoyer la plaie;clean the wound
+DIAGNOSTIC;15_examens_actes;diagnostic;diagnosis
+DEUXIEME_AVIS;15_examens_actes;deuxième avis;second opinion
+HOSPITALISATION;15_examens_actes;hospitalisation;hospitalization
+GOUTTES_POUR_LES_OREILLES;16_medicaments_posologie;gouttes pour les oreilles;ear drops
+SUPPOSITOIRE;16_medicaments_posologie;suppositoire;suppository
+SACHET;16_medicaments_posologie;sachet;sachet
+INSULINE;16_medicaments_posologie;insuline;insulin
+ANTIBIOTIQUE;16_medicaments_posologie;antibiotique;antibiotic
+ANTIDOULEUR;16_medicaments_posologie;antidouleur;painkiller
+PARACETAMOL;16_medicaments_posologie;paracétamol;paracetamol
+ANTI_INFLAMMATOIRE;16_medicaments_posologie;anti-inflammatoire;anti-inflammatory
+ANTIPALUDIQUE;16_medicaments_posologie;antipaludique;antimalarial
+ANTIRETROVIRAL;16_medicaments_posologie;antiretroviral;antiretroviral
+FER;16_medicaments_posologie;fer;iron supplement
+VERMIFUGE;16_medicaments_posologie;vermifuge;dewormer
+SOLUTION_DE_REHYDRATATION;16_medicaments_posologie;solution de réhydratation;oral rehydration solution
+CONTRACEPTION;16_medicaments_posologie;contraception;contraception
+PILULE_CONTRACEPTIVE;16_medicaments_posologie;pilule contraceptive;contraceptive pill
+PRESERVATIF;16_medicaments_posologie;préservatif;condom
+SERINGUE_DOSEUSE;16_medicaments_posologie;seringue doseuse;oral syringe
+TROIS_FOIS_PAR_JOUR;16_medicaments_posologie;trois fois par jour;three times a day
+EFFET_SECONDAIRE;16_medicaments_posologie;effet secondaire;side effect
+ANESTHESIE;17_chirurgie_operations;anesthésie;anesthesia
+ANESTHESIE_GENERALE;17_chirurgie_operations;anesthésie générale;general anesthesia
+ANESTHESIE_LOCALE;17_chirurgie_operations;anesthésie locale;local anesthesia
+ENDORMIR;17_chirurgie_operations;endormir;put to sleep
+POINTS_DE_SUTURE;17_chirurgie_operations;points de suture;stitches
+RETIRER_LES_FILS;17_chirurgie_operations;retirer les fils;remove stitches
+AMPUTATION;17_chirurgie_operations;amputation;amputation
+BIOPSIE;17_chirurgie_operations;biopsie;biopsy
+CONVALESCENCE;17_chirurgie_operations;convalescence;recovery
+COMPLICATION;17_chirurgie_operations;complication;complication
+BENEFICE;17_chirurgie_operations;bénéfice;benefit
+TOISE;18_materiel_medical;toise;height gauge
+POT_A_URINE;18_materiel_medical;pot à urine;urine cup
+PEDIATRIE;19_lieux_services_parcours;pédiatrie;pediatrics
+CARNET_DE_SANTE;19_lieux_services_parcours;carnet de santé;health record booklet
+JUS_DE_FRUIT;20_alimentation_regime;jus de fruit;fruit juice
+FEUILLES_VERTES;20_alimentation_regime;feuilles vertes;leafy greens
+APPETIT;20_alimentation_regime;appétit;appetite
+DEPISTAGE;21_hygiene_prevention;dépistage;screening
+EAU_BOUILLIE;21_hygiene_prevention;eau bouillie;boiled water
+LAVER_LES_ALIMENTS;21_hygiene_prevention;laver les aliments;wash food
+CUIRE_LES_ALIMENTS;21_hygiene_prevention;cuire les aliments;cook food
+LATRINES;21_hygiene_prevention;latrines;latrine
+SE_REVEILLER_LA_NUIT;22_activite_sommeil_mode_de_vie;se réveiller la nuit;wake up at night
+ETIREMENTS;22_activite_sommeil_mode_de_vie;étirements;stretching
+BOIRE_DE_L_ALCOOL;22_activite_sommeil_mode_de_vie;boire de l'alcool;drink alcohol
+RELATIONS_SEXUELLES;22_activite_sommeil_mode_de_vie;relations sexuelles;sexual intercourse
+VIE_DE_FAMILLE;22_activite_sommeil_mode_de_vie;vie de famille;family life
+CONSULTATION_PRENATALE;23_grossesse_enfant_sexualite;consultation prénatale;antenatal care
+DENTS_QUI_POUSSENT;23_grossesse_enfant_sexualite;dents qui poussent;teething
+MENOPAUSE;23_grossesse_enfant_sexualite;ménopause;menopause
+STERILET;23_grossesse_enfant_sexualite;stérilet;IUD
+IMPLANT;23_grossesse_enfant_sexualite;implant;implant
+FAUSSE_COUCHE;23_grossesse_enfant_sexualite;fausse couche;miscarriage
+STERILITE;23_grossesse_enfant_sexualite;stérilité;infertility
+RELATIONS_PROTEGEES;23_grossesse_enfant_sexualite;relations protégées;safe sex
+MALVOYANT;24_handicap_aides;malvoyant;visually impaired
+PICTOGRAMME;24_handicap_aides;pictogramme;pictogram
+SOUS_TITRES;24_handicap_aides;sous-titres;subtitles
+PROTHESE;24_handicap_aides;prothèse;prosthesis
+DEFICIENCE_INTELLECTUELLE;24_handicap_aides;déficience intellectuelle;intellectual disability
+PARALYSE;24_handicap_aides;paralysé;paralyzed
+CARTE_D_INVALIDITE;24_handicap_aides;carte d'invalidité;disability card
+EAU_DU_ROBINET;25_vie_quotidienne_contexte;eau du robinet;tap water
+A_PIED;25_vie_quotidienne_contexte;à pied;on foot
+TEMPS_FROID;25_vie_quotidienne_contexte;temps froid;cold weather
+FEU_DE_CUISINE;25_vie_quotidienne_contexte;feu de cuisine;cooking fire
+MENAGERE;25_vie_quotidienne_contexte;ménagère;housewife
+TOUT_A_L_HEURE;26_temps_frequence_duree;tout à l'heure;later today
+RAREMENT;26_temps_frequence_duree;rarement;rarely
+TROIS_FOIS;26_temps_frequence_duree;trois fois;three times
+TOT;26_temps_frequence_duree;tôt;early
+D_UN_COUP;26_temps_frequence_duree;d'un coup;suddenly
+PETIT_A_PETIT;26_temps_frequence_duree;petit à petit;little by little
+SAISON_DES_PLUIES;26_temps_frequence_duree;saison des pluies;rainy season
+SAISON_SECHE;26_temps_frequence_duree;saison sèche;dry season
+MODERE;27_nombres_quantites_mesures;modéré;moderate
+SEVERE;27_nombres_quantites_mesures;sévère;severe
+PIRE;27_nombres_quantites_mesures;pire;worse
+GRAMME;27_nombres_quantites_mesures;gramme;gram
+MILLILITRE;27_nombres_quantites_mesures;millilitre;millilitre
+CENTIMETRE;27_nombres_quantites_mesures;centimètre;centimetre
+DEGRE;27_nombres_quantites_mesures;degré;degree
+GONFLE;28_couleurs_aspect_sensations;gonflé;swollen
+MAUVAISE_ODEUR;28_couleurs_aspect_sensations;mauvaise odeur;bad smell
+SANS_ODEUR;28_couleurs_aspect_sensations;sans odeur;odourless
+GOUT_SUCRE;28_couleurs_aspect_sensations;goût sucré;sweet taste
+GOUT_SALE;28_couleurs_aspect_sensations;goût salé;salty taste
+PUS;28_couleurs_aspect_sensations;pus;pus
+SANG_ROUGE_VIF;28_couleurs_aspect_sensations;sang rouge vif;bright red blood
+SANG_FONCE;28_couleurs_aspect_sensations;sang foncé;dark blood
+CROUTE;28_couleurs_aspect_sensations;croûte;scab
+CHUTE;29_urgence_securite;chute;fall injury
+ETOUFFEMENT;29_urgence_securite;étouffement;choking
+SAIGNER_BEAUCOUP;29_urgence_securite;saigner beaucoup;heavy bleeding
+EMPOISONNEMENT;29_urgence_securite;empoisonnement;poisoning
+BRULURE_GRAVE;29_urgence_securite;brûlure grave;severe burn
+MORSURE_DE_SERPENT;29_urgence_securite;morsure de serpent;snakebite
+NOYADE;29_urgence_securite;noyade;drowning
+POMPIERS;29_urgence_securite;pompiers;firefighters
+PROTECTION_DES_DONNEES;30_droits_consentement_donnees;protection des données;data protection
+MAXIMUM;27_nombres_quantites_mesures;au maximum (jusqu'à);at most (up to)

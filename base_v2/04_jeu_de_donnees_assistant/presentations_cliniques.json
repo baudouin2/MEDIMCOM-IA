@@ -1,0 +1,1351 @@
+{
+ "description": "Présentations cliniques servant à générer le jeu de données de l'assistant (agent 3) : questions complémentaires, signes d'alerte et pistes à évoquer. Contenu de médecine générale volontairement prudent : À VALIDER PAR UN MÉDECIN avant tout entraînement. Les pistes ne sont jamais des diagnostics : le médecin décide.",
+ "version": "0.1",
+ "presentations": [
+  {
+   "id": "DOULEUR_ABDOMINALE",
+   "motif": "douleur abdominale",
+   "message_patient": [
+    "VENTRE+DOULEUR"
+   ],
+   "population": {
+    "age_min": 15,
+    "age_max": 75
+   },
+   "questions": [
+    {
+     "cle": "allergies",
+     "question": "Avez-vous des allergies (médicaments, aliments) ?",
+     "pictogrammes": [
+      "VOUS",
+      "ALLERGIE",
+      "QUESTION"
+     ],
+     "raison": "Information obligatoire avant toute prescription.",
+     "priorite": 1
+    },
+    {
+     "cle": "traitements_en_cours",
+     "question": "Prenez-vous des médicaments en ce moment ?",
+     "pictogrammes": [
+      "VOUS",
+      "MEDICAMENT",
+      "QUESTION"
+     ],
+     "raison": "Interactions et contre-indications à vérifier avant de prescrire.",
+     "priorite": 1
+    },
+    {
+     "cle": "grossesse",
+     "question": "Êtes-vous enceinte ?",
+     "pictogrammes": [
+      "VOUS",
+      "ENCEINTE",
+      "QUESTION"
+     ],
+     "raison": "Change les examens et les traitements possibles ; ne jamais supposer.",
+     "priorite": 1,
+     "si": {
+      "sexe": "F",
+      "age_min": 12,
+      "age_max": 50
+     }
+    },
+    {
+     "cle": "debut",
+     "question": "Depuis quand avez-vous mal ?",
+     "pictogrammes": [
+      "DOULEUR",
+      "AVANT",
+      "QUESTION"
+     ],
+     "raison": "Douleur récente ou ancienne : orientation différente.",
+     "priorite": 2
+    },
+    {
+     "cle": "intensite_douleur",
+     "question": "La douleur est forte de combien (0 à 10) ?",
+     "pictogrammes": [
+      "DOULEUR",
+      "QUESTION"
+     ],
+     "raison": "Une douleur très intense est un signe de gravité.",
+     "priorite": 1
+    },
+    {
+     "cle": "fievre",
+     "question": "Avez-vous de la fièvre ?",
+     "pictogrammes": [
+      "VOUS",
+      "FIEVRE",
+      "QUESTION"
+     ],
+     "raison": "Une fièvre oriente vers une infection.",
+     "priorite": 2
+    },
+    {
+     "cle": "vomissements",
+     "question": "Avez-vous vomi ?",
+     "pictogrammes": [
+      "VOUS",
+      "VOMIR",
+      "QUESTION"
+     ],
+     "raison": "Vomissements : risque de déshydratation, orientation digestive.",
+     "priorite": 2
+    },
+    {
+     "cle": "diarrhee",
+     "question": "Avez-vous la diarrhée ?",
+     "pictogrammes": [
+      "VOUS",
+      "DIARRHEE",
+      "QUESTION"
+     ],
+     "raison": "Oriente vers une cause digestive infectieuse.",
+     "priorite": 2
+    }
+   ],
+   "alertes": [
+    {
+     "cle": "evanouissement",
+     "question": "Avez-vous perdu connaissance ou eu un malaise ?",
+     "pictogrammes": [
+      "VOUS",
+      "EVANOUISSEMENT",
+      "QUESTION"
+     ],
+     "raison": "Malaise avec douleur abdominale : urgence possible (hémorragie interne).",
+     "orientation": "urgence"
+    },
+    {
+     "cle": "saignement",
+     "question": "Saignez-vous (vomi, selles, ou par le vagin) ?",
+     "pictogrammes": [
+      "VOUS",
+      "SANG",
+      "QUESTION"
+     ],
+     "raison": "Saignement avec douleur abdominale : urgence.",
+     "orientation": "urgence"
+    }
+   ],
+   "pistes": [
+    {
+     "hypothese": "Gastro-entérite",
+     "arguments": [
+      "vomissements",
+      "diarrhee"
+     ]
+    },
+    {
+     "hypothese": "Appendicite à évoquer",
+     "arguments": [
+      "fievre"
+     ],
+     "examens": [
+      "examen de l'abdomen par le médecin",
+      "numération sanguine"
+     ]
+    },
+    {
+     "hypothese": "Infection urinaire à évoquer",
+     "arguments": [
+      "fievre"
+     ],
+     "examens": [
+      "bandelette urinaire"
+     ]
+    },
+    {
+     "hypothese": "Grossesse extra-utérine à éliminer en urgence",
+     "arguments": [
+      "grossesse"
+     ],
+     "si": {
+      "grossesse": true
+     },
+     "urgence": true,
+     "examens": [
+      "test de grossesse",
+      "échographie"
+     ]
+    }
+   ],
+   "contexte_pays": {
+    "CM": [
+     {
+      "hypothese": "Paludisme à rechercher (fièvre en zone d'endémie)",
+      "arguments": [
+       "fievre"
+      ],
+      "si": {
+       "fievre": true
+      },
+      "examens": [
+       "test de diagnostic rapide du paludisme"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "FIEVRE_TOUX",
+   "motif": "fièvre et toux",
+   "message_patient": [
+    "FIEVRE",
+    "TOUX"
+   ],
+   "population": {
+    "age_min": 15,
+    "age_max": 80
+   },
+   "questions": [
+    {
+     "cle": "allergies",
+     "question": "Avez-vous des allergies (médicaments, aliments) ?",
+     "pictogrammes": [
+      "VOUS",
+      "ALLERGIE",
+      "QUESTION"
+     ],
+     "raison": "Information obligatoire avant toute prescription.",
+     "priorite": 1
+    },
+    {
+     "cle": "traitements_en_cours",
+     "question": "Prenez-vous des médicaments en ce moment ?",
+     "pictogrammes": [
+      "VOUS",
+      "MEDICAMENT",
+      "QUESTION"
+     ],
+     "raison": "Interactions et contre-indications à vérifier avant de prescrire.",
+     "priorite": 1
+    },
+    {
+     "cle": "grossesse",
+     "question": "Êtes-vous enceinte ?",
+     "pictogrammes": [
+      "VOUS",
+      "ENCEINTE",
+      "QUESTION"
+     ],
+     "raison": "Change les examens et les traitements possibles ; ne jamais supposer.",
+     "priorite": 1,
+     "si": {
+      "sexe": "F",
+      "age_min": 12,
+      "age_max": 50
+     }
+    },
+    {
+     "cle": "debut",
+     "question": "Depuis combien de jours ?",
+     "pictogrammes": [
+      "FIEVRE",
+      "JOUR",
+      "QUESTION"
+     ],
+     "raison": "Durée des symptômes.",
+     "priorite": 2
+    },
+    {
+     "cle": "crachats_sang",
+     "question": "Crachez-vous du sang ?",
+     "pictogrammes": [
+      "VOUS",
+      "TOUX",
+      "SANG",
+      "QUESTION"
+     ],
+     "raison": "Sang dans les crachats : examens rapides.",
+     "priorite": 1
+    },
+    {
+     "cle": "contact_malade",
+     "question": "Quelqu'un de votre famille est-il malade ?",
+     "pictogrammes": [
+      "FAMILLE",
+      "FIEVRE",
+      "QUESTION"
+     ],
+     "raison": "Contagion possible (maladie à déclarer selon le contexte).",
+     "priorite": 2
+    }
+   ],
+   "alertes": [
+    {
+     "cle": "essoufflement",
+     "question": "Avez-vous du mal à respirer ?",
+     "pictogrammes": [
+      "VOUS",
+      "RESPIRER",
+      "DOULEUR",
+      "QUESTION"
+     ],
+     "raison": "Difficulté respiratoire : urgence possible.",
+     "orientation": "urgence"
+    },
+    {
+     "cle": "douleur_thoracique",
+     "question": "Avez-vous mal à la poitrine ?",
+     "pictogrammes": [
+      "VOUS",
+      "POITRINE+DOULEUR",
+      "QUESTION"
+     ],
+     "raison": "Douleur thoracique avec fièvre : pneumonie ou autre cause grave possible.",
+     "orientation": "urgence"
+    }
+   ],
+   "pistes": [
+    {
+     "hypothese": "Infection respiratoire virale (rhume, grippe)",
+     "arguments": [
+      "toux"
+     ]
+    },
+    {
+     "hypothese": "Pneumonie à évoquer",
+     "arguments": [
+      "fievre",
+      "essoufflement"
+     ],
+     "examens": [
+      "auscultation",
+      "radiographie du thorax si besoin"
+     ]
+    },
+    {
+     "hypothese": "Tuberculose à évoquer si toux longue ou sang dans les crachats",
+     "arguments": [
+      "crachats_sang"
+     ],
+     "si": {
+      "crachats_sang": true
+     },
+     "examens": [
+      "examen des crachats"
+     ]
+    }
+   ],
+   "contexte_pays": {
+    "CM": [
+     {
+      "hypothese": "Paludisme à rechercher (fièvre en zone d'endémie)",
+      "arguments": [
+       "fievre"
+      ],
+      "examens": [
+       "test de diagnostic rapide du paludisme"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "CEPHALEE",
+   "motif": "mal de tête",
+   "message_patient": [
+    "TETE+DOULEUR"
+   ],
+   "population": {
+    "age_min": 15,
+    "age_max": 75
+   },
+   "questions": [
+    {
+     "cle": "allergies",
+     "question": "Avez-vous des allergies (médicaments, aliments) ?",
+     "pictogrammes": [
+      "VOUS",
+      "ALLERGIE",
+      "QUESTION"
+     ],
+     "raison": "Information obligatoire avant toute prescription.",
+     "priorite": 1
+    },
+    {
+     "cle": "traitements_en_cours",
+     "question": "Prenez-vous des médicaments en ce moment ?",
+     "pictogrammes": [
+      "VOUS",
+      "MEDICAMENT",
+      "QUESTION"
+     ],
+     "raison": "Interactions et contre-indications à vérifier avant de prescrire.",
+     "priorite": 1
+    },
+    {
+     "cle": "grossesse",
+     "question": "Êtes-vous enceinte ?",
+     "pictogrammes": [
+      "VOUS",
+      "ENCEINTE",
+      "QUESTION"
+     ],
+     "raison": "Change les examens et les traitements possibles ; ne jamais supposer.",
+     "priorite": 1,
+     "si": {
+      "sexe": "F",
+      "age_min": 12,
+      "age_max": 50
+     }
+    },
+    {
+     "cle": "debut",
+     "question": "Depuis quand avez-vous mal à la tête ?",
+     "pictogrammes": [
+      "TETE+DOULEUR",
+      "AVANT",
+      "QUESTION"
+     ],
+     "raison": "Une douleur brutale et récente est un signe de gravité.",
+     "priorite": 2
+    },
+    {
+     "cle": "intensite_douleur",
+     "question": "La douleur est forte de combien (0 à 10) ?",
+     "pictogrammes": [
+      "DOULEUR",
+      "QUESTION"
+     ],
+     "raison": "Intensité.",
+     "priorite": 1
+    },
+    {
+     "cle": "fievre",
+     "question": "Avez-vous de la fièvre ?",
+     "pictogrammes": [
+      "VOUS",
+      "FIEVRE",
+      "QUESTION"
+     ],
+     "raison": "Fièvre et mal de tête : infection à rechercher.",
+     "priorite": 2
+    },
+    {
+     "cle": "vomissements",
+     "question": "Avez-vous vomi ?",
+     "pictogrammes": [
+      "VOUS",
+      "VOMIR",
+      "QUESTION"
+     ],
+     "raison": "Vomissements avec céphalée : signe à surveiller.",
+     "priorite": 2
+    }
+   ],
+   "alertes": [
+    {
+     "cle": "cephalee_brutale",
+     "question": "Le mal de tête est-il arrivé d'un coup, très fort ?",
+     "pictogrammes": [
+      "TETE+DOULEUR",
+      "MAXIMUM",
+      "QUESTION"
+     ],
+     "raison": "Céphalée brutale et intense : urgence (cause vasculaire possible).",
+     "orientation": "urgence"
+    },
+    {
+     "cle": "evanouissement",
+     "question": "Avez-vous perdu connaissance ?",
+     "pictogrammes": [
+      "VOUS",
+      "EVANOUISSEMENT",
+      "QUESTION"
+     ],
+     "raison": "Trouble de conscience : urgence.",
+     "orientation": "urgence"
+    }
+   ],
+   "pistes": [
+    {
+     "hypothese": "Céphalée de tension ou migraine"
+    },
+    {
+     "hypothese": "Infection (dont méningite à éliminer si fièvre et vomissements)",
+     "arguments": [
+      "fievre",
+      "vomissements"
+     ],
+     "si": {
+      "fievre": true
+     },
+     "urgence": true,
+     "examens": [
+      "examen neurologique par le médecin"
+     ]
+    },
+    {
+     "hypothese": "Hypertension ou pré-éclampsie à rechercher chez une femme enceinte",
+     "arguments": [
+      "grossesse"
+     ],
+     "si": {
+      "grossesse": true
+     },
+     "urgence": true,
+     "examens": [
+      "mesure de la tension artérielle",
+      "recherche de protéines dans les urines"
+     ]
+    }
+   ],
+   "contexte_pays": {
+    "CM": [
+     {
+      "hypothese": "Paludisme à rechercher (fièvre en zone d'endémie)",
+      "arguments": [
+       "fievre"
+      ],
+      "si": {
+       "fievre": true
+      },
+      "examens": [
+       "test de diagnostic rapide du paludisme"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "DOULEUR_THORACIQUE",
+   "motif": "douleur à la poitrine",
+   "message_patient": [
+    "POITRINE+DOULEUR"
+   ],
+   "population": {
+    "age_min": 20,
+    "age_max": 85
+   },
+   "questions": [
+    {
+     "cle": "allergies",
+     "question": "Avez-vous des allergies (médicaments, aliments) ?",
+     "pictogrammes": [
+      "VOUS",
+      "ALLERGIE",
+      "QUESTION"
+     ],
+     "raison": "Information obligatoire avant toute prescription.",
+     "priorite": 1
+    },
+    {
+     "cle": "traitements_en_cours",
+     "question": "Prenez-vous des médicaments en ce moment ?",
+     "pictogrammes": [
+      "VOUS",
+      "MEDICAMENT",
+      "QUESTION"
+     ],
+     "raison": "Interactions et contre-indications à vérifier avant de prescrire.",
+     "priorite": 1
+    },
+    {
+     "cle": "grossesse",
+     "question": "Êtes-vous enceinte ?",
+     "pictogrammes": [
+      "VOUS",
+      "ENCEINTE",
+      "QUESTION"
+     ],
+     "raison": "Change les examens et les traitements possibles ; ne jamais supposer.",
+     "priorite": 1,
+     "si": {
+      "sexe": "F",
+      "age_min": 12,
+      "age_max": 50
+     }
+    },
+    {
+     "cle": "debut",
+     "question": "Depuis quand ?",
+     "pictogrammes": [
+      "DOULEUR",
+      "AVANT",
+      "QUESTION"
+     ],
+     "raison": "Douleur récente : urgence plus probable.",
+     "priorite": 2
+    },
+    {
+     "cle": "intensite_douleur",
+     "question": "La douleur est forte de combien (0 à 10) ?",
+     "pictogrammes": [
+      "DOULEUR",
+      "QUESTION"
+     ],
+     "raison": "Intensité.",
+     "priorite": 1
+    }
+   ],
+   "alertes": [
+    {
+     "cle": "essoufflement",
+     "question": "Avez-vous du mal à respirer ?",
+     "pictogrammes": [
+      "VOUS",
+      "RESPIRER",
+      "DOULEUR",
+      "QUESTION"
+     ],
+     "raison": "Douleur thoracique et essoufflement : urgence.",
+     "orientation": "urgence"
+    },
+    {
+     "cle": "evanouissement",
+     "question": "Avez-vous eu un malaise ?",
+     "pictogrammes": [
+      "VOUS",
+      "EVANOUISSEMENT",
+      "QUESTION"
+     ],
+     "raison": "Malaise avec douleur thoracique : urgence.",
+     "orientation": "urgence"
+    }
+   ],
+   "pistes": [
+    {
+     "hypothese": "Cause cardiaque à éliminer en priorité",
+     "urgence": true,
+     "examens": [
+      "électrocardiogramme",
+      "avis médical immédiat"
+     ]
+    },
+    {
+     "hypothese": "Douleur musculaire ou reflux à évoquer après avoir éliminé une cause grave"
+    }
+   ],
+   "toujours_urgent": true
+  },
+  {
+   "id": "DIARRHEE",
+   "motif": "diarrhée",
+   "message_patient": [
+    "DIARRHEE"
+   ],
+   "population": {
+    "age_min": 15,
+    "age_max": 80
+   },
+   "questions": [
+    {
+     "cle": "allergies",
+     "question": "Avez-vous des allergies (médicaments, aliments) ?",
+     "pictogrammes": [
+      "VOUS",
+      "ALLERGIE",
+      "QUESTION"
+     ],
+     "raison": "Information obligatoire avant toute prescription.",
+     "priorite": 1
+    },
+    {
+     "cle": "traitements_en_cours",
+     "question": "Prenez-vous des médicaments en ce moment ?",
+     "pictogrammes": [
+      "VOUS",
+      "MEDICAMENT",
+      "QUESTION"
+     ],
+     "raison": "Interactions et contre-indications à vérifier avant de prescrire.",
+     "priorite": 1
+    },
+    {
+     "cle": "grossesse",
+     "question": "Êtes-vous enceinte ?",
+     "pictogrammes": [
+      "VOUS",
+      "ENCEINTE",
+      "QUESTION"
+     ],
+     "raison": "Change les examens et les traitements possibles ; ne jamais supposer.",
+     "priorite": 1,
+     "si": {
+      "sexe": "F",
+      "age_min": 12,
+      "age_max": 50
+     }
+    },
+    {
+     "cle": "debut",
+     "question": "Depuis combien de jours ?",
+     "pictogrammes": [
+      "DIARRHEE",
+      "JOUR",
+      "QUESTION"
+     ],
+     "raison": "Diarrhée aiguë ou prolongée.",
+     "priorite": 2
+    },
+    {
+     "cle": "boit",
+     "question": "Arrivez-vous à boire ?",
+     "pictogrammes": [
+      "VOUS",
+      "BOIRE",
+      "QUESTION"
+     ],
+     "raison": "Risque de déshydratation.",
+     "priorite": 1
+    },
+    {
+     "cle": "fievre",
+     "question": "Avez-vous de la fièvre ?",
+     "pictogrammes": [
+      "VOUS",
+      "FIEVRE",
+      "QUESTION"
+     ],
+     "raison": "Fièvre : cause infectieuse.",
+     "priorite": 2
+    }
+   ],
+   "alertes": [
+    {
+     "cle": "saignement",
+     "question": "Y a-t-il du sang dans les selles ?",
+     "pictogrammes": [
+      "DIARRHEE",
+      "SANG",
+      "QUESTION"
+     ],
+     "raison": "Diarrhée sanglante : examens et traitement rapides.",
+     "orientation": "urgence"
+    },
+    {
+     "cle": "evanouissement",
+     "question": "Avez-vous eu un malaise ?",
+     "pictogrammes": [
+      "VOUS",
+      "EVANOUISSEMENT",
+      "QUESTION"
+     ],
+     "raison": "Malaise : déshydratation sévère possible.",
+     "orientation": "urgence"
+    }
+   ],
+   "pistes": [
+    {
+     "hypothese": "Gastro-entérite (le plus fréquent)",
+     "arguments": [
+      "diarrhee"
+     ]
+    },
+    {
+     "hypothese": "Déshydratation à évaluer",
+     "arguments": [
+      "!boit"
+     ],
+     "examens": [
+      "évaluation clinique de l'hydratation"
+     ]
+    },
+    {
+     "hypothese": "Intoxication alimentaire à évoquer"
+    }
+   ],
+   "contexte_pays": {
+    "CM": [
+     {
+      "hypothese": "Choléra à évoquer en cas de diarrhée aqueuse abondante en période d'épidémie (maladie à déclarer)",
+      "examens": [
+       "test rapide selon les consignes nationales"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "REACTION_ALLERGIQUE",
+   "motif": "démangeaisons, boutons",
+   "message_patient": [
+    "PEAU",
+    "DEMANGEAISON"
+   ],
+   "population": {
+    "age_min": 15,
+    "age_max": 80
+   },
+   "questions": [
+    {
+     "cle": "allergies",
+     "question": "Avez-vous des allergies (médicaments, aliments) ?",
+     "pictogrammes": [
+      "VOUS",
+      "ALLERGIE",
+      "QUESTION"
+     ],
+     "raison": "Information obligatoire avant toute prescription.",
+     "priorite": 1
+    },
+    {
+     "cle": "traitements_en_cours",
+     "question": "Prenez-vous des médicaments en ce moment ?",
+     "pictogrammes": [
+      "VOUS",
+      "MEDICAMENT",
+      "QUESTION"
+     ],
+     "raison": "Interactions et contre-indications à vérifier avant de prescrire.",
+     "priorite": 1
+    },
+    {
+     "cle": "grossesse",
+     "question": "Êtes-vous enceinte ?",
+     "pictogrammes": [
+      "VOUS",
+      "ENCEINTE",
+      "QUESTION"
+     ],
+     "raison": "Change les examens et les traitements possibles ; ne jamais supposer.",
+     "priorite": 1,
+     "si": {
+      "sexe": "F",
+      "age_min": 12,
+      "age_max": 50
+     }
+    },
+    {
+     "cle": "nouveau_produit",
+     "question": "Avez-vous pris un nouveau médicament ou mangé un aliment nouveau ?",
+     "pictogrammes": [
+      "VOUS",
+      "MEDICAMENT",
+      "MANGER",
+      "QUESTION"
+     ],
+     "raison": "Cause allergique à identifier.",
+     "priorite": 1
+    }
+   ],
+   "alertes": [
+    {
+     "cle": "gonflement_visage",
+     "question": "Votre visage ou votre gorge gonfle-t-il ?",
+     "pictogrammes": [
+      "GORGE",
+      "GONFLEMENT",
+      "QUESTION"
+     ],
+     "raison": "Gonflement du visage ou de la gorge : allergie grave possible, urgence.",
+     "orientation": "urgence"
+    },
+    {
+     "cle": "essoufflement",
+     "question": "Avez-vous du mal à respirer ?",
+     "pictogrammes": [
+      "VOUS",
+      "RESPIRER",
+      "DOULEUR",
+      "QUESTION"
+     ],
+     "raison": "Difficulté respiratoire : urgence (anaphylaxie possible).",
+     "orientation": "urgence"
+    }
+   ],
+   "pistes": [
+    {
+     "hypothese": "Réaction allergique (médicament, aliment)",
+     "arguments": [
+      "nouveau_produit"
+     ]
+    },
+    {
+     "hypothese": "Maladie de peau (eczéma, infection) à évoquer"
+    }
+   ]
+  },
+  {
+   "id": "VERTIGE_MALAISE",
+   "motif": "vertiges, malaise",
+   "message_patient": [
+    "VERTIGE"
+   ],
+   "population": {
+    "age_min": 15,
+    "age_max": 85
+   },
+   "questions": [
+    {
+     "cle": "allergies",
+     "question": "Avez-vous des allergies (médicaments, aliments) ?",
+     "pictogrammes": [
+      "VOUS",
+      "ALLERGIE",
+      "QUESTION"
+     ],
+     "raison": "Information obligatoire avant toute prescription.",
+     "priorite": 1
+    },
+    {
+     "cle": "traitements_en_cours",
+     "question": "Prenez-vous des médicaments en ce moment ?",
+     "pictogrammes": [
+      "VOUS",
+      "MEDICAMENT",
+      "QUESTION"
+     ],
+     "raison": "Interactions et contre-indications à vérifier avant de prescrire.",
+     "priorite": 1
+    },
+    {
+     "cle": "grossesse",
+     "question": "Êtes-vous enceinte ?",
+     "pictogrammes": [
+      "VOUS",
+      "ENCEINTE",
+      "QUESTION"
+     ],
+     "raison": "Change les examens et les traitements possibles ; ne jamais supposer.",
+     "priorite": 1,
+     "si": {
+      "sexe": "F",
+      "age_min": 12,
+      "age_max": 50
+     }
+    },
+    {
+     "cle": "mange",
+     "question": "Avez-vous mangé aujourd'hui ?",
+     "pictogrammes": [
+      "VOUS",
+      "MANGER",
+      "QUESTION"
+     ],
+     "raison": "Hypoglycémie possible.",
+     "priorite": 2
+    },
+    {
+     "cle": "boit",
+     "question": "Avez-vous assez bu ?",
+     "pictogrammes": [
+      "VOUS",
+      "BOIRE",
+      "QUESTION"
+     ],
+     "raison": "Déshydratation possible.",
+     "priorite": 2
+    }
+   ],
+   "alertes": [
+    {
+     "cle": "evanouissement",
+     "question": "Avez-vous perdu connaissance ?",
+     "pictogrammes": [
+      "VOUS",
+      "EVANOUISSEMENT",
+      "QUESTION"
+     ],
+     "raison": "Perte de connaissance : bilan rapide.",
+     "orientation": "urgence"
+    },
+    {
+     "cle": "douleur_thoracique",
+     "question": "Avez-vous mal à la poitrine ?",
+     "pictogrammes": [
+      "VOUS",
+      "POITRINE+DOULEUR",
+      "QUESTION"
+     ],
+     "raison": "Malaise et douleur thoracique : urgence.",
+     "orientation": "urgence"
+    }
+   ],
+   "pistes": [
+    {
+     "hypothese": "Hypotension ou déshydratation",
+     "arguments": [
+      "!boit"
+     ]
+    },
+    {
+     "hypothese": "Hypoglycémie à rechercher",
+     "arguments": [
+      "!mange"
+     ],
+     "examens": [
+      "glycémie capillaire"
+     ]
+    },
+    {
+     "hypothese": "Anémie à évoquer",
+     "examens": [
+      "numération sanguine"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "MAL_DE_GORGE",
+   "motif": "mal de gorge",
+   "message_patient": [
+    "GORGE+DOULEUR"
+   ],
+   "population": {
+    "age_min": 15,
+    "age_max": 75
+   },
+   "questions": [
+    {
+     "cle": "allergies",
+     "question": "Avez-vous des allergies (médicaments, aliments) ?",
+     "pictogrammes": [
+      "VOUS",
+      "ALLERGIE",
+      "QUESTION"
+     ],
+     "raison": "Information obligatoire avant toute prescription.",
+     "priorite": 1
+    },
+    {
+     "cle": "traitements_en_cours",
+     "question": "Prenez-vous des médicaments en ce moment ?",
+     "pictogrammes": [
+      "VOUS",
+      "MEDICAMENT",
+      "QUESTION"
+     ],
+     "raison": "Interactions et contre-indications à vérifier avant de prescrire.",
+     "priorite": 1
+    },
+    {
+     "cle": "grossesse",
+     "question": "Êtes-vous enceinte ?",
+     "pictogrammes": [
+      "VOUS",
+      "ENCEINTE",
+      "QUESTION"
+     ],
+     "raison": "Change les examens et les traitements possibles ; ne jamais supposer.",
+     "priorite": 1,
+     "si": {
+      "sexe": "F",
+      "age_min": 12,
+      "age_max": 50
+     }
+    },
+    {
+     "cle": "fievre",
+     "question": "Avez-vous de la fièvre ?",
+     "pictogrammes": [
+      "VOUS",
+      "FIEVRE",
+      "QUESTION"
+     ],
+     "raison": "Fièvre : angine bactérienne possible.",
+     "priorite": 2
+    },
+    {
+     "cle": "toux",
+     "question": "Toussez-vous ?",
+     "pictogrammes": [
+      "VOUS",
+      "TOUX",
+      "QUESTION"
+     ],
+     "raison": "Toux : plutôt virale.",
+     "priorite": 2
+    },
+    {
+     "cle": "debut",
+     "question": "Depuis combien de jours ?",
+     "pictogrammes": [
+      "GORGE+DOULEUR",
+      "JOUR",
+      "QUESTION"
+     ],
+     "raison": "Durée.",
+     "priorite": 2
+    }
+   ],
+   "alertes": [
+    {
+     "cle": "essoufflement",
+     "question": "Avez-vous du mal à respirer ?",
+     "pictogrammes": [
+      "VOUS",
+      "RESPIRER",
+      "DOULEUR",
+      "QUESTION"
+     ],
+     "raison": "Gêne respiratoire : urgence.",
+     "orientation": "urgence"
+    },
+    {
+     "cle": "ne_peut_avaler",
+     "question": "Avez-vous du mal à avaler (même votre salive) ?",
+     "pictogrammes": [
+      "VOUS",
+      "BOIRE",
+      "DOULEUR",
+      "QUESTION"
+     ],
+     "raison": "Impossible d'avaler : abcès possible, urgence.",
+     "orientation": "urgence"
+    }
+   ],
+   "pistes": [
+    {
+     "hypothese": "Angine virale (souvent avec toux)",
+     "arguments": [
+      "toux"
+     ]
+    },
+    {
+     "hypothese": "Angine bactérienne à rechercher",
+     "arguments": [
+      "fievre"
+     ],
+     "examens": [
+      "test rapide d'angine"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "GROSSESSE_SIGNES",
+   "motif": "femme enceinte qui a mal à la tête ou gonfle",
+   "message_patient": [
+    "ENCEINTE",
+    "TETE+DOULEUR"
+   ],
+   "population": {
+    "age_min": 16,
+    "age_max": 45,
+    "sexe": "F",
+    "grossesse": true
+   },
+   "questions": [
+    {
+     "cle": "allergies",
+     "question": "Avez-vous des allergies (médicaments, aliments) ?",
+     "pictogrammes": [
+      "VOUS",
+      "ALLERGIE",
+      "QUESTION"
+     ],
+     "raison": "Information obligatoire avant toute prescription.",
+     "priorite": 1
+    },
+    {
+     "cle": "traitements_en_cours",
+     "question": "Prenez-vous des médicaments en ce moment ?",
+     "pictogrammes": [
+      "VOUS",
+      "MEDICAMENT",
+      "QUESTION"
+     ],
+     "raison": "Interactions et contre-indications à vérifier avant de prescrire.",
+     "priorite": 1
+    },
+    {
+     "cle": "terme",
+     "question": "De combien de mois êtes-vous enceinte ?",
+     "pictogrammes": [
+      "ENCEINTE",
+      "QUESTION"
+     ],
+     "raison": "Après 20 semaines, la pré-éclampsie est à rechercher.",
+     "priorite": 1
+    },
+    {
+     "cle": "gonflement",
+     "question": "Vos pieds ou vos mains gonflent-ils ?",
+     "pictogrammes": [
+      "PIED",
+      "GONFLEMENT",
+      "QUESTION"
+     ],
+     "raison": "Œdèmes : signe à surveiller pendant la grossesse.",
+     "priorite": 2
+    }
+   ],
+   "alertes": [
+    {
+     "cle": "saignement",
+     "question": "Saignez-vous ?",
+     "pictogrammes": [
+      "VOUS",
+      "SANG",
+      "QUESTION"
+     ],
+     "raison": "Saignement pendant la grossesse : urgence.",
+     "orientation": "urgence"
+    },
+    {
+     "cle": "troubles_vision",
+     "question": "Voyez-vous mal (points, flou) ?",
+     "pictogrammes": [
+      "OEIL",
+      "QUESTION"
+     ],
+     "raison": "Troubles visuels pendant la grossesse : urgence possible.",
+     "orientation": "urgence"
+    }
+   ],
+   "pistes": [
+    {
+     "hypothese": "Pré-éclampsie à rechercher en priorité",
+     "arguments": [
+      "gonflement"
+     ],
+     "urgence": true,
+     "examens": [
+      "mesure de la tension artérielle",
+      "protéines dans les urines"
+     ]
+    },
+    {
+     "hypothese": "Céphalée simple de la grossesse, après avoir éliminé une cause grave"
+    }
+   ]
+  },
+  {
+   "id": "FIEVRE_ISOLEE",
+   "motif": "fièvre",
+   "message_patient": [
+    "FIEVRE"
+   ],
+   "population": {
+    "age_min": 15,
+    "age_max": 80
+   },
+   "questions": [
+    {
+     "cle": "allergies",
+     "question": "Avez-vous des allergies (médicaments, aliments) ?",
+     "pictogrammes": [
+      "VOUS",
+      "ALLERGIE",
+      "QUESTION"
+     ],
+     "raison": "Information obligatoire avant toute prescription.",
+     "priorite": 1
+    },
+    {
+     "cle": "traitements_en_cours",
+     "question": "Prenez-vous des médicaments en ce moment ?",
+     "pictogrammes": [
+      "VOUS",
+      "MEDICAMENT",
+      "QUESTION"
+     ],
+     "raison": "Interactions et contre-indications à vérifier avant de prescrire.",
+     "priorite": 1
+    },
+    {
+     "cle": "grossesse",
+     "question": "Êtes-vous enceinte ?",
+     "pictogrammes": [
+      "VOUS",
+      "ENCEINTE",
+      "QUESTION"
+     ],
+     "raison": "Change les examens et les traitements possibles ; ne jamais supposer.",
+     "priorite": 1,
+     "si": {
+      "sexe": "F",
+      "age_min": 12,
+      "age_max": 50
+     }
+    },
+    {
+     "cle": "debut",
+     "question": "Depuis combien de jours avez-vous de la fièvre ?",
+     "pictogrammes": [
+      "FIEVRE",
+      "JOUR",
+      "QUESTION"
+     ],
+     "raison": "Durée de la fièvre.",
+     "priorite": 2
+    },
+    {
+     "cle": "frissons",
+     "question": "Avez-vous des frissons ?",
+     "pictogrammes": [
+      "VOUS",
+      "FIEVRE",
+      "QUESTION"
+     ],
+     "raison": "Frissons : infection importante possible.",
+     "priorite": 2
+    },
+    {
+     "cle": "voyage_contact",
+     "question": "Quelqu'un de votre entourage a-t-il la même chose ?",
+     "pictogrammes": [
+      "FAMILLE",
+      "FIEVRE",
+      "QUESTION"
+     ],
+     "raison": "Cas groupés : maladie transmissible à déclarer possible.",
+     "priorite": 2
+    }
+   ],
+   "alertes": [
+    {
+     "cle": "evanouissement",
+     "question": "Avez-vous eu un malaise ou perdu connaissance ?",
+     "pictogrammes": [
+      "VOUS",
+      "EVANOUISSEMENT",
+      "QUESTION"
+     ],
+     "raison": "Fièvre et trouble de conscience : urgence.",
+     "orientation": "urgence"
+    },
+    {
+     "cle": "saignement",
+     "question": "Saignez-vous (nez, gencives, peau) ?",
+     "pictogrammes": [
+      "VOUS",
+      "SANG",
+      "QUESTION"
+     ],
+     "raison": "Fièvre avec saignements : fièvre hémorragique possible, isolement et urgence.",
+     "orientation": "urgence"
+    }
+   ],
+   "pistes": [
+    {
+     "hypothese": "Infection virale"
+    },
+    {
+     "hypothese": "Infection bactérienne à rechercher selon l'examen",
+     "arguments": [
+      "frissons"
+     ],
+     "examens": [
+      "examen clinique complet",
+      "numération sanguine"
+     ]
+    }
+   ],
+   "contexte_pays": {
+    "CM": [
+     {
+      "hypothese": "Paludisme à rechercher en premier (zone d'endémie)",
+      "examens": [
+       "test de diagnostic rapide du paludisme"
+      ]
+     }
+    ],
+    "AE": [
+     {
+      "hypothese": "Infection importée à évoquer en cas de voyage récent",
+      "examens": [
+       "selon le pays visité"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "note_arguments": "Un argument « !cle » est présent quand la réponse est NON (ex. « !boit » : le patient ne boit pas assez)."
+}

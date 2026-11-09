@@ -18,5 +18,4 @@ interface/web/node_modules/
 cle*.txt
 
 # base de connaissances constituée par outils/constituer_base_v2.py (volumineuse, licences propres) : hors dépôt
-base_v2/
 MEDIMCOM_base*/

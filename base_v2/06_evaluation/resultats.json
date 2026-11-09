@@ -1,0 +1,113 @@
+{
+ "date": "2026-11-07T05:10:47+00:00",
+ "base": "/home/baudouin/Downloads/MEDIMCOM_IA/base_v2",
+ "pictogrammes_disponibles": 19925,
+ "morceaux_indexes": 10393,
+ "traduction": {
+  "exemples": 385,
+  "precision": 0.893,
+  "rappel": 0.871,
+  "f1": 0.882,
+  "rappel_atteignable": 0.914,
+  "phrases_exactes": 0.569,
+  "negations_conservees": "2/2"
+ },
+ "recherche_juridique": {
+  "exemples": 18,
+  "rappel@1": 0.167,
+  "rappel@3": 0.167,
+  "rappel@5": 0.167,
+  "rappel@10": 0.222,
+  "MRR": 0.172
+ },
+ "recherche_oms": {
+  "exemples": 465,
+  "rappel@1": 0.611,
+  "rappel@3": 0.796,
+  "rappel@5": 0.841,
+  "rappel@10": 0.946,
+  "MRR": 0.718
+ },
+ "recherche_oms_par_langue": {
+  "fr": {
+   "exemples": 150,
+   "rappel@1": 0.52,
+   "rappel@3": 0.687,
+   "rappel@5": 0.74,
+   "rappel@10": 0.913,
+   "MRR": 0.632
+  },
+  "en": {
+   "exemples": 177,
+   "rappel@1": 0.638,
+   "rappel@3": 0.797,
+   "rappel@5": 0.842,
+   "rappel@10": 0.944,
+   "MRR": 0.734
+  },
+  "ar": {
+   "exemples": 138,
+   "rappel@1": 0.674,
+   "rappel@3": 0.913,
+   "rappel@5": 0.949,
+   "rappel@10": 0.986,
+   "MRR": 0.793
+  }
+ },
+ "comparaison_methodes": {
+  "bm25": {
+   "juridique": {
+    "exemples": 18,
+    "rappel@1": 0.167,
+    "rappel@3": 0.167,
+    "rappel@5": 0.167,
+    "rappel@10": 0.222,
+    "MRR": 0.172
+   },
+   "oms": {
+    "exemples": 465,
+    "rappel@1": 0.611,
+    "rappel@3": 0.796,
+    "rappel@5": 0.841,
+    "rappel@10": 0.946,
+    "MRR": 0.718
+   }
+  },
+  "vecteurs": {
+   "juridique": {
+    "exemples": 18,
+    "rappel@1": 0.167,
+    "rappel@3": 0.222,
+    "rappel@5": 0.278,
+    "rappel@10": 0.278,
+    "MRR": 0.208
+   },
+   "oms": {
+    "exemples": 465,
+    "rappel@1": 0.351,
+    "rappel@3": 0.604,
+    "rappel@5": 0.688,
+    "rappel@10": 0.832,
+    "MRR": 0.5
+   }
+  },
+  "hybride": {
+   "juridique": {
+    "exemples": 18,
+    "rappel@1": 0.167,
+    "rappel@3": 0.222,
+    "rappel@5": 0.278,
+    "rappel@10": 0.333,
+    "MRR": 0.211
+   },
+   "oms": {
+    "exemples": 465,
+    "rappel@1": 0.596,
+    "rappel@3": 0.787,
+    "rappel@5": 0.903,
+    "rappel@10": 0.963,
+    "MRR": 0.716
+   }
+  }
+ }
+}
