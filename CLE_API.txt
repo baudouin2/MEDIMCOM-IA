@@ -1,0 +1,1 @@
+CLE='your API_KEY'  # we use a free qwen/qwen3.8-27b
