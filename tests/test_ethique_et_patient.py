@@ -1,6 +1,6 @@
-"""Field feedback of 7 November (2): ethics (drugs, child selling, sexual remarks, abortion, misspelt insults),
-glued words, duration of symptoms, declared medicines, prescription given to the patient (PDF), readable law texts,
-doctor's language."""
+"""Retour d'usage du 7 novembre (2) : éthique (drogue, vente d'enfant, propos sexuels, avortement, injures mal écrites),
+mots collés, durée des symptômes, médicaments déclarés, ordonnance remise au patient (PDF), textes de loi lisibles,
+langue du médecin."""
 import json
 import sys
 import threading
@@ -43,7 +43,7 @@ def test_messages_contraires_a_l_ethique_bloques():
     assert any("je ne peux pas vous suivre" in s["texte"] for s in app.ctx.dossier.suggestions.values()), "l'assistant confronte"
     for texte in ("imbecil , mouf ,vote cul",):
         assert _dire(app, texte)["statut"] == "BLOQUE"
-    # questions, warnings, narratives: allowed
+    # questions, mises en garde, récits : permis
     for texte in ("Prenez-vous de la drogue ?", "Pas d'alcool pendant la grossesse", "Avez-vous déjà avorté ?",
                   "Arrêtez de fumer", "Je vais examiner votre ventre"):
         a = analyser_message(texte, MEDS)

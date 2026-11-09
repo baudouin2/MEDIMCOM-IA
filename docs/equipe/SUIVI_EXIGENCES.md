@@ -1,15 +1,15 @@
 # Suivi des exigences de l'appel (UIT, AI for Good Lab – Émirats arabes unis)
 
-Mise à jour du 9 novembre 2026 (base au format UIT, carte de la soumission `SUBMISSION.md`). Remplace le tableau du 14 octobre (dans `archives/`), qui concluait « pas encore entièrement ». Pour chaque exigence : où se trouve la preuve dans ce dossier.
+Mise à jour du 16 octobre 2026. Remplace le tableau du 14 octobre (dans `archives/`), qui concluait « pas encore entièrement ». Pour chaque exigence : où se trouve la preuve dans ce dossier.
 
 ## Exigences de l'appel
 
 | # | Exigence | État | Preuve dans le dossier |
 |---|---|---|---|
 | 1 | Solution d'IA agentique dans un domaine (santé) | Fait | 3 agents autonomes (boucle observer → réfléchir → agir, outils, garde-fous dans les outils) : `medimcom/agents.py`, `docs/technique/ARCHITECTURE_AGENTS.md` |
-| 2 | Correspondance avec les documents nationaux du pays hôte | Fait (à revérifier en partie) | 47 sources (dont 33 lues sur le texte officiel), dont les lois fédérales et normes DoH, DHA et MOHAP ; 139 dispositions : `kb/sources.json`, `kb/fiches.jsonl`. 11 sources secondaires et 3 « à confirmer » : action 7 de `REPARTITION.md`. Second pays (Cameroun) : `kb/regles_cm.json`, `--pays CM` |
+| 2 | Correspondance avec les documents nationaux du pays hôte | Fait (à revérifier en partie) | 40 sources (dont 30 lues sur le texte officiel), dont les lois fédérales et normes DoH, DHA et MOHAP ; 124 dispositions : `kb/sources.json`, `kb/fiches.jsonl`. 7 sources secondaires et 3 « à confirmer » : action 7 de `REPARTITION.md`. Second pays (Cameroun) : `kb/regles_cm.json`, `--pays CM` |
 | 3 | Correspondance avec les bonnes pratiques mondiales | Fait | Exemples ONU (CDPH), OMS, UE (AI Act), FDA, NHS, ISO, UA dans `kb/sources.json` ; chaque lacune a ses exemples mondiaux : `kb/lacunes.json` |
-| 4 | Code de référence UIT + base vectorielle hébergée par le laboratoire | Prêt à ingérer (9 novembre) | `kb/InputDocs/` suit exactement le format du code de référence de l'UIT (dépôt CrashingGuru/ITUAIReadiness : sous-dossiers `AI_Strategies/` et `AI_Use_Cases/`, manifeste `Inputs.md`) : `python -m server.knowledge.ingest --dir kb/InputDocs --reset` ; généré par `python kb/outils/exporter_inputdocs.py`. Morceaux prêts pour toute base vectorielle : `kb/index/chunks.jsonl` |
+| 4 | Code de référence UIT + base vectorielle hébergée par le laboratoire | Prêt à ingérer | Les 133 morceaux `kb/index/chunks.jsonl` (texte + métadonnées) se chargent dans n'importe quelle base vectorielle ; à ingérer avec le code de l'UIT quand les organisateurs le fournissent |
 | 5 | Crédits cloud du bac à sable | À utiliser plus tard | Tout tourne en local sur un portable (argument d'infrastructure légère) ; les crédits serviront à tester de plus grands modèles, avec des données fictives uniquement |
 | 6 | Rôle de conseiller politique et juridique | Fait | Mode conseiller du juriste pendant la crise (pouvoirs d'urgence, obligations, lacunes), toujours avec sources : `medimcom/agents.py` (Juriste), `scenarios/crise.json` |
 | 7 | Participants institutionnels | Fait | Autorité de santé, hôpital, cellule de crise, chacun avec son mandat et sans accès au dossier du patient : `medimcom/mandats.json` |
@@ -23,7 +23,7 @@ Mise à jour du 9 novembre 2026 (base au format UIT, carte de la soumission `SUB
 
 | Critère | Où le jury le voit |
 |---|---|
-| Qualité de la base de connaissances | `kb/` ; recherche mesurée sur 65 questions : rappel@3 = 0,89, MRR = 0,86 (9 novembre) (`python kb/outils/evaluer_recherche.py`) ; cohérence : `python kb/outils/verifier_kb.py` |
+| Qualité de la base de connaissances | `kb/` ; recherche mesurée sur 65 questions : rappel@3 = 0,94, MRR = 0,87 (`python kb/outils/evaluer_recherche.py`) ; cohérence : `python kb/outils/verifier_kb.py` |
 | Capacité des agents dans les scénarios d'erreur | `python evaluer_agents.py` : 6 invariants de sécurité + attendus par scénario ; modèle « chaotique » qui ne casse jamais la sécurité. **À compléter avec un vrai modèle** (action 3) |
 | Identification des lacunes | 9 lacunes du domaine avec exemples mondiaux : `docs/soumission/MEDIMCOM_IA_Gap_Analysis.pdf` |
 | Traçabilité | Page « Journal lisible » de l'interface ; `python verifier_journal.py sortie/journal.json --falsifier 10` montre qu'une ligne modifiée est détectée |

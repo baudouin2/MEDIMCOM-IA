@@ -1,16 +1,15 @@
-"""Vector store of the knowledge base: embedding, index, similarity search, fusion with BM25.
+"""Base vectorielle de la base de connaissances : encodage, index, recherche par similarité, fusion avec BM25.
 
-Encoders:
-- EncodeurOllama: real embedding model (default "bge-m3", multilingual: French, English, Arabic),
-  run LOCALLY by Ollama (http://localhost:11434). Search "by meaning".
-- EncodeurFastembed: local embedding model through fastembed (ONNX), see below.
-- EncodeurHachage: no model, no dependency (hashed character n-grams). Search by word similarity only:
-  used as a fallback and for tests, not semantic search.
+Deux encodeurs :
+- EncodeurOllama : vrai modèle d'encodage (par défaut « bge-m3 », multilingue : français, anglais, arabe),
+  exécuté en LOCAL par Ollama (http://localhost:11434). Recherche « par le sens ».
+- EncodeurHachage : sans modèle ni dépendance (n-grammes de caractères hachés). Recherche par ressemblance de
+  mots seulement : sert de repli et pour les tests, pas de recherche sémantique.
 
-Exchange format (kb/index/vecteurs_<encoder>.jsonl): one line per chunk
-{"id", "text", "metadata", "embedding"}: loads as is into Chroma, Qdrant, FAISS, pgvector or the ITU vector
-store. The header (first line, key "_index") describes the encoder, the dimension and the chunks' fingerprint,
-to check that an index matches the current base.
+Format d'échange (kb/index/vecteurs_<encodeur>.jsonl) : une ligne par morceau
+{"id", "text", "metadata", "embedding"} : se charge tel quel dans Chroma, Qdrant, FAISS, pgvector ou la base
+vectorielle de l'UIT. L'en-tête (première ligne, clé "_index") décrit l'encodeur, la dimension et l'empreinte
+des morceaux, pour vérifier qu'un index correspond bien à la base actuelle.
 """
 from __future__ import annotations
 
@@ -30,7 +29,7 @@ def _normaliser(v: list[float]) -> list[float]:
 
 
 class EncodeurHachage:
-    """Vector of character (3 to 5) and word n-grams, hashed into `dimension` slots, normalised."""
+    """Vecteur de n-grammes de caractères (3 à 5) et de mots, hachés dans `dimension` cases, normalisé."""
 
     def __init__(self, dimension: int = 1024):
         self.dimension = dimension
@@ -53,7 +52,7 @@ class EncodeurHachage:
 
 
 class EncodeurOllama:
-    """Local embedding model served by Ollama (no data leaves the machine)."""
+    """Modèle d'encodage local servi par Ollama (aucune donnée ne quitte la machine)."""
 
     def __init__(self, modele: str = "bge-m3", url: str = "http://localhost:11434", lot: int = 16, delai: int = 300):
         self.modele, self.url, self.lot, self.delai = modele, url.rstrip("/"), lot, delai
@@ -77,12 +76,12 @@ class EncodeurOllama:
 
 
 class EncodeurFastembed:
-    """Embedding model run LOCALLY by fastembed (ONNX: no PyTorch, no GPU, no API key).
-    The model is downloaded once (Hugging Face), then everything stays on the machine: no data leaves.
+    """Modèle d'encodage exécuté en LOCAL par fastembed (ONNX : ni PyTorch, ni carte graphique, ni clé d'API).
+    Le modèle est téléchargé une fois (Hugging Face), puis tout reste sur la machine : aucune donnée ne sort.
 
-    Aliases: "e5" = intfloat/multilingual-e5-large (1024 dimensions, ~100 languages incl. French, English, Arabic;
-    the most accurate, 2.2 GB); "mpnet" = paraphrase-multilingual-mpnet-base-v2 (768 dim., 1 GB, faster);
-    "minilm" = paraphrase-multilingual-MiniLM-L12-v2 (384 dim., 0.2 GB; short texts: pictograms)."""
+    Alias : « e5 » = intfloat/multilingual-e5-large (1024 dimensions, ~100 langues dont français, anglais, arabe ;
+    le plus précis, 2,2 Go) ; « mpnet » = paraphrase-multilingual-mpnet-base-v2 (768 dim., 1 Go, plus rapide) ;
+    « minilm » = paraphrase-multilingual-MiniLM-L12-v2 (384 dim., 0,2 Go ; textes courts : pictogrammes)."""
 
     ALIAS = {"e5": "intfloat/multilingual-e5-large",
              "mpnet": "sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
@@ -90,24 +89,24 @@ class EncodeurFastembed:
 
     def __init__(self, modele: str = "e5", lot: int = 16, telecharger: bool = True):
         self.modele = self.ALIAS.get(modele, modele)
-        self.telecharger = telecharger      # False: only use the model already downloaded (the server never waits)
+        self.telecharger = telecharger      # False : n'utiliser que le modèle déjà téléchargé (le serveur n'attend jamais)
         self.nom = "fastembed-" + re.sub(r"[^a-z0-9]+", "-", self.modele.split("/")[-1].lower()).strip("-")
         self.lot, self._m, self.dimension = lot, None, None
-        # E5 models were trained with these prefixes: without them, search is clearly worse.
+        # Les modèles E5 ont été entraînés avec ces préfixes : sans eux, la recherche est nettement moins bonne.
         self.prefixes = {"requete": "query: ", "passage": "passage: "} if "e5" in self.modele.lower() else {}
 
     @staticmethod
     def dossier_modeles() -> Path:
-        """PERMANENT folder for the models (by default fastembed puts them in /tmp, emptied at reboot: 2 GB would
-        have to be downloaded again). Can be changed with the MEDIMCOM_MODELES variable."""
+        """Dossier PERMANENT des modèles (par défaut fastembed les range dans /tmp, vidé au redémarrage : il faudrait
+        retélécharger 2 Go). Modifiable par la variable MEDIMCOM_MODELES."""
         import os
         return Path(os.environ.get("MEDIMCOM_MODELES") or Path.home() / ".cache" / "medimcom" / "modeles")
 
     def _charger(self):
         if self._m is None:
             import os
-            # Plain HTTP download, which RESUMES where it stopped: Hugging Face's "Xet" protocol fails on unstable
-            # connections ("channel closed", "IncompleteBody").
+            # Téléchargement HTTP classique, qui REPREND où il s'était arrêté : le protocole « Xet » de Hugging Face
+            # échoue sur les connexions instables (« channel closed », « IncompleteBody »).
             os.environ.setdefault("HF_HUB_DISABLE_XET", "1")
             os.environ.setdefault("HF_HUB_DOWNLOAD_TIMEOUT", "60")
             try:
@@ -127,7 +126,7 @@ class EncodeurFastembed:
 
 
 def encodeur(nom: str, telecharger: bool = True):
-    """"hachage", "ollama:<model>" (default bge-m3) or "fastembed:<model or alias>" (default e5)."""
+    """« hachage », « ollama:<modèle> » (défaut bge-m3) ou « fastembed:<modèle ou alias> » (défaut e5)."""
     if nom == "hachage":
         return EncodeurHachage()
     if nom.startswith("ollama"):
@@ -138,14 +137,14 @@ def encodeur(nom: str, telecharger: bool = True):
 
 
 def encoder_requete(enc, texte: str) -> list[float]:
-    """Vector of a question (with the "query" prefix if the model has one), cached: the agents often ask the
-    same question several times during a consultation."""
+    """Vecteur d'une question (avec le préfixe « requête » si le modèle en a un), mis en cache : les agents posent
+    souvent la même question plusieurs fois pendant une consultation."""
     cle = (getattr(enc, "nom", id(enc)), texte)
     cache = _CACHE_REQUETES
     if cle not in cache:
         try:
             v = enc.encoder([texte], role="requete")[0]
-        except TypeError:                     # encoder without a notion of role
+        except TypeError:                     # encodeur sans notion de rôle
             v = enc.encoder([texte])[0]
         if len(cache) > 2000:
             cache.clear()
@@ -157,11 +156,11 @@ _CACHE_REQUETES: dict = {}
 
 
 class MatriceVecteurs:
-    """A collection of vectors on disk, for large bases (base_v2: law articles, WHO fact sheets, pictograms):
-    <collection>.<encoder>.npy (float32, normalised vectors) + .json (ids, fingerprint of each text).
+    """Une collection de vecteurs sur disque, pour les grandes bases (base_v2 : articles de loi, fiches de l'OMS,
+    pictogrammes) : <collection>.<encodeur>.npy (float32, vecteurs normalisés) + .json (ids, empreinte de chaque texte).
 
-    Building RESUMES where it stopped (regular saves) and only re-embeds new or modified texts (SHA-256
-    fingerprint of each text): running again after an update of the base is fast."""
+    La construction REPREND où elle s'était arrêtée (sauvegarde régulière) et ne réencode que les textes nouveaux ou
+    modifiés (empreinte SHA-256 de chaque texte) : relancer après une mise à jour de la base est rapide."""
 
     def __init__(self, ids: list[str], empreintes: list[str], matrice, encodeur_nom: str):
         self.ids, self.empreintes, self.matrice, self.encodeur_nom = ids, empreintes, matrice, encodeur_nom
@@ -189,7 +188,7 @@ class MatriceVecteurs:
         f_npy, f_json = self.chemins(dossier, collection, self.encodeur_nom)
         tmp = f_npy.parent / (f_npy.name + ".tmp.npy")
         np.save(tmp, self.matrice.astype("float32"))
-        tmp.replace(f_npy)                       # atomic write: an interruption does not leave a damaged file
+        tmp.replace(f_npy)                       # écriture atomique : une interruption ne laisse pas un fichier abîmé
         f_json.write_text(json.dumps({"encodeur": self.encodeur_nom, "collection": collection, "similarite": "cosinus",
                                       "dimension": int(self.matrice.shape[1]) if len(self.ids) else 0,
                                       "ids": self.ids, "empreintes": self.empreintes}, ensure_ascii=False), encoding="utf-8")
@@ -212,7 +211,7 @@ class MatriceVecteurs:
             for k, v in zip(ks, enc.encoder([elements[k][1] for k in ks], role="passage")):
                 vect[k] = np.asarray(v, dtype="float32")
             faits += len(ks)
-            if faits % (lot * 10) < lot or faits == len(a_faire):      # regular save: resuming is possible
+            if faits % (lot * 10) < lot or faits == len(a_faire):      # sauvegarde régulière : reprise possible
                 pret = [k for k, v in enumerate(vect) if v is not None]
                 cls([ids[k] for k in pret], [emps[k] for k in pret], np.vstack([vect[k] for k in pret]), enc.nom).sauver(dossier, collection)
                 reste = (time.time() - t0) / faits * (len(a_faire) - faits)
@@ -227,7 +226,7 @@ class MatriceVecteurs:
         import numpy as np
         if not len(self.ids):
             return []
-        scores = self.matrice @ np.asarray(vecteur_requete, dtype="float32")       # cosine (normalised vectors)
+        scores = self.matrice @ np.asarray(vecteur_requete, dtype="float32")       # cosinus (vecteurs normalisés)
         sortie = []
         for j in np.argsort(-scores):
             i = self.ids[int(j)]
@@ -278,7 +277,7 @@ class IndexVectoriel:
 
 
 def fusion_rangs(*classements: list[str], k: int = 60) -> list[tuple[str, float]]:
-    """Reciprocal rank fusion (RRF): robust when scores do not share the same scale."""
+    """Fusion par rangs réciproques (RRF) : robuste quand les scores n'ont pas la même échelle."""
     total: dict[str, float] = {}
     for cl in classements:
         for r, i in enumerate(cl, 1):

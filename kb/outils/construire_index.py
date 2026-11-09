@@ -1,9 +1,10 @@
-"""Exports the base as chunks ready for a vector store (Chroma, FAISS, the ITU's distributed store).
+"""Exporte la base en morceaux prêts pour une base vectorielle (Chroma, FAISS, base distribuée de l'UIT).
 
     python kb/outils/construire_index.py   ->  kb/index/chunks.jsonl
 
-Each line: {"id", "text", "metadata"}. The text combines title, provision and source, so that each chunk is
-understandable on its own. The metadata keep traceability (source, article, official link, verification level).
+Chaque ligne : {"id", "text", "metadata"}. Le texte combine titre, disposition et source,
+pour que chaque morceau soit compréhensible seul. Les métadonnées gardent la
+traçabilité (source, article, lien officiel, niveau de vérification).
 """
 import json
 

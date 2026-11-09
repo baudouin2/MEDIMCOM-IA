@@ -1,6 +1,7 @@
-"""Tamper-evident journal: each line contains the fingerprint of the previous one.
+"""Journal infalsifiable : chaque ligne contient l'empreinte de la précédente.
 
-Any later change (of a line or of the order of lines) is detected by `verifier()`.
+Toute modification après coup (d'une ligne ou de l'ordre des lignes) est détectée
+par `verifier()`.
 """
 import hashlib
 import json
@@ -24,7 +25,7 @@ class Journal:
             "heure": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "agent": agent,
             "type": type_evt,          # raisonnement, action, message, evenement, verdict...
-            # frozen copy: an object modified later must not change what was logged
+            # copie figée : un objet modifié plus tard ne doit pas changer ce qui a été journalisé
             "contenu": json.loads(json.dumps(contenu, ensure_ascii=False, default=str)),
             "precedent": self.lignes[-1]["empreinte"] if self.lignes else "0" * 64,
         }

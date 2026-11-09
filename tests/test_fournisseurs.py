@@ -1,4 +1,4 @@
-"""Online API providers (free tiers): presets, "fictitious data" safeguard, fallback, HTTP 429 quota."""
+"""Fournisseurs d'API en ligne (offres gratuites) : préréglages, garde-fou « données fictives », secours, quota HTTP 429."""
 import http.server
 import json
 import sys
@@ -22,7 +22,7 @@ def test_prereglages(monkeypatch=None):
         preparer(Config(fournisseur="groq"))
         raise AssertionError("un modèle en ligne doit exiger --donnees-fictives")
     except SystemExit as e:
-        assert "fictitious" in str(e)
+        assert "fictifs" in str(e)
     for f in FOURNISSEURS.values():
         assert f["url"].startswith("https://") and f["variable_cle"].endswith("_API_KEY") and f["console"].startswith("https://")
 
@@ -55,7 +55,7 @@ def test_secours_passe_au_suivant():
         CerveauSecours([Panne(), Panne()]).chat([], [])
         raise AssertionError
     except RuntimeError as e:
-        assert "all providers failed" in str(e)
+        assert "tous les fournisseurs" in str(e)
 
 
 def test_secours_construit_depuis_la_config():

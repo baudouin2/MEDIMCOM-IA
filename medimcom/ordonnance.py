@@ -1,9 +1,9 @@
-"""Prescription given to the patient: on screen (pictograms) and as a downloadable PDF.
+"""Ordonnance remise au patient : à l'écran (pictogrammes) et en PDF téléchargeable.
 
-Only the prescriptions judged compliant (or overridden by the doctor) AND whose pictogram explanation was
-validated and sent to the patient are given to them: the patient receives what the doctor decided and explained,
-nothing else. The PDF is written in pure Python (nothing to install); each prescription carries the fingerprint
-of its journal line, which allows checking that it was not modified.
+Seules les prescriptions jugées conformes (ou maintenues par le médecin) ET dont l'explication en pictogrammes a été
+validée et envoyée au patient lui sont remises : le patient reçoit ce que le médecin a décidé et expliqué, rien d'autre.
+Le PDF est écrit en Python pur (aucune dépendance à installer) ; chaque ordonnance porte l'empreinte de sa ligne du
+journal, ce qui permet de vérifier qu'elle n'a pas été modifiée.
 """
 from __future__ import annotations
 
@@ -54,7 +54,7 @@ def _couper(t: str, n: int = 92) -> list[str]:
 
 
 def pdf(ords: list[dict], patient: dict, session: str, pays: str = "AE") -> bytes:
-    """A prescription readable by everyone (text), with the word translation of the pictograms shown to the patient."""
+    """Une ordonnance lisible par tous (texte), avec la traduction en mots des pictogrammes montrés au patient."""
     lignes: list[tuple[int, str]] = [(18, "ORDONNANCE"), (10, f"MEDIMCOM IA - consultation {session} - données fictives (démonstration)"),
                                      (10, "")]
     infos = ", ".join(f"{k} : {v}" for k, v in patient.items() if v not in (None, ""))

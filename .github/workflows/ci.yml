@@ -1,4 +1,4 @@
-# Continuous integration of MEDIMCOM IA: every change is tested and FORMALLY VERIFIED before being accepted.
+# Intégration continue de MEDIMCOM IA : chaque modification est testée et VÉRIFIÉE FORMELLEMENT avant d'être acceptée.
 name: verification
 on: [push, pull_request]
 jobs:
@@ -13,13 +13,13 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: pip install -r requirements-dev.txt
-      - name: Tests (unit, scenarios, interface, formal methods)
+      - name: Tests (unitaires, scénarios, interface, méthodes formelles)
         run: python -m pytest -q
-      - name: Knowledge-base consistency
+      - name: Cohérence de la base de connaissances
         run: python kb/outils/verifier_kb.py
-      - name: Formal verification (exhaustive enumeration, SMT proofs, exploration, monitor)
+      - name: Vérification formelle (énumération exhaustive, preuves SMT, exploration, moniteur)
         run: python outils/verifier_formel.py --rapide
-      - name: Agent evaluation bench (100 % safety required)
+      - name: Banc d'évaluation des agents (sécurité 100 % exigée)
         run: python evaluer_agents.py
   interface:
     runs-on: ubuntu-latest
@@ -30,6 +30,6 @@ jobs:
           node-version: "20"
       - run: npm ci
         working-directory: interface/web
-      - name: TypeScript type check and build
+      - name: Typage TypeScript et compilation
         run: npm run build
         working-directory: interface/web

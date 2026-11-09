@@ -1,14 +1,14 @@
-"""Formal verification of the jurist's rules, on the REAL engine (medimcom/regles.py).
+"""Vérification formelle des règles du juriste, sur le moteur RÉEL (medimcom/regles.py).
 
-Method: exhaustive enumeration over a finite abstract domain (explicit model checking).
-The rule conditions only compare a variable with constants written in the rules; two values absent from the
-rules therefore always behave the same way. The abstract domain of a variable is: the constants cited by the
-rules and the specification, an "other" value that stands for all the rest, and "unknown" (None); for a number,
-the cited bounds and their neighbours. Checking every combination of this domain amounts to checking ALL
-possible inputs (partition into equivalence classes).
-The same properties are proved independently by an SMT solver in medimcom/formel_smt.py.
+Méthode : énumération exhaustive sur un domaine abstrait fini (vérification de modèle explicite).
+Les conditions des règles ne comparent une variable qu'à des constantes écrites dans les règles ; deux valeurs
+absentes des règles se comportent donc toujours de la même façon. Le domaine abstrait d'une variable est :
+les constantes citées par les règles et la spécification, une valeur « autre » qui les représente toutes,
+et « inconnue » (None) ; pour un nombre, les bornes citées et leurs voisins. Vérifier toutes les combinaisons
+de ce domaine revient à vérifier TOUTES les entrées possibles (partition en classes d'équivalence).
+Les mêmes propriétés sont prouvées indépendamment par un solveur SMT dans medimcom/formel_smt.py.
 
-Each property returns the number of cases examined and at most 3 counter-examples.
+Chaque propriété renvoie le nombre de cas examinés et au plus 3 contre-exemples.
 """
 import itertools
 import json
@@ -40,7 +40,7 @@ def _resultat(id_, titre, methode, cas, contre, reference=""):
 
 # ------------------------------------------------------------------ domaines abstraits
 def _constantes(conditions: list) -> tuple[set, set]:
-    """Constants and numeric bounds cited by a list of conditions."""
+    """Constantes et bornes numériques citées par une liste de conditions."""
     consts, bornes = set(), set()
     for c in conditions:
         if isinstance(c, dict):
@@ -143,14 +143,14 @@ def bonne_formation(moteur) -> list[Resultat]:
     ]
 
 
-# ------------------------------------------------------------------ declarative families (sharing, sending)
+# ------------------------------------------------------------------ familles déclaratives (partage, envoi)
 def _entrees(moteur, famille: str, regles: list, spec: list):
     sig = moteur.kb.get("signature", {}).get(famille, {})
     par = _conditions_par_variable(regles, spec)
     variables = sorted(set(sig) | set(par))
     domaines = [domaine(sig, v, par.get(v, [])) for v in variables]
     if famille == "partage" and "lieu" in variables:
-        # place names as a human or a model writes them ("EAU", "Cameroun"…), BEFORE translation
+        # les noms de lieux tels qu'un humain ou un modèle les écrit (« EAU », « Cameroun »…), AVANT traduction
         i = variables.index("lieu")
         bruts = sorted({*moteur.LIEUX, *moteur.kb.get("lieux", {}), "EAU", "hors_EAU"})
         domaines[i] = [*domaines[i][:-1], *[b for b in bruts if b not in domaines[i]], None]
@@ -158,7 +158,7 @@ def _entrees(moteur, famille: str, regles: list, spec: list):
 
 
 def verifier_famille(moteur, famille: str) -> list[Resultat]:
-    """Data sharing and sending to the patient: every input of the abstract domain, on the real engine."""
+    """Partage de données et envoi au patient : toutes les entrées du domaine abstrait, sur le moteur réel."""
     cle = {"partage": "regles_partage", "envoi_patient": "regles_envoi_patient"}[famille]
     regles, spec = moteur.kb[cle], _spec(moteur.pays, famille)
     variables, domaines, sig = _entrees(moteur, famille, regles, spec)
@@ -179,13 +179,13 @@ def verifier_famille(moteur, famille: str) -> list[Resultat]:
     res = []
     lisible = lambda v: {k: x for k, x in zip(variables, v) if x is not None}  # noqa: E731
 
-    # P1 default refusal: nothing is compliant without a rule that explicitly allows it
+    # P1 refus par défaut : rien n'est conforme sans une règle qui le permet explicitement
     permissions = {r["id"] for r in regles if r["niveau"] == "CONFORME"}
     contre = [lisible(v) for v, (verdict, rs) in table.items() if verdict == "CONFORME" and not permissions & set(rs)]
     res.append(_resultat(f"{famille}.P1", "Refus par défaut : rien n'est conforme sans une permission explicite",
                          "énumération exhaustive", n, contre, "politiques « deny by default » (Backes et al., 2018)"))
 
-    # P2 caution: unknown information is never assumed safe
+    # P2 prudence : une information inconnue n'est jamais supposée sans danger
     contre = []
     for i, v in enumerate(variables):
         if sig.get(v, {}).get("monde") == "ferme":
@@ -201,7 +201,7 @@ def verifier_famille(moteur, famille: str) -> list[Resultat]:
                          "le verdict n'est pas « conforme »", "énumération exhaustive", n, contre,
                          "logique à trois valeurs de Kleene ; hypothèse du monde ouvert"))
 
-    # P3 monotonicity: an additional guarantee (true instead of false) never worsens the verdict
+    # P3 monotonie : une garantie supplémentaire (vrai au lieu de faux) n'aggrave jamais le verdict
     contre = []
     garanties = [v for v in variables if sig.get(v, {}).get("type") == "booleen" and sig[v].get("monde") != "ferme"]
     for v in garanties:
@@ -216,7 +216,7 @@ def verifier_famille(moteur, famille: str) -> list[Resultat]:
                              "énumération exhaustive (relation métamorphique)", n * len(garanties), contre,
                              "test métamorphique (Chen et al., 2018)"))
 
-    # P4 requirements of the formal specification (kb/specification_formelle.json)
+    # P4 exigences de la spécification formelle (kb/specification_formelle.json)
     lieux = {}
     if famille == "partage" and "lieu" in variables:
         lieux = {l: moteur._normaliser_demande({"lieu": l})["lieu"] for l in domaines[variables.index("lieu")] if l is not None}
@@ -225,7 +225,7 @@ def verifier_famille(moteur, famille: str) -> list[Resultat]:
         for valeurs, (verdict, rs) in table.items():
             x = dict(zip(variables, valeurs))
             if famille == "partage" and x.get("lieu") is not None:
-                x["lieu"] = lieux[x["lieu"]]   # the specification speaks of normalised values ("EAU" → dans_le_pays…)
+                x["lieu"] = lieux[x["lieu"]]   # la spécification parle des valeurs normalisées (« EAU » → dans_le_pays…)
             if not all(evaluer(c, x.get(k)) is True for k, c in e["si"].items()):
                 continue
             if (("au_moins" in e and rang(verdict) < rang(e["au_moins"])) or verdict in e.get("jamais", [])
@@ -237,7 +237,7 @@ def verifier_famille(moteur, famille: str) -> list[Resultat]:
         res.append(_resultat(e["id"], f"{e['enonce']} ({attendu})", "énumération exhaustive", n, contre,
                              "fiches " + ", ".join(e["fiches"])))
 
-    # P5 no dead rule: each rule applies in at least one case
+    # P5 aucune règle morte : chaque règle s'applique dans au moins un cas
     mortes = [r["id"] for r in regles if r["id"] not in regles_vues]
     res.append(_resultat(f"{famille}.P5", "Aucune règle morte : chaque règle s'applique dans au moins un cas",
                          "énumération exhaustive", len(regles), mortes, "analyse de couverture des tables de décision (DMN)"))
@@ -324,7 +324,7 @@ def verifier_prescription(moteur) -> list[Resultat]:
                 contre["PR9"].append({**lis, "verdict": v})
             if x["allergies"] == "MEME" and rang(v) < rang(kb["regle_allergie"]["niveau"]):
                 contre["PR6"].append({**lis, "verdict": v})
-        if x["grossesse"] == "nc":                    # confirming a piece of information must never worsen the verdict
+        if x["grossesse"] == "nc":                    # confirmer une information ne doit jamais aggraver le verdict
             confirme = {**etat, "grossesse": {"valeur": True, "confirme": True}}
             vc = juger(x, confirme)["verdict"]
             if rang(vc) > rang(v):

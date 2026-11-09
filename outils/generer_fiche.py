@@ -1,8 +1,8 @@
-"""One-page project sheet (A4, in French), generated from the real figures of the repository.
+"""Fiche de présentation du projet (1 page A4, en français), générée à partir des chiffres réels du dépôt.
 
     python outils/generer_fiche.py          # -> docs/equipe/MEDIMCOM_IA_Fiche_projet.pdf
 
-Requires: pip install playwright pypdf && python -m playwright install chromium
+Nécessite : pip install playwright pypdf && python -m playwright install chromium
 """
 import json
 import sys
@@ -62,7 +62,7 @@ td { border-bottom: .4pt solid #D9E1E6; padding: .6mm 1.2mm; vertical-align: top
 
 
 def schema() -> str:
-    """Architecture diagram: who talks to whom."""
+    """Schéma de l'architecture : qui parle à qui."""
     N, F, A, T = "#12324A", "#FFFFFF", "#E8EFF5", "#33454F"
 
     def boite(x, y, w, h, titre, sous="", fond=A, epais=1):

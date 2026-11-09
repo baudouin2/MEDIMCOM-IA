@@ -12,13 +12,11 @@ pictogrammes/bases/candidats_arasaac.json
 pictogrammes/bases/planche_candidats.html
 interface/web/node_modules/
 
-# API keys: never in the repository (CLE_API.exemple.txt, the template without a key, is published)
-CLE_API.txt
+# clés d API : jamais dans le dépôt
 .env
 *.env
 cle*.txt
-!CLE_API.exemple.txt
 
-# knowledge base built by outils/constituer_base_v2.py (large, own licences): outside the repository
+# base de connaissances constituée par outils/constituer_base_v2.py (volumineuse, licences propres) : hors dépôt
 base_v2/
 MEDIMCOM_base*/

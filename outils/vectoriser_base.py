@@ -1,24 +1,24 @@
-"""Vectorises the whole base for hybrid search (keywords + meaning), LOCALLY, without an API key.
+"""Vectorise toute la base pour la recherche hybride (mots-clés + sens), EN LOCAL, sans clé d'API.
 
-    pip install -r requirements-vecteurs.txt                       # once: fastembed (ONNX) + numpy
-    python outils/vectoriser_base.py                               # multilingual e5 model (default), base_v2 found automatically
-    python outils/vectoriser_base.py --encodeur fastembed:mpnet    # faster, slightly less accurate
-    python outils/vectoriser_base.py --encodeur ollama:bge-m3      # if Ollama is installed (ollama pull bge-m3)
-    python outils/vectoriser_base.py --exporter                    # + JSONL files for Chroma / the ITU vector store
+    pip install -r requirements-vecteurs.txt                       # une fois : fastembed (ONNX) + numpy
+    python outils/vectoriser_base.py                               # modèle e5 multilingue (défaut), base_v2 trouvée seule
+    python outils/vectoriser_base.py --encodeur fastembed:mpnet    # plus rapide, un peu moins précis
+    python outils/vectoriser_base.py --encodeur ollama:bge-m3      # si Ollama est installé (ollama pull bge-m3)
+    python outils/vectoriser_base.py --exporter                    # + fichiers JSONL pour Chroma / la base de l'UIT
 
-Collections encoded:
-  kb            the verified provisions and the 9 gaps (kb/index/vecteurs_<encoder>.jsonl)
-  juridique     the articles of the official texts of base_v2 (title + article + text)
-  oms           the sections of the WHO fact sheets
-  pictogrammes  each pictogram: fr/en/ar labels, synonyms, ARASAAC keywords, category
-                (the last three in base_v2/07_vecteurs/)
+Collections encodées :
+  kb            les 124 dispositions vérifiées et les 9 lacunes (kb/index/vecteurs_<encodeur>.jsonl)
+  juridique     les articles des textes officiels de base_v2 (titre + article + texte)
+  oms           les sections des fiches de l'OMS
+  pictogrammes  chaque pictogramme : libellés fr/en/ar, synonymes, mots-clés ARASAAC, catégorie
+                (les trois dernières dans base_v2/07_vecteurs/)
 
-Slow connection: download the model elsewhere (`--telecharger-seulement`), then copy the folder
-~/.cache/medimcom/modeles to this computer (USB stick). The "minilm" model weighs only 0.2 GB.
+Connexion lente : téléchargez le modèle ailleurs (`--telecharger-seulement`), puis copiez le dossier
+~/.cache/medimcom/modeles sur cet ordinateur (clé USB). Le modèle « minilm » ne pèse que 0,2 Go.
 
-Work is saved regularly: if you interrupt it (Ctrl+C), run the same command again, it resumes.
-After an update of the base, only new or modified texts are re-encoded.
-Then start the server with: --recherche fastembed:e5 (the same encoder).
+Le travail est sauvegardé régulièrement : si vous l'interrompez (Ctrl+C), relancez la même commande, il reprend.
+Après une mise à jour de la base, seuls les textes nouveaux ou modifiés sont réencodés.
+Puis lancer le serveur avec : --recherche fastembed:e5 (le même encodeur).
 """
 import argparse
 import json
@@ -48,7 +48,7 @@ def main(argv=None):
     dossier_modeles = getattr(enc, "dossier_modeles", None)
     print(f"Encodeur : {enc.nom}" + (f" (modèle rangé dans {dossier_modeles()})" if dossier_modeles else ""))
     t0 = time.time()
-    # Model download (once only): on an unstable connection, it resumes where it stopped.
+    # Téléchargement du modèle (une seule fois) : sur une connexion instable, il est repris là où il s'était arrêté.
     for essai in range(1, a.essais + 1):
         try:
             enc.encoder(["test"], role="passage")
@@ -58,7 +58,7 @@ def main(argv=None):
             return 1
         except Exception as e:  # noqa: BLE001
             court = str(e).split("\n")[0][:160]
-            if "absent" in court or isinstance(e, ImportError):      # missing package: retrying is pointless
+            if "absent" in court or isinstance(e, ImportError):      # paquet manquant : réessayer ne sert à rien
                 print(f"\n✖ {court}\n  Dans cet environnement Python : pip install -r requirements-vecteurs.txt")
                 return 1
             if essai == a.essais:
@@ -90,7 +90,7 @@ def main(argv=None):
         return 0
     dossier = base / "07_vecteurs"
     print(f"Base : {base}")
-    corpus = Corpus(base)                          # all countries together: filtering by country happens at search time
+    corpus = Corpus(base)                          # tous pays confondus : le filtre par pays se fait à la recherche
     elements = corpus.elements_a_vectoriser()
     for c in ("juridique", "oms"):
         if c in voulues and elements.get(c):

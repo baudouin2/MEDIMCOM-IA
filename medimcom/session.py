@@ -1,7 +1,7 @@
-"""Session assembly: configuration -> context, agents, coordinator.
+"""Assemblage d'une session : configuration -> contexte, agents, coordinateur.
 
-Used by main.py, interface/serveur.py, the evaluation bench (evaluer_agents.py) and the tests,
-so that they all run exactly the same system.
+Utilisé par main.py, par le banc d'évaluation (evaluer_agents.py) et par les tests,
+pour que tous lancent exactement le même système.
 """
 import hashlib
 import importlib
@@ -31,58 +31,53 @@ CLASSES = [Traducteur, Assistant, Juriste, AutoriteSante, Hopital, CelluleCrise]
 @dataclass
 class Config:
     mode: str = "simule"                       # simule | ollama | openai
-    modele: str = "qwen3:8b"                   # default model
-    modeles: dict = field(default_factory=dict)   # model per agent, e.g. {"juriste": "qwen3:8b"}
+    modele: str = "qwen3:8b"                   # modèle par défaut
+    modeles: dict = field(default_factory=dict)   # modèle par agent, ex. {"juriste": "qwen3:8b"}
     url: str | None = None                     # mode openai : ex. http://localhost:8080/v1
-    cle: str | None = None                     # openai mode: API key (otherwise MEDIMCOM_CLE variable)
+    cle: str | None = None                     # mode openai : clé d'API (sinon variable MEDIMCOM_CLE)
     temperature: float = 0.0
-    regles: str | None = None                  # jurist rules file (default: the country's)
-    pays: str = "AE"                           # AE (United Arab Emirates, host country) or CM (Cameroon)
+    regles: str | None = None                  # fichier de règles du juriste (défaut : celui du pays)
+    pays: str = "AE"                           # AE (Émirats, pays hôte) ou CM (Cameroun)
     langue: str = "fr"
     verbeux: bool = True
     pictogrammes: str | None = None            # paquet.module:Classe
     repli_sans_ia: bool = True
     ordre: str = "fixe"                        # fixe | aleatoire
     graine: int = 0
-    fournisseur: str | None = None             # preset online service: gemini, groq, openrouter, mistral, xai, anthropic, openai
-    agents_ia: list | None = None             # agents that use the model (None = all); the others: written policy
-    base_trouvee: str | None = None            # filled at start-up: base_v2 folder actually used
-    base: str | None = None                    # base_v2 folder (default: automatic search; "aucune" to do without)
-    effort: str | None = None                  # reasoning effort of reasoning models: low, medium, high, xhigh
-    secours: list = field(default_factory=list)   # fallback providers tried in order if the first fails (quota, outage)
-    donnees_fictives: bool = False             # required for an online model: certifies that only fictitious patients are used
-    recherche: str | None = None               # hybrid search in the base: "ollama:bge-m3" or "hachage" (default: BM25 only)
+    fournisseur: str | None = None             # service en ligne préréglé : gemini, groq, openrouter, mistral, xai
+    agents_ia: list | None = None             # agents qui utilisent le modèle (None = tous) ; les autres : politique écrite
+    base_trouvee: str | None = None            # rempli au démarrage : dossier base_v2 effectivement utilisé
+    base: str | None = None                    # dossier base_v2 (défaut : recherche automatique ; « aucune » pour s'en passer)
+    effort: str | None = None                  # effort de réflexion des modèles qui raisonnent : low, medium, high, xhigh
+    secours: list = field(default_factory=list)   # fournisseurs de secours essayés dans l'ordre si le premier échoue (quota, panne)
+    donnees_fictives: bool = False             # obligatoire pour un modèle en ligne : on atteste n'utiliser que des patients fictifs
+    recherche: str | None = None               # recherche hybride dans la base : « ollama:bge-m3 » ou « hachage » (défaut : BM25 seul)
 
 
-# Preset online services (OpenAI-compatible API). Data sent there leaves the UAE: use only with fictitious patients
-# (Federal Law No. 2 of 2019 on ICT in health; this is what the jurist enforces). Free tiers change often and some reuse
-# requests to improve their models: fictitious patients only. "modele" is the model used if --modele is not given
-# (change it if the provider retires it).
+# Services en ligne préréglés (API compatible OpenAI). Les données y partent hors des Émirats : à n'utiliser
+# qu'avec des patients fictifs (loi fédérale n° 2/2019 sur les TIC en santé ; c'est ce que le juriste fait respecter).
+# Les offres gratuites changent souvent et certaines réutilisent les requêtes pour améliorer leurs modèles : patients fictifs
+# seulement. « modele » est le modèle utilisé si --modele n'est pas précisé (le changer si le fournisseur le retire).
 FOURNISSEURS = {
-    "gemini": {"nom": "Google Gemini (online)", "url": "https://generativelanguage.googleapis.com/v1beta/openai",
+    "gemini": {"nom": "Google Gemini (en ligne)", "url": "https://generativelanguage.googleapis.com/v1beta/openai",
                "variable_cle": "GEMINI_API_KEY", "modele": "gemini-3.8-flash", "societe": "Google", "pays": "États-Unis",
                "console": "https://aistudio.google.com/apikey"},
-    "groq": {"nom": "Groq (online)", "url": "https://api.groq.com/openai/v1", "variable_cle": "GROQ_API_KEY",
+    "groq": {"nom": "Groq (en ligne)", "url": "https://api.groq.com/openai/v1", "variable_cle": "GROQ_API_KEY",
              "modele": "qwen/qwen3.8-27b", "societe": "Groq", "pays": "États-Unis", "console": "https://console.groq.com/keys"},
-    "openrouter": {"nom": "OpenRouter (online)", "url": "https://openrouter.ai/api/v1", "variable_cle": "OPENROUTER_API_KEY",
+    "openrouter": {"nom": "OpenRouter (en ligne)", "url": "https://openrouter.ai/api/v1", "variable_cle": "OPENROUTER_API_KEY",
                    "modele": "google/gemma-4-31b-it:free", "societe": "OpenRouter (routage vers plusieurs hébergeurs)",
                    "pays": "États-Unis", "console": "https://openrouter.ai/keys"},
-    "mistral": {"nom": "Mistral AI (online)", "url": "https://api.mistral.ai/v1", "variable_cle": "MISTRAL_API_KEY",
+    "mistral": {"nom": "Mistral AI (en ligne)", "url": "https://api.mistral.ai/v1", "variable_cle": "MISTRAL_API_KEY",
                 "modele": "mistral-large-latest", "societe": "Mistral AI", "pays": "France (Union européenne)",
                 "console": "https://console.mistral.ai/api-keys"},
-    "anthropic": {"nom": "Anthropic / Claude (online)", "url": "https://api.anthropic.com/v1", "variable_cle": "ANTHROPIC_API_KEY",
-                  "modele": "claude-haiku-5-5", "societe": "Anthropic", "pays": "États-Unis",
-                  "console": "https://platform.claude.com/settings/keys"},
-    "openai": {"nom": "OpenAI / GPT (online)", "url": "https://api.openai.com/v1", "variable_cle": "OPENAI_API_KEY",
-               "modele": "gpt-5.4-mini", "societe": "OpenAI", "pays": "États-Unis", "console": "https://platform.openai.com/api-keys"},
-    "xai": {"nom": "xAI / Grok (online)", "url": "https://api.x.ai/v1", "variable_cle": "XAI_API_KEY", "modele": "grok-4.7",
+    "xai": {"nom": "xAI / Grok (en ligne)", "url": "https://api.x.ai/v1", "variable_cle": "XAI_API_KEY", "modele": "grok-4.7",
             "societe": "xAI (groupe SpaceX)", "pays": "États-Unis", "console": "https://console.x.ai"},
 }
 MODELE_PAR_DEFAUT = "qwen3:8b"
 
 
 def est_en_ligne(url: str) -> bool:
-    """True if the address is not on this machine or the local network (so a service hosted elsewhere)."""
+    """Vrai si l'adresse n'est pas sur cette machine ou le réseau local (donc un service hébergé ailleurs)."""
     hote = (urlparse(url).hostname or "").lower()
     if hote in ("localhost", ""):
         return hote == ""
@@ -96,55 +91,14 @@ def est_en_ligne(url: str) -> bool:
 REGLES_PAR_PAYS = {"AE": RACINE / "kb" / "regles_uae.json", "CM": RACINE / "kb" / "regles_cm.json"}
 
 
-# PERSONAL copy of the keys, outside the project: it survives new unzipped versions and is never published.
+# Copie PERSONNELLE des clés, hors du projet : elle survit aux nouvelles versions décompressées et n'est jamais publiée.
 ENV_PERSONNEL = Path.home() / ".config" / "medimcom" / "env"
 
 
-def _lire_cles(chemin: Path) -> dict[str, str]:
-    cles = {}
-    if chemin.exists():
-        for ligne in chemin.read_text(encoding="utf-8").splitlines():
-            ligne = ligne.strip().removeprefix("export ").strip()
-            if ligne and not ligne.startswith("#") and "=" in ligne:
-                nom, valeur = (x.strip().strip('"').strip("'") for x in ligne.split("=", 1))
-                if nom.endswith("_API_KEY") and valeur:
-                    cles.setdefault(nom, valeur)
-    return cles
-
-
-def memoriser_cles(source: Path | None = None, cible: Path | None = None) -> list[str]:
-    """Copies the API keys of CLE_API.txt and of the project's `.env` into the personal copy ~/.config/medimcom/env
-    (created if needed, readable by you only): they stay on the computer even if the project folder is replaced by a
-    new version. Returns the NAMES of the keys added or updated (never their value)."""
-    par_defaut = source is None
-    source, cible = source or RACINE / ".env", cible or ENV_PERSONNEL
-    projet = _lire_cles(source)
-    if par_defaut:                      # the key pasted in CLE_API.txt is also kept on the computer
-        from .cle_api import cles_a_memoriser
-        projet.update(cles_a_memoriser())
-    if not projet:
-        return []
-    perso = _lire_cles(cible)
-    changees = [n for n, v in projet.items() if perso.get(n) != v]
-    if not changees:
-        return []
-    cible.parent.mkdir(parents=True, exist_ok=True)
-    lignes = cible.read_text(encoding="utf-8").splitlines() if cible.exists() else [
-        "# Clés d'API de MEDIMCOM IA (copie personnelle, hors du projet, jamais publiée)."]
-    lignes = [l for l in lignes if l.strip().removeprefix("export ").split("=", 1)[0].strip() not in changees]
-    lignes += [f"{n}={projet[n]}" for n in changees]
-    cible.write_text("\n".join(lignes) + "\n", encoding="utf-8")
-    try:
-        cible.chmod(0o600)
-    except OSError:
-        pass
-    return changees
-
-
 def charger_env(chemin: Path | None = None) -> int:
-    """Reads API keys from the `.env` file at the project root (NAME=value lines), then from the personal copy
-    ~/.config/medimcom/env, without overwriting an already defined variable. Neither is published:
-    `.env` is excluded from the repository by .gitignore, and the personal copy is outside the project."""
+    """Lit les clés d'API dans le fichier `.env` à la racine du projet (lignes NOM=valeur), puis dans la copie
+    personnelle ~/.config/medimcom/env, sans écraser une variable déjà définie. Ni l'un ni l'autre n'est publié :
+    `.env` est exclu du dépôt par .gitignore, et la copie personnelle est hors du projet."""
     if chemin is None:
         return charger_env(RACINE / ".env") + charger_env(ENV_PERSONNEL)
     n = 0
@@ -155,7 +109,7 @@ def charger_env(chemin: Path | None = None) -> int:
                 ligne = ligne[7:].strip()
             if ligne and not ligne.startswith("#") and "=" in ligne:
                 nom, valeur = (x.strip().strip('"').strip("'") for x in ligne.split("=", 1))
-                if valeur.startswith("xai-") and not nom.endswith("_API_KEY"):   # "api key = xai-…": xAI key recognised by its prefix
+                if valeur.startswith("xai-") and not nom.endswith("_API_KEY"):   # « api key = xai-… » : clé xAI reconnue à son préfixe
                     nom = "XAI_API_KEY"
                 if nom and valeur and nom not in os.environ:
                     os.environ[nom] = valeur
@@ -164,31 +118,30 @@ def charger_env(chemin: Path | None = None) -> int:
 
 
 def preparer(cfg: Config) -> Config:
-    """Applies the country, the chosen provider and the "fictitious data" safeguard before creating the brains."""
+    """Applique le pays, le fournisseur choisi et le garde-fou « données fictives » avant de créer les cerveaux."""
     charger_env()
     if cfg.pays not in REGLES_PAR_PAYS:
-        raise SystemExit(f"Unknown country: {cfg.pays} (available: {', '.join(REGLES_PAR_PAYS)}).")
+        raise SystemExit(f"Pays inconnu : {cfg.pays} (disponibles : {', '.join(REGLES_PAR_PAYS)}).")
     cfg.regles = str(cfg.regles or REGLES_PAR_PAYS[cfg.pays])
     if cfg.fournisseur:
         if cfg.fournisseur not in FOURNISSEURS:
-            raise SystemExit(f"Unknown provider: {cfg.fournisseur} (available: {', '.join(FOURNISSEURS)}).")
+            raise SystemExit(f"Fournisseur inconnu : {cfg.fournisseur} (disponibles : {', '.join(FOURNISSEURS)}).")
         f = FOURNISSEURS[cfg.fournisseur]
         cfg.mode, cfg.url = "openai", cfg.url or f["url"]
         if f["modele"] and cfg.modele in (None, MODELE_PAR_DEFAUT):
             cfg.modele = f["modele"]
         cfg.cle = cfg.cle or os.environ.get(f["variable_cle"]) or os.environ.get("MEDIMCOM_CLE")
         if not cfg.cle:
-            raise SystemExit(f"No API key for {f['nom']}. Simplest: paste it in {RACINE / 'CLE_API.txt'} (line CLE=) and start\n"
-                             f"without --fournisseur (see docs/GUIDE_CLE_API.md). Or: the file {ENV_PERSONNEL} or {RACINE / '.env'}\n"
-                             f"with the line {f['variable_cle']}=your_key, or:\n"
-                             f"  export {f['variable_cle']}=...      (Windows PowerShell: $env:{f['variable_cle']}=\"...\")")
+            raise SystemExit(f"Clé d'API manquante pour {f['nom']}. Le plus simple : créer le fichier {ENV_PERSONNEL} (gardé d'une version à l'autre) ou {RACINE / '.env'}\n"
+                             f"contenant la ligne {f['variable_cle']}=votre_clé (modèle : .env.exemple). Sinon :\n"
+                             f"  export {f['variable_cle']}=...      (Windows PowerShell : $env:{f['variable_cle']}=\"...\")")
     for s in cfg.secours:
         if s not in FOURNISSEURS:
-            raise SystemExit(f"Unknown fallback provider: {s} (available: {', '.join(FOURNISSEURS)}).")
+            raise SystemExit(f"Fournisseur de secours inconnu : {s} (disponibles : {', '.join(FOURNISSEURS)}).")
     if (cfg.secours or (cfg.mode == "openai" and cfg.url and est_en_ligne(cfg.url))) and not cfg.donnees_fictives:
-        raise SystemExit("ONLINE model (" + cfg.url + "): the agents' messages leave this machine and the UAE.\n"
-                         "UAE Federal Law No. 2 of 2019 (Art. 13) forbids sending real health data there. Start again with\n"
-                         "--donnees-fictives to certify that only fictitious patients are used (or use CLE_API.txt).")
+        raise SystemExit("Modèle EN LIGNE (" + cfg.url + ") : les messages des agents quittent cette machine et les Émirats.\n"
+                         "La loi fédérale n° 2/2019 interdit d'y envoyer de vraies données de santé. Relancer avec\n"
+                         "--donnees-fictives pour attester que seuls des patients fictifs sont utilisés.")
     return cfg
 
 
@@ -203,7 +156,7 @@ def creer_cerveau(cfg: Config, modele: str):
         return CerveauOllama(modele, temperature=cfg.temperature)
     if cfg.mode == "openai":
         if not cfg.url:
-            raise SystemExit("Mode openai: give --url (e.g. http://localhost:8080/v1).")
+            raise SystemExit("Mode openai : préciser --url (ex. http://localhost:8080/v1).")
         c = CerveauOpenAI(cfg.url, modele, cfg.cle or os.environ.get("MEDIMCOM_CLE"), temperature=cfg.temperature, effort=cfg.effort)
         if cfg.fournisseur:
             c.nom = FOURNISSEURS[cfg.fournisseur]["nom"]
@@ -218,7 +171,7 @@ def creer_cerveau(cfg: Config, modele: str):
                 b.nom = f["nom"]
                 secours.append(b)
         return CerveauSecours([c] + secours) if secours else c
-    raise SystemExit(f"Unknown mode: {cfg.mode}")
+    raise SystemExit(f"Mode inconnu : {cfg.mode}")
 
 
 def configuration(cfg: Config, agents) -> dict:
@@ -248,25 +201,25 @@ def construire(cfg: Config):
     enc = None
     cfg.bilan_vecteurs = {}
     if cfg.recherche:
-        # Hybrid search (keywords + meaning). If the model or an index is missing, we SAY so and go on with BM25: a
-        # consultation must never stop because of it.
+        # Recherche hybride (mots-clés + sens). Si le modèle ou un index manque, on le DIT et on continue en BM25 :
+        # une consultation ne doit jamais s'arrêter pour cela.
         from .vecteurs import IndexVectoriel, encodeur
         try:
-            # The server NEVER downloads a model (it can take an hour): it uses the one already installed by
-            # outils/vectoriser_base.py, and only if vectors were built with it.
+            # Le serveur ne télécharge JAMAIS de modèle (cela peut prendre une heure) : il utilise celui déjà installé
+            # par outils/vectoriser_base.py, et seulement si des vecteurs ont été construits avec lui.
             enc = encodeur(cfg.recherche, telecharger=False)
             from .base_v2 import trouver_base as _trouver
             v2 = _trouver(cfg.base) if cfg.base != "aucune" else None
             existe = (Path(cfg.regles).parent / "index" / f"vecteurs_{enc.nom}.jsonl").exists() or \
                 bool(v2 and list((v2 / "07_vecteurs").glob(f"*.{enc.nom}.npy")))
             if not existe:
-                raise RuntimeError(f"no vectors built with {enc.nom}: run first "
+                raise RuntimeError(f"aucun vecteur construit avec {enc.nom} : lancer d'abord "
                                    f"python outils/vectoriser_base.py --encodeur {cfg.recherche}")
             encoder_requete_test = enc.encoder(["test"], role="requete")
             if not encoder_requete_test:
-                raise RuntimeError("encoder returned nothing")
+                raise RuntimeError("encodeur muet")
         except Exception as e:  # noqa: BLE001
-            print(f"⚠ Semantic search unavailable ({e}): keyword search (BM25) only.")
+            print(f"⚠ Recherche par le sens indisponible ({e}) : recherche par mots-clés (BM25) seulement.")
             cfg.bilan_vecteurs = {"erreur": str(e)[:200]}
             enc = None
         if enc is not None:
@@ -276,7 +229,7 @@ def construire(cfg: Config):
                     base.brancher_vecteurs(IndexVectoriel.charger(chemin), enc)
                     cfg.bilan_vecteurs["kb"] = len(base.fiches)
                 else:
-                    print(f"⚠ Internal knowledge base not vectorised ({chemin.name}): python outils/vectoriser_base.py --encodeur {cfg.recherche}")
+                    print(f"⚠ Base interne non vectorisée ({chemin.name}) : python outils/vectoriser_base.py --encodeur {cfg.recherche}")
             except ValueError as e:
                 print(f"⚠ {e}")
     regles = MoteurRegles(cfg.regles, base, langue=cfg.langue)
@@ -295,8 +248,8 @@ def construire(cfg: Config):
         ctx.pictogrammeur = getattr(importlib.import_module(module), classe)()
     elif base_v2 and os.environ.get("MEDIMCOM_PICTOS", "bases") != "demo" and (base_v2 / "02_pictogrammes" / "notions.csv").exists():
         ctx.pictogrammeur = LexiqueBaseV2(base_v2, charger_pictogrammes(base_v2))
-        # pictogram search index (spelling similarity) prepared in the background: several seconds with the full
-        # catalogue (~20,000 images); the patient's first search does not wait
+        # index de recherche des pictogrammes (ressemblance d'écriture) préparé en arrière-plan : plusieurs secondes avec
+        # le catalogue complet (~20 000 images) ; la première recherche du patient n'attend pas
         import threading
         threading.Thread(target=lambda: ctx.pictogrammeur.recherche._ecriture_index(), daemon=True, name="index-pictos").start()
         if enc is not None:
@@ -304,23 +257,23 @@ def construire(cfg: Config):
             if n:
                 cfg.bilan_vecteurs["pictogrammes"] = n
     from .bibliotheque import brancher_images
-    brancher_images(getattr(ctx.pictogrammeur, "image", None))     # new "GEN:…" images if the engine provides some
+    brancher_images(getattr(ctx.pictogrammeur, "image", None))     # images nouvelles « GEN:… » si le moteur en fournit
     cerveaux = {}
     agents = []
     for C in CLASSES:
         if cfg.mode != "simule" and cfg.agents_ia is not None and C.nom not in cfg.agents_ia:
-            agents.append(C(ctx, CerveauSimule()))      # written policy: no network wait, verified behaviour
+            agents.append(C(ctx, CerveauSimule()))      # politique écrite : aucune attente réseau, comportement vérifié
             continue
         modele = cfg.modeles.get(C.nom, cfg.modele)
         if modele not in cerveaux:
             cerveaux[modele] = creer_cerveau(cfg, modele)
         agents.append(C(ctx, cerveaux[modele]))
     journal.ajouter("coordinateur", "configuration", configuration(cfg, agents))
-    # Health check: a missing server is detected in a few seconds, not after minutes of waiting.
+    # Vérification de santé : un serveur absent est détecté en quelques secondes, pas après des minutes d'attente.
     for modele, cerveau in cerveaux.items():
         if hasattr(cerveau, "verifier"):
             ok, message = cerveau.verifier()
-            if ok and message != "ok":            # model replaced automatically (missing for this key): we say so
+            if ok and message != "ok":            # modèle remplacé automatiquement (absent pour cette clé) : on le dit
                 print(f"ℹ {message}", file=sys.stderr)
                 journal.ajouter("coordinateur", "modele_remplace", {"demande": modele, "utilise": cerveau.modele, "message": message})
             if not ok:
@@ -328,9 +281,9 @@ def construire(cfg: Config):
                 print(f"⚠ {message}", file=sys.stderr)
                 if not cfg.repli_sans_ia:
                     raise ModeleHorsService(message)
-                ctx.echecs_modele[modele] = ctx.seuil_echecs        # circuit breaker open at once: immediate fallback…
-                ctx.disjoncteur_depuis[modele] = __import__("time").time()   # … and new attempt in 90 s
+                ctx.echecs_modele[modele] = ctx.seuil_echecs        # disjoncteur ouvert d'emblée : repli immédiat…
+                ctx.disjoncteur_depuis[modele] = __import__("time").time()   # … et nouvel essai dans 90 s
                 ctx.etat_modele[modele] = {"disponible": False, "message": message}
             else:
-                ctx.etat_modele[modele] = {"disponible": True, "message": "prêt" if cfg.mode == "ollama" else "en ligne"}
+                ctx.etat_modele[modele] = {"disponible": True, "message": "en ligne"}
     return ctx, agents, Orchestrateur(ctx, agents, ordre=cfg.ordre, graine=cfg.graine)

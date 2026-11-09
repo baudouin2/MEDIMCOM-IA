@@ -10,7 +10,6 @@
 | `questions_test.jsonl` | Retrieval test set with expected provision ids |
 | `index/chunks.jsonl` | Self-contained chunks `{id, text, metadata}` for any vector store (regenerate with `outils/construire_index.py`) |
 | `index/vecteurs_<encoder>.jsonl` | Vector base: one line per chunk `{id, text, metadata, embedding}` after a header line `{"_index": {encoder, dimension, chunk fingerprint, cosine}}`. `vecteurs_hachage-1024.jsonl` is a dependency-free fallback (word similarity only); build the semantic one locally with `bge-m3` |
-| `InputDocs/` | The same knowledge base in the format of the **ITU reference ingestion code** (CrashingGuru/ITUAIReadiness, `server/knowledge/ingest.py`): `AI_Strategies/` (one Markdown file per source with its metadata and provisions), `AI_Use_Cases/` (use case, Y.3172 pipeline, gaps), manifest `Inputs.md`. Ingest with `python -m server.knowledge.ingest --dir kb/InputDocs --reset`; regenerate with `python kb/outils/exporter_inputdocs.py` |
 | `outils/` | `verifier_kb.py` (consistency), `evaluer_recherche.py` (recall@k, MRR; `--comparer` for BM25 vs vectors vs hybrid), `construire_index.py` (chunks), `construire_vecteurs.py` (vector base), `telecharger_sources.py` (download originals, pin SHA-256, detect changes) |
 
 **Legal basis labels**: `LOI` (law), `NORME` (binding regulator standard), `POLITIQUE` (regulator policy), `RECOMMANDATION` (clinical reference), `STRATEGIE`, `ENGAGEMENT_INTERNATIONAL` (treaty), `EXEMPLE_MONDIAL` (global example), `COMPARATIF` (Cameroon, comparison only).

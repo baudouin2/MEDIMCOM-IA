@@ -1,4 +1,4 @@
-"""A click of the doctor or the patient must never wait for the agents to finish (slow online model)."""
+"""Un clic du médecin ou du patient ne doit jamais attendre la fin du travail des agents (modèle en ligne lent)."""
 import sys
 import threading
 import time
@@ -18,7 +18,7 @@ def test_clic_immediat_pendant_que_les_agents_travaillent():
 
     def lent(*a, **k):
         occupe.set()
-        time.sleep(1.5)                      # an online model that takes time to answer
+        time.sleep(1.5)                      # un modèle en ligne qui met du temps à répondre
         return origine(*a, **k)
 
     app.orch.stabiliser = lent
@@ -61,7 +61,7 @@ def _post(port, chemin, corps, jeton=None):
     import urllib.request
     req = urllib.request.Request(f"http://127.0.0.1:{port}{chemin}", data=json.dumps(corps).encode(), method="POST",
                                  headers={"Content-Type": "application/json", **({"X-Jeton": jeton} if jeton else {})})
-    ouvreur = urllib.request.build_opener(urllib.request.ProxyHandler({}))     # 127.0.0.1: never through a proxy
+    ouvreur = urllib.request.build_opener(urllib.request.ProxyHandler({}))     # 127.0.0.1 : jamais par un proxy
     with ouvreur.open(req, timeout=10) as r:
         return json.loads(r.read())
 
@@ -86,7 +86,7 @@ def test_fiche_libre_traduction_patient_et_doublons():
         m1 = _post(port, "/api/medecin/message", {"texte": "Avez-vous de la fièvre ?", "question": True}, app.jeton)
         m2 = _post(port, "/api/medecin/message", {"texte": "Avez-vous de la fièvre ?", "question": True}, app.jeton)
         assert "Déjà transmis" in m2["retour"] and "Déjà" not in m1["retour"]
-        sauve, sauve_groq = os.environ.pop("XAI_API_KEY", None), os.environ.pop("GROQ_API_KEY", None)
+        sauve = os.environ.pop("XAI_API_KEY", None)
         try:
             from urllib.error import HTTPError
             try:
@@ -97,8 +97,6 @@ def test_fiche_libre_traduction_patient_et_doublons():
         finally:
             if sauve:
                 os.environ["XAI_API_KEY"] = sauve
-            if sauve_groq:
-                os.environ["GROQ_API_KEY"] = sauve_groq
         assert app.vue_patient()["messages"] == [] or "texte" in app.vue_patient()["messages"][0]
     finally:
         serveur.shutdown()

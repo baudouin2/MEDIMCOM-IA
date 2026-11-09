@@ -1,5 +1,5 @@
-"""Hybrid search (keywords + meaning): resumed vectorisation, rank fusion, pictograms found by meaning or
-despite a typo, suggestions to the doctor, agents' tool, and BM25 fallback if the model is missing (never a stop)."""
+"""Recherche hybride (mots-clés + sens) : vectorisation reprise, fusion par rangs, pictogrammes trouvés par le sens ou
+malgré une faute, suggestions au médecin, outil des agents, et repli BM25 si le modèle manque (jamais d'arrêt)."""
 import json
 import sys
 import tempfile
@@ -11,7 +11,7 @@ from medimcom.vecteurs import EncodeurHachage, MatriceVecteurs, _normaliser  # n
 
 
 class FauxSens:
-    """Test "semantic" encoder: different words meaning the same thing have the same vector."""
+    """Encodeur « sémantique » de test : des mots différents qui veulent dire la même chose ont le même vecteur."""
     nom = "faux-sens"
     CONCEPTS = [("information", "informé", "renseigner", "savoir"), ("fièvre", "chaud", "température"),
                 ("consentement", "accord", "accepter"), ("vomir", "nausée", "vomissement", "vomissements")]
@@ -48,7 +48,7 @@ def test_corpus_hybride_trouve_par_le_sens():
         for c, el in corpus.elements_a_vectoriser().items():
             if el:
                 MatriceVecteurs.construire(el, enc, base / "07_vecteurs", c, progression=lambda *_: None)
-        question = "comment se renseigner"                # no word in common with "droit à l'information"
+        question = "comment se renseigner"                # aucun mot commun avec « droit à l'information »
         assert corpus.chercher(question, 3, methode="bm25") == []
         bilan = corpus.brancher_vecteurs(base / "07_vecteurs", enc)
         assert bilan.get("juridique")
@@ -70,7 +70,7 @@ def test_pictogrammes_hybrides_et_suggestions():
             assert lx.chercher("fievre", 3)[0]["id"] == "FIEVRE"
             assert any(r["id"] == "BRULURE" for r in lx.chercher("brulure", 5))
             assert "consentment" not in lx.suggerer(["consentment"]) or "CONSENTEMENT" in lx.suggerer(["consentment"])["consentment"]
-            # by meaning: "il a très chaud" shares no word with "fièvre"
+            # par le sens : « il a très chaud » ne partage aucun mot avec « fièvre »
             enc = FauxSens()
             MatriceVecteurs.construire(lx.recherche.elements_a_vectoriser(), enc, base / "07_vecteurs", "pictogrammes",
                                        progression=lambda *_: None)
@@ -98,12 +98,12 @@ def test_repli_bm25_si_modele_absent_et_api():
         with tempfile.TemporaryDirectory() as t:
             base = constituer(Path(t))
             os.environ["MEDIMCOM_BASE"] = str(base)
-            # model not found: the consultation still starts, with BM25, and the journal says so
+            # modèle introuvable : la consultation démarre quand même, en BM25, et le journal le dit
             app = Application(Config(verbeux=False, recherche="ollama:modele-inexistant-xyz", pays="CM"), asynchrone=False)
             conf = next(l for l in app.ctx.journal.lignes if l["type"] == "configuration")["contenu"]
             assert "erreur" in conf["recherche_dans_la_base"]
             assert app.ctx.corpus.chercher("information", 1)
-            # the agents' tool and the interface route
+            # l'outil des agents et la route de l'interface
             a = next(x for x in app.agents if x.nom == "traducteur")
             res = a.executer("chercher_pictogrammes", {"idee": "douleur"})
             assert isinstance(res, list) and res[0]["id"] == "DOULEUR"

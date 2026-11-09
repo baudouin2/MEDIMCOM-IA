@@ -1,15 +1,15 @@
-"""Adds to the manifest the pictograms dropped by hand (Tawasol, Mulberry, Sclera…).
+"""Ajoute au manifeste les pictogrammes déposés à la main (Tawasol, Mulberry, Sclera…).
 
-    1. Download the image from the database's website (respect its licence).
-    2. Name it with the MEDIMCOM identifier and drop it in images/<base>/:
+    1. Télécharger l'image depuis le site de la base (respecter sa licence).
+    2. La nommer avec l'identifiant MEDIMCOM et la déposer dans images/<base>/ :
          pictogrammes/bases/images/tawasol/GORGE.png
          pictogrammes/bases/images/mulberry/DOS.svg
     3. python pictogrammes/bases/importer_fichiers.py
-       (option --url GORGE=https://… to keep the link of the original page)
+       (option --url GORGE=https://… pour garder le lien de la page d'origine)
 
-Checks: identifier known in the vocabulary, base declared in bases.json and allowed, safe PNG, JPEG or SVG
-format (shapes and text only). SantéBD is refused as long as the written agreement is not noted in bases.json.
-A file imported by hand replaces the ARASAAC image of the same identifier.
+Contrôles : identifiant connu du vocabulaire, base déclarée dans bases.json et autorisée, format PNG, JPEG ou SVG
+sûr (formes et texte seulement). SantéBD est refusée tant que l'accord écrit n'est pas noté dans bases.json.
+Un fichier importé à la main remplace l'image ARASAAC du même identifiant.
 """
 import argparse
 import json

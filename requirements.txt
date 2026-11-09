@@ -1,5 +1,4 @@
-# Simulated mode and API keys (CLE_API.txt): no dependency (Python 3.10+ is enough).
-# Local Ollama mode:
+# Mode simulé : aucune dépendance (Python 3.10+ suffit).
+# Mode Ollama :
 ollama>=0.5.1
-# Optional: PDF text reading (pypdf) and HTTPS certificates (certifi), installed by lancer_local.sh
-# Tests and formal verification: pip install -r requirements-dev.txt
+# Tests et vérification formelle : pip install -r requirements-dev.txt

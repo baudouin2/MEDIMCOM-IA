@@ -1,7 +1,7 @@
-"""Shared consultation record, read and written continuously by the agents.
+"""Dossier de consultation partagé, lu et écrit en continu par les agents.
 
-Each change increments `version` and is written in the journal, which lets each agent see "what changed since
-its last pass".
+Chaque modification incrémente `version` et est inscrite au journal, ce qui permet
+à chaque agent de voir « ce qui a changé depuis son dernier passage ».
 """
 from itertools import count
 
@@ -10,13 +10,13 @@ class Dossier:
     def __init__(self, journal):
         self.journal = journal
         self.version = 0
-        self.historique: list[dict] = []       # (version, type, summary)
-        self.etat: dict[str, dict] = {}        # key -> {valeur, source, confirme}
-        self.etat_version = 0                  # version of the last state change
-        self.fil: list[dict] = []              # consultation exchanges
+        self.historique: list[dict] = []       # (version, type, résumé)
+        self.etat: dict[str, dict] = {}        # clé -> {valeur, source, confirme}
+        self.etat_version = 0                  # version de la dernière modif de l'état
+        self.fil: list[dict] = []              # échanges de la consultation
         self.questions_a_poser: list[dict] = []
         self.suggestions: dict[int, dict] = {}
-        self.decisions: dict[int, dict] = {}   # doctor's decisions (prescriptions...)
+        self.decisions: dict[int, dict] = {}   # décisions du médecin (prescriptions...)
         self.verdicts: list[dict] = []
         self.lacunes: list[dict] = []
         self._ids = count(1)
@@ -30,10 +30,10 @@ class Dossier:
     def changements_depuis(self, version: int) -> list[dict]:
         return [h for h in self.historique if h["version"] > version]
 
-    # ------------------------------------------------------------------ writes
+    # ------------------------------------------------------------------ écritures
     def ajouter_echange(self, auteur: str, texte: str, donnees: dict | None = None, confirme: bool = True,
                         details: dict | None = None) -> None:
-        # "v": version of the record at the time of the exchange (chronological order shared with the decisions)
+        # « v » : version du dossier au moment de l'échange (ordre chronologique commun avec les décisions)
         e = {"auteur": auteur, "texte": texte, "donnees": donnees or {}, "confirme": confirme, "v": self.version + 1, **(details or {})}
         self.fil.append(e)
         self._changer(auteur, "echange", e)
@@ -61,7 +61,7 @@ class Dossier:
         return f"Question {q['id']} transmise au traducteur (à valider par le médecin) : {question}"
 
     def statut_question(self, auteur: str, qid: int | None, statut: str, raison: str = "") -> None:
-        """en_attente -> posee (message sent) -> repondue; or rejetee / annulee (the doctor does not ask it)."""
+        """en_attente -> posee (message envoyé) -> repondue ; ou rejetee / annulee (le médecin ne la pose pas)."""
         q = next((q for q in self.questions_a_poser if q["id"] == qid), None)
         if q and q["statut"] != statut and q["statut"] != "repondue":
             q["statut"] = statut
@@ -93,20 +93,20 @@ class Dossier:
         self.verdicts.append(verdict)
         d = self.decisions.get(verdict.get("decision_id"))
         if d:
-            # A named override stays valid as long as the verdict does not worsen AND no new "to review" reason appears:
-            # the doctor only justified the reasons they examined.
+            # Un maintien nominatif reste valable tant que le verdict ne s'aggrave pas ET qu'aucun nouveau motif
+            # « à revoir » n'apparaît : le médecin n'a justifié que les motifs qu'il a examinés.
             motifs = {c["regle"] for c in verdict.get("constats", []) if c["niveau"] == "A_REVOIR"}
             m = d.get("maintien")
             garde = bool(m) and verdict["verdict"] == "A_REVOIR" and motifs <= set(m.get("motifs", motifs))
             d["statut"] = "MAINTENUE" if garde else verdict["verdict"]
             d["verifiee_a_version_etat"] = self.etat_version
             if m and not garde and verdict["verdict"] != "CONFORME":
-                d["maintien"] = None                 # verdict worsened or new reason: the override lapses
+                d["maintien"] = None                 # verdict aggravé ou nouveau motif : le maintien devient caduc
                 self._changer(auteur, "maintien_caduc", {"id": d["id"], "verdict": verdict["verdict"], "motifs": sorted(motifs)})
         self._changer(auteur, "verdict", {**verdict, "statut_decision": d["statut"] if d else None})
 
     def maintenir_decision(self, auteur: str, decision_id: int, medecin: str, justification: str, regles) -> str:
-        """A named human overrides a "to review" decision. Impossible for a blocked decision."""
+        """Un humain nommé maintient une décision « à revoir ». Impossible pour une décision bloquée."""
         d = self.decisions.get(int(decision_id))
         if not d:
             return f"Refusé : décision {decision_id} introuvable."

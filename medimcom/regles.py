@@ -1,11 +1,11 @@
-"""Deterministic rule engine of the jurist agent.
+"""Moteur de règles déterministe de l'agent juriste.
 
-IT is what returns the verdicts. The jurist's language model may consult it,
-explain and negotiate, but it cannot change a verdict.
+C'est LUI qui rend les verdicts. Le modèle de langage du juriste peut le consulter,
+expliquer et négocier, mais il ne peut pas modifier un verdict.
 
-Each finding cites provisions of the knowledge base (kb/fiches.jsonl):
-the full citation (text, article, official link, verification level) is
-rebuilt from the base, never hand-written in the code.
+Chaque constat cite des fiches de la base de connaissances (kb/fiches.jsonl) :
+la citation complète (texte, article, lien officiel, niveau de vérification) est
+reconstruite à partir de la base, jamais écrite à la main dans le code.
 """
 import json
 import re
@@ -27,19 +27,19 @@ def _vide(v) -> bool:
     return v is None or v == "" or v == []
 
 
-# Formal semantics of the condition language (see docs/technique/METHODES_FORMELLES.md).
-# - EPISTEMIC operators (about what is known): absent, present, pas ("it is not established that…").
-#   Always true or false.
-# - FACTUAL operators (about the world): equality, dans, contient, inferieur_a, superieur_a.
-#   Kleene three-valued logic: on an unknown value, they are UNKNOWN (None).
+# Sémantique formelle du langage de conditions (voir docs/technique/METHODES_FORMELLES.md).
+# - Opérateurs ÉPISTÉMIQUES (sur ce que l'on sait) : absent, present, pas (« il n'est pas établi que… »).
+#   Toujours vrais ou faux.
+# - Opérateurs FACTUELS (sur le monde) : égalité, dans, contient, inferieur_a, superieur_a.
+#   Logique à trois valeurs de Kleene : sur une valeur inconnue, ils valent INCONNU (None).
 OPERATEURS_EPISTEMIQUES = {"absent", "present", "pas"}
 OPERATEURS_FACTUELS = {"dans", "hors", "contient", "inferieur_a", "superieur_a"}
 
 
 def evaluer(cond, valeur, monde_ferme: bool = False):
-    """Truth value of a condition: True, False or None (unknown).
-    monde_ferme: for a "closed-world" variable (signature of the rules file), a missing value means
-    "none" (e.g. no linked prescription): factual operators are then false, never unknown."""
+    """Valeur de vérité d'une condition : True, False ou None (inconnu).
+    monde_ferme : pour une variable en « monde fermé » (signature du fichier de règles), une valeur absente veut
+    dire « aucun » (ex. aucune prescription liée) : les opérateurs factuels valent alors faux, jamais inconnu."""
     if isinstance(cond, dict):
         if len(cond) != 1:
             raise ValueError(f"Condition à un seul opérateur attendue : {cond}")
@@ -56,7 +56,7 @@ def evaluer(cond, valeur, monde_ferme: bool = False):
             return False if monde_ferme else None
         if op == "dans":
             return valeur in arg
-        if op == "hors":                      # allow-list: any value other than these
+        if op == "hors":                      # liste d'autorisation : toute autre valeur que celles-ci
             return valeur not in arg
         if op == "contient":
             return normaliser(arg) in normaliser(valeur)
@@ -69,12 +69,12 @@ def evaluer(cond, valeur, monde_ferme: bool = False):
 
 
 def condition_vraie(cond, valeur) -> bool:
-    """True only if the condition is established (an unknown condition is not true)."""
+    """Vrai seulement si la condition est établie (une condition inconnue n'est pas vraie)."""
     return evaluer(cond, valeur) is True
 
 
 def conjonction(si: dict, contexte: dict, fermees: frozenset | set = frozenset()):
-    """Kleene conjunction: False if a condition is false, otherwise None if one is unknown, otherwise True."""
+    """Conjonction de Kleene : False si une condition est fausse, sinon None si l'une est inconnue, sinon True."""
     valeurs = [evaluer(c, contexte.get(k), k in fermees) for k, c in si.items()]
     if False in valeurs:
         return False
@@ -86,8 +86,8 @@ UNITES_MG = {"mcg": 0.001, "µg": 0.001, "ug": 0.001, "mg": 1.0, "g": 1000.0, "g
 
 
 def lire_dose(dose: str | None, posologie: str | None) -> dict:
-    """"50 mg" + "3 fois par jour" -> {"mg": 50, "prises_par_jour": 3, "mg_par_jour": 150}. Also reads common
-    typos: "7fois parjours", "3x/j", "toutes les 6 h", "matin et soir"."""
+    """« 50 mg » + « 3 fois par jour » -> {"mg": 50, "prises_par_jour": 3, "mg_par_jour": 150}. Lit aussi les fautes
+    courantes : « 7fois parjours », « 3x/j », « toutes les 6 h », « matin et soir »."""
     d = normaliser(dose or "").replace("_", " ").replace(",", ".")
     p = normaliser(posologie or "").replace("_", " ").replace(",", ".")
     for mot, n in (("une", 1), ("un", 1), ("deux", 2), ("trois", 3), ("quatre", 4), ("cinq", 5), ("six", 6), ("sept", 7),
@@ -121,8 +121,8 @@ def lire_dose(dose: str | None, posologie: str | None) -> dict:
     return sortie
 
 
-# A restrictive rule (A_REVOIR, BLOQUE) that COULD apply if the missing facts were known is never ignored: it gives
-# "insufficient evidence" (principle: an unknown is never assumed safe).
+# Une règle restrictive (A_REVOIR, BLOQUE) qui POURRAIT s'appliquer si l'on savait ce qui manque n'est jamais ignorée :
+# elle donne « preuves insuffisantes » (principe : une inconnue n'est jamais supposée sans danger).
 RESTRICTIFS = {"A_REVOIR", "BLOQUE"}
 
 
@@ -136,7 +136,7 @@ class MoteurRegles:
         if manquantes:
             raise ValueError(f"Règles citant des fiches absentes de la base : {sorted(manquantes)}")
 
-    # ------------------------------------------------------------------ knowledge-base checks
+    # ------------------------------------------------------------------ contrôle de la base
     def _toutes_les_regles(self):
         kb = self.kb
         yield from kb["regle_prescripteur"].values()
@@ -175,7 +175,7 @@ class MoteurRegles:
                 "piste": (r.get("piste_en") if self.langue == "en" and r.get("piste_en") else r.get("piste"))}
 
     def fermees(self, famille: str) -> frozenset:
-        """Closed-world variables of a rule family (signature of the rules file)."""
+        """Variables en monde fermé d'une famille de règles (signature du fichier de règles)."""
         sig = self.kb.get("signature", {}).get(famille, {})
         return frozenset(k for k, v in sig.items() if v.get("monde") == "ferme")
 
@@ -187,7 +187,7 @@ class MoteurRegles:
                 sortie.append(self._constat(r["id"], r))
             elif v is None and r["niveau"] in RESTRICTIFS:
                 potentiels.append(self._potentiel(r["id"], r, r["si"], contexte, fermees))
-        # an explicit rule already triggered by the absence of the same information (e.g. "…-INCONNU") is enough
+        # une règle explicite déjà déclenchée sur l'absence de la même information (ex. « …-INCONNU ») suffit
         couvertes = {k for r in regles if conjonction(r["si"], contexte, fermees) is True
                      and r["niveau"] in RESTRICTIFS | {"PREUVES_INSUFFISANTES"}
                      for k, c in r["si"].items() if c == {"absent": True}}
@@ -203,7 +203,7 @@ class MoteurRegles:
         return c
 
     def incoherences(self, ctx: dict) -> list[dict]:
-        """Axioms contradicted by known values (e.g. sex = M and pregnancy = yes)."""
+        """Axiomes contredits par des valeurs connues (ex. sexe = M et grossesse = oui)."""
         out = []
         for ax in self.kb.get("axiomes", []):
             if conjonction(ax["si"], ctx, self.fermees("axiomes")) is True:
@@ -212,8 +212,8 @@ class MoteurRegles:
         return out
 
     def axiomes(self, ctx: dict) -> dict:
-        """Background knowledge (rules file, key "axiomes"): fills in an unknown value when it follows from
-        known facts (e.g. a man is not pregnant). Never replaces a known value."""
+        """Connaissances de fond (fichier de règles, clé « axiomes ») : complètent une valeur inconnue quand elle
+        découle de faits connus (ex. un homme n'est pas enceint). Ne remplacent jamais une valeur connue."""
         derives = {}
         for ax in self.kb.get("axiomes", []):
             if conjonction(ax["si"], ctx, self.fermees("axiomes")) is True:
@@ -224,7 +224,7 @@ class MoteurRegles:
 
     @staticmethod
     def _condition_applicable(si: dict, ctx: dict) -> bool:
-        """A condition whose elements are unknown is considered applicable (caution)."""
+        """Une condition dont on ne connaît pas les éléments est considérée comme applicable (prudence)."""
         sexe, age = ctx.get("sexe"), ctx.get("age")
         if "sexe" in si and sexe is not None and sexe != si["sexe"]:
             return False
@@ -259,7 +259,7 @@ class MoteurRegles:
         for cle, m in meds.items():
             if nom in m.get("synonymes", []):
                 return cle, m
-        # Typing or dictation error ("tramadole", "doliprane", "para c'est tamol"): careful reading, shown to the doctor
+        # Faute de frappe ou de dictée (« tramadole », « doliprane », « para c'est tamol ») : lecture prudente et affichée
         from .lecture import trouver_medicaments
         lus = [x for x in trouver_medicaments(nom.replace("_", " "), meds) if x["nom"] in meds]
         if len(lus) == 1:
@@ -276,8 +276,8 @@ class MoteurRegles:
         return any(t in a for t in termes)
 
     def verifier_prescription(self, decision: dict, etat: dict) -> dict:
-        """decision: medicament, prescripteur, auteur, dose, posologie, mode (presentiel|distance),
-        urgence, issue_de_suggestion. etat: patient state from the shared record."""
+        """decision : medicament, prescripteur, auteur, dose, posologie, mode (presentiel|distance),
+        urgence, issue_de_suggestion. etat : état du patient du dossier partagé."""
         kb = self.kb
         ctx = {**self._valeurs(etat), **{k: v for k, v in decision.items() if v is not None}}
         nom, med = self._trouver_medicament(normaliser(decision["medicament"]))
@@ -289,12 +289,12 @@ class MoteurRegles:
         constats = []
         if ctx["mode"] and mode_dossier and ctx["mode"] != mode_dossier:
             constats.append(self._constat("mode_contradictoire", kb["regle_mode_contradictoire"]))
-            ctx["mode"] = "distance"   # caution: the teleconsultation rules are applied too
+            ctx["mode"] = "distance"   # prudence : on applique aussi les règles de la téléconsultation
         if ctx["mode"] is None:
             constats.append(self._constat("mode_consultation", kb["regle_mode_inconnu"],
                                           prefixe=f"« {mode_brut} » : " if mode_brut else ""))
 
-        # 1. Who prescribes?
+        # 1. Qui prescrit ?
         p = kb["prescripteurs"].get(decision.get("prescripteur"))
         if decision.get("auteur") not in (None, "medecin") or (p and not p.get("humain", False)):
             constats.append(self._constat("prescripteur_humain", kb["regle_prescripteur"]["non_humain"]))
@@ -305,7 +305,7 @@ class MoteurRegles:
             constats.append(self._constat("prescripteur_actif", kb["regle_prescripteur"]["inactif"],
                                           prefixe=f"{decision.get('prescripteur')} : "))
 
-        # 2. Is the medicine authorised?
+        # 2. Le médicament est-il autorisé ?
         if med is None:
             constats.append(self._constat("medicament_connu", kb["regle_medicament_inconnu"],
                                           prefixe=f"« {decision['medicament']} » : "))
@@ -314,30 +314,30 @@ class MoteurRegles:
         elif med.get("amm_a_confirmer"):
             constats.append(self._constat("autorisation_a_confirmer", kb["regle_amm_a_confirmer"]))
 
-        # 3. Is the patient's state known well enough?
+        # 3. L'état du patient est-il assez connu ?
         manquants = []
         for ch in kb["champs_obligatoires_avant_prescription"]:
             if not self._condition_applicable(ch["si"], ctx):
                 continue
             v = etat.get(ch["champ"])
-            if v is None or not v["confirme"] or "préciser" in str(v["valeur"]):     # "yes, to be specified": not filled in yet
+            if v is None or not v["confirme"] or "préciser" in str(v["valeur"]):     # « oui, à préciser » : pas encore renseigné
                 manquants.append(ch["champ"])
                 constats.append(self._constat(f"champ_obligatoire:{ch['champ']}", {**ch, "niveau": "PREUVES_INSUFFISANTES"}))
 
-        # 4. Contradictory information (e.g. a man recorded as pregnant): never settled silently
+        # 4. Informations contradictoires (ex. un homme noté enceint) : jamais tranchées en silence
         for ax in self.incoherences(ctx):
             constats.append(self._constat(f"incoherence:{ax['id']}", {**ax, "niveau": "PREUVES_INSUFFISANTES"},
                                           prefixe="Informations contradictoires : "))
 
-        # 5. Contraindications and allergies, for every known medicine, authorised or not (with background knowledge: a
-        # man is not pregnant)
+        # 5. Contre-indications et allergies, pour tout médicament connu, autorisé ou non
+        #    (avec les connaissances de fond : un homme n'est pas enceint)
         constats += self._risques_patient(nom, med, ctx)
 
-        # 5 bis. Is the dose plausible? (reading of dose and rhythm, comparison with the maximum dose)
+        # 5 bis. La dose est-elle plausible ? (lecture de la dose et du rythme, comparaison à la dose maximale)
         dose = lire_dose(decision.get("dose"), decision.get("posologie"))
         constats += self._verifier_dose(nom, med or {}, dose, ctx.get("age"))
-        # History not filled in: the contraindications that depend on it are judged on the DECLARED history (what is not
-        # written is assumed absent); the jurist says so, for the doctor to check.
+        # Antécédents non renseignés : les contre-indications qui en dépendent sont jugées sur les antécédents DÉCLARÉS
+        # (ce qui n'est pas écrit est supposé absent) ; le juriste le dit, pour que le médecin vérifie.
         drapeaux = {k for c in (med or {}).get("contre_indications", []) for k in c["si"]} & {
             "maladie_renale", "maladie_hepatique", "ulcere_digestif", "anticoagulant", "maladie_cardiaque"}
         if drapeaux and not any(k in etat for k in ("antecedents", "maladies_connues", *drapeaux)):
@@ -349,7 +349,7 @@ class MoteurRegles:
                              "detail": f"Antécédents non renseignés : vérifiez l'absence de {', '.join(noms[k] for k in sorted(drapeaux))} avant {nom}.",
                              "lacune": None, "juridiction": None, "piste": "Remplissez « Maladies connues, antécédents » dans la fiche (même « aucun »)."})
 
-        # 6. General rules (written form, teleconsultation, consent, information, AI)
+        # 6. Règles générales (écrit, téléconsultation, consentement, information, IA)
         constats += self._appliquer(kb["regles_prescription"], {**ctx, **self.axiomes(ctx)}, "prescription")
 
         if lu_comme:
@@ -363,8 +363,8 @@ class MoteurRegles:
             "informations_manquantes": manquants, "dose_lue": dose, "alternatives": alternatives})
 
     def _risques_patient(self, nom: str, med: dict | None, ctx: dict) -> list[dict]:
-        """Contraindications and allergy of THIS medicine for THIS patient (record state). Used for prescriptions
-        and for every message to the patient that mentions the medicine."""
+        """Contre-indications et allergie de CE médicament pour CE patient (état du dossier). Sert à la prescription
+        et à tout message au patient qui cite le médicament."""
         constats = []
         if med:
             ctx_ci, fermees = {**ctx, **self.axiomes(ctx)}, self.fermees("contre_indications")
@@ -377,11 +377,11 @@ class MoteurRegles:
                     constats.append(self._potentiel(rid, ci, ci["si"], ctx_ci, fermees))
             if self._allergique(ctx.get("allergies"), nom, med):
                 regle = dict(self.kb["regle_allergie"])
-                if med.get("allergie_fiches"):          # the product label specifies the contraindication
+                if med.get("allergie_fiches"):          # la notice du produit précise la contre-indication
                     regle["fiches"] = list(dict.fromkeys(regle.get("fiches", []) + med["allergie_fiches"]))
                 constats.append(self._constat(f"allergie:{nom}", regle))
         elif self._allergique(ctx.get("allergies"), nom, {}):
-            # medicine unknown to the base, but the patient declared an allergy to this very name
+            # médicament inconnu de la base, mais le patient a déclaré une allergie à ce nom même
             constats.append(self._constat(f"allergie:{nom}", self.kb["regle_allergie"]))
         return constats
 
@@ -397,8 +397,8 @@ class MoteurRegles:
         return alternatives
 
     def risques_medicament(self, medicament: str, etat: dict) -> dict:
-        """Is this medicine risky for this patient? (assistant watch, messages to the patient, medicines
-        declared by the patient). Returns {medicament, connu, constats, alternatives, dose_max_mg}."""
+        """Ce médicament est-il risqué pour ce patient ? (veille de l'assistant, messages au patient, médicaments
+        déclarés par le patient). Renvoie {medicament, connu, constats, alternatives, dose_max_mg}."""
         nom, med = self._trouver_medicament(normaliser(medicament))
         ctx = self._valeurs(etat)
         return {"medicament": nom, "connu": med is not None, "constats": self._risques_patient(nom, med, ctx),
@@ -407,12 +407,11 @@ class MoteurRegles:
                 "fiches_dose_max": ((med or {}).get("dose_max_jour_mg") or {}).get("fiches", [])}
 
     def _verifier_dose(self, nom, med: dict, dose: dict, age=None) -> list[dict]:
-        """Dose safeguards. An impossible unit ("1 kg") or more than twice the maximum daily dose is
-        BLOCKED by the system's safety safeguard (probable input error, life-threatening risk); above the maximum
-        dose, "to review" with the source of that dose; an unreadable rhythm or dose: missing information."""
+        """Garde-fous de dose. Une unité impossible (« 1 kg ») ou plus du double de la dose maximale par jour est
+        BLOQUÉE par le garde-fou de sûreté du système (erreur de saisie probable, risque vital) ; au-delà de la dose
+        maximale, « à revoir » avec la source de cette dose ; un rythme ou une dose illisible : information manquante."""
         constats, en = [], self.langue == "en"
-        # Provisions cited by the safeguard: the country's "written prescription with dose" rule, and the product's
-        # maximum dose
+        # Fiches citées par le garde-fou : la règle « prescription écrite avec dose » du pays, et la dose maximale du produit
         ecrite = next((r.get("fiches", []) for r in self.kb["regles_prescription"] if r["id"] == "RX-ECRITE-DOSE"), [])
         fiches_max = (med.get("dose_max_jour_mg") or {}).get("fiches", [])
 
@@ -434,7 +433,7 @@ class MoteurRegles:
         maxi = (med.get("dose_max_jour_mg") or {})
         enfant = med.get("dose_max_jour_mg_enfant")
         if enfant and isinstance(age, (int, float)) and age < enfant.get("age_inferieur_a", 18):
-            maxi = enfant                         # maximum dose for children
+            maxi = enfant                         # dose maximale de l'enfant
         if maxi and dose.get("mg_par_jour"):
             m, j = maxi["valeur"], dose["mg_par_jour"]
             if j > 2 * m:
@@ -452,18 +451,18 @@ class MoteurRegles:
                              "lacune": None, "juridiction": None, "piste": "Écrivez par exemple « 3 fois par jour » ou « toutes les 8 heures »."})
         return constats
 
-    # ------------------------------------------------------------------ data
-    # NEUTRAL tokens (country-independent): "dans_le_pays" / "hors_du_pays". Country names (UAE,
-    # Cameroon…) are translated by each rules file (key "lieux"): "EAU" means "in the country"
-    # for the UAE rules, but "outside the country" for the Cameroon rules.
+    # ------------------------------------------------------------------ données
+    # Jetons NEUTRES (indépendants du pays) : « dans_le_pays » / « hors_du_pays ». Les noms de pays (Émirats,
+    # Cameroun…) sont traduits par chaque fichier de règles (clé « lieux ») : « EAU » veut dire « dans le pays »
+    # pour les règles des Émirats, mais « hors du pays » pour celles du Cameroun.
     LIEUX = {"local": "dans_le_pays", "dans_le_pays": "dans_le_pays", "national": "dans_le_pays", "in_country": "dans_le_pays",
              "sur_place": "dans_le_pays", "hors_du_pays": "hors_du_pays", "etranger": "hors_du_pays",
              "a_l_etranger": "hors_du_pays", "abroad": "hors_du_pays", "outside": "hors_du_pays", "international": "hors_du_pays"}
     VRAI = {"oui", "yes", "true", "vrai", "1"}
     FAUX = {"non", "no", "false", "faux", "0"}
 
-    # Role of each country's own sources (kb/sources.json); the other roles (global examples, clinical references, ITU)
-    # apply everywhere. A comparative text is never a basis for a decision.
+    # Rôle des sources propres à chaque pays (kb/sources.json) ; les autres rôles (exemples mondiaux, références
+    # cliniques, UIT) s'appliquent partout. Un texte comparatif n'est jamais une base de décision.
     ROLES_NATIONAUX = {"AE": "primary", "CM": "national_cm"}
 
     @property
@@ -471,7 +470,7 @@ class MoteurRegles:
         return self.kb.get("pays", "AE")
 
     def applicable(self, fiche_id: str) -> bool:
-        """True if the provision can ground an answer in the country of the loaded rules."""
+        """Vrai si la fiche peut fonder une réponse dans le pays des règles chargées."""
         f = self.base.fiches.get(fiche_id)
         if not f or f.get("basis") == "COMPARATIF":
             return False
@@ -501,13 +500,13 @@ class MoteurRegles:
         r["depassement_possible"] = r["verdict"] == "A_REVOIR"
         return r
 
-    # ------------------------------------------------------------------ sending to the patient
+    # ------------------------------------------------------------------ envoi au patient
     def verifier_envoi_patient(self, message: dict, suppose_valide: bool = False, etat: dict | None = None) -> dict:
-        """Form (validated by an authorised doctor?) AND content (medimcom/surete.py: dangerous statements, medicine
-        instruction without prescription). `suppose_valide`: pre-check of a proposal the doctor has not validated yet
-        ("if it were validated, could it be sent?"); forbidden content is thus blocked BEFORE.
-        `etat`: patient state; a medicine advised in the message is checked against their record (pregnancy, age,
-        allergies, diseases), like a prescription: the doctor sees WHY, for THIS patient."""
+        """Forme (validé par un médecin autorisé ?) ET contenu (medimcom/surete.py : propos dangereux, consigne de
+        médicament sans prescription). `suppose_valide` : pré-contrôle d'une proposition que le médecin n'a pas encore
+        validée (« si elle était validée, pourrait-elle partir ? ») ; un contenu interdit est ainsi bloqué AVANT.
+        `etat` : état du patient ; un médicament conseillé dans le message est confronté à sa fiche (grossesse, âge,
+        allergies, maladies), comme une prescription : le médecin voit POURQUOI, pour CE patient."""
         from .surete import analyser_message
         p = self.kb["prescripteurs"].get(str(message.get("valide_par") or "").strip().upper())
         analyse = analyser_message(message.get("texte", ""), self.kb.get("medicaments", {}))
@@ -515,7 +514,7 @@ class MoteurRegles:
                "incitation_au_mal": analyse["incitation_au_mal"],
                "medicament_controle": analyse["medicament_controle"]}
         if analyse["consigne_medicament"] and ctx.get("contenu_type") not in ("traitement", "diagnostic"):
-            ctx["contenu_type"] = "traitement"     # "prends du tramadol" (take tramadol) is a treatment instruction, whatever button was chosen
+            ctx["contenu_type"] = "traitement"     # « prends du tramadol » est une consigne de traitement, quel que soit le bouton choisi
         constats = self._appliquer(self.kb["regles_envoi_patient"], ctx, "envoi_patient")
         if analyse["incitation_au_mal"] and not any(c["niveau"] == "BLOQUE" and c["regle"] == "ENVOI-PROPOS-DANGEREUX" for c in constats):
             constats.append(self.garde_fou_surete(analyse))
@@ -533,7 +532,7 @@ class MoteurRegles:
             constats.append(self.garde_fou_ethique(e))
         constats += self._lecture_contexte(analyse, message)
         r = self._resultat("envoi_au_patient", constats, {"message": message.get("texte", "")})
-        if r["verdict"] != "CONFORME":   # "can be sent" must never accompany a block
+        if r["verdict"] != "CONFORME":   # « peut être envoyé » ne doit jamais accompagner un blocage
             r["constats"] = [c for c in r["constats"] if c["niveau"] != "CONFORME"]
         r["alternatives"] = alternatives
         r["depassement_possible"] = False
@@ -541,9 +540,9 @@ class MoteurRegles:
         return r
 
     def _lecture_contexte(self, analyse: dict, message: dict) -> list[dict]:
-        """What the jurist UNDERSTOOD of the message (narrative, question, warning…), and what it could not settle.
-        An uncertain meaning ("pendre" alone, a quoted incitement, a medicine named without a verb) is neither blocked nor
-        let through silently: the doctor confirms what they mean, and the confirmation is signed in the journal."""
+        """Ce que le juriste a COMPRIS du message (récit, question, mise en garde…), et ce qu'il n'a pas pu trancher.
+        Un sens incertain (« pendre » seul, une incitation citée, un médicament cité sans verbe) n'est ni bloqué ni
+        laissé passer en silence : le médecin confirme ce qu'il veut dire, et sa confirmation est signée au journal."""
         sortie, en = [], self.langue == "en"
         fiches = (["DHA21-4.4", "ML16-A3"] if self.pays == "AE" else [f for f in ("CM-DEONTO",) if f in self.base.fiches]) or []
         ref = " ; ".join(self.base.citer_court(f) for f in fiches) or "-"
@@ -587,8 +586,8 @@ class MoteurRegles:
                 "piste": f"Prescrivez {nom} dans l'onglet Ordonnance avec une dose en mg et un rythme précis : le juriste et l'assistant la vérifient."}
 
     def garde_fou_ethique(self, e: dict) -> dict:
-        """Message contrary to medical ethics: it is not sent. Basis: the law when the country has a text that was read
-        (abortion in the UAE: Law 4/2016, Art. 16), otherwise the system's safety safeguard, presented as such."""
+        """Message contraire à l'éthique médicale : il ne part pas. Base : la loi quand le pays en a un texte lu
+        (avortement aux Émirats : loi 4/2016, art. 16), sinon le garde-fou de sûreté du système, présenté comme tel."""
         if e["categorie"] == "avortement" and self.pays == "AE" and "ML16-A16" in self.base.fiches:
             fiches, base, ref = ["ML16-A16"], "LOI", self.base.citer_court("ML16-A16")
         else:
@@ -601,12 +600,12 @@ class MoteurRegles:
                 "lacune": None, "juridiction": None, "piste": e["piste"]}
 
     def garde_fou_surete(self, analyse: dict) -> dict:
-        """System SAFETY safeguard, independent of the law: a message inciting the patient to harm themself (or
-        insulting them) is never sent, even in a country where no text read so far covers the case. It is presented
-        as such (basis "SURETE") and not as a legal verdict."""
+        """Garde-fou de SÛRETÉ du système, indépendant du droit : un message qui incite le patient à se faire du mal
+        (ou qui l'injurie) ne part jamais, même dans un pays dont aucun texte lu ne couvre encore ce cas. Il est
+        présenté comme tel (base « SURETE ») et non comme un verdict juridique."""
         en = self.langue == "en"
-        # Cited text: the country's code of ethics or duty of care (not yet read article by article: the block comes
-        # from the safeguard, not from this text, which only frames the principle).
+        # Texte cité : la déontologie ou le devoir de soin du pays (non encore lu article par article : le blocage
+        # vient du garde-fou, pas de ce texte, qui situe seulement le principe).
         fiches = ["ML16-A3"] if self.pays == "AE" else [f for f in ("CM-DEONTO",) if f in self.base.fiches]
         return {"regle": "SURETE-PROPOS-DANGEREUX", "niveau": "BLOQUE", "base": "SURETE", "fiches": fiches,
                 "source": " ; ".join(self.base.citer(f, self.langue) for f in fiches) or "-",
@@ -631,6 +630,6 @@ class MoteurRegles:
             return False, "une justification écrite est obligatoire."
         return True, "maintien autorisé"
 
-    # ------------------------------------------------------------------ obligations arising from the state
+    # ------------------------------------------------------------------ obligations liées à l'état
     def obligations_etat(self, etat: dict) -> list[dict]:
         return self._appliquer(self.kb["regles_etat"], self._valeurs(etat), "etat")

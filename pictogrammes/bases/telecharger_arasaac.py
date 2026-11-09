@@ -1,17 +1,17 @@
-"""Builds the pictogram base from ARASAAC (Internet access required; licence CC BY-NC-SA).
+"""Constitue la base de pictogrammes à partir d'ARASAAC (accès Internet requis ; licence CC BY-NC-SA).
 
-    python pictogrammes/bases/telecharger_arasaac.py                 # the whole medical vocabulary
-    python pictogrammes/bases/telecharger_arasaac.py --ids GORGE DOS # only some identifiers
-    python pictogrammes/bases/telecharger_arasaac.py --hors-ligne    # rebuild the manifest and the sheet without network
+    python pictogrammes/bases/telecharger_arasaac.py                 # tout le vocabulaire médical
+    python pictogrammes/bases/telecharger_arasaac.py --ids GORGE DOS # seulement certains identifiants
+    python pictogrammes/bases/telecharger_arasaac.py --hors-ligne    # refaire le manifeste et la planche sans réseau
 
-For each identifier of vocabulaire_medical.json:
-1. searches ARASAAC pictograms with the French words, then English (6 candidates at most);
-2. keeps the first one, unless the team chose another in choix_arasaac.json ({"GORGE": 12345});
-3. downloads the chosen image into images/arasaac/<IDENTIFIER>.png;
-4. writes candidats_arasaac.json, manifeste_externe.json (base, author, licence, link) and planche_candidats.html.
+Pour chaque identifiant de vocabulaire_medical.json :
+1. cherche les pictogrammes ARASAAC avec les mots français, puis anglais (6 candidats au plus) ;
+2. retient le premier, sauf si l'équipe en a choisi un autre dans choix_arasaac.json ({"GORGE": 12345}) ;
+3. télécharge l'image retenue dans images/arasaac/<IDENTIFIANT>.png ;
+4. écrit candidats_arasaac.json, manifeste_externe.json (base, auteur, licence, lien) et planche_candidats.html.
 
-Open planche_candidats.html to compare the candidates, note the right numbers in choix_arasaac.json, run again.
-The final choice of pictograms belongs to the team, then to tests with deaf people.
+Ouvrir planche_candidats.html pour comparer les candidats, noter les bons numéros dans choix_arasaac.json, relancer.
+Le choix final des pictogrammes revient à l'équipe, puis aux tests avec des personnes sourdes.
 """
 import argparse
 import html
@@ -36,7 +36,7 @@ def _get(url: str, binaire: bool = False):
 
 
 def chercher(mot: str, langue: str) -> list[dict]:
-    """ARASAAC candidates for a word: first the "best search", then the broad search."""
+    """Candidats ARASAAC pour un mot : d'abord la « meilleure recherche », puis la recherche large."""
     vus, sortie = set(), []
     for chemin in ("bestsearch", "search"):
         try:

@@ -1,33 +1,32 @@
-"""Builds, on your computer, the complete knowledge base of MEDIMCOM IA, well organised (version 1; see
-constituer_base_v2.py for the larger version).
+"""Constitue, sur votre ordinateur, la base de connaissances complète de MEDIMCOM IA, bien rangée.
 
-    python outils/constituer_base.py                                  # -> ~/MEDIMCOM_base (everything, with downloads)
-    python outils/constituer_base.py --sortie D:/MEDIMCOM_base        # another folder
-    python outils/constituer_base.py --sans-reseau                    # no Internet: Markdown, filing, data set
-    python outils/constituer_base.py --etapes juridique               # one step only (juridique, pictogrammes, donnees)
+    python outils/constituer_base.py                                  # -> ~/MEDIMCOM_base (tout, avec téléchargements)
+    python outils/constituer_base.py --sortie D:/MEDIMCOM_base        # autre dossier
+    python outils/constituer_base.py --sans-reseau                    # sans Internet : Markdown, rangement, jeu de données
+    python outils/constituer_base.py --etapes juridique               # une seule étape (juridique, pictogrammes, donnees)
 
-Folder produced:
+Dossier produit :
 
     MEDIMCOM_base/
-    ├── LISEZMOI.md                       summary, figures, licences, date
+    ├── LISEZMOI.md                       sommaire, chiffres, licences, date
     ├── 1_textes_juridiques/
-    │   ├── index.md                      every text: title, verification level, official link, local file
+    │   ├── index.md                      tous les textes : titre, niveau de vérification, lien officiel, fichier local
     │   ├── AE_Emirats/  CM_Cameroun/  International/
-    │   │   ├── <ID>.md                   the text in Markdown: metadata, provisions (article, summary, quote),
-    │   │   │                             jurist rules and gaps that cite it
-    │   │   └── originaux/<ID>.pdf        the downloaded official text (when a download link exists)
+    │   │   ├── <ID>.md                   le texte en Markdown : métadonnées, dispositions (article, résumé, citation),
+    │   │   │                             règles du juriste et lacunes qui le citent
+    │   │   └── originaux/<ID>.pdf        le texte officiel téléchargé (quand un lien de téléchargement existe)
     ├── 2_pictogrammes/
-    │   ├── catalogue.csv  catalogue.md   each idea: category, fr / en / ar labels, description, available sources
-    │   ├── planche.html                  every idea, with the image of each source side by side
-    │   ├── par_source/<base>/            images as downloaded (+ the database's LICENCE.md)
-    │   └── par_idee/<category>/<ID>/     description.md + one image per source (<base>.png) + demo icon
-    ├── 3_jeu_de_donnees_assistant/       fictitious cases, training / validation / test conversations,
-    │                                     table to be validated by a doctor, datasheet
-    └── journal_constitution.json         what was downloaded (SHA-256 fingerprint), copied, refused, with the date
+    │   ├── catalogue.csv  catalogue.md   chaque idée : catégorie, libellés fr / en / ar, description, sources disponibles
+    │   ├── planche.html                  toutes les idées, avec l'image de chaque source côte à côte
+    │   ├── par_source/<base>/            images telles que téléchargées (+ LICENCE.md de la base)
+    │   └── par_idee/<catégorie>/<ID>/    description.md + une image par source (<base>.png) + icône de démonstration
+    ├── 3_jeu_de_donnees_assistant/       cas fictifs, conversations d'entraînement / validation / test,
+    │                                     tableau à faire valider par un médecin, fiche de données
+    └── journal_constitution.json         ce qui a été téléchargé (empreinte SHA-256), copié, refusé, avec la date
 
-ARASAAC images are downloaded by pictogrammes/bases/telecharger_arasaac.py (run here except with --sans-reseau);
-Tawasol, Mulberry or Sclera images dropped by hand are imported by importer_fichiers.py. Running the script again
-updates everything without duplicating anything.
+Les images ARASAAC sont téléchargées par pictogrammes/bases/telecharger_arasaac.py (lancé ici sauf avec --sans-reseau) ;
+les images Tawasol, Mulberry ou Sclera déposées à la main sont importées par importer_fichiers.py. Relancer le script
+met tout à jour sans rien dupliquer.
 """
 import argparse
 import csv
@@ -156,7 +155,7 @@ def _telecharger(url: str) -> tuple[bytes, str]:
 
 
 def _module(nom: str):
-    """Loads a script of pictogrammes/bases/ making it work on the BASES folder."""
+    """Charge un script de pictogrammes/bases/ en le faisant travailler sur le dossier BASES."""
     import importlib
     if str(BASES) not in sys.path:
         sys.path.insert(0, str(BASES))
@@ -195,11 +194,11 @@ def etape_pictogrammes(sortie: Path, reseau: bool, journal: dict) -> int:
         except (Exception, SystemExit) as e:
             journal["pictogrammes"].append({"etape": "arasaac", "etat": f"échec : {e}"})
             print(f"  ✖ ARASAAC indisponible ({e}) : on continue avec ce qui est déjà présent")
-    _module("importer_fichiers").main([])          # Tawasol, Mulberry, Sclera images dropped by hand
+    _module("importer_fichiers").main([])          # images Tawasol, Mulberry, Sclera déposées à la main
     B.charger_bases(BASES)
     bases = json.loads((BASES / "bases.json").read_text(encoding="utf-8"))["bases"]
     manifeste = json.loads((BASES / "manifeste_externe.json").read_text(encoding="utf-8")) if (BASES / "manifeste_externe.json").exists() else {"pictogrammes": {}}
-    # every available image, per source: those of the manifest, plus all those dropped in images/<base>/
+    # toutes les images disponibles, par source : celles du manifeste, plus toutes celles déposées dans images/<base>/
     par_source: dict[str, dict[str, Path]] = {}
     for d in sorted((BASES / "images").glob("*")) if (BASES / "images").exists() else []:
         for f in sorted(d.iterdir()) if d.is_dir() else []:
@@ -269,7 +268,7 @@ img{{width:96px;height:96px;object-fit:contain;border:1px solid #eee;border-radi
 
 
 def _refus(base_nom: str, f: Path, bases: dict) -> str:
-    """Same checks as importer_fichiers.py: declared and allowed database, known identifier, real and safe image file."""
+    """Mêmes contrôles qu'importer_fichiers.py : base déclarée et autorisée, identifiant connu, vrai fichier image sûr."""
     b, ext = bases.get(base_nom), f.suffix.lower()
     if b is None:
         return "base non déclarée dans bases.json"
@@ -291,7 +290,7 @@ def _copier(src: Path, dest: Path, journal: dict) -> None:
         journal["pictogrammes"].append({"fichier": str(dest), "source": str(src), "sha256": _sha(dest)})
 
 
-# --------------------------------------------------------------------------------------------- 3. data set
+# --------------------------------------------------------------------------------------------- 3. jeu de données
 def etape_donnees(sortie: Path, variantes: int, journal: dict) -> int:
     import jeu_assistant
     r = jeu_assistant.construire(sortie / "3_jeu_de_donnees_assistant", variantes)

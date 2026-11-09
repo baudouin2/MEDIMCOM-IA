@@ -1,12 +1,11 @@
-"""Responsibility report drawn from the hash-chained journal (hackathon requirement: traceability, failures of the
-AI and of the legal texts, including in a crisis, and help to establish responsibilities).
+"""Rapport de responsabilités tiré du journal chaîné (demande du hackathon : traçabilité, défaillances de l'IA et des
+textes juridiques, y compris en crise, et aide à établir les responsabilités).
 
-For each message to the patient and each prescription: WHO proposed it (agent), WHAT the jurist judged and on
-WHICH basis (law, standard, recommendation, system safeguard), WHO decided (named doctor, with their
-justification), what was sent. Then the AI failures (model unavailable, check forgotten and caught by the
-safety net, action refused by a safeguard, translation corrected by the doctor…) and the legal gaps
-(situations no text read settles, crisis measures refused for lack of a legal basis). Everything comes from the
-journal: nothing is invented.
+Pour chaque message au patient et chaque prescription : QUI l'a proposé (agent), CE QUE le juriste a jugé et sur
+QUELLE base (loi, norme, recommandation, garde-fou du système), QUI a décidé (médecin nommé, avec sa justification),
+ce qui est parti. Puis les défaillances de l'IA (modèle indisponible, contrôle oublié rattrapé par le filet de
+sécurité, action refusée par un garde-fou, traduction corrigée par le médecin…) et les lacunes du droit (situations
+qu'aucun texte lu ne règle, mesures de crise refusées faute de base légale). Tout vient du journal : rien n'est inventé.
 """
 from __future__ import annotations
 
@@ -76,7 +75,7 @@ def rapport(lignes: list[dict]) -> dict:
     for d in decisions.values():
         dernier = d["verdicts"][-1] if d["verdicts"] else None
         decideur = next((h["par"] for h in reversed(d["humains"]) if h["action"] in (HUMAINS["validation"], HUMAINS["maintien"])), None) \
-            or d.get("prescripteur")                      # a prescription is itself the doctor's decision
+            or d.get("prescripteur")                      # une prescription est elle-même la décision du médecin
         chaines.append({**d, "dernier_verdict": dernier, "decideur": decideur,
                         "responsabilite": ("décision humaine : " + decideur) if decideur else
                                           ("bloqué par le juriste avant toute décision humaine" if dernier and dernier["verdict"] == "BLOQUE" else

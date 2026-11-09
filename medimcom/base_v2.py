@@ -1,16 +1,16 @@
-"""Plugs the knowledge base built by outils/constituer_base_v2.py (folder "base_v2") into the agents.
+"""Branchement de la base constituée par outils/constituer_base_v2.py (dossier « base_v2 ») sur les agents.
 
-Where is the base? In this order:
-  1. the MEDIMCOM_BASE variable (folder path; "aucune" to not use it);
-  2. MEDIMCOM_IA/base_v2 (recommended location, excluded from the GitHub repository);
-  3. ~/MEDIMCOM_base_v2 (default location of the building script).
+Où est la base ? Dans l'ordre :
+  1. la variable MEDIMCOM_BASE (chemin du dossier ; « aucune » pour ne pas l'utiliser) ;
+  2. MEDIMCOM_IA/base_v2 (emplacement recommandé, exclu du dépôt GitHub) ;
+  3. ~/MEDIMCOM_base_v2 (emplacement par défaut du script de constitution).
 
-What it brings, without AI or network:
-- `charger_pictogrammes`: the images and labels of 02_pictogrammes become displayable pictograms;
-- `LexiqueBaseV2`: engine of agent 1 (translate / interpret) over the 1,287 concepts of the consultation vocabulary,
-  multi-word expressions and compound concepts included; it keeps the safety rules of the demo lexicon
-  (negation, "at most", numbers, doses, medicines never lost);
-- `Corpus`: BM25 search in the 87 official texts split by article and in the WHO fact sheets.
+Ce qu'elle apporte, sans IA ni réseau :
+- `charger_pictogrammes` : les images et libellés de 02_pictogrammes deviennent des pictogrammes affichables ;
+- `LexiqueBaseV2` : moteur de l'agent 1 (traduire / interpreter) sur les 1 287 notions du vocabulaire de consultation,
+  expressions et notions composées comprises ; il garde les règles de sûreté du lexique de démonstration
+  (négation, « au maximum », chiffres, doses, médicaments jamais perdus) ;
+- `Corpus` : recherche BM25 dans les 87 textes officiels découpés par article et dans les fiches de l'OMS.
 """
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ from .pictogrammes import MEDICAMENTS, MOTS, MOTS_OUTILS, LexiquePictogrammes, _
 
 RACINE = Path(__file__).resolve().parent.parent
 
-# Frame colour (library categories) for each vocabulary category
+# Couleur du cadre (catégories de la bibliothèque) pour chaque catégorie du vocabulaire
 CADRE_PAR_CATEGORIE = {
     "01": "reponse", "02": "reponse", "03": "reponse", "04": "reponse", "05": "emotion", "06": "soin", "07": "soin",
     "08": "personne", "09": "corps", "10": "corps", "11": "symptome", "12": "symptome", "13": "symptome", "14": "emotion",
@@ -75,7 +75,7 @@ def _ident(fr: str) -> str:
 
 
 def charger_pictogrammes(base: Path) -> dict:
-    """Registers in the library every concept that has an image in the base; returns {id: concept}."""
+    """Enregistre dans la bibliothèque chaque notion qui a une image dans la base ; renvoie {id: notion}."""
     from . import bibliotheque as B
     dossier = (base / "02_pictogrammes").resolve()
     attributions = {}
@@ -106,8 +106,8 @@ def charger_pictogrammes(base: Path) -> dict:
                                    "attribution": a.get("attribution", ""), "url": "", "auteur": ""}
                 entree["image"] = im
                 break
-    # Every other image of the base (variants of a concept, pictograms kept by health label, Mulberry, OpenMoji): each
-    # becomes a pictogram of its own, named by its first keyword and filed in its category.
+    # Toutes les autres images de la base (variantes d'une notion, pictogrammes retenus par étiquette santé, Mulberry,
+    # OpenMoji) : chacune devient un pictogramme à part entière, nommé par son premier mot-clé et rangé dans sa catégorie.
     utilisees = {n.get("image") for n in notions.values()}
     for fichier, a in attributions.items():
         if fichier in utilisees:
@@ -116,7 +116,7 @@ def charger_pictogrammes(base: Path) -> dict:
         if not (dossier in f.parents and f.is_file() and f.suffix.lower() in (".png", ".svg", ".jpg", ".jpeg")):
             continue
         ident = "IMG_" + re.sub(r"[^A-Za-z0-9]+", "_", f"{a.get('source', '')}_{a.get('id', '')}").strip("_").upper()
-        libelle_anglais = not [m for m in a.get("mots_fr") or [] if m]     # no French word: English label as a fallback
+        libelle_anglais = not [m for m in a.get("mots_fr") or [] if m]     # pas de mot français : libellé anglais en repli
         mots_fr = [m for m in a.get("mots_fr") or [] if m] or [m for m in a.get("mots_en") or [] if m]
         mots_en = [m for m in a.get("mots_en") or [] if m] or mots_fr
         lie = [notions[x] for x in a.get("notions", []) if x in notions]
@@ -136,16 +136,16 @@ def charger_pictogrammes(base: Path) -> dict:
 
 
 class LexiqueBaseV2(LexiquePictogrammes):
-    """Text ⇄ pictograms over the consultation vocabulary of the base (longest expressions first).
+    """Texte ⇄ pictogrammes sur le vocabulaire de consultation de la base (expressions les plus longues d'abord).
 
-    Same safety rules as the demo lexicon: negation ("pas", "jamais", "sans"…), limits ("jusqu'à", "pas plus de"),
-    numbers, doses and medicine names are never lost; a word with no available pictogram is reported to the doctor
-    (non_traduits), never replaced by an approximate image.
+    Règles de sûreté identiques au lexique de démonstration : la négation (« pas », « jamais », « sans »…), la limite
+    (« jusqu'à », « pas plus de »), les chiffres, les doses et les noms de médicaments ne sont jamais perdus ; un mot sans
+    pictogramme disponible est signalé au médecin (non_traduits), jamais remplacé par une image approchante.
     """
 
     LONGUEUR_MAX = 7
-    # Frequent spoken conjugated forms: "j'ai mal", "vous avez mal", "ça fait mal" -> PAIN (like the demo lexicon, so
-    # that the "body part + pain" combination and the agents' checks stay identical)
+    # Formes conjuguées fréquentes à l'oral : « j'ai mal », « vous avez mal », « ça fait mal » -> DOULEUR (comme le lexique
+    # de démonstration, pour que la combinaison « partie du corps + douleur » et les contrôles des agents restent identiques)
     FORMES_ORALES = {("ai", "mal"): "DOULEUR", ("avez", "mal"): "DOULEUR", ("a", "mal"): "DOULEUR", ("fait", "mal"): "DOULEUR",
                      ("as", "mal"): "DOULEUR", ("ont", "mal"): "DOULEUR", ("mal",): "DOULEUR"}
     IMPERATIFS = {"buvez": "boire", "dormez": "dormir", "prenez": "prendre", "mettez": "mettre", "faites": "faire", "dites": "dire",
@@ -153,18 +153,18 @@ class LexiqueBaseV2(LexiquePictogrammes):
                   "lisez": "lire", "ecrivez": "ecrire", "attendez": "attendre", "repondez": "repondre", "courez": "courir",
                   "tenez": "tenir", "souriez": "sourire", "choisissez": "choisir", "evitez": "eviter", "reposez": "se reposer"}
     AUXILIAIRES = {"ai", "as", "a", "avez", "avons", "ont", "suis", "es", "est", "sommes", "etes", "sont", "me", "te", "nous", "ca"}
-    # Words that carry no meaning to illustrate: "je VAIS vous prescrire" (near future), "COMME médicament". Giving them
-    # an image at any cost degrades the message ("vais" -> "ça va", "comme" -> a flag).
+    # Mots qui ne portent pas de sens à illustrer : « je VAIS vous prescrire » (futur proche), « COMME médicament ».
+    # Leur donner une image à tout prix dégrade le message (« vais » -> « ça va », « comme » -> un drapeau).
     MOTS_IGNORES = {"vais", "vas", "vont", "allons", "comme", "donc", "alors", "puis", "aussi", "tres", "vraiment", "deja"}
-    # Frequent participles and irregular forms -> infinitive ("qu'avez-vous PRIS" = prendre, never "bris" = break)
+    # Participes et formes irrégulières fréquents -> infinitif (« qu'avez-vous PRIS » = prendre, jamais « bris » = casser)
     IRREGULIERS = {"pris": "prendre", "prise": "prendre", "prises": "prendre", "prends": "prendre", "prend": "prendre",
                    "bu": "boire", "bois": "boire", "boit": "boire", "mis": "mettre", "mise": "mettre", "mets": "mettre",
                    "dormi": "dormir", "dors": "dormir", "dort": "dormir", "vomi": "vomir", "vomis": "vomir", "vomit": "vomir",
                    "mange": "manger", "manges": "manger", "senti": "sentir", "sens": "sentir",
                    "sent": "sentir", "sentez": "sentir", "toussez": "tousser", "tousse": "tousser", "saigne": "saigner",
                    "saignez": "saigner", "respirez": "respirer", "respire": "respirer", "marche": "marcher"}
-    # Words of violence or self-harm: NEVER translated automatically ("pendre" must not become "accrocher", nor "tuer"
-    # some random image). The doctor sees them "without pictogram"; the jurist judges the message.
+    # Mots de violence ou d'atteinte à soi : JAMAIS traduits d'office (« pendre » ne doit pas devenir « accrocher », ni
+    # « tuer » une image quelconque). Le médecin les voit « sans pictogramme » ; le juriste juge le message.
     MOTS_DANGEREUX = {"pendre", "pends", "pend", "pendez", "pendu", "pendue", "pendaison", "suicide", "suicider", "suicidez",
                       "suicidaire", "tuer", "tue", "tuez", "tuera", "tuerai", "mourir", "meurs", "mourez", "crever", "creve",
                       "crevez", "egorger", "poignarder", "empoisonner", "noyer", "noyez", "etrangler", "buter", "massacrer"}
@@ -189,23 +189,23 @@ class LexiqueBaseV2(LexiquePictogrammes):
                 cle = tuple(self._mots(forme))
                 if cle and cle not in self.formes:
                     self.formes[cle] = nid
-        for nid, n in self.notions.items():             # French label of the base (historical concepts included)
-            if nid.startswith("IMG_"):                  # catalogue images: stricter rules, below
+        for nid, n in self.notions.items():             # libellé français de la base (notions historiques comprises)
+            if nid.startswith("IMG_"):                  # images du catalogue : règles plus strictes, plus bas
                 continue
             cle = tuple(self._mots(n["fr"]))
             if cle:
                 self.formes.setdefault(cle, nid)
         for cle in [c for c in self.formes if len(c) == 1 and (c[0] in MOTS_OUTILS or c[0] in self.AUXILIAIRES)]:
-            del self.formes[cle]                        # "là" (= "la" without accent) must not capture the article "la"
-        # FRENCH keywords of the other images (full catalogue included): used only when no concept of the
-        # consultation vocabulary matches ("voiture", "école"); never sensitive content; never an English keyword
-        # ("car" is also a French word); for the same word, the most used image wins.
-        # Caution (field feedback: "pendre" -> "accrocher", "comme" -> a flag, "male" -> "mâle"):
-        #  - only the MAIN LABEL of the image counts, never its secondary keywords ("pendre" is a secondary keyword
-        #    of the image "accrocher");
-        #  - only ARASAAC images, whose French labels are written by speech therapists; the French labels of
-        #    Mulberry and OpenMoji are derived from English ("as" -> "comme"): manual search only;
-        #  - the accent must match exactly ("male" is not "mâle"): see self._accents.
+            del self.formes[cle]                        # « là » (= « la » sans accent) ne doit pas capter l'article « la »
+        # Mots-clés FRANÇAIS des autres images (catalogue complet compris) : utilisés seulement quand aucune notion du
+        # vocabulaire de consultation ne correspond (« voiture », « école ») ; jamais un contenu sensible ; jamais un
+        # mot-clé anglais (« car » est aussi un mot français) ; à mot égal, l'image la plus utilisée l'emporte.
+        # Prudence (retour d'usage : « pendre » -> « accrocher », « comme » -> un drapeau, « male » -> « mâle ») :
+        #  - seul le LIBELLÉ PRINCIPAL de l'image compte, jamais ses mots-clés secondaires (« pendre » est un mot-clé
+        #    secondaire de l'image « accrocher ») ;
+        #  - seulement les images ARASAAC, dont les libellés français sont écrits par des orthophonistes ; les libellés
+        #    français de Mulberry et d'OpenMoji sont déduits de l'anglais (« as » -> « comme ») : recherche manuelle seulement ;
+        #  - l'accent doit correspondre exactement (« male » n'est pas « mâle ») : voir self._accents.
         self._accents: dict[tuple, str] = {}
         generales = sorted((n for n in self.notions.values() if n["id"].startswith("IMG_ARASAAC_") and not n.get("sensible")
                             and not n.get("libelle_anglais") and not n.get("variante_de") and self._disponible(n["id"])
@@ -219,18 +219,18 @@ class LexiqueBaseV2(LexiquePictogrammes):
                     and not (len(cle) == 1 and (cle[0] in MOTS_OUTILS or cle[0] in self.AUXILIAIRES or len(cle[0]) < 3)) \
                     and not any(w in MEDICAMENTS or w in self.MOTS_DANGEREUX or w in self.MOTS_IGNORES for w in cle) \
                     and not (existante and existante.startswith("IMG_")):
-                self.formes[cle] = n["id"]      # also when the vocabulary concept has no image in this base
+                self.formes[cle] = n["id"]      # aussi quand la notion du vocabulaire n'a pas d'image dans cette base
                 self._accents[cle] = " ".join(self._mots_accents(m))
         for cle, nid in self.FORMES_ORALES.items():
             if nid in self.notions or self._connu(nid):
                 self.formes[cle] = nid
-        self.alias: dict[str, list[tuple]] = defaultdict(list)      # every way of saying each concept
+        self.alias: dict[str, list[tuple]] = defaultdict(list)      # toutes les façons de dire chaque notion
         for cle, nid in self.formes.items():
             self.alias[nid].append(cle)
         self._recherche = None
-        self.langue_saisie = "fr"        # "en": the doctor writes in English (see _traduire_en)
+        self.langue_saisie = "fr"        # « en » : le médecin écrit en anglais (voir _traduire_en)
         self._formes_en = None
-        self.rapprochement = True        # automatic and safe matching of unknown words (see _rapprocher)
+        self.rapprochement = True        # rapprochement automatique et sûr des mots inconnus (voir _rapprocher)
 
     @property
     def recherche(self) -> "RecherchePictogrammes":
@@ -242,8 +242,8 @@ class LexiqueBaseV2(LexiquePictogrammes):
         return self.recherche.chercher(requete, k)
 
     def suggerer(self, mots: list[str], k: int = 3) -> dict[str, list[str]]:
-        """For each word without a pictogram: the closest pictograms (keywords, spelling, meaning), suggested to the
-        doctor. Never inserted automatically."""
+        """Pour chaque mot sans pictogramme : les pictogrammes les plus proches (mots-clés, écriture, sens), proposés au
+        médecin. Jamais insérés d'office."""
         sortie = {}
         for m in mots:
             m = re.sub(r"\s*\(en partie\)$", "", m)
@@ -256,7 +256,7 @@ class LexiqueBaseV2(LexiquePictogrammes):
 
     @staticmethod
     def _mots_accents(texte: str) -> list[str]:
-        """Like _mots, but keeping accents ("mâle" is not "male")."""
+        """Comme _mots, mais en gardant les accents (« mâle » ≠ « male »)."""
         t = (texte or "").lower().replace("’", "'")
         return [re.sub(r"^(d|l|qu|j|s|n|c|m|t)'", "", m) for m in re.findall(r"[\w']+|\?", t) if m]
 
@@ -274,16 +274,16 @@ class LexiqueBaseV2(LexiquePictogrammes):
     def _disponible(self, nid: str) -> bool:
         return self._connu(nid)
 
-    # Categories where automatic matching cannot invert the meaning (body, pain, sensations, symptoms, feelings,
-    # conversation words). Never: medicines, doses, time, quantities, negation.
+    # Catégories où un rapprochement automatique est sans risque d'inverser le sens (corps, douleur, sensations,
+    # symptômes, ressenti, mots de la conversation). Jamais : médicaments, doses, temps, quantités, négation.
     CATEGORIES_RAPPROCHABLES = ("03", "04", "05", "06", "07", "08", "09", "11", "12", "14")
 
     def _rapprocher(self, mot: str) -> str | None:
-        """Unknown word -> a concept, in the background, only when it is SAFE: conjugated form ("sentez" -> sentir)
-        or obvious typo on a long word ("doulleur" -> douleur). NEVER by meaning alone, nor by similarity on a short
-        word: a valid French word often looks like an unrelated one ("pris" / "bris" -> break, "vais" -> "ça va").
-        Better a word "without pictogram", which the doctor sees and corrects, than a wrong image. The match is noted on
-        the proposal: the doctor sees it."""
+        """Mot inconnu -> une notion, en arrière-plan, seulement quand c'est SÛR : forme conjuguée (« sentez » -> sentir)
+        ou faute de frappe évidente sur un mot long (« doulleur » -> douleur). JAMAIS par le sens seul, ni par une
+        ressemblance sur un mot court : un mot français valide ressemble souvent à un autre qui n'a rien à voir
+        (« pris » / « bris » -> casser, « vais » -> « ça va »). Mieux vaut un mot « sans pictogramme », que le médecin
+        voit et corrige, qu'une image fausse. Le rapprochement est noté sur la proposition : le médecin le voit."""
         m = _norm(mot)
         if len(m) < 4 or m.isdigit() or m in MOTS_OUTILS or m in MEDICAMENTS or re.search(r"\d", m) \
                 or m in self.MOTS_DANGEREUX or m in self.MOTS_IGNORES or m in self.AUXILIAIRES:
@@ -296,7 +296,7 @@ class LexiqueBaseV2(LexiquePictogrammes):
             nid = self.formes.get(tuple(self._mots(cand)))
             if nid and self._disponible(nid):
                 return nid
-        if len(m) < 6:                       # typo: only on a word long enough to be unambiguous
+        if len(m) < 6:                       # faute de frappe : seulement sur un mot assez long pour être sans ambiguïté
             return None
         try:
             res = self.recherche.chercher(mot, 5)
@@ -314,9 +314,9 @@ class LexiqueBaseV2(LexiquePictogrammes):
 
     @staticmethod
     def _inversions(texte: str) -> str:
-        """Inverted questions: "avez-vous mal ?" -> "vous avez mal ?", "comment vous sentez-vous" -> "comment vous
-        sentez". A single YOU pictogram per question instead of "you you you"; the spoken form "avez mal" is still
-        recognised (PAIN)."""
+        """Questions à inversion : « avez-vous mal ? » -> « vous avez mal ? », « comment vous sentez-vous » -> « comment
+        vous sentez ». Un seul pictogramme VOUS par question, au lieu de « vous vous vous » ; la forme orale
+        « avez mal » reste reconnue (DOULEUR)."""
         motif = re.compile(r"\b(\w+)-(?:t-)?(vous|tu)\b", flags=re.IGNORECASE)
         phrases = re.split(r"(?<=[?.!])", texte)
         sortie = []
@@ -336,7 +336,7 @@ class LexiqueBaseV2(LexiquePictogrammes):
         return "".join(sortie)
 
     def _choix_ou(self) -> str | None:
-        """Image of the choice "ou" (or), if the base has one (exact label "ou", no accent), never the one of place ("où", where)."""
+        """Image du « ou » de choix, si la base en a une (libellé exact « ou », sans accent), jamais celle du lieu."""
         if not hasattr(self, "_ou_choix"):
             self._ou_choix = next((n["id"] for n in self.notions.values() if n.get("fr", "").strip().lower() == "ou"
                                    and n["id"] != "OU" and self._disponible(n["id"])), None)
@@ -349,12 +349,12 @@ class LexiqueBaseV2(LexiquePictogrammes):
         cle = (m,)
         if cle in self.formes:
             return not (cle in self._accents and " ".join(self._mots_accents(brut)) != self._accents[cle])
-        return any(c[0] == m for c in self.formes if len(c) > 1)      # start of an expression ("pas plus de")
+        return any(c[0] == m for c in self.formes if len(c) > 1)      # début d'une expression (« pas plus de »)
 
     def _corriger(self, m: str, brut: str) -> str | None:
-        """Typing or dictation error on an unknown word -> known form, only when it is safe:
-        QWERTY keyboard used by an AZERTY typist ("sentew" -> sentez), extra final e ("male" -> mal),
-        misspelt medicine name ("tramadole", "paracetamole", "ibuprophene")."""
+        """Faute de frappe ou de dictée sur un mot inconnu -> forme connue, seulement quand c'est sûr :
+        clavier QWERTY d'un habitué de l'AZERTY (« sentew » -> sentez), e final en trop (« male » -> mal),
+        nom de médicament mal écrit (« tramadole », « paracetamole », « ibuprophene »)."""
         if len(m) < 3 or self._mot_connu(m, brut) or re.search(r"\d", m):
             return None
         from .lecture import trouver_medicaments, variantes
@@ -368,19 +368,19 @@ class LexiqueBaseV2(LexiquePictogrammes):
             lus = trouver_medicaments(m, {n: {} for n in MEDICAMENTS})
             if len(lus) == 1 and lus[0]["nom"] in MEDICAMENTS:
                 return lus[0]["nom"]
-        if len(m) >= 7:                    # error on a long word: same pronunciation, or one letter away, without ambiguity
+        if len(m) >= 7:                    # faute sur un mot long : même prononciation, ou une lettre près, sans ambiguïté
             from .lecture import cle_phonetique, distance
             idx = self._index_fautes()
             cands = set(idx["cles"].get(cle_phonetique(m), set()))
             if len(cands) != 1:
                 cands = {w for w in idx["par_debut"].get(m[:2], ()) if abs(len(w) - len(m)) <= 1 and distance(m, w, 1) <= 1}
-            cands = {w for w in cands if not (m.endswith(("er", "ir", "re")) and m.startswith(w[:-1]))}   # "droguer" (to drug) is not "drogue" (drug)
+            cands = {w for w in cands if not (m.endswith(("er", "ir", "re")) and m.startswith(w[:-1]))}   # « droguer » n'est pas « drogue »
             if len(cands) == 1:
                 return next(iter(cands))
         return None
 
     def _index_fautes(self) -> dict:
-        """Known words of at least 6 letters (forms of a single concept): pronunciation key and first two letters."""
+        """Mots connus d'au moins 6 lettres (formes d'une seule notion) : clé de prononciation et deux premières lettres."""
         if getattr(self, "_idx_fautes", None) is None:
             from .lecture import cle_phonetique
             cles, debut = {}, {}
@@ -396,14 +396,14 @@ class LexiqueBaseV2(LexiquePictogrammes):
                        "plus", "trop", "votre", "vos", "mal", "bien")
 
     def _decoller(self, texte: str) -> tuple[str, dict]:
-        """Words glued by a typing or dictation error: "enpharmacie" -> "en pharmacie", "malau ventre" ->
-        "mal au ventre". Only if the whole word is unknown and both parts are known."""
+        """Mots collés par erreur de frappe ou de dictée : « enpharmacie » -> « en pharmacie », « malau ventre » ->
+        « mal au ventre ». Seulement si le mot entier est inconnu et que ses deux morceaux sont connus."""
         corrections = {}
 
         def separer(mt):
             w = mt.group(0)
             if mt.end() < len(mt.string) and mt.string[mt.end()] in "'’":
-                return w                          # elision ("jusqu'à", "qu'avez"): not a glued word
+                return w                          # élision (« jusqu'à », « qu'avez ») : pas un mot collé
             n = _norm(w)
             if len(n) < 5 or self._mot_connu(n, w) or n in MEDICAMENTS:
                 return w
@@ -428,8 +428,8 @@ class LexiqueBaseV2(LexiquePictogrammes):
                       "tramadol": "tramadol", "misoprostol": "misoprostol"}
 
     def _traduire_en(self, texte: str) -> dict:
-        """The doctor writes in ENGLISH: English labels of the concepts and of the ARASAAC images (longest expression
-        first), same safety rules (negation, numbers, doses, medicines never lost)."""
+        """Le médecin écrit en ANGLAIS : libellés anglais des notions et des images ARASAAC (plus longue expression
+        d'abord), mêmes règles de sûreté (négation, chiffres, doses, médicaments jamais perdus)."""
         if self._formes_en is None:
             self._formes_en = {}
             for nid, n in self.notions.items():
@@ -479,14 +479,14 @@ class LexiqueBaseV2(LexiquePictogrammes):
             return self._traduire_en(texte)
         texte = self._inversions(texte)
         texte, colles = self._decoller(texte)
-        # Doses and rhythms typed quickly: "1kg", "7fois parjours", "3x/j" -> "1kg", "7 fois par jour"
+        # Doses et rythmes écrits vite : « 1kg », « 7fois parjours », « 3x/j » -> « 1kg », « 7 fois par jour »
         texte = re.sub(r"(\d+(?:[.,]\d+)?)\s*(mg|g|kg|ml|l|mcg|µg|ui)\b", r"\1\2", texte, flags=re.IGNORECASE)
         texte = re.sub(r"(\d)\s*(?:fois|x)\b", r"\1 fois", texte, flags=re.IGNORECASE)
         texte = re.sub(r"\bpar\s*jours?\b|/\s*j(?:our)?\b", " par jour", texte, flags=re.IGNORECASE)
         bruts = re.findall(r"[\w'’]+|\?", texte)
         mots = [re.sub(r"^(d|l|qu|j|s|n|c|m|t)'", "", _norm(b).replace("’", "'")) for b in bruts]
         corrections = dict(colles)
-        for k, (m, b) in enumerate(zip(mots, bruts)):        # typing and dictation errors, corrected and shown
+        for k, (m, b) in enumerate(zip(mots, bruts)):        # fautes de frappe et de dictée, corrigées et montrées
             c = self._corriger(m, b)
             if c:
                 mots[k] = c
@@ -494,7 +494,7 @@ class LexiqueBaseV2(LexiquePictogrammes):
         pictos, manquants, rapproches, i = [], [], {}, 0
         while i < len(mots):
             m, brut = mots[i], bruts[i]
-            if re.match(r"^j['’]", _norm(brut)) and self._disponible("MOI"):     # "j'ai", "j'avais": the patient speaks about themself
+            if re.match(r"^j['’]", _norm(brut)) and self._disponible("MOI"):     # « j'ai », « j'avais » : le patient parle de lui
                 pictos.append("MOI")
             if _norm(brut).replace("’", "'").startswith("jusqu"):
                 pictos.append("MAXIMUM"); i += 1; continue
@@ -506,12 +506,12 @@ class LexiqueBaseV2(LexiquePictogrammes):
                 pictos.append(f"DOSE:{m}"); i += 1; continue
             if m in MEDICAMENTS:
                 pictos.append(f"MEDICAMENT:{m}"); i += 1; continue
-            if MOTS.get(m) in ("NE_PAS", "MAXIMUM", "STOP", "URGENCE"):   # safety words: never absorbed by an expression
+            if MOTS.get(m) in ("NE_PAS", "MAXIMUM", "STOP", "URGENCE"):   # mots de sûreté : jamais absorbés par une expression
                 pictos.append(MOTS[m]); i += 1; continue
-            # "où" (where) is not "ou" (or): without an accent, it is recognised at the start of a question. Losing "où"
-            # changes the question ("où avez-vous mal ?" became "you pain?").
-            # "où" (accent) or "ou" at the start of a question followed by a verb ("ou avez-vous mal ?") = PLACE;
-            # otherwise it is a CHOICE ("la tête ou le ventre ?"), illustrated if the base has an "ou" (choice) image
+            # « où » (lieu) n'est pas « ou » (choix) : sans accent, on le reconnaît en tête de question. Perdre « où » change
+            # la question (« où avez-vous mal ? » devenait « vous douleur ? »).
+            # « où » (accent) ou « ou » en tête de question suivi d'un verbe (« ou avez-vous mal ? ») = le LIEU ;
+            # sinon c'est le CHOIX (« la tête ou le ventre ? »), illustré si la base a une image « ou » (choix)
             verbe_suit = i + 1 < len(mots) and (mots[i + 1] in self.AUXILIAIRES or mots[i + 1] in ("vous", "tu", "est", "sont", "etes",
                                                                                                    "avez", "as", "habitez", "allez", "travaillez"))
             if m == "ou" and not (brut.lower().replace("ù", "u") != brut.lower() or (i == 0 and verbe_suit)):
@@ -523,9 +523,9 @@ class LexiqueBaseV2(LexiquePictogrammes):
                 if self._disponible("OU"):
                     pictos.append("OU")
                 else:
-                    manquants.append(brut)        # never lost silently: the doctor sees it "without pictogram"
+                    manquants.append(brut)        # jamais perdu en silence : le médecin le voit « sans pictogramme »
                 i += 1; continue
-            if m in self.MOTS_DANGEREUX:          # never an automatic image: the doctor and the jurist see the word as it is
+            if m in self.MOTS_DANGEREUX:          # jamais d'image d'office : le médecin et le juriste voient le mot tel quel
                 manquants.append(brut); i += 1; continue
             if m in self.MOTS_IGNORES:
                 i += 1; continue
@@ -534,10 +534,10 @@ class LexiqueBaseV2(LexiquePictogrammes):
                 cle = tuple(mots[i:i + L])
                 nid = self.formes.get(cle)
                 if nid and cle in self._accents and " ".join(self._mots_accents(" ".join(bruts[i:i + L]))) != self._accents[cle]:
-                    nid = None                    # general catalogue image: the accent must match ("male" ≠ "mâle")
+                    nid = None                    # image du catalogue général : l'accent doit correspondre (« male » ≠ « mâle »)
                 if nid is None and L == 1 and len(m) > 3 and m[-1] in "sx":
                     nid = self.formes.get((m[:-1],))
-                if nid is None and L == 1 and m.endswith("ez") and len(m) > 4:    # imperative: "mangez" -> manger
+                if nid is None and L == 1 and m.endswith("ez") and len(m) > 4:    # impératif : « mangez » -> manger
                     nid = self.formes.get(tuple(self._mots(self.IMPERATIFS.get(m, m[:-2] + "er"))))
                 if nid:
                     trouve = (nid, L)
@@ -565,7 +565,7 @@ class LexiqueBaseV2(LexiquePictogrammes):
                 manquants.append(brut)
             i += 1
         j = 0
-        while j < len(pictos) - 1:                      # "pas plus de 4" = at most 4
+        while j < len(pictos) - 1:                      # « pas plus de 4 » = au maximum 4
             if pictos[j] == "NE_PAS" and pictos[j + 1] == "PLUS":
                 pictos[j:j + 2] = ["MAXIMUM"]
             j += 1
@@ -580,15 +580,15 @@ class LexiqueBaseV2(LexiquePictogrammes):
         return " ".join(("(" + " + ".join(libelle(x) for x in p.split("+")) + ")") if "+" in p else libelle(p) for p in pictogrammes)
 
 
-# Patient palette: ALL illustrated concepts, filed in tabs (in screen order). A compound concept ("pain that comes and
-# goes") has no tab: the patient expresses it by chaining pictograms.
+# Palette du patient : TOUTES les notions illustrées, rangées en onglets (l'ordre est celui de l'écran). Une notion composée
+# (« douleur qui va et vient ») n'a pas d'onglet : le patient l'exprime en enchaînant ses pictogrammes.
 ONGLETS_PATIENT = {
     "reponses": ("02", "01"), "questions": ("03",), "corps": ("09",), "localisation": ("10",), "douleur": ("11",),
     "intensite": ("27I",), "sensations": ("28",), "symptomes": ("12",), "ressenti": ("14",), "maladies": ("13",),
     "soins": ("15", "16", "17", "18"), "alimentation": ("20",), "hygiene": ("21", "22"), "grossesse": ("23",),
     "handicap": ("24",), "personnes": ("08",), "vie quotidienne": ("25", "19"), "temps": ("26",), "nombres": ("27",),
     "urgence": ("29",), "droits": ("30", "04", "05", "06", "07"), "autres": ("99",),
-    "general": ("90",), "symboles": ("91",),        # the whole catalogue (--tous-pictos); "98" (sensitive): search only
+    "general": ("90",), "symboles": ("91",),        # tout le catalogue (--tous-pictos) ; « 98 » (sensible) : recherche seulement
 }
 INTENSITE = ["PAS_DE_DOULEUR", "UN_PEU", "PEU", "LEGER", "MODERE", "FORT", "SEVERE", "BEAUCOUP", "TROP", "FAIBLE", "PLUS", "MOINS",
              "MIEUX", "PIRE", "PAREIL", "DE_PLUS_EN_PLUS_FORT", "DE_MOINS_EN_MOINS_FORT"]
@@ -603,16 +603,16 @@ def palette_patient(notions: dict, par_onglet: int = 50000) -> dict:
         else:
             ids = [nid for nid, n in notions.items() if n["categorie_vocabulaire"][:2] in codes and not n["composition"]
                    and connu(nid) and not (onglet == "nombres" and nid in INTENSITE) and not n.get("sensible")]
-            if onglet in ("general", "symboles"):     # most used first
+            if onglet in ("general", "symboles"):     # les plus utilisés d'abord
                 ids.sort(key=lambda i: -notions[i].get("popularite", 0))
         if ids:
             sortie[onglet] = ids[:par_onglet]
     return sortie
 
 
-# Combined images (one large pictogram + 1 or 2 badges): "headache" = HEAD + PAIN, "burning in the stomach on the left"
-# = STOMACH + BURN + LEFT, "paracetamol 500 mg" = MEDICINE + DOSE. Negation, limits, emergency and STOP are never
-# combined (checked by the library): they stay whole pictograms.
+# Images combinées (un grand pictogramme + 1 ou 2 médaillons) : « mal à la tête » = TÊTE + DOULEUR, « brûlure au ventre à
+# gauche » = VENTRE + BRÛLURE + GAUCHE, « paracétamol 500 mg » = MÉDICAMENT + DOSE. La négation, la limite, l'urgence et STOP
+# ne sont jamais combinées (contrôle de la bibliothèque) : elles restent des pictogrammes entiers.
 SENSATIONS_LOCALES = {"DOULEUR", "AVOIR_MAL", "SANG", "GONFLEMENT", "SAIGNEMENT", "ERUPTION", "BOUTONS", "PLAIE", "COUPURE",
                       "BRULURE_DE_LA_PEAU", "HEMATOME", "BOSSE", "FRACTURE", "ENTORSE", "MORSURE", "PIQURE_D_INSECTE",
                       "ENGOURDISSEMENT", "PARALYSIE", "TREMBLEMENT", "GONFLE", "CLOQUE", "CROUTE", "TACHE", "PUS"}
@@ -634,7 +634,7 @@ def combiner_pictogrammes(pictos: list[str], notions: dict) -> list[str]:
         if b and a in corps and b in sensations:
             groupe = [a, b]
         elif b and a in sensations and b in corps:
-            groupe = [b, a]                               # "pain in the stomach": the body part is the large image
+            groupe = [b, a]                               # « douleur au ventre » : la partie du corps en grand
         elif b and a in corps and b in COTES:
             groupe = [a, b]
         elif b and a.startswith("MEDICAMENT:") and b.startswith("DOSE:"):
@@ -658,14 +658,14 @@ MOTS_VIDES_AR = {"ما", "هي", "هو", "من", "في", "على", "عن", "إل
 
 
 def _normaliser_arabe(m: str) -> str:
-    m = re.sub(r"[\u064B-\u0652\u0640]", "", m)                    # short vowels, tatweel
+    m = re.sub(r"[\u064B-\u0652\u0640]", "", m)                    # voyelles brèves, tatweel
     m = re.sub(r"[إأآ]", "ا", m).replace("ة", "ه").replace("ى", "ي")
     return m[2:] if m.startswith("ال") and len(m) > 4 else m          # article « al- »
 
 
 class Corpus:
-    """BM25 search (inverted index, no dependency) in the chunks of the base: articles of official texts
-    (01_base_juridique/corpus_rag.jsonl) and sections of the WHO fact sheets (03_references_medicales/oms_fiches.jsonl)."""
+    """Recherche BM25 (index inversé, sans dépendance) dans les morceaux de la base : articles des textes officiels
+    (01_base_juridique/corpus_rag.jsonl) et sections des fiches de l'OMS (03_references_medicales/oms_fiches.jsonl)."""
 
     def __init__(self, base: Path, pays: str | None = None, k1: float = 1.4, b: float = 0.75):
         self.base, self.k1, self.b = base, k1, b
@@ -697,7 +697,7 @@ class Corpus:
 
     @staticmethod
     def _jetons(texte: str, traduire: bool = True) -> list[str]:
-        """Latin tokens (like the internal base) + Arabic tokens (Arabic letters, without short vowels or tatweel)."""
+        """Jetons latins (comme la base interne) + jetons arabes (lettres arabes, sans voyelles brèves ni tatweel)."""
         arabes = [_normaliser_arabe(m) for m in re.findall(r"[\u0621-\u064A\u0660-\u0669\u064B-\u0652\u0640]+", texte)]
         return jetons(texte, traduire=traduire) + [m for m in arabes if len(m) > 1 and m not in MOTS_VIDES_AR]
 
@@ -705,7 +705,7 @@ class Corpus:
         self.postings: dict[str, list[tuple[int, int]]] = defaultdict(list)
         self.longueurs = []
         for i, m in enumerate(self.morceaux):
-            # the title (disease, law) and the article or section count double: they are what a question targets
+            # le titre (maladie, loi) et l'article ou la section comptent double : ce sont eux que vise une question
             c = Counter(self._jetons(f"{m['titre']} {m['titre']} {m['article']} {m['article']} {m['texte']}", traduire=False))
             self.longueurs.append(sum(c.values()))
             for t, n in c.items():
@@ -721,8 +721,8 @@ class Corpus:
     _vect = None
 
     def elements_a_vectoriser(self) -> dict[str, list[tuple[str, str]]]:
-        """Texts to embed, per collection. Each chunk is preceded by its context (title of the text, article or
-        section): an isolated article ("Article 13: …") is thus linked to its law, which improves search."""
+        """Textes à encoder, par collection. Chaque morceau est précédé de son contexte (titre du texte, article ou
+        section) : un article isolé (« Article 13 : … ») est ainsi rattaché à sa loi, ce qui améliore la recherche."""
         sortie: dict[str, list] = {c: [] for c in self.COLLECTIONS.values()}
         for m in self.morceaux:
             tete = f"{m['titre']} — {m['article']}" if m["article"] else m["titre"]
@@ -730,7 +730,7 @@ class Corpus:
         return sortie
 
     def brancher_vecteurs(self, dossier: Path, enc) -> dict:
-        """Enables hybrid search (words + meaning). Returns the number of vectors loaded per collection."""
+        """Active la recherche hybride (mots + sens). Renvoie le nombre de vecteurs chargés par collection."""
         from .vecteurs import MatriceVecteurs
         matrices, bilan = [], {}
         for c in self.COLLECTIONS.values():
@@ -749,9 +749,9 @@ class Corpus:
         return sorted(scores.items(), key=lambda x: -x[1])
 
     def chercher(self, question: str, k: int = 5, type_: str | None = None, methode: str | None = None) -> list[dict]:
-        """methode: "bm25", "vecteurs" or "hybride" (default: hybrid if vectors are plugged in).
-        Hybrid: the best 30 by keywords (BM25) and the best 30 by meaning (cosine) are merged by reciprocal rank fusion
-        (RRF). Each result says WHY it is there (keyword rank, meaning rank and cosine)."""
+        """methode : « bm25 », « vecteurs » ou « hybride » (défaut : hybride si des vecteurs sont branchés).
+        Hybride : les 30 meilleurs par mots-clés (BM25) et les 30 meilleurs par le sens (cosinus) sont fusionnés par
+        rangs réciproques (RRF). Chaque résultat dit POURQUOI il est là (rang par mots, rang et cosinus par le sens)."""
         from .vecteurs import encoder_requete, fusion_rangs
         methode = methode or ("hybride" if self._vect else "bm25")
         if not hasattr(self, "_rang_id"):
@@ -788,16 +788,16 @@ class Corpus:
 
 
 class RecherchePictogrammes:
-    """Find a pictogram by what one means, not only by its exact name: "essoufflement" (breathlessness),
-    "j'ai la tête qui tourne" (I feel dizzy), "souffle court". Three signals, merged by reciprocal rank fusion (RRF):
+    """Trouver un pictogramme par ce qu'on veut dire, pas seulement par son nom exact : « essoufflement »,
+    « j'ai la tête qui tourne », « souffle court ». Trois signaux, fusionnés par rangs réciproques (RRF) :
 
-    1. keywords (BM25) on the French, English and Arabic labels, the vocabulary synonyms, the ARASAAC keywords
-       and the category title ("Symptômes");
-    2. spelling similarity (character n-grams): typos, plurals, "essouflement";
-    3. meaning (vectors of a local embedding model), if the base was vectorised (outils/vectoriser_base.py).
+    1. mots-clés (BM25) sur le libellé français, anglais, arabe, les synonymes du vocabulaire, les mots-clés ARASAAC
+       et le titre de la catégorie (« Symptômes ») ;
+    2. ressemblance d'écriture (n-grammes de caractères) : fautes de frappe, pluriels, « essouflement » ;
+    3. le sens (vecteurs d'un modèle d'encodage local), si la base a été vectorisée (outils/vectoriser_base.py).
 
-    Safety: these results are SUGGESTIONS (to the doctor, the patient, the translator agent); automatic translation
-    never replaces a word by an approximate image unless a human chooses it."""
+    Sûreté : ces résultats sont des PROPOSITIONS (au médecin, au patient, à l'agent traducteur) ; la traduction
+    automatique ne remplace jamais un mot par une image approchante sans qu'un humain la choisisse."""
 
     def __init__(self, lexique: "LexiqueBaseV2"):
         from .vecteurs import EncodeurHachage
@@ -824,7 +824,7 @@ class RecherchePictogrammes:
         self.longueurs = []
         for k, nid in enumerate(self.ids):
             n = self.lexique.notions[nid]
-            # the label counts triple: it is what is searched first
+            # le libellé compte triple : c'est lui que l'on cherche d'abord
             c = Counter(Corpus._jetons(f"{n['fr']} {n['fr']} {n['fr']} {self.docs[nid]}"))
             self.longueurs.append(sum(c.values()))
             for t, x in c.items():
@@ -836,9 +836,9 @@ class RecherchePictogrammes:
     def elements_a_vectoriser(self) -> list[tuple[str, str]]:
         return [(nid, self.docs[nid]) for nid in self.ids]
 
-    # Minimum cosine for a pictogram to be kept "by meaning": each model has its own scale (E5 models give cosines
-    # packed near the top, bge-m3 and mpnet more spread). The "hachage" (hashing) encoder is not semantic: it does not
-    # count as meaning (spelling similarity replaces it).
+    # Cosinus minimal pour qu'un pictogramme soit retenu « par le sens » : chaque modèle a son échelle (les E5 donnent
+    # des cosinus serrés vers le haut, bge-m3 et mpnet plus étalés). L'encodeur « hachage » n'est pas sémantique :
+    # il ne compte pas comme « sens » (la ressemblance d'écriture le remplace).
     SEUILS_SENS = {"e5": 0.80, "bge": 0.50, "mpnet": 0.45, "minilm": 0.45}
 
     def brancher_vecteurs(self, dossier: Path, enc) -> int:
@@ -851,8 +851,8 @@ class RecherchePictogrammes:
         return len(m.ids) if m is not None else 0
 
     def _ecriture_index(self):
-        """One line per way of writing each concept (label + 4 synonyms): "essouflement" finds "essoufflement",
-        "douleurs" finds "douleur". Built at the first search."""
+        """Une ligne par façon d'écrire chaque notion (libellé + 4 synonymes) : « essouflement » retrouve
+        « essoufflement », « douleurs » retrouve « douleur ». Construit à la première recherche."""
         if self._ecr is None:
             formes = []
             for i in self.ids:
@@ -869,7 +869,7 @@ class RecherchePictogrammes:
 
     @staticmethod
     def _distance(a: str, b: str, maxi: int) -> int:
-        """Edit distance (insertions, deletions, substitutions), stopped as soon as it exceeds `maxi`."""
+        """Distance d'édition (insertions, suppressions, substitutions), arrêtée dès qu'elle dépasse `maxi`."""
         if abs(len(a) - len(b)) > maxi:
             return maxi + 1
         prec = list(range(len(b) + 1))
@@ -883,8 +883,8 @@ class RecherchePictogrammes:
         return prec[-1]
 
     def _orthographe_proches(self, requete: str) -> list[str]:
-        """Short misspelt words ("fivre", "tousse"): n-grams are not enough, edit distance is
-        (1 error up to 6 letters, 2 beyond)."""
+        """Mots courts mal écrits (« fivre », « tousse ») : les n-grammes ne suffisent pas, la distance d'édition oui
+        (1 faute jusqu'à 6 lettres, 2 au-delà)."""
         mots = self.lexique._mots(requete)
         if len(mots) != 1 or len(mots[0]) < 4:
             return []
@@ -928,12 +928,12 @@ class RecherchePictogrammes:
             enc, m = self._vect
             res = [(i, c) for i, c in m.chercher(encoder_requete(enc, requete), 30) if i in self.docs]
             meilleur = res[0][1] if res else 0
-            for i, c in res:       # absolute threshold of the model AND close to the best: only real proximities are kept
+            for i, c in res:       # seuil absolu du modèle ET proche du meilleur : on ne garde que les vraies proximités
                 if c >= max(seuil_sens or self.seuil_sens, meilleur - 0.10):
                     sens.append(i)
                     cos[i] = c
         classement = fusion_rangs(*[x for x in (mots, ecriture, sens) if x])
-        # the exact label (or an exact synonym, singular) comes first: "douleurs" -> PAIN first
+        # le libellé exact (ou un synonyme exact, au singulier) passe en tête : « douleurs » -> DOULEUR d'abord
         cles = {tuple(self.lexique._mots(requete))}
         cles |= {tuple(m[:-1] if len(m) > 3 and m[-1] in "sx" else m for m in c) for c in list(cles)}
         exacts = [i for i in self.ids if tuple(self.lexique._mots(self.lexique.notions[i]["fr"])) in cles

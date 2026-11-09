@@ -1,6 +1,6 @@
-"""Reads the free-text fields of the patient record ("history", "other information"): the doctor writes what
-they want, without an imposed form; the facts the agents can use are extracted from it, deterministically and
-verifiably. The free text is always kept as is: the assistant (language model) also reads it in full.
+"""Lecture des renseignements libres de la fiche patient (« antécédents », « autres informations ») : le médecin écrit
+ce qu'il veut, sans formulaire imposé ; on en tire, de façon déterministe et vérifiable, les faits que les agents savent
+utiliser. Le texte libre est toujours conservé tel quel : l'assistant (modèle de langage) le lit aussi en entier.
 
     extraire_faits("diabète de type 2, insuffisance rénale, enceinte de 3 mois")
     -> {"maladies_connues": ["diabète", "insuffisance rénale"], "maladie_renale": True, "grossesse": True}
@@ -15,7 +15,7 @@ from pathlib import Path
 
 RACINE = Path(__file__).resolve().parent.parent
 
-# Common forms and abbreviations -> (label, possible derived fact)
+# Formes courantes et abréviations -> (libellé, fait dérivé éventuel)
 SYNONYMES = {
     "hta": ("hypertension", None), "tension": ("hypertension", None), "hypertendu": ("hypertension", None),
     "diabetique": ("diabète", None), "dt2": ("diabète", None), "dt1": ("diabète", None),
@@ -28,7 +28,7 @@ SYNONYMES = {
     "infarctus": ("infarctus", "maladie_cardiaque"), "drepanocytaire": ("drépanocytose", None), "seropositif": ("VIH", None),
     "asthmatique": ("asthme", None), "epileptique": ("épilepsie", None), "allaite": ("allaitement", "allaitement"),
     "allaitement": ("allaitement", "allaitement"),
-    # common anticoagulants (current treatments): bleeding risk with aspirin and NSAIDs
+    # anticoagulants courants (traitements en cours) : risque de saignement avec l'aspirine et les AINS
     "warfarine": ("traitement anticoagulant", "anticoagulant"), "coumadine": ("traitement anticoagulant", "anticoagulant"),
     "acenocoumarol": ("traitement anticoagulant", "anticoagulant"), "sintrom": ("traitement anticoagulant", "anticoagulant"),
     "fluindione": ("traitement anticoagulant", "anticoagulant"), "previscan": ("traitement anticoagulant", "anticoagulant"),
@@ -51,7 +51,7 @@ def _norm(t: str) -> str:
 
 @lru_cache(maxsize=1)
 def _maladies() -> dict:
-    """Diseases of the consultation vocabulary (category 13): normalised form -> label."""
+    """Maladies du vocabulaire de consultation (catégorie 13) : forme normalisée -> libellé."""
     v = RACINE / "kb" / "corpus" / "vocabulaire_consultation.json"
     sortie = {}
     if v.exists():
@@ -79,8 +79,8 @@ def _vocabulaire() -> frozenset:
 
 
 def corriger_fautes(texte: str) -> tuple[str, dict]:
-    """"diabhete" -> diabete, "insufisance" -> insuffisance, "enseinte" -> enceinte: same pronunciation or one
-    letter away on a long word, and only towards a known medical word; never an ambiguous correction."""
+    """« diabhete » -> diabete, « insufisance » -> insuffisance, « enseinte » -> enceinte : à prononciation égale ou à
+    une lettre près sur un mot long, et seulement vers un mot médical connu ; jamais une correction ambiguë."""
     from .lecture import cle_phonetique, distance
     voc = _vocabulaire()
     cles = {}

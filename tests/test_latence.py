@@ -1,5 +1,5 @@
-"""Latency: with a slow online model, the doctor's and patient's clicks go through at once, the assistant reasons in
-the background without losing anything, and the connection to the model is kept open."""
+"""Latence : avec un modèle en ligne lent, les clics du médecin et du patient passent tout de suite,
+l'assistant réfléchit en arrière-plan sans rien perdre, et la connexion au modèle est gardée ouverte."""
 import http.server
 import json
 import sys
@@ -16,12 +16,12 @@ from serveur import Application  # noqa: E402
 
 
 def _faux_modele(delai: float):
-    """Fake OpenAI-compatible service: reads the record then finishes; notes each call and the connection used."""
+    """Faux service compatible OpenAI : lit le dossier puis termine ; note chaque appel et la connexion utilisée."""
     appels = []
 
     class H(http.server.BaseHTTPRequestHandler):
         protocol_version = "HTTP/1.1"
-        disable_nagle_algorithm = True        # like a real service: no artificial wait between headers and body
+        disable_nagle_algorithm = True        # comme un vrai service : pas d'attente artificielle entre en-têtes et corps
 
         def _json(self, obj):
             r = json.dumps(obj).encode()
@@ -69,14 +69,14 @@ def test_clics_immediats_et_reflexion_en_arriere_plan():
         d = app.ctx.dossier
         app.evenement({"type": "texte_medecin", "auteur": "medecin", "texte": "Avez-vous mal au ventre ?", "contenu_type": "question"})
         assert _attendre(lambda: any(x["statut"] == "attente_validation" for x in d.decisions.values())) < 0.5
-        _attendre(lambda: app.reflexion_en_cours, 5)                    # the assistant queries the model…
+        _attendre(lambda: app.reflexion_en_cours, 5)                    # l'assistant interroge le modèle…
         prop = next(x for x in d.decisions.values() if x["statut"] == "attente_validation")
         app.evenement({"type": "validation", "auteur": "medecin", "medecin": "DR-001", "decision_id": prop["id"]})
         assert _attendre(lambda: prop["statut"] == "envoye") < 0.5, "la validation a attendu le modèle"
         app.evenement({"type": "reponse_patient", "auteur": "patient", "pictogrammes": ["OUI"]})
         _attendre(lambda: app.en_cours == 0)
         assert app.vue_medecin()["reflexion_en_cours"] is True
-        # … then resumes: the patient's answer, which arrived during its reasoning, is not lost for it.
+        # … puis reprend : la réponse du patient, arrivée pendant sa réflexion, n'est pas perdue pour lui.
         _attendre(lambda: not app.reflexion_en_cours and not app._a_reflechir and app.en_cours == 0)
         vus = " ".join(json.dumps(a["messages"], ensure_ascii=False) for a in appels)
         assert "reponse_patient" in vus or "OUI" in vus, "l'assistant n'a jamais vu la réponse du patient"

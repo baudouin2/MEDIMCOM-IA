@@ -1,6 +1,6 @@
-"""Offline tests of outils/constituer_base_v2.py: the network is simulated, no site is contacted.
+"""Tests hors ligne de outils/constituer_base_v2.py : le réseau est simulé, aucun site n'est contacté.
 
-    python -m pytest tests/test_constituer_base_v2.py -q      (or: python tests/test_constituer_base_v2.py)
+    python -m pytest tests/test_constituer_base_v2.py -q      (ou : python tests/test_constituer_base_v2.py)
 """
 import csv
 import io
@@ -18,7 +18,7 @@ import constituer_base_v2 as cb  # noqa: E402
 def pdf_avec_articles(titre: str, n: int = 5) -> bytes:
     try:
         from reportlab.pdfgen import canvas
-    except ImportError:  # without reportlab: minimal hand-written PDF
+    except ImportError:  # sans reportlab : PDF minimal écrit à la main
         lignes = " ".join(f"(Article {i} Le patient a droit a l information numero {i}.) Tj T*" for i in range(1, n + 1))
         flux = f"BT /F1 10 Tf 14 TL 40 800 Td ({titre}) Tj T* {lignes} ET".encode()
         objets = [b"<< /Type /Catalog /Pages 2 0 R >>", b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
@@ -125,7 +125,7 @@ def test_juridique_complet():
             assert rag[0]["metadata"]["sha256"] and rag[0]["metadata"]["axes"]
             with (jur / "index_sources.csv").open(encoding="utf-8-sig") as f:
                 assert len(list(csv.reader(f, delimiter=";"))) == 6
-            # running again: nothing is downloaded again
+            # relance : rien n'est retéléchargé
             reseau2 = ReseauSimule(pages_juridiques())
             r2 = cb.etape_juridique(sortie, reseau2, cb.Journal(sortie / "journal.json"), forcer=False)
             assert r2["obtenus"] == 4 and reseau2.appels == [], reseau2.appels
@@ -190,7 +190,7 @@ def test_pictogrammes_filtres():
         assert (p / "planches" / "index.html").exists() and (p / "LICENCES.md").exists()
         rejets = (p / "audit" / "rejets.csv").read_text(encoding="utf-8-sig")
         assert "violence" in rejets
-        # running again: no image downloaded again
+        # relance : aucune image retéléchargée
         reseau2 = ReseauSimule(pages)
         cb.etape_pictogrammes(sortie, reseau2, cb.Journal(sortie / "journal.json"))
         assert not [u for u in reseau2.appels if u.endswith((".png", ".svg"))]
@@ -254,8 +254,7 @@ if __name__ == "__main__":
             print("ok", nom)
 
 
-# ------------------------------------------------------------------------------- "from scratch" version: target,
-# references, training
+# ------------------------------------------------------------------------------- version « de zéro » : objectif, références, entraînement
 import base_v2_entrainement as ent  # noqa: E402
 import base_v2_references as ref  # noqa: E402
 
@@ -264,10 +263,10 @@ def test_objectif_pictos_elargit_sans_sortir_du_domaine():
     with tempfile.TemporaryDirectory() as t:
         t = Path(t)
         fr, en = faux_arasaac()
-        for i in range(100, 110):   # additional variants of "pain"
+        for i in range(100, 110):   # variantes supplémentaires de « douleur »
             fr.append({"_id": i, "keywords": [{"keyword": "douleur"}], "tags": [], "downloads": 1})
             en.append({"_id": i, "keywords": [{"keyword": "pain"}], "tags": []})
-        for i in range(200, 205):   # keyword containing a health concept, without a label
+        for i in range(200, 205):   # mot-clé contenant une notion santé, sans étiquette
             fr.append({"_id": i, "keywords": [{"keyword": f"fièvre forte {i}"}], "tags": [], "downloads": 1})
             en.append({"_id": i, "keywords": [{"keyword": "high fever"}], "tags": []})
         fr.append({"_id": 300, "keywords": [{"keyword": "dinosaure fièvre"}], "tags": ["dinosaur"], "downloads": 99})
@@ -280,7 +279,7 @@ def test_objectif_pictos_elargit_sans_sortir_du_domaine():
         sortie = t / "b"
         sans = cb.etape_pictogrammes(sortie, ReseauSimule(pages), cb.Journal(sortie / "journal.json"), objectif=0)
         avec = cb.etape_pictogrammes(t / "c", ReseauSimule(pages), cb.Journal(t / "c" / "journal.json"), objectif=1000)
-        assert sans["images"] == 7 and avec["images"] == 7 + 8 + 5, (sans, avec)   # 3 variants of "pain" out of 11 taken automatically
+        assert sans["images"] == 7 and avec["images"] == 7 + 8 + 5, (sans, avec)   # 3 variantes de « douleur » sur 11 prises d'office
         assert avec["objectif_atteint"] is False and len(avec["paliers"]) == 3
         assert not (t / "c/02_pictogrammes/13_maladies_antecedents/arasaac_300.png").exists()
         assert not list((t / "c/02_pictogrammes").rglob("arasaac_300.png")), "liste noire respectée même pour atteindre l'objectif"
@@ -387,7 +386,7 @@ def test_bon_sens_du_mot_jambe_humaine():
 
 
 def test_tous_les_pictos_tous_domaines():
-    """--tous-pictos: the whole catalogue, including beyond health; sensitive content kept but filed apart."""
+    """--tous-pictos : tout le catalogue, y compris hors santé ; contenus sensibles gardés mais rangés à part."""
     with tempfile.TemporaryDirectory() as t:
         t = Path(t)
         fr, en = faux_arasaac()
@@ -410,6 +409,6 @@ def test_tous_les_pictos_tous_domaines():
         assert (t / "b/02_pictogrammes/98_sensible/arasaac_302.png").exists()
         cat = [json.loads(l) for l in (t / "b/02_pictogrammes/catalogue.jsonl").read_text(encoding="utf-8").splitlines()]
         assert next(c for c in cat if c["id"] == "301")["popularite"] == 50
-        # running again: nothing is downloaded again
+        # relance : rien n'est retéléchargé
         r = cb.etape_pictogrammes(t / "b", ReseauSimule(pages), cb.Journal(t / "b" / "journal.json"), objectif=0, tous=True)
         assert r["telechargees"] == 0 and r["deja_presentes"] == len(fr)

@@ -1,12 +1,13 @@
-"""Knowledge base of MEDIMCOM IA: sources, provisions and gaps.
+"""Base de connaissances de MEDIMCOM IA : sources, fiches (dispositions) et lacunes.
 
-- `sources.json`  : manifest of the texts (title, authority, dates, official link, verification level).
-- `fiches.jsonl`  : one provision per line (article, summary, short quote, themes).
-- `lacunes.json`  : gap catalogue (what exists, what is missing, global examples).
+- `sources.json`  : manifeste des textes (titre, autorité, dates, lien officiel, niveau de vérification).
+- `fiches.jsonl`  : une disposition par ligne (article, résumé, citation courte, thèmes).
+- `lacunes.json`  : catalogue des lacunes (ce qui existe, ce qui manque, exemples mondiaux).
 
-Search is a dependency-free BM25, with a small French → English lexicon (the base is in English, questions may
-be in French). It is a measurable reference; hybrid search with vectors can complement it (see
-`kb/outils/construire_vecteurs.py`).
+La recherche est un BM25 sans dépendance, avec un petit lexique français → anglais
+(la base est en anglais, les questions peuvent être en français). Elle sert de
+référence mesurable ; une recherche vectorielle pourra la remplacer dans le bac à
+sable de l'UIT (voir `kb/outils/construire_index.py`).
 """
 import json
 import math
@@ -25,7 +26,7 @@ quelle quels quelles dont il elle ils elles on nous vous je mon ma mes son sa se
 peut peuvent doit doivent faut il-y avoir etre fait faire si est-ce
 """.split())
 
-# Minimal French -> English lexicon (forms without accents, lower case).
+# Lexique minimal français -> anglais (formes sans accents, en minuscules).
 LEXIQUE = {
     "grossesse": "pregnancy pregnant", "enceinte": "pregnant pregnancy", "consentement": "consent",
     "ordonnance": "prescription", "prescrire": "prescribe prescription", "prescription": "prescription",
@@ -101,9 +102,9 @@ class BaseConnaissances:
         self.lacunes = {l["id"]: l for l in json.loads(lac.read_text(encoding="utf-8"))["gaps"]} if lac.exists() else {}
         self._indexer()
 
-    # ------------------------------------------------------------------ checks
+    # ------------------------------------------------------------------ contrôle
     def problemes(self) -> list[str]:
-        """List of inconsistencies of the base (empty if everything is consistent)."""
+        """Liste des incohérences de la base (vide si tout est cohérent)."""
         p = []
         for s in self.sources.values():
             if s.get("verification") not in VERIFICATIONS:
@@ -157,7 +158,7 @@ class BaseConnaissances:
     _vect = None
 
     def brancher_vecteurs(self, index, encodeur) -> None:
-        """Enables hybrid search: BM25 (words) + vectors (meaning), merged by reciprocal ranks."""
+        """Active la recherche hybride : BM25 (mots) + vecteurs (sens), fusionnés par rangs réciproques."""
         ids = {m["id"] for m in index.morceaux}
         manquantes = set(self.fiches) - ids
         if manquantes:
@@ -167,7 +168,7 @@ class BaseConnaissances:
 
     def chercher(self, question: str, k: int = 5, mode: str | None = None, k1: float = 1.4, b: float = 0.75,
                  methode: str | None = None) -> list[dict]:
-        """methode: "bm25", "vecteurs" or "hybride" (default: hybrid if an index is plugged in, otherwise bm25)."""
+        """methode : « bm25 », « vecteurs » ou « hybride » (par défaut : hybride si un index est branché, sinon bm25)."""
         methode = methode or ("hybride" if self._vect else "bm25")
         if methode != "bm25":
             if not self._vect:
@@ -206,7 +207,7 @@ class BaseConnaissances:
         return [{"fiche": fid, "score": round(s, 3)} for s, fid in scores[:k]]
 
     def lacunes_liees(self, fiches: list[str], minimum: int = 1) -> list[str]:
-        """Gaps citing at least `minimum` of the given provisions, most linked first."""
+        """Lacunes citant au moins `minimum` des fiches données, les plus liées d'abord."""
         ens = set(fiches)
         comptes = [(len(ens & {x["fiche"] for x in l["existing_texts"] + l["global_examples"]}), l["id"])
                    for l in self.lacunes.values()]

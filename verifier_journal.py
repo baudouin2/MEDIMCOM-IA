@@ -1,7 +1,7 @@
-"""Checks that a journal was not modified.
+"""Vérifie qu'un journal n'a pas été modifié.
 
     python verifier_journal.py sortie/journal.json
-    python verifier_journal.py sortie/journal.json --falsifier 10   # demo: modifies line 10 then checks
+    python verifier_journal.py sortie/journal.json --falsifier 10   # démo : modifie la ligne 10 puis vérifie
 """
 
 import sys as _sys
@@ -19,7 +19,7 @@ p.add_argument("--falsifier", type=int, help="numéro de ligne à modifier (dém
 a = p.parse_args()
 
 j = Journal.charger(a.chemin)
-print(f"{len(j.lignes)} lines · {j.verifier()}")
+print(f"{len(j.lignes)} lignes · {j.verifier()}")
 if a.falsifier:
     j.lignes[a.falsifier - 1]["contenu"] = "TEXTE MODIFIÉ APRÈS COUP"
-    print(f"After modifying line {a.falsifier}: {j.verifier()}")
+    print(f"Après modification de la ligne {a.falsifier} : {j.verifier()}")

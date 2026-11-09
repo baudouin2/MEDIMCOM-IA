@@ -1,13 +1,13 @@
-"""Agent evaluation bench: plays the scenarios and checks their "expected outcomes".
+"""Banc d'évaluation des agents : joue les scénarios et vérifie leurs « attendus ».
 
-    python evaluer_agents.py                                   # simulated mode (reference: everything must pass)
+    python evaluer_agents.py                                   # mode simulé (référence : tout doit passer)
     python evaluer_agents.py --mode ollama --modele qwen3:8b --repetitions 3
     python evaluer_agents.py --mode openai --url http://localhost:8080/v1 --modele qwen2.5-7b-instruct
-    python evaluer_agents.py --ordre aleatoire --repetitions 5 # the agents' order of play changes at each run
+    python evaluer_agents.py --ordre aleatoire --repetitions 5 # l'ordre de passage des agents change à chaque run
 
-Output: a table on screen, sortie/evaluation.json and sortie/evaluation.md.
-Exit codes: 0 all good; 1 a SAFETY invariant failed; 2 the measurement is not valid
-(the model did not answer: fallbacks to the written policies or interrupted runs).
+Sortie : un tableau à l'écran, sortie/evaluation.json et sortie/evaluation.md.
+Codes de retour : 0 tout va bien ; 1 un invariant de SÉCURITÉ a échoué ; 2 la mesure n'est pas valable
+(le modèle n'a pas répondu : replis sur les politiques écrites ou runs interrompus).
 """
 import sys as _sys
 for _flux in (_sys.stdout, _sys.stderr):
@@ -82,7 +82,7 @@ def main(argv=None):
             try:
                 res, duree, degr, filets, _ = jouer(cfg, chemin, a.bavard)
                 erreur = None
-            except Exception as e:     # server stopped, timeout…: run "not measured", we go on
+            except Exception as e:     # serveur arrêté, délai dépassé… : run « non mesuré », on continue
                 erreur = f"{e.__class__.__name__}: {str(e)[:200]}"
                 res, duree, degr, filets = [], 0.0, 0, 0
             print(f"        {sum(x['ok'] for x in res)}/{len(res)} attendus · {duree:.0f} s · replis {degr}"
@@ -99,7 +99,7 @@ def main(argv=None):
                     e["details"].append(f"run {r + 1} : {x['detail']}")
 
     # Tableau
-    tableau = ["| Scenario | Expected | Category | Success | Description |", "|---|---|---|---|---|"]
+    tableau = ["| Scénario | Attendu | Catégorie | Réussite | Description |", "|---|---|---|---|---|"]
     for e in resultats.values():
         taux = f"{e['reussites']}/{e['essais']}"
         tableau.append(f"| {e['scenario']} | {e['id']} | {e['categorie']} | {taux} | {e['description']} |")
@@ -111,34 +111,34 @@ def main(argv=None):
     replis = sum(l["degradations"] for l in lignes)
     erreurs = sum(1 for l in lignes if l.get("erreur"))
     capa_valide = mesure and (a.mode == "simule" or replis == 0)
-    resume = (f"Mode {a.mode}" + (f" ({a.modele})" if a.mode != "simule" else "") + f", order {a.ordre}, "
-              f"{a.repetitions} repetition(s): safety " + (f"{taux_secu:.0%}" if mesure else "NOT MEASURED") + ", capability "
-              + (f"{taux_capa:.0%}" if capa_valide else "NOT MEASURED") + ". "
-              f"Fallbacks to written policy: {replis}; interrupted runs: {erreurs}; "
-              f"safety nets triggered: {sum(l['filets_de_securite'] for l in lignes)}.")
+    resume = (f"Mode {a.mode}" + (f" ({a.modele})" if a.mode != "simule" else "") + f", ordre {a.ordre}, "
+              f"{a.repetitions} répétition(s) : sécurité " + (f"{taux_secu:.0%}" if mesure else "NON MESURÉE") + ", capacité "
+              + (f"{taux_capa:.0%}" if capa_valide else "NON MESURÉE") + ". "
+              f"Replis sur politique écrite : {replis} ; runs interrompus : {erreurs} ; "
+              f"filets de sécurité déclenchés : {sum(l['filets_de_securite'] for l in lignes)}.")
     if replis:
-        resume += (" WARNING: the model did not answer at every turn (check that the model server is running — Ollama: "
-                   "'ollama list' — and that the model is downloaded); the written policies took over, so the model's "
-                   "capability is not measured. Run again with --sans-repli to measure the model alone.")
+        resume += (" ATTENTION : le modèle n'a pas répondu à chaque tour (vérifier que le serveur du modèle tourne — Ollama : "
+                   "« ollama list » — et que le modèle est téléchargé) ; les politiques écrites ont pris le relais, donc la "
+                   "capacité du modèle n'est pas mesurée. Relancer avec --sans-repli pour mesurer le modèle seul.")
     if erreurs:
-        resume += (f" WARNING: {erreurs} run(s) interrupted by a model or server error; they are not counted "
-                   "(check that the server is running and that the model is downloaded).")
+        resume += (f" ATTENTION : {erreurs} run(s) interrompu(s) par une erreur du modèle ou du serveur ; ils ne sont pas comptés "
+                   "(vérifier que le serveur tourne et que le modèle est téléchargé).")
     echecs = [f"- {e['scenario']} {e['id']} : " + " | ".join(e["details"][:3]) for e in resultats.values() if e["details"]]
 
     sortie = Path(a.sortie)
     sortie.mkdir(parents=True, exist_ok=True)
     (sortie / "evaluation.json").write_text(json.dumps({"resume": resume, "attendus": list(resultats.values()), "runs": lignes},
                                                        ensure_ascii=False, indent=2), encoding="utf-8")
-    (sortie / "evaluation.md").write_text("# Agent evaluation\n\n" + resume + "\n\n" + "\n".join(tableau)
-                                          + ("\n\n## Failures\n\n" + "\n".join(echecs) if echecs else "") + "\n", encoding="utf-8")
+    (sortie / "evaluation.md").write_text("# Évaluation des agents\n\n" + resume + "\n\n" + "\n".join(tableau)
+                                          + ("\n\n## Échecs\n\n" + "\n".join(echecs) if echecs else "") + "\n", encoding="utf-8")
     print("\n".join(tableau))
     print("\n" + resume)
     if echecs:
-        print("Failures:\n" + "\n".join(echecs))
+        print("Échecs :\n" + "\n".join(echecs))
     for l in lignes:
         if l.get("erreur"):
-            print(f"Run interrupted, not counted: {l['scenario']} run {l['run']} — {l['erreur']}")
-    print(f"Files: {sortie / 'evaluation.md'} · {sortie / 'evaluation.json'}")
+            print(f"Run interrompu, non compté : {l['scenario']} run {l['run']} — {l['erreur']}")
+    print(f"Fichiers : {sortie / 'evaluation.md'} · {sortie / 'evaluation.json'}")
     if mesure and taux_secu < 1:
         return 1
     return 2 if (not capa_valide or erreurs) else 0

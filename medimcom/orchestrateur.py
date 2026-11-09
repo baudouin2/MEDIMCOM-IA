@@ -1,8 +1,8 @@
-"""Coordinator: releases the events one by one and lets the agents react.
+"""Coordinateur : libère les événements un par un et laisse les agents réagir.
 
-It imposes no order on the agents: at each "round", each agent looks at its messages and the record,
-and decides whether it has something to do. It stops when no agent acts any more (the system is stable)
-or after `max_rounds`.
+Il n'impose aucun ordre aux agents : à chaque « round », chaque agent regarde ses
+messages et le dossier, et décide s'il a quelque chose à faire. On s'arrête quand
+plus aucun agent n'agit (le système est stable) ou après `max_rounds`.
 """
 import json
 import random
@@ -15,26 +15,15 @@ class Orchestrateur:
         self.ctx = ctx
         self.agents = agents
         self.max_rounds = max_rounds
-        self.ordre = ordre                      # "aleatoire": the order of play changes at each round
+        self.ordre = ordre                      # « aleatoire » : l'ordre de passage change à chaque round
         self.hasard = random.Random(graine)
-        self.apres_tour = None                  # callback after each agent action (the interface refreshes its screen)
+        self.apres_tour = None                  # rappel après chaque action d'agent (l'interface rafraîchit son écran)
 
     def appliquer(self, evt: dict) -> None:
         d = self.ctx.dossier
         t = evt["type"]
         if t == "echange":
             d.ajouter_echange(evt["auteur"], evt["texte"], evt.get("donnees"), evt.get("confirme", True))
-            # What the DOCTOR enters in the record goes into the patient's state at once, without waiting for the
-            # assistant's turn: with a slow (or failing) online model, the record stayed empty for tens of seconds and
-            # the jurist said "missing information" although everything was filled in (feedback of 9 November). What a
-            # DOCUMENT suggests also goes in at once, but only if it contradicts nothing: UNconfirmed.
-            for cle, valeur in (evt.get("donnees") or {}).items():
-                actuel = d.etat.get(cle)
-                if evt["auteur"] == "medecin" and evt.get("confirme", True):
-                    if not actuel or actuel["valeur"] != valeur or not actuel["confirme"]:
-                        d.maj_etat("medecin", cle, valeur, "fiche saisie par le médecin", True)
-                elif evt["auteur"] == "document" and actuel is None:
-                    d.maj_etat("document", cle, valeur, f"document : {evt['texte'][:60]}", False)
         elif t == "prescription":
             if evt.get("remplace_medicament"):
                 for dec in d.decisions.values():
@@ -47,9 +36,9 @@ class Orchestrateur:
         elif t == "partage_donnees":
             d.ajouter_decision(evt["auteur"], {"type": "partage_donnees", "demande": evt["demande"], "texte": evt.get("texte", "")})
         elif t == "envoi_patient":
-            # A message coming from outside is NEVER considered validated, even if it declares a validator: only a
-            # recorded validation (doctor's "validation" event) counts. Defect found by the automatic exploration
-            # (medimcom/exploration.py, monitor property R8).
+            # Un message venu de l'extérieur n'est JAMAIS considéré comme validé, même s'il déclare un validateur :
+            # seule une validation enregistrée (événement « validation » du médecin) fait foi. Défaut trouvé par
+            # l'exploration automatique (medimcom/exploration.py, propriété R8 du moniteur).
             d.ajouter_decision(evt["auteur"], {"type": "envoi_patient", "texte": evt["texte"],
                                                "contenu_type": evt.get("contenu_type"), "valide_par": None,
                                                "valide_par_declare": evt.get("valide_par")})
@@ -63,8 +52,8 @@ class Orchestrateur:
             contenu = json.dumps({"pictogrammes": evt["pictogrammes"]}, ensure_ascii=False)
             self.ctx.messagerie.envoyer("patient", "traducteur", "information", contenu)
         elif t == "texte_medecin":
-            # The doctor writes to the patient: a question goes through the question list (the translator takes it),
-            # information is handed directly to the translator.
+            # Le médecin écrit au patient : une question passe par la liste des questions (le traducteur la prend),
+            # une information est confiée directement au traducteur.
             if evt.get("contenu_type") == "question":
                 d.ajouter_question("medecin", evt["texte"], "question du médecin", evt.get("cle") or None)
             else:
@@ -80,8 +69,8 @@ class Orchestrateur:
         elif t == "rejet":
             print(f"  ✖ {self._rejeter(evt)}")
         elif t == "poser_question":
-            # The doctor picks, in the Assistant tab, a question proposed by the assistant: it is translated; if they
-            # clicked "Send" after seeing the preview, it leaves as soon as the jurist has judged it compliant.
+            # Le médecin choisit, dans l'onglet Assistant, une question proposée par l'assistant : elle est traduite ; s'il a
+            # cliqué « Envoyer » après avoir vu l'aperçu, elle part dès que le juriste l'a jugée conforme.
             q = next((q for q in d.questions_a_poser if q["id"] == int(evt["question_id"])), None)
             if not q or q["statut"] != "en_attente":
                 print("  ✖ Refusé : question introuvable ou déjà traitée.")
@@ -118,7 +107,7 @@ class Orchestrateur:
             raise ValueError(f"Type d'événement inconnu : {t}")
 
     def _chercher(self, evt: dict):
-        """Last decision targeted by an override: by medicine, or by type (e.g. partage_donnees)."""
+        """Dernière décision visée par un maintien : par médicament, ou par type (ex. partage_donnees)."""
         for dec in reversed(list(self.ctx.dossier.decisions.values())):
             if evt.get("medicament") and dec.get("medicament") == evt["medicament"]:
                 return dec["id"]
@@ -127,7 +116,7 @@ class Orchestrateur:
         return None
 
     def _valider(self, evt: dict) -> str:
-        """The doctor validates ONE translator proposal: the one given, or the only pending one of the given type."""
+        """Le médecin valide UNE proposition du traducteur : celle indiquée, ou la seule en attente du type donné."""
         d = self.ctx.dossier
         if evt.get("auteur") != "medecin":
             return "Refusé : seul le médecin valide un message destiné au patient."
@@ -163,9 +152,9 @@ class Orchestrateur:
         return f"Proposition #{cible['id']} validée par {evt['medecin']} : {' '.join(cible.get('pictogrammes', []))}"
 
     def _modifier_pictogrammes(self, evt: dict) -> str:
-        """The doctor corrects the translation of a proposal before validating it (add, remove, order, combine).
-        Same safeguards as for the translator agent: known pictograms only, and never removing the negation, the
-        limit, the emergency, STOP, a number, a dose or a medicine present in the translation."""
+        """Le médecin corrige la traduction d'une proposition avant de la valider (ajout, retrait, ordre, combinaison).
+        Mêmes garde-fous que pour l'agent traducteur : pictogrammes connus seulement, et jamais de retrait de la négation,
+        de la limite, de l'urgence, de STOP, d'un chiffre, d'une dose ou d'un médicament présents dans la traduction."""
         from .bibliotheque import connu
         d = self.ctx.dossier
         cible = d.decisions.get(int(evt["decision_id"]))
@@ -188,7 +177,7 @@ class Orchestrateur:
         return f"Proposition #{cible['id']} modifiée : {' '.join(choix)} (à valider)"
 
     def _rejeter(self, evt: dict) -> str:
-        """The doctor rejects a translator proposal (they may receive a new one)."""
+        """Le médecin rejette une proposition du traducteur (il pourra en recevoir une nouvelle)."""
         d = self.ctx.dossier
         if evt.get("auteur") != "medecin":
             return "Refusé : seul le médecin rejette une proposition."
@@ -203,13 +192,13 @@ class Orchestrateur:
             return "Refusé : aucune proposition en attente à rejeter."
         cible["statut"] = "rejete"
         d._changer(evt["auteur"], "rejet", {"id": cible["id"], "raison": evt.get("raison", "")})
-        if cible.get("source_question"):        # the translator does not propose it again: the doctor rephrases if they wish
+        if cible.get("source_question"):        # le traducteur ne la repropose pas : le médecin reformule s'il le souhaite
             d.statut_question(evt["auteur"], cible["source_question"], "rejetee", evt.get("raison", ""))
         return f"Proposition #{cible['id']} annulée : {evt.get('raison', '') or 'elle ne partira pas'}"
 
     def _retirer(self, evt: dict) -> str:
-        """The doctor removes from the patient screen a message already sent (mistake, message now wrong). The journal keeps
-        the message and its removal: nothing is erased from the trace."""
+        """Le médecin retire de l'écran du patient un message déjà envoyé (erreur, message devenu faux). Le journal garde
+        le message et son retrait : rien n'est effacé de la trace."""
         d = self.ctx.dossier
         cible = d.decisions.get(int(evt.get("decision_id") or -1))
         if evt.get("auteur") != "medecin" or not cible or cible.get("type") != "envoi_patient" or cible["statut"] != "envoye":
@@ -219,7 +208,7 @@ class Orchestrateur:
         return f"Message #{cible['id']} retiré de l'écran du patient (le journal le garde)."
 
     def _masquer(self, evt: dict) -> str:
-        """Hide from the doctor's conversation a message that was not sent (cancelled, blocked) or removed."""
+        """Masquer de la conversation du médecin un message qui n'est pas parti (annulé, bloqué) ou retiré."""
         d = self.ctx.dossier
         cible = d.decisions.get(int(evt.get("decision_id") or -1))
         if not cible or cible.get("type") != "envoi_patient" or cible["statut"] in ("attente_validation", "a_verifier", "CONFORME", "envoye"):
@@ -229,8 +218,8 @@ class Orchestrateur:
         return f"Message #{cible['id']} masqué de la conversation (le journal le garde)."
 
     def stabiliser(self, exclure=frozenset()) -> int:
-        """`exclure`: agents that do not play now (the interface first runs the fast agents, then the agent that
-        queries the online model, so that a click never waits for the model)."""
+        """`exclure` : agents qui ne jouent pas maintenant (l'interface fait d'abord passer les agents rapides,
+        puis l'agent qui interroge le modèle en ligne, pour qu'un clic n'attende jamais le modèle)."""
         for r in range(1, self.max_rounds + 1):
             ordre = [a for a in self.agents if a.nom not in exclure]
             if self.ordre == "aleatoire":
@@ -248,13 +237,13 @@ class Orchestrateur:
         return self.max_rounds
 
     def filet_de_securite(self) -> int:
-        """Model-independent guarantee: every unchecked decision (or checked before the last change of the
-        patient's state) is checked by the jurist's tool. Logged as such."""
+        """Garantie indépendante du modèle : toute décision non contrôlée (ou contrôlée avant le dernier
+        changement de l'état du patient) est contrôlée par l'outil du juriste. Journalisé comme tel."""
         juriste = next((a for a in self.agents if a.nom == "juriste"), None)
         if juriste is None:
             return 0
         d, n = self.ctx.dossier, 0
-        # Content of every proposal to the patient checked BEFORE validation, even if the jurist (model) forgot it
+        # Contenu de chaque proposition au patient contrôlé AVANT la validation, même si le juriste (modèle) l'a oublié
         for dec in list(d.decisions.values()):
             if dec.get("type") == "envoi_patient" and dec["statut"] == "attente_validation" and not precontrole_a_jour(dec, d):
                 self.ctx.journal.ajouter("coordinateur", "filet_de_securite",
@@ -275,14 +264,14 @@ class Orchestrateur:
                                          {"decision": dec["id"], "raison": "non contrôlée par le juriste après stabilisation"})
                 print(f"  ⛑ filet de sécurité : contrôle forcé de la décision #{dec['id']}")
                 juriste.executer(outils[dec["type"]], {"decision_id": dec["id"]})
-                # The jurist's usual reaction (alerts, requests, gaps) is sent too.
+                # La réaction habituelle du juriste (alertes, demandes, lacunes) est envoyée elle aussi.
                 for raisonnement, outil, args in juriste._reagir(juriste.dernier_verdict, dec):
                     juriste._penser(raisonnement)
                     juriste.executer(outil, args)
                 n += 1
-        # Questions the doctor picked in the Assistant tab with "Send": validated on their behalf as soon as the jurist
-        # has judged the content compliant (they saw the pictogram preview before clicking); otherwise they stay in the
-        # conversation, to validate by hand.
+        # Questions choisies par le médecin dans l'onglet Assistant avec « Envoyer » : validées en son nom dès que le
+        # juriste a jugé le contenu conforme (il a vu l'aperçu en pictogrammes avant de cliquer) ; sinon elles restent
+        # dans la conversation, à valider à la main.
         for dec in list(d.decisions.values()):
             q = next((q for q in d.questions_a_poser if q["id"] == dec.get("source_question")), None)
             if dec.get("type") == "envoi_patient" and dec["statut"] == "attente_validation" and q and q.get("valider_auto_par") \
@@ -292,8 +281,8 @@ class Orchestrateur:
                     r = self._valider({"auteur": "medecin", "medecin": medecin, "decision_id": dec["id"]})
                     print(f"  {'✖' if r.startswith('Refusé') else '✔'} {r} (depuis l'onglet Assistant)")
                     n += 1
-        # Assistant's clinical watch (deterministic, instant): a risky prescription is reported to the doctor with its
-        # sourced alternative, without waiting for the online model.
+        # Veille clinique de l'assistant (déterministe, instantanée) : une prescription risquée est signalée au
+        # médecin avec son alternative sourcée, sans attendre le modèle en ligne.
         assistant = next((a for a in self.agents if a.nom == "assistant"), None)
         if assistant is not None and hasattr(assistant, "veille_clinique"):
             for raisonnement, outil, args in list(assistant.veille_clinique()):
