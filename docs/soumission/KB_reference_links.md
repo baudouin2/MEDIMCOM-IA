@@ -1,6 +1,6 @@
 # MEDIMCOM IA — reference links of the materials proposed to the knowledge base
 
-Team ShifaMiko · generated from `kb/sources.json` · 40 sources · 124 provisions in `kb/fiches.jsonl`.
+Team ShifaMiko · generated from `kb/sources.json` · 47 sources · 139 provisions in `kb/fiches.jsonl`.
 Verification level: *official text* = read on the official publisher's site; *secondary source* = known through a law firm or the press; *to confirm* = listed, not yet read.
 
 | ID | Title | Authority | Date | Role | Verification | Link |
@@ -45,3 +45,10 @@ Verification level: *official text* = read on the official publisher's site; *se
 | CM-DEONTO-1983 | Cameroun - Décret n° 83/166 du 12 avril 1983 portant code de déontologie médicale | République du Cameroun | 1983-04-12 | national_cm | to confirm | https://onmc.cm/wp-content/uploads/2021/07/ONMC_code-de-deontotologie-corrigee-en-Francais.pdf |
 | CM-PHARM-1990 | Cameroun - Loi n° 90/035 du 10 août 1990 relative à l'exercice et à l'organisation de la profession de pharmacien | République du Cameroun | 1990-08-10 | national_cm | to confirm | https://extranet.who.int/cpcd/health-legislation/loi-ndeg90-035-du-10-aout-1990-relative-lexercice-et-lorganisation-de-la |
 | CM-CP-2016 | Cameroun - Loi n° 2016/007 du 12 juillet 2016 portant Code pénal (secret professionnel) | République du Cameroun | 2016-07-12 | national_cm | to confirm | https://www.memoireonline.com/10/10/4008/m_La-responsabilite-penale-du-medecin-traitant-dans-le-systeme-penal-camerounais12.html |
+| US-FDA-TRAMADOL-LABEL | Tramadol hydrochloride tablets — FDA-approved prescribing information (DailyMed), revised 3/2021 | U.S. Food and Drug Administration (via NLM DailyMed) | 2021-03-01 | clinical_reference | official text | https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=de66ea8a-f320-483d-a429-724c9b65994e |
+| US-DM-METFORMIN | Metformin hydrochloride tablets — FDA-approved prescribing information (DailyMed), revised 6/2026 | U.S. Food and Drug Administration (labelling) | 2026-06-09 | clinical_reference | official text | https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b8004451-7b26-425b-b5ea-cbb1b08e30e3 |
+| US-DM-AMOXICILLIN | Amoxicillin capsules — FDA-approved prescribing information (DailyMed), revised 01/2024 | U.S. Food and Drug Administration (labelling) | 2024-01-23 | clinical_reference | official text | https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=7e3a4517-1934-4e03-b96b-4ad65ab076c5 |
+| US-OTC-ACETAMINOPHEN | Acetaminophen 500 mg tablets — FDA OTC Drug Facts label (reproduced by NDC List) | U.S. Food and Drug Administration (labelling) | None | clinical_reference | secondary source | https://ndclist.com/ndc/69842-465/label |
+| US-OTC-IBUPROFEN | Ibuprofen 200 mg tablets — FDA OTC Drug Facts label (reproduced by NDC List) | U.S. Food and Drug Administration (labelling) | None | clinical_reference | secondary source | https://ndclist.com/ndc/72927-805/label |
+| US-RX-IBUPROFEN | Ibuprofen tablets USP — prescription label (reproduced by MedLibrary) | U.S. Food and Drug Administration (labelling) | None | clinical_reference | secondary source | https://medlibrary.org/lib/rx/meds/ibuprofen-16/page/6/ |
+| US-OTC-ASPIRIN | Aspirin 325 mg tablets — FDA OTC Drug Facts label (reproduced by NDC List) | U.S. Food and Drug Administration (labelling) | None | clinical_reference | secondary source | https://ndclist.com/ndc/41250-681/label |
