@@ -10,7 +10,7 @@ ITU **AI for Good Lab Hackathon – United Arab Emirates** · submission of 10 N
 - **Knowledge base for the ITU reference ingestion code**: [`kb/InputDocs/`](kb/InputDocs/)
 - **Extended knowledge base `base_v2`** (87 official documents, ~1,300 pictogram concepts, WHO fact sheets): published
   separately because of its size — download and install it as described in [section 4.2](#42-extended-knowledge-base-base_v2)
-- **Detailed guide** (every command, building the knowledge base, hybrid search, formal methods): [`README_FR.md`](README_FR.md)
+- **Detailed guide** (every command, building the knowledge base, hybrid search, formal methods): [`README_FR.md`](README_EN.md)
 
 > Prototype with **fictitious patients only**. Not a medical device and not legal advice. The Arabic text of UAE
 > legislation prevails over the English versions used here.
