@@ -16,13 +16,19 @@ ITU **AI for Good Lab Hackathon – United Arab Emirates** · submission of 10 N
 ## 1. What it does
 
 A doctor and a **deaf patient with limited literacy** communicate through **pictograms**. Autonomous agents work around a
-shared consultation record, talk to each other through typed messages, and write every step to a tamper-evident journal:
+shared consultation record, talk to each other through typed messages, and write every step to a tamper-evident journal.
+
+**How an agent works.** Every agent — translator, assistant, jurist, institutions — has the same architecture: a
+**language model drives it** in a reason-and-act loop (it reads the record and its messages, decides what to do, and calls
+its own tools), and a **written, verified policy** takes over at once if the model fails, times out or runs out of quota.
+Each agent's limits are enforced in its tools, not only in its instructions. Which agents use the model is a setting
+(`AGENTS=assistant` by default, `AGENTS=assistant,juriste` or `AGENTS=tous`); see section 6.
 
 | Agent | Role |
 |---|---|
 | **Translator** (agent 1) | text ⇄ pictograms. Refuses to guess: a word without a safe pictogram is shown to the doctor "without pictogram", never replaced by a wrong image. Reads the context (instruction, question, narrative…) and corrects typing and dictation errors. Never removes a negation, a limit, a number, a dose or a medicine name. |
 | **Assistant** (agent 3) | keeps the patient state (confirmed or not), spots missing facts, proposes questions and sourced treatment options, checks every medicine against the patient (pregnancy, age, allergies, current treatments), reads documents (photos of prescriptions, receipts). Uses a language model if one is configured; otherwise a deterministic watch does the essential. |
-| **Jurist** (agent 2) | a **deterministic rule engine** grounded in UAE law and regulator standards (DoH, DHA, MOHAP) checks every prescription, every message to the patient and every data request; verdicts cite the provision, the article, the official link and its verification level. Crisis advisor; detects legal gaps. Cameroonian law available with `--pays CM`. |
+| **Jurist** (agent 2) | an agent whose **verdicts come from a deterministic rule engine** grounded in UAE law and regulator standards (DoH, DHA, MOHAP), which it calls as tools (`verifier_prescription`, `verifier_envoi_patient`, `verifier_partage_donnees`, `obligations_etat_patient`, `signaler_lacune`, plus knowledge-base search). When a model drives it, the model decides what to check and when, writes the explanations, answers the institutions' legal questions and links gaps — but **cannot change a verdict**. Verdicts cite the provision, the article, the official link and its verification level. Re-checks on its own when the patient's state changes; crisis advisor; detects legal gaps. Cameroonian law with `--pays CM`. |
 | **Institutions** (crisis scenario) | health authority, hospital, crisis cell: fragmented information, own mandates, **no access to the patient record**, measures only with a checked binding legal basis. |
 
 **The doctor always decides.** Nothing reaches the patient without the doctor's validation and a compliant verdict of the
@@ -86,6 +92,7 @@ Full guide: [`docs/GUIDE_CLE_API.md`](docs/GUIDE_CLE_API.md).
 bash lancer_local.sh ollama            # open-source model qwen3:8b ON this computer: no key, nothing leaves (≥ 8 GB RAM)
 VISION=1 bash lancer_local.sh ollama   # + qwen3-vl:8b to read photos of prescriptions, receipts, medicine boxes
 bash lancer_local.sh sans-ia           # written rules only (no language model)
+AGENTS=assistant,juriste bash lancer_local.sh   # the model also drives the jurist (AGENTS=tous: every agent)
 bash lancer_local.sh cle               # shows which provider / model CLE_API.txt will give
 bash lancer_local.sh diagnostic        # "model unavailable"? tests Internet, certificates, key, quota, model, real call
 RESEAU=1 bash lancer_local.sh          # patient tablet on the same Wi-Fi (trusted network only)
@@ -162,7 +169,11 @@ concepts, WHO fact sheets) can be built locally with `python outils/constituer_b
   `docs/pictogrammes/PROTOCOLE_TESTS.md`).
 
 **Language models**
-- By default only the **assistant** uses the language model; the jurist's verdicts never depend on it.
+- By default only the **assistant** is driven by the language model (response time, free-tier quotas, reproducible demos);
+  the other agents run their written policy. `AGENTS=tous` lets the model drive every agent, the jurist included. In every
+  case the **jurist's verdicts come from the rule engine**, never from the model: a legal verdict must be reproducible,
+  auditable and provable, and a model can invent a legal provision. Model-driven agents are tested with simulated and
+  deliberately chaotic models; their capability with a real model is not yet fully measured.
 - With an online provider (Groq, Gemini, OpenRouter, Mistral, xAI, Anthropic, OpenAI) the messages leave the computer and the
   country: **fictitious patients only** (UAE Federal Law No. 2 of 2019, Art. 13). For real data use a local model
   (`bash lancer_local.sh ollama`) or an authorised in-country host.
