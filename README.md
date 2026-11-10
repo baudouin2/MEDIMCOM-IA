@@ -8,7 +8,9 @@ ITU **AI for Good Lab Hackathon – United Arab Emirates** · submission of 10 N
   **Detailed technical documentation** (agents, rules, auditability): [`docs/soumission/MEDIMCOM_IA_Technical_Documentation.pdf`](docs/soumission/MEDIMCOM_IA_Technical_Documentation.pdf) ·
   **Gap analysis**: [`docs/soumission/MEDIMCOM_IA_Gap_Analysis.pdf`](docs/soumission/MEDIMCOM_IA_Gap_Analysis.pdf)
 - **Knowledge base for the ITU reference ingestion code**: [`kb/InputDocs/`](kb/InputDocs/)
-- French version of this page: [`README_FR.md`](README_FR.md)
+- **Extended knowledge base `base_v2`** (87 official documents, ~1,300 pictogram concepts, WHO fact sheets): published
+  separately because of its size — download and install it as described in [section 4.2](#42-extended-knowledge-base-base_v2)
+- **Detailed guide** (every command, building the knowledge base, hybrid search, formal methods): [`README_FR.md`](README_FR.md)
 
 > Prototype with **fictitious patients only**. Not a medical device and not legal advice. The Arabic text of UAE
 > legislation prevails over the English versions used here.
@@ -49,9 +51,10 @@ nothing else to install for the basic use.
 ```bash
 # 1. optional — choose a language model: put ONE API key in CLE_API.txt (one line):
 #      CLE=your_key
-# 2. start
+# 2. optional — extended knowledge base: unzip base_v2.zip at the root (section 4.2)
+# 3. start
 bash lancer_local.sh
-# 3. open the private DOCTOR link printed in the terminal; the PATIENT screen is http://127.0.0.1:8000/patient
+# 4. open the private DOCTOR link printed in the terminal; the PATIENT screen is http://127.0.0.1:8000/patient
 ```
 
 At start-up the terminal says which provider and model are used, e.g.
@@ -97,6 +100,7 @@ bash lancer_local.sh cle               # shows which provider / model CLE_API.tx
 bash lancer_local.sh diagnostic        # "model unavailable"? tests Internet, certificates, key, quota, model, real call
 RESEAU=1 bash lancer_local.sh          # patient tablet on the same Wi-Fi (trusted network only)
 PAYS=CM bash lancer_local.sh           # the jurist applies Cameroonian law
+bash lancer_demo.sh                    # everything needed to film the demo (3 servers + journal)
 
 python3 interface/serveur.py --demo scenarios/grossesse.json   # step-by-step demo ("Next step" button)
 python3 interface/serveur.py --demo scenarios/crise.json       # crisis scenario with the institutions' board
@@ -116,7 +120,9 @@ python3 main.py --scenario scenarios/crise.json                # terminal run of
   treatment), "I don't understand", emergency button, **"My prescription"** (pictograms + PDF), and **"Send a document"**
   (photo or file: prescription, medicine box, receipt, X-ray, lab result).
 
-## 4. Knowledge base (`kb/`)
+## 4. Knowledge base
+
+### 4.1 Core base in the repository (`kb/`)
 
 - `sources.json` — 47 sources: UAE (federal laws, DoH, DHA, MOHAP, AI charter and strategy), Cameroon, global examples
   (UN, WHO, EU, FDA, NHS, ISO, African Union), ITU references (Y.3172, AI Readiness Framework 2.0); 33 read on the
@@ -128,10 +134,48 @@ python3 main.py --scenario scenarios/crise.json                # terminal run of
 - `InputDocs/` — the same base **in the format of the ITU reference ingestion code** (`AI_Strategies/`, `AI_Use_Cases/`,
   `Inputs.md`): `python -m server.knowledge.ingest --dir kb/InputDocs --reset`. `index/chunks.jsonl` — 148 vector-ready chunks.
 
-Keyword search (BM25, no dependency) on 65 test questions: recall@1 = 0.80, recall@3 = 0.89, recall@5 = 0.97, MRR = 0.86 (`python kb/outils/evaluer_recherche.py`). Optional
-hybrid search (keywords + meaning, local embedding model): `pip install -r requirements-vecteurs.txt`, then
-`python outils/vectoriser_base.py` and `--recherche fastembed:e5`. A larger base (87 official documents, ~1,300 pictogram
-concepts, WHO fact sheets) can be built locally with `python outils/constituer_base_v2.py` (see `README_FR.md`).
+Keyword search (BM25, no dependency) on 65 test questions: recall@1 = 0.80, recall@3 = 0.89, recall@5 = 0.97, MRR = 0.86
+(`python kb/outils/evaluer_recherche.py`). Optional hybrid search (keywords + meaning, local embedding model):
+`pip install -r requirements-vecteurs.txt`, then `python outils/vectoriser_base.py` and `--recherche fastembed:e5`.
+
+### 4.2 Extended knowledge base (`base_v2`)
+
+`kb/` is enough to run everything. `base_v2` makes the agents much richer; it is too large for the Git history and is
+published as a release file.
+
+| Folder of `base_v2/` | Content |
+|---|---|
+| `01_base_juridique/` | **87 official, open documents** (UAE host country, Cameroon, African Union, UN, WHO, ITU…), each as `fiche.md` (metadata, official link), `texte.md`, `articles.jsonl` (split by article) and `original.pdf`; plus a requirement × jurisdiction matrix and `corpus_rag.jsonl` |
+| `02_pictogrammes/` | ARASAAC, Mulberry and OpenMoji pictograms filtered for medical consultation: **1,287 concepts in 30 categories** (welcome, ask, describe a pain, give an instruction, prescribe…), with `catalogue.csv`, `notions.csv` and `LICENCES.md` |
+| `03_references_medicales/` | WHO fact sheets (fr / en / ar) split by section, MedlinePlus summaries, Wikidata fr / en / ar lexicon with ICD-10 codes |
+| `04_jeu_de_donnees_assistant/` · `05_jeux_entrainement/` | fictitious cases for the assistant; datasets to train or evaluate a model (images ⇄ labels, pictograms ⇄ sentences, legal retrieval, WHO Q&A), with a data sheet |
+| `journal.json` | address, date and SHA-256 fingerprint of every document and image |
+
+**Install it (once):**
+
+```bash
+# 1. download base_v2.zip from the Releases page of this repository:
+#    https://github.com/baudouin2/MEDIMCOM-IA/releases
+# 2. unzip it at the root of the project, so that the folder is MEDIMCOM_IA/base_v2/
+unzip base_v2.zip -d .
+ls base_v2/01_base_juridique base_v2/02_pictogrammes >/dev/null && echo "base_v2 OK"
+# 3. start as usual: the base is found automatically (no option needed)
+bash lancer_local.sh
+```
+
+The base is looked for in this order: the `MEDIMCOM_BASE` variable, `MEDIMCOM_IA/base_v2/`, then `~/MEDIMCOM_base_v2/`
+(`--base aucune` runs without it). With `base_v2`, `lancer_local.sh` also installs the optional local embedding model for
+search by meaning.
+
+**What it changes for the agents:** the translator uses the 1,287-concept consultation vocabulary and its images (same
+safety rules: negations, "at most", numbers, doses and medicine names are never lost); the patient's palette gets all the
+illustrated concepts; the `consulter_base` tool of every agent also returns the articles of the 87 official texts and the
+sections of the WHO fact sheets, with their links. The jurist's verdicts still come only from its verified rules in `kb/`.
+
+**Rebuild it from scratch** (network needed, everything downloaded from the official sources with SHA-256 fingerprints):
+`python outils/constituer_base_v2.py` → `~/MEDIMCOM_base_v2` (details in [`README_FR.md`](README_FR.md)).
+Pictogram licences: ARASAAC CC BY-NC-SA 4.0 (non-commercial), Mulberry CC BY-SA 2.0 UK, OpenMoji CC BY-SA 4.0 — see
+`base_v2/02_pictogrammes/LICENCES.md`.
 
 ## 5. Robustness, audit and formal methods
 
@@ -162,10 +206,11 @@ concepts, WHO fact sheets) can be built locally with `python outils/constituer_b
 
 **Language and pictograms**
 - The doctor's input is processed in **French** (English supported for translation; Arabic labels on the patient side, to be
-  reviewed by a native speaker). Context reading and typo correction are rule-based: unusual phrasing may be read as
-  ambiguous, and the doctor is then asked to confirm.
-- The pictogram vocabulary is finite: 46 demo icons, or ~1,300 consultation concepts with the optional base. Missing words are
-  shown "without pictogram" (by design). Pictograms have **not yet been tested with deaf users** (protocol ready:
+  reviewed by a native speaker). The doctor screen is complete in French; its English and Arabic versions are partial.
+  Context reading and typo correction are rule-based: unusual phrasing may be read as ambiguous, and the doctor is then
+  asked to confirm.
+- The pictogram vocabulary is finite: 46 demo icons, or 1,287 consultation concepts with `base_v2`. Missing words are shown
+  "without pictogram" (by design). Pictograms have **not yet been tested with deaf users** (protocol ready:
   `docs/pictogrammes/PROTOCOLE_TESTS.md`).
 
 **Language models**
@@ -178,8 +223,8 @@ concepts, WHO fact sheets) can be built locally with `python outils/constituer_b
   country: **fictitious patients only** (UAE Federal Law No. 2 of 2019, Art. 13). For real data use a local model
   (`bash lancer_local.sh ollama`) or an authorised in-country host.
 - Free tiers have quotas; model names change (an automatic replacement is chosen and reported). Anthropic and OpenAI support
-  was tested with simulated servers only; the agents' capability with a real model is not yet fully measured
-  (`python evaluer_agents.py --mode ollama --modele qwen3:8b --repetitions 3 --sans-repli`).
+  was tested with simulated servers only (`python evaluer_agents.py --mode ollama --modele qwen3:8b --repetitions 3 --sans-repli`
+  measures a real model).
 - Reading **photos** needs a model that sees images (online vision model, or `VISION=1` with Ollama). Text and text-PDF
   documents are read without a model. Extracted facts enter the record as **unconfirmed**.
 - **Dictation**: in the browser (Chrome / Edge, audio transcribed by Google) or on the server with a Groq (Whisper) or xAI
@@ -200,14 +245,16 @@ concepts, WHO fact sheets) can be built locally with `python outils/constituer_b
 
 ```
 MEDIMCOM_IA/
-├── README.md · README_FR.md · SUBMISSION.md · LICENSE · NOTICE.md
+├── README.md · README_FR.md (detailed guide) · SUBMISSION.md · LICENSE · NOTICE.md
 ├── CLE_API.exemple.txt     template of the key file (CLE_API.txt = your key, excluded from Git)
 ├── lancer_local.sh         one-command start (key, Ollama or rules; diagnostic)
+├── lancer_demo.sh          everything needed to film the demo
 ├── main.py · evaluer_agents.py · verifier_journal.py · exporter_journal.py
 ├── medimcom/               core: agents, rule engine (regles.py), record, messaging, journal, brains (LLM providers),
 │                           context reading, safety and ethics guards, documents, prescriptions, formal methods
 ├── interface/              serveur.py (Python standard library) · web/ (React + TypeScript; compiled build in web/dist/)
-├── kb/                     knowledge base (+ InputDocs/ for the ITU ingestion code, index/, outils/)
+├── kb/                     core knowledge base (+ InputDocs/ for the ITU ingestion code, index/, outils/)
+├── base_v2/                extended knowledge base — release file, not in Git (section 4.2)
 ├── scenarios/              grossesse.json · allergie.json · crise.json — fragmented events with expected outcomes
 ├── tests/                  automated tests
 ├── outils/                 formal verification, report generation, diagnostics, knowledge-base builders
@@ -217,9 +264,10 @@ MEDIMCOM_IA/
 ```
 
 Code identifiers and some working documents (`docs/technique/`, `docs/equipe/`) are in French; code comments, terminal
-messages, this page, `SUBMISSION.md`, the technical report and the gap analysis are in English.
+messages, this page, the detailed guide `README_FR.md`, `SUBMISSION.md`, the technical report and the gap analysis are in
+English.
 
 ## 8. Licence
 
 Code: Apache 2.0 (`LICENSE`). ARASAAC pictograms remain under CC BY-NC-SA 4.0 (non-commercial use, credits shown in the
-interface); other third-party content is listed in `NOTICE.md`.
+interface); Mulberry symbols CC BY-SA 2.0 UK; OpenMoji CC BY-SA 4.0; other third-party content is listed in `NOTICE.md`.
