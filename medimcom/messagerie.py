@@ -1,4 +1,4 @@
-"""Messagerie directe entre agents (et vers le médecin / le traducteur)."""
+"""Direct messaging between agents (and to the doctor / the translator)."""
 from dataclasses import dataclass, field
 from itertools import count
 

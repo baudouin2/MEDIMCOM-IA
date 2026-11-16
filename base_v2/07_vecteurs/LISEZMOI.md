@@ -1,6 +1,6 @@
 # Vecteurs de la base (recherche hybride)
 
-Encodeur : `fastembed-paraphrase-multilingual-minilm-l12-v2` · similarité : cosinus (vecteurs normalisés) · fusion avec BM25 : rangs réciproques (RRF, k = 60).
+Encodeur : `fastembed-multilingual-e5-large` · similarité : cosinus (vecteurs normalisés) · fusion avec BM25 : rangs réciproques (RRF, k = 60).
 
 | Fichier | Contenu |
 |---|---|
@@ -8,4 +8,4 @@ Encodeur : `fastembed-paraphrase-multilingual-minilm-l12-v2` · similarité : co
 | `<collection>.<encodeur>.json` | identifiants et empreinte SHA-256 (16 car.) de chaque texte encodé |
 | `export/*.jsonl` | `{id, text, metadata, embedding}` pour Chroma, Qdrant, FAISS ou la base de l'UIT |
 
-Reconstruire : `python outils/vectoriser_base.py --encodeur fastembed:minilm`.
+Reconstruire : `python outils/vectoriser_base.py --encodeur fastembed:e5`.

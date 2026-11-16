@@ -1,14 +1,14 @@
-"""Mesure de la latence EN CONDITION RÉELLE, depuis votre machine et votre connexion, avec le vrai modèle en ligne.
+"""Measures latency IN REAL CONDITIONS, from your machine and your connection, with the real online model.
 
-    python outils/mesurer_latence.py --fournisseur xai --effort low --donnees-fictives
+    python outils/mesurer_latence.py --fournisseur groq --effort low --donnees-fictives
 
-Deux mesures :
-1. Connexion : 4 appels courts au modèle, d'abord en refaisant la connexion à chaque fois (ancien comportement),
-   puis en la gardant ouverte (nouveau). La différence = le temps gagné par appel grâce à la connexion gardée.
-2. Consultation : un patient fictif ; le médecin pose une question, valide, le patient répond. On mesure le temps
-   que voit le médecin pour chaque clic, et le temps que met l'assistant (Grok) à réfléchir en arrière-plan.
+Two measurements:
+1. Connection: 4 short calls to the model, first reopening the connection each time (old behaviour), then
+   keeping it open (new). The difference = time saved per call thanks to the kept connection.
+2. Consultation: a fictitious patient; the doctor asks a question, validates, the patient answers. We measure
+   the time the doctor sees for each click, and the time the assistant takes to reason in the background.
 
-Coût : une dizaine d'appels au modèle (quelques centimes). Aucune donnée réelle : uniquement un patient fictif.
+Cost: about ten model calls (a few cents with a paid key). No real data: only a fictitious patient.
 """
 import argparse
 import statistics
@@ -39,7 +39,7 @@ def mesurer_connexion(cfg, n=4):
     for _ in range(n):
         if c._connexion is not None:
             c._connexion.close()
-        c._connexion = None                      # ancien comportement : nouvelle connexion à chaque appel
+        c._connexion = None                      # old behaviour: new connection at each call
         t0 = time.time()
         c.chat(msg, [])
         nouvelles.append(time.time() - t0)
@@ -61,7 +61,7 @@ def mesurer_consultation(cfg):
     prop = next((x for x in d.decisions.values() if x["statut"] == "attente_validation"), None)
     if prop is None:
         return r, app
-    _attendre(lambda: app.reflexion_en_cours, 5)          # le médecin valide PENDANT que l'assistant interroge le modèle
+    _attendre(lambda: app.reflexion_en_cours, 5)          # the doctor validates WHILE the assistant queries the model
     app.evenement({"type": "validation", "auteur": "medecin", "medecin": "DR-001", "decision_id": prop["id"]})
     r["Validation -> envoyé au patient"] = _attendre(lambda: prop["statut"] == "envoye", 30)
     app.evenement({"type": "reponse_patient", "auteur": "patient", "pictogrammes": ["OUI"]})

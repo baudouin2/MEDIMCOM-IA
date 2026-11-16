@@ -100,6 +100,18 @@
    "issue_de_suggestion": {
     "type": "booleen",
     "monde": "ferme"
+   },
+   "maladie_declarable_groupe": {
+    "type": "enum",
+    "valeurs": [
+     "A",
+     "B"
+    ],
+    "monde": "ferme"
+   },
+   "declaration_faite": {
+    "type": "booleen",
+    "monde": "ferme"
    }
   },
   "contre_indications": {
@@ -216,7 +228,8 @@
     "CM90-A16-17"
    ],
    "detail": "Prescripteur absent du tableau de l'Ordre : nul ne peut exercer la médecine au Cameroun sans y être inscrit (exercice illégal puni).",
-   "detail_en": "Prescriber not on the Order's roll: no one may practise medicine in Cameroon without registration (illegal practice is punished)."
+   "detail_en": "Prescriber not on the Order's roll: no one may practise medicine in Cameroon without registration (illegal practice is punished).",
+   "detail_ar": "الواصف غير مسجّل في جدول هيئة الأطباء: لا يجوز لأحد ممارسة الطب في الكاميرون دون التسجيل فيه (الممارسة غير القانونية يعاقب عليها)."
   },
   "inactif": {
    "niveau": "BLOQUE",
@@ -225,7 +238,8 @@
     "CM90-A2"
    ],
    "detail": "Prescripteur non inscrit ou suspendu : il ne peut pas exercer.",
-   "detail_en": "Prescriber not registered or suspended: may not practise."
+   "detail_en": "Prescriber not registered or suspended: may not practise.",
+   "detail_ar": "الواصف غير مسجّل أو موقوف: لا يجوز له الممارسة."
   },
   "non_humain": {
    "niveau": "BLOQUE",
@@ -235,7 +249,8 @@
     "CM90-A16-17"
    ],
    "detail": "Une IA n'est pas un médecin inscrit : elle ne peut ni diagnostiquer ni prescrire (exercice illégal).",
-   "detail_en": "An AI is not a registered physician: it may neither diagnose nor prescribe (illegal practice)."
+   "detail_en": "An AI is not a registered physician: it may neither diagnose nor prescribe (illegal practice).",
+   "detail_ar": "الذكاء الاصطناعي ليس طبيبًا مسجّلًا: لا يجوز له التشخيص ولا الوصف (ممارسة غير قانونية)."
   }
  },
  "champs_obligatoires_avant_prescription": [
@@ -251,7 +266,8 @@
     "CM-DEONTO"
    ],
    "detail": "Grossesse non renseignée chez une femme en âge de procréer : l'état du patient doit être consigné avant le traitement.",
-   "detail_en": "Pregnancy status unknown for a woman of childbearing age: the patient's condition must be recorded before treatment."
+   "detail_en": "Pregnancy status unknown for a woman of childbearing age: the patient's condition must be recorded before treatment.",
+   "detail_ar": "حالة الحمل غير مسجّلة لدى امرأة في سن الإنجاب: يجب تسجيل حالة المريضة قبل العلاج."
   },
   {
    "champ": "allergies",
@@ -261,7 +277,8 @@
     "CM-DEONTO"
    ],
    "detail": "Allergies non renseignées : les antécédents doivent être consignés avant le traitement.",
-   "detail_en": "Allergies unknown: medical history must be recorded before treatment."
+   "detail_en": "Allergies unknown: medical history must be recorded before treatment.",
+   "detail_ar": "الحساسية غير مسجّلة: يجب تسجيل السوابق المرضية قبل العلاج."
   },
   {
    "champ": "traitements_en_cours",
@@ -271,7 +288,8 @@
     "CM-DEONTO"
    ],
    "detail": "Traitements en cours non renseignés : les antécédents doivent être consignés avant le traitement.",
-   "detail_en": "Current treatments unknown: medical history must be recorded before treatment."
+   "detail_en": "Current treatments unknown: medical history must be recorded before treatment.",
+   "detail_ar": "العلاجات الحالية غير مسجّلة: يجب تسجيل السوابق المرضية قبل العلاج."
   }
  ],
  "axiomes": [
@@ -288,7 +306,9 @@
     "CM-DEONTO"
    ],
    "base": "NORME",
-   "detail": "Un homme n'est pas enceint. L'état du patient doit être consigné correctement avant le traitement : vérifier le dossier."
+   "detail": "Un homme n'est pas enceint. L'état du patient doit être consigné correctement avant le traitement : vérifier le dossier.",
+   "detail_ar": "الرجل لا يحمل. يجب تسجيل حالة المريض بشكل صحيح قبل العلاج: تحقّق من الملف.",
+   "raison_ar": "الرجل لا يحمل."
   },
   {
    "id": "AX-AGE-BAS",
@@ -305,7 +325,9 @@
     "CM-DEONTO"
    ],
    "base": "NORME",
-   "detail": "Hors de l'âge de procréer retenu par les champs obligatoires (12 à 50 ans). L'état du patient doit être consigné correctement avant le traitement : vérifier le dossier."
+   "detail": "Hors de l'âge de procréer retenu par les champs obligatoires (12 à 50 ans). L'état du patient doit être consigné correctement avant le traitement : vérifier le dossier.",
+   "detail_ar": "خارج سن الإنجاب المعتمد في الحقول الإلزامية (12 إلى 50 سنة). يجب تسجيل حالة المريض بشكل صحيح قبل العلاج: تحقّق من الملف.",
+   "raison_ar": "خارج سن الإنجاب المعتمد في الحقول الإلزامية (12 إلى 50 سنة)."
   },
   {
    "id": "AX-AGE-HAUT",
@@ -322,7 +344,9 @@
     "CM-DEONTO"
    ],
    "base": "NORME",
-   "detail": "Hors de l'âge de procréer retenu par les champs obligatoires (12 à 50 ans). L'état du patient doit être consigné correctement avant le traitement : vérifier le dossier."
+   "detail": "Hors de l'âge de procréer retenu par les champs obligatoires (12 à 50 ans). L'état du patient doit être consigné correctement avant le traitement : vérifier le dossier.",
+   "detail_ar": "خارج سن الإنجاب المعتمد في الحقول الإلزامية (12 إلى 50 سنة). يجب تسجيل حالة المريض بشكل صحيح قبل العلاج: تحقّق من الملف.",
+   "raison_ar": "خارج سن الإنجاب المعتمد في الحقول الإلزامية (12 إلى 50 سنة)."
   }
  ],
  "medicaments": {
@@ -341,7 +365,8 @@
       "OTC-APAP-FOIE"
      ],
      "detail": "Paracétamol et maladie du foie : risque d'atteinte hépatique grave ; dose à réduire et avis médical.",
-     "detail_en": "Paracetamol and liver disease: risk of severe liver damage; reduce the dose and seek medical advice."
+     "detail_en": "Paracetamol and liver disease: risk of severe liver damage; reduce the dose and seek medical advice.",
+     "detail_ar": "الباراسيتامول مع مرض الكبد: خطر تلف كبدي شديد؛ تُخفَّض الجرعة ويُطلب رأي طبي."
     },
     {
      "si": {
@@ -353,7 +378,8 @@
       "OTC-APAP-FOIE"
      ],
      "detail": "Paracétamol sous anticoagulant (warfarine) : surveiller l'INR en cas de prise régulière.",
-     "detail_en": "Paracetamol with an anticoagulant (warfarin): monitor INR with regular use."
+     "detail_en": "Paracetamol with an anticoagulant (warfarin): monitor INR with regular use.",
+     "detail_ar": "الباراسيتامول مع مضاد تخثّر (الوارفارين): يُراقَب INR عند الاستعمال المنتظم."
     }
    ],
    "synonymes": [
@@ -389,7 +415,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "مضادات الالتهاب غير الستيرويدية: تُتجنَّب ابتداءً من الأسبوع 20 من الحمل ما لم يُنصح بها صراحةً؛ ويُذكر الباراسيتامول بديلًا. قاعدة سريرية على سبيل المثال، يجب أن يعتمدها طبيب."
     },
     {
      "si": {
@@ -405,7 +432,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "الإيبوبروفين: لا يُستعمل في الأشهر الثلاثة الأخيرة من الحمل."
     },
     {
      "si": {
@@ -421,7 +449,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "الإيبوبروفين مع سوابق قرحة أو نزيف هضمي: خطر نزف."
     },
     {
      "si": {
@@ -437,7 +466,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "الإيبوبروفين مع مضاد تخثّر: خطر نزيف هضمي."
     },
     {
      "si": {
@@ -453,7 +483,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "الإيبوبروفين مع مرض الكلى: يلزم رأي طبي، خطر تفاقم."
     },
     {
      "si": {
@@ -469,7 +500,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "الإيبوبروفين مع مرض القلب: يلزم رأي طبي."
     },
     {
      "si": {
@@ -483,7 +515,8 @@
       "OTC-IBU-SAIGNEMENT"
      ],
      "detail": "Ibuprofène après 60 ans : risque de saignement digestif plus élevé.",
-     "detail_en": "Ibuprofen at 60 or older: higher risk of stomach bleeding."
+     "detail_en": "Ibuprofen at 60 or older: higher risk of stomach bleeding.",
+     "detail_ar": "الإيبوبروفين بعد سن 60: خطر أعلى لنزيف المعدة."
     }
    ],
    "synonymes": [
@@ -522,7 +555,8 @@
       "CYTOTEC-BW"
      ],
      "detail": "Misoprostol chez une femme enceinte : risque d'avortement et de malformations (notice). Les dispositions pénales camerounaises sur l'avortement ne sont pas encore dans la base : à vérifier avant tout usage réel. Règle clinique d'exemple, à valider par un médecin.",
-     "detail_en": "Misoprostol in a pregnant woman: risk of abortion and birth defects (label). Cameroonian criminal provisions on abortion are not yet in the knowledge base. Example clinical rule, to be validated by a physician."
+     "detail_en": "Misoprostol in a pregnant woman: risk of abortion and birth defects (label). Cameroonian criminal provisions on abortion are not yet in the knowledge base. Example clinical rule, to be validated by a physician.",
+     "detail_ar": "الميزوبروستول لدى امرأة حامل: خطر الإجهاض والتشوهات (النشرة). الأحكام الجزائية الكاميرونية بشأن الإجهاض ليست بعد في القاعدة: يجب التحقق منها قبل أي استعمال حقيقي. قاعدة سريرية على سبيل المثال، يجب أن يعتمدها طبيب."
     }
    ],
    "synonymes": [
@@ -548,7 +582,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "الترامادول أثناء الحمل: خطر متلازمة انسحاب الأفيونيات لدى المولود، وقد تهدد حياته. يُتجنَّب ما لم يُبرَّر طبيًا صراحةً."
     },
     {
      "si": {
@@ -561,8 +596,9 @@
      "fiches": [
       "FDA-TRAM-ENFANT"
      ],
-     "detail": "Tramadol chez l'enfant de moins de 12 ans : contre-indiqué par l'étiquette de la FDA (référence étrangère, à confirmer par la notice émiratie).",
-     "detail_en": "Tramadol in a child under 12: contraindicated by the FDA label (foreign reference, to be confirmed by the UAE product information)."
+     "detail": "Tramadol chez l'enfant de moins de 12 ans : contre-indiqué par l'étiquette de la FDA (référence étrangère, à confirmer par la notice camerounaise).",
+     "detail_en": "Tramadol in a child under 12: contraindicated by the FDA label (foreign reference, to be confirmed by the Cameroonian product information).",
+     "detail_ar": "الترامادول لطفل دون 12 سنة: ممنوع وفق نشرة FDA (مرجع أجنبي، يُؤكَّد بالنشرة الكاميرونية)."
     },
     {
      "si": {
@@ -576,7 +612,8 @@
       "FDA-TRAM-ENFANT"
      ],
      "detail": "Tramadol chez un mineur : à éviter chez l'adolescent de 12 à 18 ans qui a d'autres facteurs de risque ; justification nécessaire.",
-     "detail_en": "Tramadol in a minor: avoid in adolescents aged 12 to 18 with other risk factors; justification required."
+     "detail_en": "Tramadol in a minor: avoid in adolescents aged 12 to 18 with other risk factors; justification required.",
+     "detail_ar": "الترامادول لقاصر: يُتجنَّب لدى المراهقين من 12 إلى 18 سنة مع عوامل خطر أخرى؛ يلزم تبرير."
     }
    ],
    "synonymes": [
@@ -599,7 +636,8 @@
     "CM-PHARM"
    ],
    "detail": "Médicament sans autorisation de mise sur le marché connue au Cameroun : à vérifier auprès de l'autorité du médicament avant toute prescription (texte camerounais à lire).",
-   "detail_en": "Medicine with no known Cameroonian marketing approval: check with the medicines authority before prescribing (Cameroonian text to be read)."
+   "detail_en": "Medicine with no known Cameroonian marketing approval: check with the medicines authority before prescribing (Cameroonian text to be read).",
+   "detail_ar": "دواء دون ترخيص تسويق معروف في الكاميرون: يجب التحقق لدى هيئة الدواء قبل أي وصفة (نص كاميروني يجب قراءته)."
   },
   "aspirine": {
    "categorie": "standard",
@@ -633,7 +671,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "الأسبرين للأطفال أو المراهقين: متلازمة راي (نادرة وخطيرة) مع جدري الماء أو أعراض شبيهة بالإنفلونزا."
     },
     {
      "si": {
@@ -649,7 +688,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "الأسبرين: لا يُستعمل في الأشهر الثلاثة الأخيرة من الحمل."
     },
     {
      "si": {
@@ -665,7 +705,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "الأسبرين مع سوابق قرحة أو نزيف هضمي: خطر نزف."
     },
     {
      "si": {
@@ -681,7 +722,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "الأسبرين مع مضاد تخثّر: خطر نزيف."
     }
    ],
    "dose_max_jour_mg": {
@@ -720,7 +762,8 @@
       "DM-AMOX-REIN"
      ],
      "detail": "Amoxicilline et insuffisance rénale sévère (DFG < 30) : pas de dose de 875 mg ; 250 ou 500 mg toutes les 12 h.",
-     "detail_en": "Amoxicillin and severe renal impairment (GFR < 30): no 875 mg dose; 250 or 500 mg every 12 hours."
+     "detail_en": "Amoxicillin and severe renal impairment (GFR < 30): no 875 mg dose; 250 or 500 mg every 12 hours.",
+     "detail_ar": "الأموكسيسيلين مع قصور كلوي شديد (معدل الترشيح < 30): لا تُعطى جرعة 875 ملغ؛ بل 250 أو 500 ملغ كل 12 ساعة."
     }
    ],
    "allergie_fiches": [
@@ -747,7 +790,8 @@
       "DM-METF-REIN"
      ],
      "detail": "Metformine et maladie des reins : contre-indiquée si DFG < 30, à ne pas débuter entre 30 et 45 ; vérifier le DFG.",
-     "detail_en": "Metformin and kidney disease: contraindicated if eGFR < 30, not to be started between 30 and 45; check eGFR."
+     "detail_en": "Metformin and kidney disease: contraindicated if eGFR < 30, not to be started between 30 and 45; check eGFR.",
+     "detail_ar": "الميتفورمين مع مرض الكلى: ممنوع إذا كان معدل الترشيح < 30، ولا يُبدأ بين 30 و45؛ تحقّق من معدل الترشيح."
     },
     {
      "si": {
@@ -759,7 +803,8 @@
       "DM-METF-FOIE"
      ],
      "detail": "Metformine et maladie du foie : non recommandée (risque d'acidose lactique).",
-     "detail_en": "Metformin and liver disease: not recommended (risk of lactic acidosis)."
+     "detail_en": "Metformin and liver disease: not recommended (risk of lactic acidosis).",
+     "detail_ar": "الميتفورمين مع مرض الكبد: غير موصى به (خطر الحماض اللبني)."
     }
    ],
    "dose_max_jour_mg": {
@@ -784,7 +829,8 @@
    "CM-PHARM"
   ],
   "detail": "Médicament absent de la base : impossible de vérifier son autorisation de mise sur le marché au Cameroun.",
-  "detail_en": "Medicine not in the knowledge base: Cameroonian marketing approval cannot be checked."
+  "detail_en": "Medicine not in the knowledge base: Cameroonian marketing approval cannot be checked.",
+  "detail_ar": "دواء غير موجود في القاعدة: لا يمكن التحقق من ترخيص تسويقه في الكاميرون."
  },
  "regle_amm_a_confirmer": {
   "niveau": "INFORMATION",
@@ -793,7 +839,8 @@
    "CM-PHARM"
   ],
   "detail": "Autorisation de mise sur le marché supposée pour la démonstration : à confirmer auprès de l'autorité camerounaise du médicament.",
-  "detail_en": "Marketing approval assumed for the demo: to be confirmed with the Cameroonian medicines authority."
+  "detail_en": "Marketing approval assumed for the demo: to be confirmed with the Cameroonian medicines authority.",
+  "detail_ar": "ترخيص التسويق مفترض لأغراض العرض: يجب تأكيده لدى هيئة الدواء الكاميرونية."
  },
  "regle_allergie": {
   "niveau": "A_REVOIR",
@@ -802,7 +849,8 @@
    "CM-DEONTO"
   ],
   "detail": "Le patient a déclaré une allergie à ce médicament ou à sa classe (y compris l'aspirine pour les AINS) : à revoir par le médecin.",
-  "detail_en": "The patient declared an allergy to this medicine or its class (including aspirin for NSAIDs): to be reviewed by the physician."
+  "detail_en": "The patient declared an allergy to this medicine or its class (including aspirin for NSAIDs): to be reviewed by the physician.",
+  "detail_ar": "صرّح المريض بحساسية من هذا الدواء أو من فئته (بما في ذلك الأسبرين لمضادات الالتهاب غير الستيرويدية): يجب أن يراجعه الطبيب."
  },
  "regles_prescription": [
   {
@@ -818,7 +866,8 @@
     "CM-DEONTO"
    ],
    "detail": "Dose absente : une prescription doit être complète et écrite.",
-   "detail_en": "Dose missing: a prescription must be complete and written."
+   "detail_en": "Dose missing: a prescription must be complete and written.",
+   "detail_ar": "الجرعة مفقودة: يجب أن تكون الوصفة كاملة ومكتوبة."
   },
   {
    "id": "RX-ECRITE-POSOLOGIE",
@@ -833,7 +882,8 @@
     "CM-DEONTO"
    ],
    "detail": "Mode d'emploi absent : une prescription doit être complète et écrite.",
-   "detail_en": "Directions missing: a prescription must be complete and written."
+   "detail_en": "Directions missing: a prescription must be complete and written.",
+   "detail_ar": "طريقة الاستعمال مفقودة: يجب أن تكون الوصفة كاملة ومكتوبة."
   },
   {
    "id": "TELE-CM",
@@ -847,7 +897,8 @@
     "CM90-A16-17"
    ],
    "detail": "Téléconsultation : aucun texte camerounais spécifique n'est dans la base ; seul un médecin inscrit diagnostique et prescrit, à distance comme en présentiel.",
-   "detail_en": "Teleconsultation: no specific Cameroonian text in the knowledge base; only a registered physician diagnoses and prescribes, remotely or in person."
+   "detail_en": "Teleconsultation: no specific Cameroonian text in the knowledge base; only a registered physician diagnoses and prescribes, remotely or in person.",
+   "detail_ar": "الاستشارة عن بُعد: لا يوجد في القاعدة نص كاميروني خاص؛ الطبيب المسجّل وحده يشخّص ويصف، عن بُعد كما حضوريًا."
   },
   {
    "id": "TELE-CONTROLE-CM",
@@ -867,7 +918,8 @@
     "CM-PHARM"
    ],
    "detail": "Médicament contrôlé prescrit à distance : aucune règle camerounaise lue dans la base ; à revoir par le médecin.",
-   "detail_en": "Controlled medicine prescribed remotely: no Cameroonian rule read in the knowledge base; to be reviewed by the physician."
+   "detail_en": "Controlled medicine prescribed remotely: no Cameroonian rule read in the knowledge base; to be reviewed by the physician.",
+   "detail_ar": "دواء خاضع للرقابة موصوف عن بُعد: لم تُقرأ في القاعدة أي قاعدة كاميرونية؛ يجب أن يراجعه الطبيب."
   },
   {
    "id": "CONSENTEMENT",
@@ -882,7 +934,8 @@
     "CM-DEONTO"
    ],
    "detail": "Recueillir le consentement libre et éclairé du patient avant le traitement.",
-   "detail_en": "Obtain the patient's free and informed consent before treatment."
+   "detail_en": "Obtain the patient's free and informed consent before treatment.",
+   "detail_ar": "احصل على موافقة المريض الحرة والمستنيرة قبل العلاج."
   },
   {
    "id": "CONSENTEMENT-PICTO",
@@ -902,7 +955,8 @@
    ],
    "lacune": "L04",
    "detail": "Consentement d'un patient sourd en pictogrammes : vérifier sa compréhension (question d'accord) ; aucun texte ne dit qu'un accord en pictogrammes vaut consentement.",
-   "detail_en": "Consent of a deaf patient in pictograms: check understanding (agreement question); no text says pictogram agreement is valid consent."
+   "detail_en": "Consent of a deaf patient in pictograms: check understanding (agreement question); no text says pictogram agreement is valid consent.",
+   "detail_ar": "موافقة مريض أصم بالرموز المصوّرة: تحقّق من فهمه (سؤال الموافقة)؛ لا يوجد نص يقول إن الموافقة بالرموز المصوّرة تعدّ موافقة قانونية."
   },
   {
    "id": "URGENCE-CONSENTEMENT",
@@ -915,7 +969,8 @@
     "CM-DEONTO"
    ],
    "detail": "Urgence : les soins urgents ne doivent pas être retardés ; informer le patient dès que possible.",
-   "detail_en": "Emergency: urgent care must not be delayed; inform the patient as soon as possible."
+   "detail_en": "Emergency: urgent care must not be delayed; inform the patient as soon as possible.",
+   "detail_ar": "الطوارئ: يجب ألا تتأخر الرعاية العاجلة؛ أبلغ المريض في أقرب وقت ممكن."
   },
   {
    "id": "INFORMATION-PATIENT",
@@ -926,7 +981,8 @@
     "CM-DEONTO"
    ],
    "detail": "Informer le patient du diagnostic et du traitement de façon compréhensible.",
-   "detail_en": "Inform the patient of the diagnosis and treatment in an understandable way."
+   "detail_en": "Inform the patient of the diagnosis and treatment in an understandable way.",
+   "detail_ar": "أبلغ المريض بالتشخيص والعلاج بطريقة مفهومة."
   },
   {
    "id": "INFORMATION-ACCESSIBLE",
@@ -942,7 +998,8 @@
    ],
    "lacune": "L03",
    "detail": "Patient sourd (handicap sensoriel au sens de la loi de 2010) : information dans un format accessible ; la loi ne mentionne pas la langue des signes.",
-   "detail_en": "Deaf patient (sensory disability under the 2010 law): information in an accessible format; the law does not mention sign language."
+   "detail_en": "Deaf patient (sensory disability under the 2010 law): information in an accessible format; the law does not mention sign language.",
+   "detail_ar": "مريض أصم (إعاقة حسية بمفهوم قانون 2010): المعلومات بصيغة ميسّرة؛ لا يذكر القانون لغة الإشارة."
   },
   {
    "id": "IA-INFORMER",
@@ -957,7 +1014,8 @@
     "WHO21-PRINC"
    ],
    "detail": "Aucun texte camerounais sur l'IA en santé dans la base ; bonne pratique (OMS) : informer le patient que l'IA aide le médecin.",
-   "detail_en": "No Cameroonian AI-in-health text in the knowledge base; good practice (WHO): tell the patient that AI supports the physician."
+   "detail_en": "No Cameroonian AI-in-health text in the knowledge base; good practice (WHO): tell the patient that AI supports the physician.",
+   "detail_ar": "لا يوجد في القاعدة نص كاميروني بشأن الذكاء الاصطناعي في الصحة؛ الممارسة الجيدة (منظمة الصحة العالمية): أبلغ المريض بأن الذكاء الاصطناعي يساعد الطبيب."
   },
   {
    "id": "IA-SUGGESTION",
@@ -971,7 +1029,29 @@
    ],
    "lacune": "L01",
    "detail": "Décision inspirée d'une suggestion de l'IA : le diagnostic et le traitement restent l'acte du médecin inscrit, qui en répond.",
-   "detail_en": "Decision inspired by an AI suggestion: diagnosis and treatment remain the act of the registered physician, who is accountable."
+   "detail_en": "Decision inspired by an AI suggestion: diagnosis and treatment remain the act of the registered physician, who is accountable.",
+   "detail_ar": "قرار مستوحى من اقتراح الذكاء الاصطناعي: يبقى التشخيص والعلاج عمل الطبيب المسجّل، وهو المسؤول عنه."
+  },
+  {
+   "id": "CONTAGION-NON-DECLAREE",
+   "si": {
+    "maladie_declarable_groupe": "A",
+    "declaration_faite": {
+     "pas": true
+    }
+   },
+   "niveau": "A_REVOIR",
+   "base": "ENGAGEMENT_INTERNATIONAL",
+   "fiches": [
+    "IHR-A6"
+   ],
+   "lacune": "L10",
+   "detail": "Maladie à potentiel épidémique suspectée et non déclarée : déclarer le cas aux autorités sanitaires et prendre les précautions (isolement, protection de l'entourage) avant de laisser repartir le patient. Aucun texte camerounais de déclaration (délai, canal) n'est dans la base.",
+   "detail_en": "Suspected epidemic-prone disease not notified: notify the case to the health authorities and take precautions (isolation, protection of contacts) before letting the patient leave. No Cameroonian notification text (time limit, channel) is in the knowledge base.",
+   "piste": "Déclarez le cas aux autorités sanitaires (hors de l'application), organisez l'isolement, puis cochez « Cas déclaré aux autorités sanitaires et isolement organisé » dans la fiche patient ; sinon, justifiez par écrit : votre nom est consigné.",
+   "detail_ar": "اشتباه في مرض ذي قابلية وبائية دون إبلاغ: أبلغ السلطات الصحية بالحالة واتخذ الاحتياطات (العزل، حماية المخالطين) قبل ترك المريض يغادر. لا يوجد في القاعدة نص كاميروني للإبلاغ (المهلة، القناة).",
+   "piste_ar": "أبلغ السلطات الصحية بالحالة (خارج التطبيق)، ونظّم العزل، ثم ضع علامة على «تم إبلاغ السلطات الصحية بالحالة وتنظيم العزل» في ملف المريض؛ وإلا فبرّر كتابةً: يُسجَّل اسمك.",
+   "piste_en": "Notify the case to the health authorities (outside the application), organise isolation, then tick “Case notified to the health authorities and isolation organised” in the patient record; otherwise, justify in writing: your name is recorded."
   }
  ],
  "regles_partage": [
@@ -988,7 +1068,8 @@
     "CM24-TRANSFERT"
    ],
    "detail": "Lieu de destination des données inconnu : impossible de vérifier les règles de transfert.",
-   "detail_en": "Data destination unknown: transfer rules cannot be checked."
+   "detail_en": "Data destination unknown: transfer rules cannot be checked.",
+   "detail_ar": "وجهة البيانات غير معروفة: لا يمكن التحقق من قواعد النقل."
   },
   {
    "id": "HORS-PAYS-SANS-AUTORISATION",
@@ -1005,7 +1086,8 @@
    ],
    "lacune": "L06",
    "detail": "Données de santé envoyées hors du Cameroun sans autorisation de l'autorité de protection des données : interdit (sanctions prévues).",
-   "detail_en": "Health data sent outside Cameroon without authorisation of the data protection authority: prohibited (sanctions apply)."
+   "detail_en": "Health data sent outside Cameroon without authorisation of the data protection authority: prohibited (sanctions apply).",
+   "detail_ar": "بيانات صحية مرسلة خارج الكاميرون دون إذن من سلطة حماية البيانات: ممنوع (عقوبات منصوص عليها)."
   },
   {
    "id": "HORS-PAYS-AUTORISATION-INCONNUE",
@@ -1023,7 +1105,8 @@
    ],
    "lacune": "L06",
    "detail": "Transfert hors du Cameroun sans autorisation connue de l'autorité : bloqué tant que l'autorisation n'est pas établie.",
-   "detail_en": "Transfer outside Cameroon with no known authorisation: blocked until the authorisation is established."
+   "detail_en": "Transfer outside Cameroon with no known authorisation: blocked until the authorisation is established.",
+   "detail_ar": "نقل خارج الكاميرون دون إذن معروف من السلطة: محظور ما لم يثبت الإذن."
   },
   {
    "id": "HORS-PAYS-AUTORISE",
@@ -1038,7 +1121,8 @@
     "CM24-A9"
    ],
    "detail": "Transfert autorisé : vérifier le consentement exprès du patient et les garanties du pays destinataire.",
-   "detail_en": "Authorised transfer: check the patient's express consent and the safeguards of the destination country."
+   "detail_en": "Authorised transfer: check the patient's express consent and the safeguards of the destination country.",
+   "detail_ar": "نقل مأذون: تحقّق من الموافقة الصريحة للمريض ومن ضمانات البلد المستقبِل."
   },
   {
    "id": "SOINS",
@@ -1060,7 +1144,8 @@
     "CM90-A4"
    ],
    "detail": "Partage pour les soins avec des soignants au Cameroun : permis (protection de la santé), sous secret professionnel.",
-   "detail_en": "Sharing for care with health professionals in Cameroon: allowed (health protection), under professional secrecy."
+   "detail_en": "Sharing for care with health professionals in Cameroon: allowed (health protection), under professional secrecy.",
+   "detail_ar": "المشاركة لأغراض الرعاية مع مقدّمي رعاية في الكاميرون: مسموح (حماية الصحة)، مع السر المهني."
   },
   {
    "id": "COMMERCIAL-SANS-ACCORD",
@@ -1080,7 +1165,8 @@
     "CM24-A9"
    ],
    "detail": "Usage commercial de données de santé sans consentement exprès : interdit.",
-   "detail_en": "Commercial use of health data without express consent: prohibited."
+   "detail_en": "Commercial use of health data without express consent: prohibited.",
+   "detail_ar": "استخدام تجاري لبيانات صحية دون موافقة صريحة: ممنوع."
   },
   {
    "id": "COMMERCIAL-ACCORD-INCONNU",
@@ -1101,7 +1187,8 @@
     "CM24-A9"
    ],
    "detail": "Usage commercial : consentement du patient non établi.",
-   "detail_en": "Commercial use: patient consent not established."
+   "detail_en": "Commercial use: patient consent not established.",
+   "detail_ar": "استخدام تجاري: موافقة المريض غير ثابتة."
   },
   {
    "id": "COMMERCIAL-AVEC-ACCORD",
@@ -1122,7 +1209,8 @@
    ],
    "detail": "Usage commercial de données de santé avec consentement exprès : à autoriser nominativement par un responsable (finalité, durée, destinataires).",
    "detail_en": "Commercial use of health data with express consent: needs named authorisation (purpose, duration, recipients).",
-   "note": "Règle ajoutée après la vérification formelle (exigence S-PA-COMMERCIAL-JAMAIS-CONFORME) : sans elle, un usage commercial consenti adressé à une autorité de santé était jugé conforme."
+   "note": "Règle ajoutée après la vérification formelle (exigence S-PA-COMMERCIAL-JAMAIS-CONFORME) : sans elle, un usage commercial consenti adressé à une autorité de santé était jugé conforme.",
+   "detail_ar": "استخدام تجاري لبيانات صحية مع موافقة صريحة: يلزم إذن باسم شخص مسؤول (الغرض، المدة، المستلمون)."
   },
   {
    "id": "RECHERCHE-ANONYME",
@@ -1137,7 +1225,8 @@
     "CM24-SENSIBLES"
    ],
    "detail": "Recherche sur données anonymisées au Cameroun : permise.",
-   "detail_en": "Research on anonymised data in Cameroon: allowed."
+   "detail_en": "Research on anonymised data in Cameroon: allowed.",
+   "detail_ar": "بحث على بيانات مجهولة الهوية في الكاميرون: مسموح."
   },
   {
    "id": "RECHERCHE-IDENTIFIANTE",
@@ -1153,7 +1242,8 @@
     "CM24-SENSIBLES"
    ],
    "detail": "Recherche sur données identifiantes sans consentement exprès : interdite.",
-   "detail_en": "Research on identifiable data without express consent: prohibited."
+   "detail_en": "Research on identifiable data without express consent: prohibited.",
+   "detail_ar": "بحث على بيانات تكشف الهوية دون موافقة صريحة: ممنوع."
   },
   {
    "id": "AUTORITE-SANTE",
@@ -1167,7 +1257,8 @@
     "CM24-SENSIBLES"
    ],
    "detail": "Transmission à l'autorité de santé camerounaise : permise pour la protection de la santé publique (minimum nécessaire).",
-   "detail_en": "Transmission to the Cameroonian health authority: allowed for public health protection (minimum necessary)."
+   "detail_en": "Transmission to the Cameroonian health authority: allowed for public health protection (minimum necessary).",
+   "detail_ar": "الإرسال إلى السلطة الصحية الكاميرونية: مسموح لحماية الصحة العامة (الحد الأدنى الضروري)."
   },
   {
    "id": "ENTRAINEMENT-IA",
@@ -1185,7 +1276,8 @@
    ],
    "lacune": "L06",
    "detail": "Entraîner une IA avec des données de santé non anonymisées : consentement exprès et base légale à établir.",
-   "detail_en": "Training an AI on non-anonymised health data: express consent and legal basis to be established."
+   "detail_en": "Training an AI on non-anonymised health data: express consent and legal basis to be established.",
+   "detail_ar": "تدريب ذكاء اصطناعي على بيانات صحية غير مجهولة الهوية: يلزم موافقة صريحة وأساس قانوني."
   },
   {
    "id": "PUBLICATION-NOMINATIVE",
@@ -1201,7 +1293,8 @@
     "CM-CP-310"
    ],
    "detail": "Publication nominative de données de santé : violation du secret professionnel, interdite.",
-   "detail_en": "Publishing named health data: breach of professional secrecy, prohibited."
+   "detail_en": "Publishing named health data: breach of professional secrecy, prohibited.",
+   "detail_ar": "نشر بيانات صحية بالأسماء: انتهاك للسر المهني، ممنوع."
   },
   {
    "id": "PUBLICATION-ANONYME",
@@ -1216,7 +1309,8 @@
     "CM24-SENSIBLES"
    ],
    "detail": "Chiffres anonymisés : publication possible.",
-   "detail_en": "Anonymised figures: may be published."
+   "detail_en": "Anonymised figures: may be published.",
+   "detail_ar": "أرقام مجهولة الهوية: يمكن نشرها."
   },
   {
    "id": "PUBLICATION-ANONYMISATION-INCONNUE",
@@ -1232,7 +1326,8 @@
     "CM90-A4"
    ],
    "detail": "Publication : anonymisation non établie.",
-   "detail_en": "Publication: anonymisation not established."
+   "detail_en": "Publication: anonymisation not established.",
+   "detail_ar": "النشر: إخفاء الهوية غير ثابت."
   }
  ],
  "regle_partage_non_couvert": {
@@ -1242,7 +1337,8 @@
    "CM24-SENSIBLES"
   ],
   "detail": "Aucune règle ne couvre cette demande : à soumettre à un humain.",
-  "detail_en": "No rule covers this request: refer to a human."
+  "detail_en": "No rule covers this request: refer to a human.",
+  "detail_ar": "لا تغطي أي قاعدة هذا الطلب: يُحال إلى إنسان."
  },
  "regles_envoi_patient": [
   {
@@ -1259,7 +1355,8 @@
     "CM90-A16-17"
    ],
    "detail": "Message au patient non validé par un médecin inscrit : un diagnostic ou un traitement ne peut venir que d'un médecin inscrit.",
-   "detail_en": "Message to the patient not validated by a registered physician: diagnosis or treatment may only come from a registered physician."
+   "detail_en": "Message to the patient not validated by a registered physician: diagnosis or treatment may only come from a registered physician.",
+   "detail_ar": "رسالة إلى المريض لم يعتمدها طبيب مسجّل: لا يأتي التشخيص أو العلاج إلا من طبيب مسجّل."
   },
   {
    "id": "ENVOI-PRESCRIPTION-NON-CONFORME",
@@ -1278,7 +1375,8 @@
    ],
    "detail": "Le traitement expliqué n'est pas (ou plus) validé : message bloqué.",
    "detail_en": "The treatment explained is not (or no longer) validated: message blocked.",
-   "note": "Liste d'autorisation (et non liste d'exclusion) : tout statut autre que conforme ou maintenu bloque l'envoi. Défaut trouvé par la vérification formelle (outils/verifier_formel.py)."
+   "note": "Liste d'autorisation (et non liste d'exclusion) : tout statut autre que conforme ou maintenu bloque l'envoi. Défaut trouvé par la vérification formelle (outils/verifier_formel.py).",
+   "detail_ar": "العلاج المشروح غير معتمد (أو لم يعد معتمدًا): الرسالة محظورة."
   },
   {
    "id": "ENVOI-TRAITEMENT-SANS-PRESCRIPTION",
@@ -1296,7 +1394,9 @@
    "detail": "Explication de traitement sans prescription du médecin : bloquée.",
    "detail_en": "Treatment explanation without the physician's prescription: blocked.",
    "piste": "Pour un traitement, passez par l'onglet Ordonnance (médicament, dose, posologie) : le juriste contrôle la prescription, puis le traducteur prépare l'explication pour le patient.",
-   "piste_en": "For a treatment, use the Prescription tab (medicine, dose, dosage): the jurist checks the prescription, then the translator prepares the explanation for the patient."
+   "piste_en": "For a treatment, use the Prescription tab (medicine, dose, dosage): the jurist checks the prescription, then the translator prepares the explanation for the patient.",
+   "detail_ar": "شرح علاج دون وصفة من الطبيب: محظور.",
+   "piste_ar": "للعلاج، استخدم تبويب الوصفة (الدواء، الجرعة، طريقة الاستعمال): يتحقق الوكيل القانوني من الوصفة، ثم يُعدّ المترجم الشرح للمريض."
   },
   {
    "id": "ENVOI-VALIDE",
@@ -1309,7 +1409,8 @@
     "CM90-A2"
    ],
    "detail": "Message validé par un médecin inscrit.",
-   "detail_en": "Message validated by a registered physician."
+   "detail_en": "Message validated by a registered physician.",
+   "detail_ar": "رسالة اعتمدها طبيب مسجّل."
   },
   {
    "id": "ENVOI-DIAGNOSTIC",
@@ -1329,7 +1430,8 @@
    ],
    "lacune": "L05",
    "detail": "Diagnostic ou traitement : vérifier que le patient a compris (question de compréhension).",
-   "detail_en": "Diagnosis or treatment: check that the patient understood."
+   "detail_en": "Diagnosis or treatment: check that the patient understood.",
+   "detail_ar": "تشخيص أو علاج: تحقّق من أن المريض فهم (سؤال الفهم)."
   }
  ],
  "regles_etat": [
@@ -1344,7 +1446,8 @@
     "IHR-A6"
    ],
    "detail": "Maladie à potentiel épidémique : notification aux autorités sanitaires (Règlement sanitaire international) ; texte national de déclaration à ajouter à la base.",
-   "detail_en": "Disease with epidemic potential: notify health authorities (International Health Regulations); national notification text to be added."
+   "detail_en": "Disease with epidemic potential: notify health authorities (International Health Regulations); national notification text to be added.",
+   "detail_ar": "مرض ذو قابلية وبائية: إبلاغ السلطات الصحية (اللوائح الصحية الدولية)؛ نص الإبلاغ الوطني يجب إضافته إلى القاعدة."
   },
   {
    "id": "DECLARATION-B",
@@ -1357,7 +1460,8 @@
     "IHR-A6"
    ],
    "detail": "Maladie à déclarer : notification selon les règles nationales de surveillance (à ajouter à la base).",
-   "detail_en": "Notifiable disease: notify under national surveillance rules (to be added)."
+   "detail_en": "Notifiable disease: notify under national surveillance rules (to be added).",
+   "detail_ar": "مرض واجب الإبلاغ: الإبلاغ وفق قواعد الترصد الوطنية (يجب إضافتها إلى القاعدة)."
   },
   {
    "id": "URGENCE-ACCESSIBLE",
@@ -1373,7 +1477,8 @@
    ],
    "lacune": "L09",
    "detail": "Urgence chez un patient sourd : utiliser le jeu de pictogrammes d'urgence et ne pas retarder l'orientation vers les secours.",
-   "detail_en": "Emergency of a deaf patient: use the emergency pictogram set and do not delay referral."
+   "detail_en": "Emergency of a deaf patient: use the emergency pictogram set and do not delay referral.",
+   "detail_ar": "طوارئ لمريض أصم: استخدم مجموعة رموز الطوارئ ولا تؤخر التوجيه إلى خدمات الإسعاف."
   }
  ],
  "regle_mode_inconnu": {
@@ -1383,7 +1488,8 @@
    "CM-DEONTO"
   ],
   "detail": "Mode de consultation inconnu (présentiel ou téléconsultation) : les règles de prescription à distance ne peuvent pas être vérifiées.",
-  "detail_en": "Consultation mode unknown (in person or telehealth): remote-prescribing rules cannot be checked."
+  "detail_en": "Consultation mode unknown (in person or telehealth): remote-prescribing rules cannot be checked.",
+  "detail_ar": "نوع الاستشارة غير معروف (حضوري أو عن بُعد): لا يمكن التحقق من قواعد الوصف عن بُعد."
  },
  "regle_mode_contradictoire": {
   "niveau": "PREUVES_INSUFFISANTES",
@@ -1392,6 +1498,7 @@
    "CM-DEONTO"
   ],
   "detail": "Le mode indiqué sur la prescription contredit le dossier du patient (présentiel / téléconsultation) : à clarifier.",
-  "detail_en": "The mode on the prescription contradicts the patient record (in person / telehealth): to be clarified."
+  "detail_en": "The mode on the prescription contradicts the patient record (in person / telehealth): to be clarified.",
+  "detail_ar": "النوع المذكور في الوصفة يناقض ملف المريض (حضوري / عن بُعد): يجب التوضيح."
  }
 }

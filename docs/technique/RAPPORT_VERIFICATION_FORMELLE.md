@@ -1,6 +1,6 @@
 # Rapport de vérification formelle — MEDIMCOM IA
 
-Généré par `outils/verifier_formel.py` le 2026-11-07 en 167 s. Méthodes, sémantique et références : [`METHODES_FORMELLES.md`](METHODES_FORMELLES.md).
+Généré par `outils/verifier_formel.py` le 2026-11-11 en 188 s. Méthodes, sémantique et références : [`METHODES_FORMELLES.md`](METHODES_FORMELLES.md).
 
 **Résultat : toutes les propriétés sont vérifiées.**
 
@@ -100,18 +100,18 @@ Généré par `outils/verifier_formel.py` le 2026-11-07 en 167 s. Méthodes, sé
 | ✅ | `U-EN-TRAITEMENT-CONFORME (SMT)` | L'explication validée d'une prescription conforme ou maintenue peut partir au patient. | preuve SMT (Z3), domaine non borné | ∞ | fiches DHA21-4.4, CM90-A2 |
 | ✅ | `envoi_patient.X` | Validation croisée : l'encodage logique et le moteur réel rendent le même verdict | comparaison sur 648 entrées | 648 | N-version / double implémentation |
 
-**Exploration du système réel** : 600 suites, 5979 événements (dont des tentatives d'abus), 60282 lignes de journal, 186 messages envoyés au patient, 23 maintiens acceptés et 247 refusés ; verdicts : A_REVOIR 354, BLOQUE 1688, CONFORME 423, PREUVES_INSUFFISANTES 221. Aucune violation des propriétés du moniteur.
+**Exploration du système réel** : 600 suites, 5985 événements (dont des tentatives d'abus), 54642 lignes de journal, 188 messages envoyés au patient, 23 maintiens acceptés et 247 refusés ; verdicts : A_REVOIR 352, BLOQUE 1690, CONFORME 428, PREUVES_INSUFFISANTES 222. Aucune violation des propriétés du moniteur.
 
 ## Cameroun (kb/regles_cm.json)
 
-71 propriétés sur 71 vérifiées ; 3 104 762 cas examinés par énumération  plus les preuves SMT sur un domaine non borné.
+71 propriétés sur 71 vérifiées ; 3 104 766 cas examinés par énumération  plus les preuves SMT sur un domaine non borné.
 
 | | Propriété | Énoncé | Méthode | Cas | Référence |
 |---|---|---|---|---|---|
-| ✅ | `WF1` | Typage : variables déclarées, opérateurs connus, constantes dans leur domaine | analyse statique | 34 | signature typée (DMN, Catala) |
-| ✅ | `WF2` | Identifiants de règles uniques | analyse statique | 34 |  |
-| ✅ | `WF3` | Seule une loi ou une norme lue peut bloquer | analyse statique | 67 | principe de la hiérarchie des normes |
-| ✅ | `WF4` | Chaque règle ne cite que des textes applicables dans son pays | analyse statique | 67 |  |
+| ✅ | `WF1` | Typage : variables déclarées, opérateurs connus, constantes dans leur domaine | analyse statique | 35 | signature typée (DMN, Catala) |
+| ✅ | `WF2` | Identifiants de règles uniques | analyse statique | 35 |  |
+| ✅ | `WF3` | Seule une loi ou une norme lue peut bloquer | analyse statique | 68 | principe de la hiérarchie des normes |
+| ✅ | `WF4` | Chaque règle ne cite que des textes applicables dans son pays | analyse statique | 68 |  |
 | ✅ | `partage.P1` | Refus par défaut : rien n'est conforme sans une permission explicite | énumération exhaustive | 67 500 | politiques « deny by default » (Backes et al., 2018) |
 | ✅ | `partage.P2` | Prudence : si une information inconnue pouvait rendre la demande non conforme, le verdict n'est pas « conforme » | énumération exhaustive | 67 500 | logique à trois valeurs de Kleene ; hypothèse du monde ouvert |
 | ✅ | `partage.P3` | Monotonie : ajouter une garantie (anonymise, autorisation_autorite, consentement_ecrit) n'aggrave jamais le verdict | énumération exhaustive (relation métamorphique) | 202 500 | test métamorphique (Chen et al., 2018) |
@@ -180,7 +180,7 @@ Généré par `outils/verifier_formel.py` le 2026-11-07 en 167 s. Méthodes, sé
 | ✅ | `U-EN-TRAITEMENT-CONFORME (SMT)` | L'explication validée d'une prescription conforme ou maintenue peut partir au patient. | preuve SMT (Z3), domaine non borné | ∞ | fiches DHA21-4.4, CM90-A2 |
 | ✅ | `envoi_patient.X` | Validation croisée : l'encodage logique et le moteur réel rendent le même verdict | comparaison sur 648 entrées | 648 | N-version / double implémentation |
 
-**Exploration du système réel** : 600 suites, 5824 événements (dont des tentatives d'abus), 58741 lignes de journal, 169 messages envoyés au patient, 34 maintiens acceptés et 213 refusés ; verdicts : A_REVOIR 454, BLOQUE 1496, CONFORME 336, PREUVES_INSUFFISANTES 235. Aucune violation des propriétés du moniteur.
+**Exploration du système réel** : 600 suites, 5931 événements (dont des tentatives d'abus), 54093 lignes de journal, 175 messages envoyés au patient, 36 maintiens acceptés et 218 refusés ; verdicts : A_REVOIR 457, BLOQUE 1556, CONFORME 339, PREUVES_INSUFFISANTES 243. Aucune violation des propriétés du moniteur.
 
 ## Propriétés du moniteur (journal)
 

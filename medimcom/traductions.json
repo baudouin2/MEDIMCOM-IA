@@ -1,0 +1,2778 @@
+{
+  "âge": {
+    "en": "age",
+    "ar": "العمر"
+  },
+  "accord du patient": {
+    "en": "patient's agreement",
+    "ar": "موافقة المريض"
+  },
+  "mode de consultation": {
+    "en": "consultation mode",
+    "ar": "نوع الاستشارة"
+  },
+  "antécédents": {
+    "en": "medical history",
+    "ar": "السوابق المرضية"
+  },
+  "Êtes-vous allergique à un médicament ?": {
+    "en": "Are you allergic to any medicine?",
+    "ar": "هل لديك حساسية من أي دواء؟"
+  },
+  "Prenez-vous des médicaments en ce moment ?": {
+    "en": "Are you taking any medicines at the moment?",
+    "ar": "هل تتناول أدوية حاليًا؟"
+  },
+  "Êtes-vous enceinte ?": {
+    "en": "Are you pregnant?",
+    "ar": "هل أنتِ حامل؟"
+  },
+  "autorité de santé de l'émirat : surveiller l'épidémie, ordonner les mesures prévues par la loi, informer la population sans exposer les malades.": {
+    "en": "health authority of the emirate: monitor the epidemic, order the measures provided by law, inform the public without exposing the patients.",
+    "ar": "السلطة الصحية في الإمارة: مراقبة الوباء، والأمر بالتدابير التي ينص عليها القانون، وإبلاغ الجمهور دون كشف هوية المرضى."
+  },
+  "hôpital de référence : accueillir les cas graves, isoler, coopérer avec l'autorité de santé.": {
+    "en": "reference hospital: receive severe cases, isolate, cooperate with the health authority.",
+    "ar": "المستشفى المرجعي: استقبال الحالات الخطيرة، والعزل، والتعاون مع السلطة الصحية."
+  },
+  "cellule de crise : coordonner les institutions, suivre les incidents (y compris d'IA), informer le public.": {
+    "en": "crisis cell: coordinate the institutions, follow incidents (including AI incidents), inform the public.",
+    "ar": "خلية الأزمة: تنسيق المؤسسات، ومتابعة الحوادث (بما فيها حوادث الذكاء الاصطناعي)، وإبلاغ الجمهور."
+  },
+  "Proposition #{} soumise au médecin : {}.{}": {
+    "en": "Proposal #{0} submitted to the doctor: {1}.{2}",
+    "ar": "عُرض الاقتراح رقم {0} على الطبيب: {1}.{2}"
+  },
+  "Proposition #{} retirée : {}.": {
+    "en": "Proposal #{0} withdrawn: {1}.",
+    "ar": "سُحب الاقتراح رقم {0}: {1}."
+  },
+  "Message #{} envoyé au patient.": {
+    "en": "Message #{0} sent to the patient.",
+    "ar": "أُرسلت الرسالة رقم {0} إلى المريض."
+  },
+  "« {} » n'est pas une fiche de la base. Demandez la base légale au juriste.": {
+    "en": "“{0}” is not a provision of the knowledge base. Ask the legal agent for the legal basis.",
+    "ar": "«{0}» ليس حكمًا في قاعدة المعرفة. اطلب الأساس القانوني من الوكيل القانوني."
+  },
+  "{} ne fait pas partie de votre mandat ({}). Adressez-vous à l'institution compétente ou au juriste.": {
+    "en": "{0} is not part of your mandate ({1}). Refer to the competent institution or to the legal agent.",
+    "ar": "{0} ليس من صلاحياتك ({1}). توجّه إلى المؤسسة المختصة أو إلى الوكيل القانوني."
+  },
+  "{} ({}) n'est pas une base contraignante pour une mesure. Demandez au juriste.": {
+    "en": "{0} ({1}) is not a binding basis for a measure. Ask the legal agent.",
+    "ar": "{0} ({1}) ليس أساسًا ملزمًا لاتخاذ تدبير. اسأل الوكيل القانوني."
+  },
+  "{} ne concerne pas les situations de crise. Demandez au juriste.": {
+    "en": "{0} does not concern crisis situations. Ask the legal agent.",
+    "ar": "{0} لا يتعلق بحالات الأزمات. اسأل الوكيل القانوني."
+  },
+  "{} ({}) ne donne pas de pouvoir d'agir. Demandez au juriste quel texte fonde cette mesure.": {
+    "en": "{0} ({1}) gives no power to act. Ask the legal agent which text grounds this measure.",
+    "ar": "{0} ({1}) لا يمنح صلاحية للتصرف. اسأل الوكيل القانوني عن النص الذي يستند إليه هذا التدبير."
+  },
+  "{} n'est connu que par une source secondaire ; une mesure exige le texte officiel.": {
+    "en": "{0} is known only through a secondary source; a measure requires the official text.",
+    "ar": "{0} معروف من مصدر ثانوي فقط؛ ويتطلب التدبير النص الرسمي."
+  },
+  "Mesure enregistrée : {} [{}]": {
+    "en": "Measure recorded: {0} [{1}]",
+    "ar": "سُجّل التدبير: {0} [{1}]"
+  },
+  "Demande #{} transmise au juriste pour contrôle.": {
+    "en": "Request #{0} passed to the legal agent for checking.",
+    "ar": "أُحيل الطلب رقم {0} إلى الوكيل القانوني للتحقق."
+  },
+  "Incident enregistré ({}).": {
+    "en": "Incident recorded ({0}).",
+    "ar": "سُجّلت الحادثة ({0})."
+  },
+  "TABLEAU DE CRISE (aucune donnée de patient) :\nMesures : {}\nIncidents : {}": {
+    "en": "CRISIS BOARD (no patient data):\nMeasures: {0}\nIncidents: {1}",
+    "ar": "لوحة الأزمة (دون بيانات مرضى):\nالتدابير: {0}\nالحوادث: {1}"
+  },
+  "Refusé : la base de pictogrammes (base_v2) n'est pas branchée.": {
+    "en": "Refused: the pictogram library (base_v2) is not connected.",
+    "ar": "مرفوض: مكتبة الرموز (base_v2) غير موصولة."
+  },
+  "Refusé : l'outil « {} » n'appartient pas à l'agent {}.": {
+    "en": "Refused: the tool “{0}” does not belong to agent {1}.",
+    "ar": "مرفوض: الأداة «{0}» لا تخص الوكيل {1}."
+  },
+  "toutes les 6 heures si besoin, 4 fois par jour au maximum": {
+    "en": "every 6 hours if needed, at most 4 times a day",
+    "ar": "كل 6 ساعات عند الحاجة، 4 مرات يوميًا كحد أقصى"
+  },
+  "toutes les 8 heures au cours d'un repas, 3 fois par jour au maximum": {
+    "en": "every 8 hours with a meal, at most 3 times a day",
+    "ar": "كل 8 ساعات مع وجبة، 3 مرات يوميًا كحد أقصى"
+  },
+  "\nPour traiter : onglet Ordonnance (médicament, dose en mg, rythme) ; le juriste et moi la vérifions avant le patient.": {
+    "en": "\nTo treat: Prescription tab (medicine, dose in mg, frequency); the legal agent and I check it before the patient sees it.",
+    "ar": "\nللعلاج: تبويب الوصفة (الدواء، الجرعة بالملغ، عدد المرات)؛ أتحقق منها مع الوكيل القانوني قبل أن تصل إلى المريض."
+  },
+  "\nÀ vérifier avec lui : dose, depuis quand, qui l'a prescrit.": {
+    "en": "\nTo check with the patient: dose, since when, who prescribed it.",
+    "ar": "\nللتحقق مع المريض: الجرعة، ومنذ متى، ومن وصفه."
+  },
+  "médicaments déclarés": {
+    "en": "reported medicines",
+    "ar": "الأدوية المُصرَّح بها"
+  },
+  "Refusé : le patient est un homme ; ne pas parler de grossesse.": {
+    "en": "Refused: the patient is a man; do not mention pregnancy.",
+    "ar": "مرفوض: المريض رجل؛ لا تذكر الحمل."
+  },
+  "Refusé : la patiente n'est pas enceinte (information confirmée) ; ne pas insister sur la grossesse.": {
+    "en": "Refused: the patient is not pregnant (confirmed information); do not insist on pregnancy.",
+    "ar": "مرفوض: المريضة ليست حاملًا (معلومة مؤكدة)؛ لا تُلحّ بشأن الحمل."
+  },
+  "Refusé : « {} » est déjà confirmé ({}, source : {}). Une valeur non confirmée ne le remplace pas ; signalez la contradiction au médecin si besoin.": {
+    "en": "Refused: “{0}” is already confirmed ({1}, source: {2}). An unconfirmed value does not replace it; report the contradiction to the doctor if needed.",
+    "ar": "مرفوض: «{0}» مؤكَّد مسبقًا ({1}، المصدر: {2}). لا تحل محله قيمة غير مؤكدة؛ أبلغ الطبيب بالتناقض عند الحاجة."
+  },
+  " Fait enregistré comme NON confirmé : aucun échange confirmé ne le rapporte.": {
+    "en": " Fact recorded as NOT confirmed: no confirmed exchange reports it.",
+    "ar": " سُجّلت المعلومة على أنها غير مؤكدة: لا يذكرها أي تبادل مؤكد."
+  },
+  "Décision {} introuvable ou pas une prescription.": {
+    "en": "Decision {0} not found or not a prescription.",
+    "ar": "القرار {0} غير موجود أو ليس وصفة."
+  },
+  "Décision {} introuvable ou pas un message au patient.": {
+    "en": "Decision {0} not found or not a message to the patient.",
+    "ar": "القرار {0} غير موجود أو ليس رسالة إلى المريض."
+  },
+  "Refusé : le message #{} n'est plus une proposition (statut « {} »).": {
+    "en": "Refused: message #{0} is no longer a proposal (status “{1}”).",
+    "ar": "مرفوض: الرسالة رقم {0} لم تعد اقتراحًا (الحالة «{1}»)."
+  },
+  "Refusé : la proposition #{} attend encore la validation du médecin ; je la contrôlerai quand il l'aura validée (aucun verdict enregistré).": {
+    "en": "Refused: proposal #{0} is still waiting for the doctor's approval; I will check it once approved (no verdict recorded).",
+    "ar": "مرفوض: الاقتراح رقم {0} ما زال بانتظار اعتماد الطبيب؛ سأتحقق منه بعد اعتماده (لم يُسجَّل أي حكم)."
+  },
+  "Refusé : le message #{} est au statut « {} » : rien à contrôler.": {
+    "en": "Refused: message #{0} has status “{1}”: nothing to check.",
+    "ar": "مرفوض: الرسالة رقم {0} في الحالة «{1}»: لا شيء للتحقق منه."
+  },
+  "Décision {} introuvable ou pas un partage de données.": {
+    "en": "Decision {0} not found or not a data-sharing request.",
+    "ar": "القرار {0} غير موجود أو ليس طلب مشاركة بيانات."
+  },
+  "il faut entre 1 et 12 pictogrammes": {
+    "en": "between 1 and 12 pictograms are needed",
+    "ar": "يلزم من 1 إلى 12 رمزًا"
+  },
+  "pictogramme ou combinaison inconnu(e) ou interdit(e) : {}": {
+    "en": "unknown or forbidden pictogram or combination: {0}",
+    "ar": "رمز أو تركيب غير معروف أو محظور: {0}"
+  },
+  "élément indispensable retiré de la traduction : {}": {
+    "en": "essential element removed from the translation: {0}",
+    "ar": "حُذف عنصر أساسي من الترجمة: {0}"
+  },
+  "Refusé : le médecin a annulé la question #{} ; il la reformulera s'il le souhaite.": {
+    "en": "Refused: the doctor cancelled question #{0}; they will rephrase it if they wish.",
+    "ar": "مرفوض: ألغى الطبيب السؤال رقم {0}؛ وسيعيد صياغته إن شاء."
+  },
+  "Refusé : déjà {} messages libres attendent la validation du médecin (les questions et explications de traitement restent possibles).": {
+    "en": "Refused: {0} free messages are already waiting for the doctor's approval (questions and treatment explanations are still possible).",
+    "ar": "مرفوض: {0} رسائل حرة بانتظار اعتماد الطبيب بالفعل (ما زالت الأسئلة وشروح العلاج ممكنة)."
+  },
+  " Mots sans pictogramme : {}.": {
+    "en": " Words without a pictogram: {0}.",
+    "ar": " كلمات بلا رمز: {0}."
+  },
+  "Refusé : aucune réponse du patient ne correspond à ces pictogrammes (on ne rapporte que ce que le patient a choisi).": {
+    "en": "Refused: no answer from the patient matches these pictograms (only what the patient chose is reported).",
+    "ar": "مرفوض: لا توجد إجابة من المريض تطابق هذه الرموز (لا يُنقل إلا ما اختاره المريض)."
+  },
+  " à « {} »": {
+    "en": " to “{0}”",
+    "ar": " على «{0}»"
+  },
+  "Réponse du patient{} en pictogrammes : [{}] → « {} »": {
+    "en": "Patient's answer{0} in pictograms: [{1}] → “{PHR1}”",
+    "ar": "إجابة المريض{0} بالرموز: [{1}] ← «{PHR1}»"
+  },
+  "Réponse rapportée : « {} »": {
+    "en": "Answer reported: “{0}”",
+    "ar": "نُقلت الإجابة: «{0}»"
+  },
+  "Refusé : seule une de mes propositions en attente de validation peut être retirée.": {
+    "en": "Refused: only one of my proposals waiting for approval can be withdrawn.",
+    "ar": "مرفوض: لا يمكن سحب إلا أحد اقتراحاتي التي تنتظر الاعتماد."
+  },
+  "Refusé : {} n'est pas un message au patient.": {
+    "en": "Refused: {0} is not a message to the patient.",
+    "ar": "مرفوض: {0} ليس رسالة إلى المريض."
+  },
+  "Refusé : le message #{} n'a pas été validé par le médecin et jugé conforme (statut : {}).": {
+    "en": "Refused: message #{0} has not been approved by the doctor and judged compliant (status: {1}).",
+    "ar": "مرفوض: الرسالة رقم {0} لم يعتمدها الطبيب ولم تُعتبر مطابقة (الحالة: {1})."
+  },
+  "Refusé : un message de traitement doit expliquer une prescription du médecin jugée conforme.": {
+    "en": "Refused: a treatment message must explain a prescription of the doctor judged compliant.",
+    "ar": "مرفوض: يجب أن تشرح رسالة العلاج وصفة للطبيب اعتُبرت مطابقة."
+  },
+  "Refusé : la prescription #{} expliquée par ce message n'est plus conforme (statut : {}). Message à refaire.": {
+    "en": "Refused: prescription #{0} explained by this message is no longer compliant (status: {1}). Message to be redone.",
+    "ar": "مرفوض: الوصفة رقم {0} التي تشرحها هذه الرسالة لم تعد مطابقة (الحالة: {1}). يجب إعادة الرسالة."
+  },
+  "aucune vérifiée": {
+    "en": "none verified",
+    "ar": "لا شيء مُتحقَّق منه"
+  },
+  "Refusé : {}": {
+    "en": "Refused: {0}",
+    "ar": "مرفوض: {0}"
+  },
+  "Refusé : les agents de la consultation n'écrivent pas aux institutions (données du patient) ; seuls le médecin et le juriste le peuvent.": {
+    "en": "Refused: the consultation agents do not write to institutions (patient data); only the doctor and the legal agent can.",
+    "ar": "مرفوض: وكلاء الاستشارة لا يراسلون المؤسسات (بيانات المريض)؛ يفعل ذلك الطبيب والوكيل القانوني فقط."
+  },
+  "fièvre": {
+    "en": "fever",
+    "ar": "الحمّى"
+  },
+  "\nVous décidez : « Préremplir l'ordonnance » pour l'ajuster et la prescrire.": {
+    "en": "\nYou decide: “Prefill the prescription” to adjust it and prescribe it.",
+    "ar": "\nالقرار لك: «تعبئة الوصفة مسبقًا» لتعديلها ثم وصفها."
+  },
+  "Le juriste ne peut pas conclure sans ces informations (prescription #{}).": {
+    "en": "The legal agent cannot conclude without this information (prescription #{0}).",
+    "ar": "لا يستطيع الوكيل القانوني الحكم دون هذه المعلومات (الوصفة رقم {0})."
+  },
+  "analyse du juriste": {
+    "en": "legal agent's analysis",
+    "ar": "تحليل الوكيل القانوني"
+  },
+  "Message #{} : ne pas conseiller {} à ce patient": {
+    "en": "Message #{0}: do not advise {1} to this patient",
+    "ar": "الرسالة رقم {0}: لا تنصح هذا المريض بـ{1}"
+  },
+  "Message #{} : préciser la dose de {}": {
+    "en": "Message #{0}: state the dose of {1}",
+    "ar": "الرسالة رقم {0}: حدّد جرعة {1}"
+  },
+  "Le patient dit prendre {} : risqué pour lui": {
+    "en": "The patient says they take {0}: risky for them",
+    "ar": "يقول المريض إنه يتناول {0}: وهذا خطر عليه"
+  },
+  "des allergies": {
+    "en": "allergies",
+    "ar": "حساسية"
+  },
+  "des traitements en cours": {
+    "en": "current treatments",
+    "ar": "علاجات حالية"
+  },
+  "Fiche du patient prise en compte : ": {
+    "en": "Patient record taken into account: ",
+    "ar": "أُخذ ملف المريض في الحسبان: "
+  },
+  "Ce contenu est interdit par une règle contraignante : je le bloque avant toute validation et je dis au médecin quoi faire.": {
+    "en": "This content is forbidden by a binding rule: I block it before any approval and tell the doctor what to do.",
+    "ar": "هذا المحتوى يمنعه حكم ملزم: أحظره قبل أي اعتماد وأخبر الطبيب بما يجب فعله."
+  },
+  "Verdict inchangé pour #{} ({}) : rien de plus à dire.": {
+    "en": "Verdict unchanged for #{0} ({1}): nothing more to say.",
+    "ar": "الحكم دون تغيير للقرار رقم {0} ({1}): لا شيء آخر يُقال."
+  },
+  "Refusé : la proposition #{} existe déjà pour ce sujet (statut : {}).": {
+    "en": "Refused: proposal #{0} already exists for this subject (status: {1}).",
+    "ar": "مرفوض: الاقتراح رقم {0} موجود بالفعل لهذا الموضوع (الحالة: {1})."
+  },
+  "Refusé : {}. Traduction automatique proposée : {}.": {
+    "en": "Refused: {0}. Automatic translation proposed: {1}.",
+    "ar": "مرفوض: {0}. الترجمة الآلية المقترحة: {1}."
+  },
+  "choix de l'agent traducteur": {
+    "en": "translator agent's choice",
+    "ar": "اختيار الوكيل المترجم"
+  },
+  "lu comme « {} »": {
+    "en": "read as “{0}”",
+    "ar": "قُرئت كـ«{0}»"
+  },
+  "Réponse « {} » au message #{} NON enregistrée comme accord : la question d'accord n'a pas été montrée en pictogramme (aucune image « d'accord » ou « accepter »). Ajoutez-la (Modifier les pictogrammes) et reposez la question.": {
+    "en": "Answer “{0}” to message #{1} NOT recorded as agreement: the agreement question was not shown as a pictogram (no “agree” or “accept” image). Add it (Edit pictograms) and ask again.",
+    "ar": "الإجابة «{0}» على الرسالة رقم {1} لم تُسجَّل كموافقة: لم يُعرض سؤال الموافقة برمز (لا صورة «موافق» أو «قبول»). أضفه (تعديل الرموز) واطرح السؤال مجددًا."
+  },
+  " (texte seulement, aucun fait structuré)": {
+    "en": " (text only, no structured fact)",
+    "ar": " (نص فقط، دون معلومة منظَّمة)"
+  },
+  "{} {}, {}. Vous êtes d'accord ?": {
+    "en": "{0} {1}, {2}. Do you agree?",
+    "ar": "{0} {1}، {2}. هل توافق؟"
+  },
+  "Lire les mesures et incidents de la crise (sans données de patients).": {
+    "en": "Read the measures and incidents of the crisis (without patient data).",
+    "ar": "قراءة تدابير الأزمة وحوادثها (دون بيانات مرضى)."
+  },
+  "Je ne tranche pas seul une question de droit : je la pose au juriste.": {
+    "en": "I do not settle a legal question alone: I ask the legal agent.",
+    "ar": "لا أحسم مسألة قانونية وحدي: أطرحها على الوكيل القانوني."
+  },
+  "Refusé : le message contient un identifiant du patient ({}) ; passer par une demande de données contrôlée.": {
+    "en": "Refused: the message contains a patient identifier ({0}); use a controlled data request.",
+    "ar": "مرفوض: تحتوي الرسالة على مُعرّف للمريض ({0})؛ استخدم طلب بيانات خاضعًا للرقابة."
+  },
+  "modèle {} hors service ({} échecs)": {
+    "en": "model {0} out of service ({1} failures)",
+    "ar": "النموذج {0} خارج الخدمة ({1} إخفاقات)"
+  },
+  "prêt": {
+    "en": "ready",
+    "ar": "جاهز"
+  },
+  "Refusé : cet appel identique a déjà été fait deux fois ; passe à autre chose ou termine.": {
+    "en": "Refused: this identical call has already been made twice; move on or finish.",
+    "ar": "مرفوض: نُفّذ هذا الاستدعاء نفسه مرتين؛ انتقل إلى غيره أو أنهِ."
+  },
+  "Le patient signale une {} et rien n'est prescrit : je propose une piste sourcée, contrôlée pour lui.": {
+    "en": "The patient reports {0} and nothing is prescribed: I propose a sourced option, checked for them.",
+    "ar": "يُبلغ المريض عن {0} ولم يوصف شيء: أقترح خيارًا موثّقًا تم التحقق منه له."
+  },
+  "Aucun antalgique simple n'est sans risque pour ce patient : je le dis au médecin.": {
+    "en": "No simple painkiller is risk-free for this patient: I tell the doctor.",
+    "ar": "لا يوجد مسكّن بسيط خالٍ من الخطر لهذا المريض: أُبلغ الطبيب."
+  },
+  "des informations": {
+    "en": "information",
+    "ar": "معلومات"
+  },
+  "Avant de prescrire {}, il manque : {}.\n": {
+    "en": "Before prescribing {0}, the following is missing: {1}.\n",
+    "ar": "قبل وصف {0}، تنقص: {1}.\n"
+  },
+  "Ne pas prescrire {} en l'état": {
+    "en": "Do not prescribe {0} as things stand",
+    "ar": "لا تصف {0} في الوضع الحالي"
+  },
+  "{} : à revoir avant toute prescription": {
+    "en": "{0}: to review before any prescription",
+    "ar": "{0}: بحاجة إلى مراجعة قبل أي وصفة"
+  },
+  "Prescription #{} ({}) jugée « {} » : je préviens le médecin tout de suite et je propose une alternative sourcée.": {
+    "en": "Prescription #{0} ({1}) judged “{2}”: I warn the doctor at once and propose a sourced alternative.",
+    "ar": "الوصفة رقم {0} ({1}) حُكم عليها بـ«{2}»: أُنبّه الطبيب فورًا وأقترح بديلًا موثّقًا."
+  },
+  "ce médicament": {
+    "en": "this medicine",
+    "ar": "هذا الدواء"
+  },
+  "Le message #{} conseille {} : risqué pour ce patient. Je dis au médecin pourquoi et quoi faire.": {
+    "en": "Message #{0} advises {1}: risky for this patient. I tell the doctor why and what to do.",
+    "ar": "الرسالة رقم {0} تنصح بـ{1}: خطر على هذا المريض. أخبر الطبيب بالسبب وبما يجب فعله."
+  },
+  ".\nCe qui est possible :\n• ": {
+    "en": ".\nWhat is possible:\n• ",
+    "ar": ".\nما هو ممكن:\n• "
+  },
+  "Le message #{} est contraire à l'éthique médicale : je le dis au médecin, avec la pratique attendue.": {
+    "en": "Message #{0} goes against medical ethics: I tell the doctor, with the expected practice.",
+    "ar": "الرسالة رقم {0} تخالف أخلاقيات الطب: أُبلغ الطبيب مع الممارسة المتوقعة."
+  },
+  "Le patient déclare prendre {}, risqué au vu de sa fiche : j'alerte le médecin.": {
+    "en": "The patient reports taking {0}, risky given their record: I alert the doctor.",
+    "ar": "يُصرّح المريض بأنه يتناول {0}، وهو خطر بالنظر إلى ملفه: أُنبّه الطبيب."
+  },
+  "« {} »": {
+    "en": "“{0}”",
+    "ar": "«{0}»"
+  },
+  "Le patient refuse que l'IA aide à la consultation : je le dis au médecin.": {
+    "en": "The patient refuses the AI's help in the consultation: I tell the doctor.",
+    "ar": "يرفض المريض مساعدة الذكاء الاصطناعي في الاستشارة: أُبلغ الطبيب."
+  },
+  "préciser": {
+    "en": "specify",
+    "ar": "التحديد"
+  },
+  "les secours": {
+    "en": "emergency services",
+    "ar": "خدمات الطوارئ"
+  },
+  "il s'agit d'une autre personne": {
+    "en": "it is about another person",
+    "ar": "الأمر يتعلق بشخص آخر"
+  },
+  "\nAlternative à discuter : {} (source : {}) ; contrôlée par le moteur du juriste : aucune contre-indication connue pour ce patient. Dose à adapter à l'âge et au poids": {
+    "en": "\nAlternative to discuss: {0} (source: {1}); checked by the legal agent's engine: no known contraindication for this patient. Dose to adjust to age and weight",
+    "ar": "\nبديل للنقاش: {0} (المصدر: {1})؛ تحقّق منه محرك الوكيل القانوني: لا موانع معروفة لهذا المريض. تُعدَّل الجرعة حسب العمر والوزن"
+  },
+  "Signe d'urgence dans l'état du patient : j'alerte le médecin en priorité.": {
+    "en": "Emergency sign in the patient's state: I alert the doctor first.",
+    "ar": "علامة طوارئ في حالة المريض: أُنبّه الطبيب أولًا."
+  },
+  "L'état du patient fait naître des obligations légales : je les rappelle au médecin avec leurs sources.": {
+    "en": "The patient's state gives rise to legal obligations: I remind the doctor of them, with their sources.",
+    "ar": "تترتب على حالة المريض التزامات قانونية: أُذكّر الطبيب بها مع مصادرها."
+  },
+  " Lacunes liées : {}.": {
+    "en": " Related gaps: {0}.",
+    "ar": " ثغرات ذات صلة: {0}."
+  },
+  "Message #{} : {}. Je dis à l'assistant ce que j'ai compris : il suit la consultation.": {
+    "en": "Message #{0}: {1}. I tell the assistant what I understood: it follows the consultation.",
+    "ar": "الرسالة رقم {0}: {1}. أخبر المساعد بما فهمته: فهو يتابع الاستشارة."
+  },
+  "Je ne peux pas trancher le sens de ce message : le médecin confirme ce qu'il veut dire, ou reformule.": {
+    "en": "I cannot settle the meaning of this message: the doctor confirms what they mean, or rephrases.",
+    "ar": "لا أستطيع الحسم في معنى هذه الرسالة: يؤكد الطبيب ما يقصده أو يعيد الصياغة."
+  },
+  "Les textes ne règlent pas entièrement cette situation : je signale la lacune {}.": {
+    "en": "The texts do not fully settle this situation: I report gap {0}.",
+    "ar": "لا تحسم النصوص هذه الحالة بالكامل: أُبلغ عن الثغرة {0}."
+  },
+  "Message au patient #{}": {
+    "en": "Message to the patient #{0}",
+    "ar": "رسالة إلى المريض رقم {0}"
+  },
+  "Demande de partage #{}": {
+    "en": "Sharing request #{0}",
+    "ar": "طلب مشاركة رقم {0}"
+  },
+  "Information manquante : je ne peux pas juger, je le dis au demandeur.": {
+    "en": "Missing information: I cannot judge; I tell the requester.",
+    "ar": "معلومات ناقصة: لا أستطيع الحكم؛ أُبلغ صاحب الطلب."
+  },
+  " Rapprochés automatiquement : ": {
+    "en": " Matched automatically: ",
+    "ar": " مُطابَق تلقائيًا: "
+  },
+  "Le patient a répondu par pictogrammes {} : je rapporte sa réponse dans le dossier.": {
+    "en": "The patient answered with pictograms {0}: I report their answer in the record.",
+    "ar": "أجاب المريض بالرموز {0}: أنقل إجابته إلى الملف."
+  },
+  "Certains mots n'ont pas de pictogramme : je préviens le médecin plutôt que d'inventer.": {
+    "en": "Some words have no pictogram: I warn the doctor rather than invent.",
+    "ar": "بعض الكلمات بلا رمز: أُنبّه الطبيب بدل أن أختلق."
+  },
+  "aucune base vérifiée": {
+    "en": "no verified basis",
+    "ar": "لا أساس مُتحقَّق منه"
+  },
+  "À CONFIRMER : {}\n": {
+    "en": "TO CONFIRM: {0}\n",
+    "ar": "بانتظار التأكيد: {0}\n"
+  },
+  "Refusé : arguments invalides pour {} ({}).": {
+    "en": "Refused: invalid arguments for {0} ({1}).",
+    "ar": "مرفوض: معطيات غير صالحة لـ{0} ({1})."
+  },
+  "politique écrite à la main": {
+    "en": "hand-written policy",
+    "ar": "سياسة مكتوبة يدويًا"
+  },
+  "  ⚠ [{}] modèle indisponible ({}) : repli sur la politique écrite à la main": {
+    "en": "  ⚠ [{0}] model unavailable ({1}): falling back on the hand-written policy",
+    "ar": "  ⚠ [{0}] النموذج غير متاح ({1}): العودة إلى السياسة المكتوبة يدويًا"
+  },
+  "{} écarté : ": {
+    "en": "{0} ruled out: ",
+    "ar": "{0} مُستبعَد: "
+  },
+  ".\nContrôlé par le moteur du juriste pour ce patient : aucune contre-indication connue.": {
+    "en": ".\nChecked by the legal agent's engine for this patient: no known contraindication.",
+    "ar": ".\nتحقّق منه محرك الوكيل القانوني لهذا المريض: لا موانع معروفة."
+  },
+  "J'ai préparé la question pour le patient (onglet Assistant, « Questions à poser ») ; vous pouvez aussi remplir la fiche.": {
+    "en": "I have prepared the question for the patient (Assistant tab, “Questions to ask”); you can also fill in the record.",
+    "ar": "أعددت السؤال للمريض (تبويب المساعد، «أسئلة للطرح»)؛ ويمكنك أيضًا ملء الملف."
+  },
+  "Complétez la fiche ; je revérifie aussitôt.": {
+    "en": "Complete the record; I re-check at once.",
+    "ar": "أكمل الملف؛ وسأعيد التحقق فورًا."
+  },
+  "Message #{} : je ne peux pas vous suivre sur ce point.\nPourquoi :\n• ": {
+    "en": "Message #{0}: I cannot follow you on this point.\nWhy:\n• ",
+    "ar": "الرسالة رقم {0}: لا أستطيع مجاراتك في هذه النقطة.\nالسبب:\n• "
+  },
+  "Lecture du message par le juriste et l'assistant.": {
+    "en": "Reading of the message by the legal agent and the assistant.",
+    "ar": "قراءة الرسالة من قبل الوكيل القانوني والمساعد."
+  },
+  "Le patient signale qu'il ne comprend pas : je propose au médecin des façons de reformuler.": {
+    "en": "The patient says they do not understand: I propose ways of rephrasing to the doctor.",
+    "ar": "يقول المريض إنه لا يفهم: أقترح على الطبيب طرقًا لإعادة الصياغة."
+  },
+  "Le patient a répondu NON à l'aide de l'IA.\nRespectez son choix : poursuivez avec un interprète en langue des signes ou un autre moyen qu'il accepte. Ce refus est enregistré au journal.": {
+    "en": "The patient answered NO to the AI's help.\nRespect their choice: continue with a sign-language interpreter or another means they accept. This refusal is recorded in the log.",
+    "ar": "أجاب المريض بـ«لا» على مساعدة الذكاء الاصطناعي.\nاحترم اختياره: تابع بمترجم لغة إشارة أو بوسيلة أخرى يقبلها. يُسجَّل هذا الرفض في السجل."
+  },
+  "Réponse du patient au message d'accueil.": {
+    "en": "Patient's answer to the welcome message.",
+    "ar": "إجابة المريض على رسالة الترحيب."
+  },
+  "Le patient a {} sans dire lesquels : le médecin doit préciser.": {
+    "en": "The patient has {0} without saying which: the doctor must specify.",
+    "ar": "لدى المريض {0} دون أن يحددها: على الطبيب أن يستوضح."
+  },
+  "Le patient semble exprimer une idée de mort pour lui-même : j'alerte le médecin en priorité.": {
+    "en": "The patient seems to express a thought of death about themselves: I alert the doctor first.",
+    "ar": "يبدو أن المريض يعبّر عن فكرة الموت بشأن نفسه: أُنبّه الطبيب أولًا."
+  },
+  "Votre message #{} évoque une prise de {} par le patient : à vérifier": {
+    "en": "Your message #{0} mentions the patient taking {1}: to check",
+    "ar": "رسالتك رقم {0} تذكر تناول المريض لـ{1}: يجب التحقق"
+  },
+  "Traitement en cours « {} » : aucun médicament nommé. Je demande au médecin de préciser.": {
+    "en": "Current treatment “{0}”: no medicine named. I ask the doctor to specify.",
+    "ar": "العلاج الحالي «{0}»: لم يُذكر اسم دواء. أطلب من الطبيب التحديد."
+  },
+  "\nL'alternative {} est elle aussi à vérifier : ": {
+    "en": "\nThe alternative {0} must also be checked: ",
+    "ar": "\nيجب التحقق من البديل {0} أيضًا: "
+  },
+  "Urgence : utiliser le jeu de pictogrammes d'urgence et orienter sans délai.": {
+    "en": "Emergency: use the emergency pictogram set and refer without delay.",
+    "ar": "طوارئ: استخدم مجموعة رموز الطوارئ ووجّه المريض دون تأخير."
+  },
+  "urgence = vrai dans l'état du patient": {
+    "en": "emergency = true in the patient's state",
+    "ar": "طوارئ = نعم في حالة المريض"
+  },
+  "Femme en âge de procréer et grossesse non renseignée : indispensable avant tout traitement. Je fais poser la question, sans attendre qu'on me le demande.": {
+    "en": "Woman of childbearing age and pregnancy not recorded: essential before any treatment. I have the question asked, without waiting to be asked.",
+    "ar": "امرأة في سن الإنجاب والحمل غير مسجّل: أمر ضروري قبل أي علاج. أطرح السؤال دون انتظار أن يُطلب مني."
+  },
+  "Je préviens aussi le médecin.": {
+    "en": "I also warn the doctor.",
+    "ar": "وأُنبّه الطبيب أيضًا."
+  },
+  "Le juriste signale un problème lié à la grossesse. Je cherche dans la base une piste citée, puis je la propose au médecin sans choisir à sa place.": {
+    "en": "The legal agent reports a pregnancy-related problem. I look for a cited option in the knowledge base, then propose it to the doctor without choosing for them.",
+    "ar": "يُبلغ الوكيل القانوني عن مشكلة تتعلق بالحمل. أبحث في قاعدة المعرفة عن خيار موثّق، ثم أقترحه على الطبيب دون أن أختار عنه."
+  },
+  "La fiche FDA20-NSAID cite le paracétamol comme alternative pour la douleur pendant la grossesse.": {
+    "en": "Provision FDA20-NSAID cites paracetamol as an alternative for pain during pregnancy.",
+    "ar": "يذكر الحكم FDA20-NSAID الباراسيتامول بديلًا لعلاج الألم أثناء الحمل."
+  },
+  "Question de {} : je cherche les textes applicables dans la base avant de répondre.": {
+    "en": "Question from {0}: I look for the applicable texts in the knowledge base before answering.",
+    "ar": "سؤال من {0}: أبحث في قاعدة المعرفة عن النصوص المنطبقة قبل الإجابة."
+  },
+  "Je réponds en citant les textes ; je ne tranche que ce que les textes tranchent.": {
+    "en": "I answer by citing the texts; I only settle what the texts settle.",
+    "ar": "أجيب مستشهدًا بالنصوص؛ ولا أحسم إلا ما تحسمه النصوص."
+  },
+  "Lecture du message #{} « {} » : {}. Indices : {}.": {
+    "en": "Reading of message #{0} “{1}”: {2}. Clues: {3}.",
+    "ar": "قراءة الرسالة رقم {0} «{1}»: {2}. المؤشرات: {3}."
+  },
+  "Message au patient #{} « {} » : sens à confirmer. {}. Il ne partira que si vous confirmez, en le validant, que ce n'est ni une consigne ni une incitation (votre nom est enregistré), ou reformulez.": {
+    "en": "Message to the patient #{0} “{1}”: meaning to confirm. {2}. It will only be sent if you confirm, by approving it, that it is neither an instruction nor an incitement (your name is recorded), or rephrase it.",
+    "ar": "الرسالة إلى المريض رقم {0} «{1}»: المعنى بحاجة إلى تأكيد. {2}. لن تُرسل إلا إذا أكدت، باعتمادها، أنها ليست تعليمة ولا تحريضًا (يُسجَّل اسمك)، أو أعد صياغتها."
+  },
+  "Pour ce patient": {
+    "en": "For this patient",
+    "ar": "لهذا المريض"
+  },
+  "Message au patient #{} « {} » BLOQUÉ, il ne partira pas : {} [{}]": {
+    "en": "Message to the patient #{0} “{1}” BLOCKED, it will not be sent: {2} [{3}]",
+    "ar": "الرسالة إلى المريض رقم {0} «{1}» محظورة، لن تُرسل: {2} [{3}]"
+  },
+  "Je ne peux pas juger sans ces informations. Je les réclame à l'assistant et j'informe le médecin.": {
+    "en": "I cannot judge without this information. I ask the assistant for it and inform the doctor.",
+    "ar": "لا أستطيع الحكم دون هذه المعلومات. أطلبها من المساعد وأُبلغ الطبيب."
+  },
+  "Problème détecté, mais la décision relève du jugement d'un humain : il peut maintenir en le justifiant.": {
+    "en": "Problem detected, but the decision is a matter of human judgement: the doctor may maintain it with a justification.",
+    "ar": "رُصدت مشكلة، لكن القرار يعود إلى تقدير بشري: يمكن للطبيب الإبقاء عليه مع التبرير."
+  },
+  "oui, à préciser": {
+    "en": "yes, to specify",
+    "ar": "نعم، يجب التحديد"
+  },
+  "Le médecin veut informer le patient : je traduis son texte et le lui soumets pour validation.": {
+    "en": "The doctor wants to inform the patient: I translate their text and submit it for approval.",
+    "ar": "يريد الطبيب إبلاغ المريض: أترجم نصه وأعرضه للاعتماد."
+  },
+  "L'assistant veut poser « {} » : je la traduis et la soumets au médecin.": {
+    "en": "The assistant wants to ask “{0}”: I translate it and submit it to the doctor.",
+    "ar": "يريد المساعد طرح «{0}»: أترجمه وأعرضه على الطبيب."
+  },
+  "La prescription #{} est conforme : je prépare l'explication en pictogrammes, avec la question d'accord (consentement), pour validation par le médecin.": {
+    "en": "Prescription #{0} is compliant: I prepare the explanation in pictograms, with the agreement (consent) question, for the doctor's approval.",
+    "ar": "الوصفة رقم {0} مطابقة: أعدّ الشرح بالرموز مع سؤال الموافقة، لاعتماده من الطبيب."
+  },
+  "La réponse à « {} » est déjà dans la fiche : je retire la proposition #{}, devenue inutile.": {
+    "en": "The answer to “{0}” is already in the record: I withdraw proposal #{1}, no longer needed.",
+    "ar": "الإجابة عن «{0}» موجودة في الملف: أسحب الاقتراح رقم {1} لأنه لم يعد ضروريًا."
+  },
+  "Le message #{} est validé par {} et conforme : je l'envoie au patient.": {
+    "en": "Message #{0} is approved by {1} and compliant: I send it to the patient.",
+    "ar": "الرسالة رقم {0} اعتمدها {1} وهي مطابقة: أرسلها إلى المريض."
+  },
+  "Proposition #{} : mots sans pictogramme ({}). Reformuler ou valider tel quel.": {
+    "en": "Proposal #{0}: words without a pictogram ({1}). Rephrase or approve as is.",
+    "ar": "الاقتراح رقم {0}: كلمات بلا رمز ({1}). أعد الصياغة أو اعتمده كما هو."
+  },
+  "Déclaration d'un cas suspect du groupe A : j'ouvre l'enquête autour du cas, comme la loi le prévoit.": {
+    "en": "Declaration of a suspected Group A case: I open an investigation around the case, as the law provides.",
+    "ar": "إبلاغ عن حالة مشتبه بها من المجموعة أ: أفتح تحقيقًا حول الحالة كما ينص القانون."
+  },
+  "Pour la surveillance, je demande les cas suspects ; le juriste contrôlera la demande.": {
+    "en": "For surveillance, I request the suspected cases; the legal agent will check the request.",
+    "ar": "لأغراض الرصد، أطلب الحالات المشتبه بها؛ وسيتحقق الوكيل القانوني من الطلب."
+  },
+  "J'informe la cellule de crise, sans aucune donnée nominative.": {
+    "en": "I inform the crisis cell, without any personal data.",
+    "ar": "أُبلغ خلية الأزمة دون أي بيانات شخصية."
+  },
+  "Quels pouvoirs la loi nous donne-t-elle pendant une épidémie : déclarer une zone infectée, restreindre les rassemblements ?": {
+    "en": "What powers does the law give us during an epidemic: declaring an infected area, restricting gatherings?",
+    "ar": "ما الصلاحيات التي يمنحها لنا القانون أثناء الوباء: إعلان منطقة موبوءة، وتقييد التجمعات؟"
+  },
+  "Un cas grave arrive : je réserve un lit d'isolement, comme la loi impose aux établissements de coopérer.": {
+    "en": "A severe case is arriving: I reserve an isolation bed, as the law requires facilities to cooperate.",
+    "ar": "حالة خطيرة قادمة: أحجز سرير عزل، إذ يُلزم القانون المنشآت بالتعاون."
+  },
+  "Le patient est sourd : je demande au médecin les pictogrammes d'urgence pour l'accueil.": {
+    "en": "The patient is deaf: I ask the doctor for the emergency pictograms for admission.",
+    "ar": "المريض أصم: أطلب من الطبيب رموز الطوارئ للاستقبال."
+  },
+  "J'informe l'autorité de santé.": {
+    "en": "I inform the health authority.",
+    "ar": "أُبلغ السلطة الصحية."
+  },
+  "Défaillance d'un système d'IA dans plusieurs établissements : je l'enregistre comme incident.": {
+    "en": "Failure of an AI system in several facilities: I record it as an incident.",
+    "ar": "خلل في نظام ذكاء اصطناعي في عدة منشآت: أسجله كحادثة."
+  },
+  "Incident d'IA : {} À qui et dans quel délai le signaler ?": {
+    "en": "AI incident: {0} To whom, and within what time, must it be reported?",
+    "ar": "حادثة ذكاء اصطناعي: {0} لمن يجب الإبلاغ عنها، وفي أي مهلة؟"
+  },
+  "modèle déclaré hors service": {
+    "en": "model declared out of service",
+    "ar": "النموذج مُعلن خارج الخدمة"
+  },
+  "politique écrite à la main (veille clinique active)": {
+    "en": "hand-written policy (clinical watch active)",
+    "ar": "سياسة مكتوبة يدويًا (المراقبة السريرية مفعّلة)"
+  },
+  ".\nAvis médical ; traitement non médicamenteux à envisager.": {
+    "en": ".\nMedical opinion; consider non-drug treatment.",
+    "ar": ".\nرأي طبي؛ يُنظر في علاج غير دوائي."
+  },
+  "Information manquante ({}) : je fais poser la question au patient.": {
+    "en": "Missing information ({0}): I have the question asked to the patient.",
+    "ar": "معلومة ناقصة ({0}): أطرح السؤال على المريض."
+  },
+  "L'urgence est prise en charge par le médecin : je retire mon alerte.": {
+    "en": "The emergency is being handled by the doctor: I withdraw my alert.",
+    "ar": "يتولى الطبيب حالة الطوارئ: أسحب تنبيهي."
+  },
+  "La prescription #{} n'attend plus d'information : je retire ma suggestion.": {
+    "en": "Prescription #{0} no longer awaits information: I withdraw my suggestion.",
+    "ar": "الوصفة رقم {0} لم تعد بانتظار معلومات: أسحب اقتراحي."
+  },
+  "Le patient ne comprend pas {}.\nReformulez : une seule idée par message, des mots simples et concrets (« ventre », « mal », « oui / non ») ; montrez du doigt ; si cela ne suffit pas, faites appel à un interprète en langue des signes.": {
+    "en": "The patient does not understand {0}.\nRephrase: one idea per message, simple and concrete words (“belly”, “pain”, “yes / no”); point with your finger; if that is not enough, call a sign-language interpreter.",
+    "ar": "المريض لا يفهم {0}.\nأعد الصياغة: فكرة واحدة في كل رسالة، وكلمات بسيطة وملموسة («بطن»، «ألم»، «نعم / لا»)؛ أشر بإصبعك؛ وإن لم يكفِ ذلك فاستعن بمترجم لغة إشارة."
+  },
+  "Réponse du patient : « je ne comprends pas ».": {
+    "en": "Patient's answer: “I don't understand”.",
+    "ar": "إجابة المريض: «لا أفهم»."
+  },
+  "Le patient dit avoir {}. Demandez lesquels (montrez-lui les pictogrammes de médicaments, ou son ordonnance, sa boîte) et écrivez-les dans la fiche.": {
+    "en": "The patient says they have {0}. Ask which ones (show them the medicine pictograms, or their prescription, their box) and write them in the record.",
+    "ar": "يقول المريض إن لديه {0}. اسأله عنها (أره رموز الأدوية أو وصفته أو العلبة) ودوّنها في الملف."
+  },
+  "Réponse OUI à la question, sans détail.": {
+    "en": "YES answer to the question, without detail.",
+    "ar": "إجابة «نعم» على السؤال دون تفاصيل."
+  },
+  "Le patient semble parler de mourir (« {} »). Évaluez le risque suicidaire maintenant.\nRestez avec lui, demandez-lui directement s'il pense à se faire du mal ; si le danger est immédiat : {}.": {
+    "en": "The patient seems to talk about dying (“{0}”). Assess the suicide risk now.\nStay with them, ask them directly whether they are thinking of harming themselves; if the danger is immediate: {1}.",
+    "ar": "يبدو أن المريض يتحدث عن الموت («{0}»). قيّم خطر الانتحار الآن.\nابقَ معه واسأله مباشرة إن كان يفكر في إيذاء نفسه؛ وإذا كان الخطر وشيكًا: {1}."
+  },
+  "Lecture du contexte par MEDIMCOM IA": {
+    "en": "Context reading by MEDIMCOM AI",
+    "ar": "قراءة السياق بواسطة MEDIMCOM IA"
+  },
+  "Le message #{} est un récit (pas une consigne), mais il dit que le patient a pris {}, risqué pour lui : je le signale.": {
+    "en": "Message #{0} is a narrative (not an instruction), but it says the patient took {1}, risky for them: I report it.",
+    "ar": "الرسالة رقم {0} سرد (وليست تعليمة)، لكنها تقول إن المريض تناول {1}، وهذا خطر عليه: أُبلغ عن ذلك."
+  },
+  "Préciser le traitement en cours (« {} ») : nom du médicament et dose.\nSans le nom, je ne peux pas vérifier les interactions ni les contre-indications.": {
+    "en": "Specify the current treatment (“{0}”): name of the medicine and dose.\nWithout the name, I cannot check interactions or contraindications.",
+    "ar": "حدّد العلاج الحالي («{0}»): اسم الدواء والجرعة.\nدون الاسم لا أستطيع التحقق من التداخلات أو موانع الاستعمال."
+  },
+  "Traitement en cours renseigné sans nom de médicament.": {
+    "en": "Current treatment entered without a medicine name.",
+    "ar": "أُدخل العلاج الحالي دون اسم دواء."
+  },
+  "Vérifier une éventuelle grossesse avant tout traitement.": {
+    "en": "Check for a possible pregnancy before any treatment.",
+    "ar": "تحقّق من احتمال الحمل قبل أي علاج."
+  },
+  "Patiente de {} ans ; grossesse non renseignée.": {
+    "en": "Female patient aged {0}; pregnancy not recorded.",
+    "ar": "مريضة عمرها {0} سنة؛ الحمل غير مسجّل."
+  },
+  "Le juriste réclame une information ; la question est déjà partie vers le patient. Je le lui dis.": {
+    "en": "The legal agent asks for information; the question has already gone to the patient. I tell it so.",
+    "ar": "يطلب الوكيل القانوني معلومة؛ وقد أُرسل السؤال إلى المريض بالفعل. أُخبره بذلك."
+  },
+  "Envisager un antalgique compatible avec la grossesse (la source cite le paracétamol), selon votre jugement.": {
+    "en": "Consider a painkiller compatible with pregnancy (the source cites paracetamol), according to your judgement.",
+    "ar": "فكّر في مسكّن يتوافق مع الحمل (يذكر المصدر الباراسيتامول)، حسب تقديرك."
+  },
+  "La grossesse est maintenant renseignée : ma suggestion n'a plus lieu d'être, je la retire.": {
+    "en": "Pregnancy is now recorded: my suggestion is no longer needed; I withdraw it.",
+    "ar": "الحمل مسجّل الآن: لم يعد لاقتراحي داعٍ، فأسحبه."
+  },
+  "Nouvelle prescription #{} ({}) : je la contrôle avant tout envoi au patient.": {
+    "en": "New prescription #{0} ({1}): I check it before anything is sent to the patient.",
+    "ar": "وصفة جديدة رقم {0} ({1}): أتحقق منها قبل إرسال أي شيء إلى المريض."
+  },
+  "L'état du patient a changé depuis mon contrôle de #{} : je revérifie.": {
+    "en": "The patient's state has changed since my check of #{0}: I re-check.",
+    "ar": "تغيّرت حالة المريض منذ تحققي من القرار رقم {0}: أعيد التحقق."
+  },
+  "Message destiné au patient": {
+    "en": "Message for the patient",
+    "ar": "رسالة موجهة إلى المريض"
+  },
+  "Demande de partage de données": {
+    "en": "Data-sharing request",
+    "ar": "طلب مشاركة بيانات"
+  },
+  "Textes applicables : {}.{} Décision finale : humaine.": {
+    "en": "Applicable texts: {0}.{1} Final decision: human.",
+    "ar": "النصوص المنطبقة: {0}.{1} القرار النهائي: بشري."
+  },
+  "{} : informations manquantes : {}. Pouvez-vous les obtenir ?": {
+    "en": "{0}: missing information: {1}. Can you obtain it?",
+    "ar": "{0}: معلومات ناقصة: {1}. هل يمكنك الحصول عليها؟"
+  },
+  "{} À REVOIR : {}. Vous pouvez maintenir en le justifiant (votre nom sera enregistré), ou choisir une alternative.": {
+    "en": "{0} TO REVIEW: {1}. You may maintain it with a justification (your name will be recorded), or choose an alternative.",
+    "ar": "{0} بحاجة إلى مراجعة: {1}. يمكنك الإبقاء عليه مع التبرير (سيُسجَّل اسمك)، أو اختيار بديل."
+  },
+  "Une règle contraignante interdit cette action : blocage sans dérogation possible. J'alerte et je propose une piste conforme si elle existe.": {
+    "en": "A binding rule forbids this action: blocked with no possible override. I alert and propose a compliant option if one exists.",
+    "ar": "حكم ملزم يمنع هذا الإجراء: حظر دون استثناء ممكن. أُنبّه وأقترح خيارًا مطابقًا إن وُجد."
+  },
+  "Conforme : la décision peut avancer ; je joins les obligations à remplir.": {
+    "en": "Compliant: the decision can go ahead; I attach the obligations to fulfil.",
+    "ar": "مطابق: يمكن المضي في القرار؛ أرفق الالتزامات الواجب الوفاء بها."
+  },
+  "information déjà obtenue": {
+    "en": "information already obtained",
+    "ar": "المعلومة حُصِّلت بالفعل"
+  },
+  "Enquête épidémiologique, dépistage et isolement des contacts du cas déclaré": {
+    "en": "Epidemiological investigation, screening and isolation of the contacts of the declared case",
+    "ar": "تحقيق وبائي وفحص وعزل لمخالطي الحالة المُبلَّغ عنها"
+  },
+  "Déclaration du médecin reçue": {
+    "en": "Doctor's declaration received",
+    "ar": "تم استلام إبلاغ الطبيب"
+  },
+  "Cas suspects pour la surveillance de l'épidémie.": {
+    "en": "Suspected cases for epidemic surveillance.",
+    "ar": "حالات مشتبه بها لرصد الوباء."
+  },
+  "Un cas suspect de maladie du groupe A a été déclaré dans le quartier. Enquête ouverte.": {
+    "en": "A suspected case of a Group A disease has been declared in the district. Investigation opened.",
+    "ar": "أُبلغ عن حالة مشتبه بها لمرض من المجموعة أ في الحي. فُتح تحقيق."
+  },
+  "La réponse du juriste ne cite pas de pouvoir applicable : je ne prends pas de mesure coercitive.": {
+    "en": "The legal agent's answer cites no applicable power: I take no coercive measure.",
+    "ar": "لا يذكر رد الوكيل القانوني أي صلاحية منطبقة: لا أتخذ أي تدبير قسري."
+  },
+  "détresse": {
+    "en": "distress",
+    "ar": "ضائقة"
+  },
+  "transféré": {
+    "en": "transferred",
+    "ar": "نُقل"
+  },
+  "Lit d'isolement réservé ; équipe prévenue": {
+    "en": "Isolation bed reserved; team alerted",
+    "ar": "حُجز سرير عزل؛ وأُبلغ الفريق"
+  },
+  "Lit d'isolement prêt. Patient sourd : merci de transmettre le jeu de pictogrammes d'urgence pour l'accueil.": {
+    "en": "Isolation bed ready. Deaf patient: please send the emergency pictogram set for admission.",
+    "ar": "سرير العزل جاهز. المريض أصم: يُرجى إرسال مجموعة رموز الطوارئ للاستقبال."
+  },
+  "Un cas grave suspect est hospitalisé en isolement.": {
+    "en": "A suspected severe case is hospitalised in isolation.",
+    "ar": "حالة خطيرة مشتبه بها في العزل بالمستشفى."
+  },
+  "Je transmets à l'autorité de santé l'avis du juriste sur le signalement de l'incident.": {
+    "en": "I pass the legal agent's opinion on reporting the incident to the health authority.",
+    "ar": "أُحيل رأي الوكيل القانوني بشأن الإبلاغ عن الحادثة إلى السلطة الصحية."
+  },
+  "Piste de traitement pour la {} : {}": {
+    "en": "Treatment option for the {0}: {1}",
+    "ar": "خيار علاجي لـ{0}: {1}"
+  },
+  " ; sans dépasser {} mg par jour chez l'adulte": {
+    "en": "; not exceeding {0} mg a day in adults",
+    "ar": "؛ دون تجاوز {0} ملغ يوميًا لدى البالغين"
+  },
+  "Aucun antalgique simple sans contre-indication pour ce patient.\n• ": {
+    "en": "No simple painkiller without contraindication for this patient.\n• ",
+    "ar": "لا يوجد مسكّن بسيط دون موانع لهذا المريض.\n• "
+  },
+  "Nécessaire avant de prescrire {}.": {
+    "en": "Needed before prescribing {0}.",
+    "ar": "ضروري قبل وصف {0}."
+  },
+  "information obtenue ou prescription modifiée": {
+    "en": "information obtained or prescription changed",
+    "ar": "حُصّلت المعلومة أو عُدّلت الوصفة"
+  },
+  "Nouveau fait rapporté par {} : {} = {}. Je l'ajoute à l'état du patient.": {
+    "en": "New fact reported by {0}: {1} = {2}. I add it to the patient's state.",
+    "ar": "معلومة جديدة أبلغ عنها {0}: {1} = {2}. أضيفها إلى حالة المريض."
+  },
+  "Question déjà transmise au patient : « {} ». Je vous préviens dès la réponse.": {
+    "en": "Question already sent to the patient: “{0}”. I will tell you as soon as they answer.",
+    "ar": "أُرسل السؤال إلى المريض بالفعل: «{0}». سأخبرك فور إجابته."
+  },
+  "Nouvelle proposition #{} pour le patient : je contrôle son contenu avant que le médecin la valide.": {
+    "en": "New proposal #{0} for the patient: I check its content before the doctor approves it.",
+    "ar": "اقتراح جديد رقم {0} للمريض: أتحقق من محتواه قبل أن يعتمده الطبيب."
+  },
+  "La fiche du patient a changé : je recontrôle la proposition #{} avant que le médecin la valide.": {
+    "en": "The patient record has changed: I re-check proposal #{0} before the doctor approves it.",
+    "ar": "تغيّر ملف المريض: أعيد التحقق من الاقتراح رقم {0} قبل أن يعتمده الطبيب."
+  },
+  "{} #{} : je le contrôle.": {
+    "en": "{0} #{1}: I check it.",
+    "ar": "{0} رقم {1}: أتحقق منه."
+  },
+  " Extraits des textes complets : ": {
+    "en": " Extracts from the full texts: ",
+    "ar": " مقتطفات من النصوص الكاملة: "
+  },
+  "{} : décision humaine nominative requise. {}": {
+    "en": "{0}: a named human decision is required. {1}",
+    "ar": "{0}: يلزم قرار بشري باسم صاحبه. {1}"
+  },
+  "{} BLOQUÉ, il ne partira pas (aucune dérogation possible) : {}": {
+    "en": "{0} BLOCKED, it will not be sent (no possible override): {1}",
+    "ar": "{0} محظور، لن يُرسل (لا استثناء ممكن): {1}"
+  },
+  "Le juriste cite l'article sur les pouvoirs en cas d'épidémie : j'enregistre la mesure sur cette base.": {
+    "en": "The legal agent cites the article on powers during an epidemic: I record the measure on that basis.",
+    "ar": "يستشهد الوكيل القانوني بالمادة المتعلقة بالصلاحيات أثناء الوباء: أسجّل التدبير على هذا الأساس."
+  },
+  "La presse réclame la liste des personnes infectées. Je prépare une publication ; le juriste la contrôlera.": {
+    "en": "The press is asking for the list of infected people. I prepare a publication; the legal agent will check it.",
+    "ar": "تطلب الصحافة قائمة المصابين. أعدّ منشورًا؛ وسيتحقق منه الوكيل القانوني."
+  },
+  "BLOQUÉ": {
+    "en": "BLOCKED",
+    "ar": "محظور"
+  },
+  "Incident d'IA enregistré. Avis du juriste : {}": {
+    "en": "AI incident recorded. Legal agent's opinion: {0}",
+    "ar": "سُجّلت حادثة الذكاء الاصطناعي. رأي الوكيل القانوني: {0}"
+  },
+  "Demande de la presse : la décision revient à l'autorité de santé, je la lui transmets.": {
+    "en": "Press request: the decision belongs to the health authority; I pass it on.",
+    "ar": "طلب الصحافة: القرار للسلطة الصحية؛ أُحيله إليها."
+  },
+  "Refusé": {
+    "en": "Refused",
+    "ar": "مرفوض"
+  },
+  " (enfant : dose selon le poids, à fixer par vous)": {
+    "en": " (child: dose according to weight, for you to set)",
+    "ar": " (طفل: الجرعة حسب الوزن، يحددها الطبيب)"
+  },
+  "Lecture de la réponse du patient : ": {
+    "en": "Reading of the patient's answer: ",
+    "ar": "قراءة إجابة المريض: "
+  },
+  "échange : {}": {
+    "en": "exchange: {0}",
+    "ar": "تبادل: {0}"
+  },
+  "#{} : ne pas envoyer ce message au patient tant qu'un médecin autorisé ne l'a pas validé.": {
+    "en": "#{0}: do not send this message to the patient until an authorised doctor has approved it.",
+    "ar": "رقم {0}: لا تُرسل هذه الرسالة إلى المريض قبل أن يعتمدها طبيب مرخّص."
+  },
+  "Décision #{} ({}) conforme.": {
+    "en": "Decision #{0} ({1}) compliant.",
+    "ar": "القرار رقم {0} ({1}) مطابق."
+  },
+  "Déclaration du quartier comme zone infectée ; rassemblements restreints": {
+    "en": "District declared an infected area; gatherings restricted",
+    "ar": "إعلان الحي منطقة موبوءة؛ وتقييد التجمعات"
+  },
+  "Foyer confirmé ; avis du juriste": {
+    "en": "Outbreak confirmed; legal agent's opinion",
+    "ar": "تأكّد البؤرة؛ رأي الوكيل القانوني"
+  },
+  "Publier la liste nominative des personnes infectées.": {
+    "en": "Publish the list of the infected people by name.",
+    "ar": "نشر قائمة المصابين بالأسماء."
+  },
+  "Le juriste bloque la publication nominative et propose une piste conforme : je la suis.": {
+    "en": "The legal agent blocks the publication of names and proposes a compliant option: I follow it.",
+    "ar": "يحظر الوكيل القانوني نشر الأسماء ويقترح خيارًا مطابقًا: أتّبعه."
+  },
+  "La presse réclame la liste des personnes infectées. ({})": {
+    "en": "The press is asking for the list of infected people. ({0})",
+    "ar": "تطلب الصحافة قائمة المصابين. ({0})"
+  },
+  "aucun texte trouvé": {
+    "en": "no text found",
+    "ar": "لم يُعثر على نص"
+  },
+  "Publier le nombre de cas par quartier, sans aucune identité.": {
+    "en": "Publish the number of cases per district, without any identity.",
+    "ar": "نشر عدد الحالات في كل حي دون أي هوية."
+  },
+  "Pour ce patient : ": {
+    "en": "For this patient: ",
+    "ar": "لهذا المريض: "
+  },
+  "Message contraire à l'éthique médicale : ": {
+    "en": "Message contrary to medical ethics: ",
+    "ar": "رسالة مخالفة لأخلاقيات الطب: "
+  },
+  "Proposition #{} validée par {} : {}": {
+    "en": "Proposal #{0} approved by {1}: {2}",
+    "ar": "اعتمد {1} الاقتراح رقم {0}: {2}"
+  },
+  "Proposition #{} modifiée : {} (à valider)": {
+    "en": "Proposal #{0} edited: {1} (to approve)",
+    "ar": "عُدّل الاقتراح رقم {0}: {1} (بانتظار الاعتماد)"
+  },
+  "Proposition #{} annulée : {}": {
+    "en": "Proposal #{0} cancelled: {1}",
+    "ar": "أُلغي الاقتراح رقم {0}: {1}"
+  },
+  "Message #{} retiré de l'écran du patient (le journal le garde).": {
+    "en": "Message #{0} removed from the patient's screen (the log keeps it).",
+    "ar": "أُزيلت الرسالة رقم {0} من شاشة المريض (يحتفظ بها السجل)."
+  },
+  "Message #{} masqué de la conversation (le journal le garde).": {
+    "en": "Message #{0} hidden from the conversation (the log keeps it).",
+    "ar": "أُخفيت الرسالة رقم {0} من المحادثة (يحتفظ بها السجل)."
+  },
+  "Refusé : seul le médecin valide un message destiné au patient.": {
+    "en": "Refused: only the doctor approves a message for the patient.",
+    "ar": "مرفوض: الطبيب وحده يعتمد رسالة موجهة إلى المريض."
+  },
+  "Refusé : aucune proposition en attente de validation.": {
+    "en": "Refused: no proposal waiting for approval.",
+    "ar": "مرفوض: لا يوجد اقتراح بانتظار الاعتماد."
+  },
+  "Refusé : ce message n'a aucun pictogramme, le patient ne verrait rien. Ajoutez-en (Modifier les pictogrammes) ou reformulez.": {
+    "en": "Refused: this message has no pictogram, the patient would see nothing. Add some (Edit pictograms) or rephrase.",
+    "ar": "مرفوض: هذه الرسالة بلا رموز، ولن يرى المريض شيئًا. أضف رموزًا (تعديل الرموز) أو أعد الصياغة."
+  },
+  "Refusé : le juriste a bloqué ce message, il ne peut pas être envoyé. {}": {
+    "en": "Refused: the legal agent blocked this message; it cannot be sent. {0}",
+    "ar": "مرفوض: حظر الوكيل القانوني هذه الرسالة؛ لا يمكن إرسالها. {0}"
+  },
+  "Refusé : seule une proposition en attente de validation peut être modifiée.": {
+    "en": "Refused: only a proposal waiting for approval can be edited.",
+    "ar": "مرفوض: لا يمكن تعديل إلا اقتراح بانتظار الاعتماد."
+  },
+  "Refusé : aucun pictogramme.": {
+    "en": "Refused: no pictogram.",
+    "ar": "مرفوض: لا توجد رموز."
+  },
+  "Refusé : pictogramme ou combinaison inconnu(e) ou interdit(e) : {}.": {
+    "en": "Refused: unknown or forbidden pictogram or combination: {0}.",
+    "ar": "مرفوض: رمز أو تركيب غير معروف أو محظور: {0}."
+  },
+  "médecin ({})": {
+    "en": "doctor ({0})",
+    "ar": "الطبيب ({0})"
+  },
+  "Refusé : seul le médecin rejette une proposition.": {
+    "en": "Refused: only the doctor rejects a proposal.",
+    "ar": "مرفوض: الطبيب وحده يرفض اقتراحًا."
+  },
+  "Refusé : aucune proposition en attente à rejeter.": {
+    "en": "Refused: no pending proposal to reject.",
+    "ar": "مرفوض: لا يوجد اقتراح معلّق لرفضه."
+  },
+  "Refusé : seul un message déjà envoyé au patient peut être retiré de son écran.": {
+    "en": "Refused: only a message already sent to the patient can be removed from their screen.",
+    "ar": "مرفوض: لا يمكن إزالة إلا رسالة أُرسلت بالفعل من شاشة المريض."
+  },
+  "Refusé : annulez ou retirez d'abord ce message.": {
+    "en": "Refused: cancel or remove this message first.",
+    "ar": "مرفوض: ألغِ هذه الرسالة أو أزلها أولًا."
+  },
+  "Refusé : {} propositions en attente ; préciser decision_id.": {
+    "en": "Refused: {0} pending proposals; specify decision_id.",
+    "ar": "مرفوض: {0} اقتراحات معلّقة؛ حدّد decision_id."
+  },
+  "Refusé : le sens de ce message est à confirmer (ni consigne ni incitation ?). Confirmez-le en le validant, ou reformulez.": {
+    "en": "Refused: the meaning of this message must be confirmed (neither an instruction nor an incitement?). Confirm it by approving it, or rephrase.",
+    "ar": "مرفوض: يجب تأكيد معنى هذه الرسالة (ليست تعليمة ولا تحريضًا؟). أكّده باعتمادها أو أعد الصياغة."
+  },
+  "Refusé : {}.": {
+    "en": "Refused: {0}.",
+    "ar": "مرفوض: {0}."
+  },
+  "Refusé : {} proposition(s) correspondante(s) ; préciser decision_id.": {
+    "en": "Refused: {0} matching proposal(s); specify decision_id.",
+    "ar": "مرفوض: {0} اقتراح(ات) مطابقة؛ حدّد decision_id."
+  },
+  "elle ne partira pas": {
+    "en": "it will not be sent",
+    "ar": "لن تُرسل"
+  },
+  "médecin": {
+    "en": "doctor",
+    "ar": "الطبيب"
+  },
+  "contenu non contrôlé avant validation": {
+    "en": "content not checked before approval",
+    "ar": "لم يُتحقَّق من المحتوى قبل الاعتماد"
+  },
+  "non contrôlée par le juriste après stabilisation": {
+    "en": "not checked by the legal agent after stabilisation",
+    "ar": "لم يتحقق منه الوكيل القانوني بعد الاستقرار"
+  },
+  "fiche saisie par le médecin": {
+    "en": "record entered by the doctor",
+    "ar": "ملف أدخله الطبيب"
+  },
+  "remplacée par le médecin": {
+    "en": "replaced by the doctor",
+    "ar": "استبدله الطبيب"
+  },
+  "question du médecin": {
+    "en": "doctor's question",
+    "ar": "سؤال الطبيب"
+  },
+  "après modification": {
+    "en": "after editing",
+    "ar": "بعد التعديل"
+  },
+  "refusée par le médecin": {
+    "en": "refused by the doctor",
+    "ar": "رفضه الطبيب"
+  },
+  "Type d'événement inconnu : {}": {
+    "en": "Unknown event type: {0}",
+    "ar": "نوع حدث غير معروف: {0}"
+  },
+  "Bonjour. Je suis votre médecin. Un ordinateur m'aide à traduire. C'est moi qui décide. Vous pouvez dire non. Vous êtes d'accord ?": {
+    "en": "Hello. I am your doctor. A computer helps me translate. I am the one who decides. You can say no. Do you agree?",
+    "ar": "مرحبًا. أنا طبيبك. يساعدني حاسوب في الترجمة. أنا من يقرّر. يمكنك أن تقول لا. هل توافق؟"
+  },
+  "Groq · modèle open source": {
+    "en": "Groq · open-source model",
+    "ar": "Groq · نموذج مفتوح المصدر"
+  },
+  "Transmis aux agents : traitement en cours (l'écran se met à jour tout seul).": {
+    "en": "Passed to the agents: processing (the screen updates by itself).",
+    "ar": "أُحيل إلى الوكلاء: جارٍ المعالجة (تتحدّث الشاشة تلقائيًا)."
+  },
+  "Document « {} » joint au dossier : lecture en cours.": {
+    "en": "Document “{0}” attached to the record: being read.",
+    "ar": "أُرفق المستند «{0}» بالملف: جارٍ قراءته."
+  },
+  "Document envoyé au médecin.": {
+    "en": "Document sent to the doctor.",
+    "ar": "أُرسل المستند إلى الطبيب."
+  },
+  "dictée indisponible : ni clé GROQ_API_KEY ni clé XAI_API_KEY (fichier .env)": {
+    "en": "dictation unavailable: no GROQ_API_KEY or XAI_API_KEY key (.env file)",
+    "ar": "الإملاء غير متاح: لا يوجد مفتاح GROQ_API_KEY ولا XAI_API_KEY (ملف .env)"
+  },
+  "enregistrement vide ou illisible": {
+    "en": "empty or unreadable recording",
+    "ar": "تسجيل فارغ أو غير مقروء"
+  },
+  "enregistrement trop long (2 minutes au plus)": {
+    "en": "recording too long (2 minutes at most)",
+    "ar": "التسجيل طويل جدًا (دقيقتان على الأكثر)"
+  },
+  "Ce document est déjà dans le dossier.": {
+    "en": "This document is already in the record.",
+    "ar": "هذا المستند موجود في الملف بالفعل."
+  },
+  "Accès médecin : utiliser le lien affiché au démarrage du serveur.": {
+    "en": "Doctor access: use the link shown when the server starts.",
+    "ar": "دخول الطبيب: استخدم الرابط المعروض عند تشغيل الخادم."
+  },
+  "Message masqué.": {
+    "en": "Message hidden.",
+    "ar": "أُخفيت الرسالة."
+  },
+  "reconnaissance vocale refusée (HTTP {}) : {}": {
+    "en": "speech recognition refused (HTTP {0}): {1}",
+    "ar": "رُفض التعرّف على الكلام (HTTP {0}): {1}"
+  },
+  "au plus {} documents par consultation": {
+    "en": "at most {0} documents per consultation",
+    "ar": "{0} مستندات على الأكثر في كل استشارة"
+  },
+  "Le patient a envoyé un document ({}) : à voir dans « Documents du patient » ; lecture automatique en cours.": {
+    "en": "The patient sent a document ({0}): see “Patient documents”; automatic reading in progress.",
+    "ar": "أرسل المريض مستندًا ({0}): انظر «مستندات المريض»؛ القراءة التلقائية جارية."
+  },
+  "Lecture du document « {} » ({}) : à confirmer par le médecin.": {
+    "en": "Reading of document “{0}” ({1}): to be confirmed by the doctor.",
+    "ar": "قراءة المستند «{0}» ({1}): بانتظار تأكيد الطبيب."
+  },
+  "nom d'hôte refusé": {
+    "en": "host name refused",
+    "ar": "اسم المضيف مرفوض"
+  },
+  "requête refusée (type ou origine)": {
+    "en": "request refused (type or origin)",
+    "ar": "الطلب مرفوض (النوع أو المصدر)"
+  },
+  "jeton médecin manquant ou invalide": {
+    "en": "doctor token missing or invalid",
+    "ar": "رمز الطبيب مفقود أو غير صالح"
+  },
+  "le corps doit être un objet JSON": {
+    "en": "the body must be a JSON object",
+    "ar": "يجب أن يكون المتن كائن JSON"
+  },
+  "donnees doit être un objet": {
+    "en": "donnees must be an object",
+    "ar": "يجب أن تكون donnees كائنًا"
+  },
+  "Déjà transmis : la traduction arrive (inutile de renvoyer).": {
+    "en": "Already sent: the translation is coming (no need to send again).",
+    "ar": "أُرسل بالفعل: الترجمة قادمة (لا داعي لإعادة الإرسال)."
+  },
+  "langue : fr, en ou ar": {
+    "en": "language: fr, en or ar",
+    "ar": "اللغة: fr أو en أو ar"
+  },
+  "Déjà transmis : la traduction arrive.": {
+    "en": "Already sent: the translation is coming.",
+    "ar": "أُرسل بالفعل: الترجمة قادمة."
+  },
+  "pictogramme ou combinaison non reconnu(e) : {}": {
+    "en": "pictogram or combination not recognised: {0}",
+    "ar": "رمز أو تركيب غير معروف: {0}"
+  },
+  "Déjà envoyé au médecin.": {
+    "en": "Already sent to the doctor.",
+    "ar": "أُرسل إلى الطبيب بالفعل."
+  },
+  "aucune ordonnance remise au patient pour l'instant": {
+    "en": "no prescription given to the patient yet",
+    "ar": "لم تُسلَّم أي وصفة للمريض حتى الآن"
+  },
+  "référence introuvable : {}": {
+    "en": "reference not found: {0}",
+    "ar": "المرجع غير موجود: {0}"
+  },
+  "requête trop lourde": {
+    "en": "request too large",
+    "ar": "الطلب كبير جدًا"
+  },
+  "Renseignements saisis par le médecin.": {
+    "en": "Information entered by the doctor.",
+    "ar": "معلومات أدخلها الطبيب."
+  },
+  "Langue : français.": {
+    "en": "Language: French.",
+    "ar": "اللغة: الفرنسية."
+  },
+  "document du patient": {
+    "en": "patient document",
+    "ar": "مستند المريض"
+  },
+  "Information manquante ({}) pour écarter : ": {
+    "en": "Missing information ({0}) to rule out: ",
+    "ar": "معلومة ناقصة ({0}) للاستبعاد: "
+  },
+  "Quantité imprécise de {} (« {} ») : risque de surdosage{}.": {
+    "en": "Imprecise quantity of {0} (“{1}”): risk of overdose{2}.",
+    "ar": "كمية غير دقيقة من {0} («{1}»): خطر جرعة زائدة{2}."
+  },
+  "Prescrivez {} dans l'onglet Ordonnance avec une dose en mg et un rythme précis : le juriste et l'assistant la vérifient.": {
+    "en": "Prescribe {0} in the Prescription tab with a dose in mg and a precise frequency: the legal agent and the assistant check it.",
+    "ar": "صِف {0} في تبويب الوصفة بجرعة بالملغ وعدد مرات محدد: يتحقق منها الوكيل القانوني والمساعد."
+  },
+  "Message contraire à l'éthique médicale : {}. Il ne partira pas.": {
+    "en": "Message contrary to medical ethics: {0}. It will not be sent.",
+    "ar": "رسالة مخالفة لأخلاقيات الطب: {0}. لن تُرسل."
+  },
+  "maintien autorisé": {
+    "en": "maintenance allowed",
+    "ar": "الإبقاء مسموح"
+  },
+  "maladie des reins": {
+    "en": "kidney disease",
+    "ar": "مرض الكلى"
+  },
+  "maladie du foie": {
+    "en": "liver disease",
+    "ar": "مرض الكبد"
+  },
+  "ulcère": {
+    "en": "ulcer",
+    "ar": "قرحة"
+  },
+  "maladie du cœur": {
+    "en": "heart disease",
+    "ar": "مرض القلب"
+  },
+  "Garde-fou de sûreté de MEDIMCOM IA (dose)": {
+    "en": "MEDIMCOM AI safety guard (dose)",
+    "ar": "ضمانة السلامة في MEDIMCOM IA (الجرعة)"
+  },
+  "Garde-fou éthique de MEDIMCOM IA": {
+    "en": "MEDIMCOM AI ethics guard",
+    "ar": "الضمانة الأخلاقية في MEDIMCOM IA"
+  },
+  "Garde-fou de sûreté de MEDIMCOM IA (aucun texte lu ne couvre encore ce cas dans ce pays)": {
+    "en": "MEDIMCOM AI safety guard (no text read covers this case in this country yet)",
+    "ar": "ضمانة السلامة في MEDIMCOM IA (لا يغطي أي نص مقروء هذه الحالة في هذا البلد بعد)"
+  },
+  "Message dangereux pour le patient ({}) : il ne partira pas.": {
+    "en": "Message harmful to the patient ({0}): it will not be sent.",
+    "ar": "رسالة مؤذية للمريض ({0}): لن تُرسل."
+  },
+  "Retirez ce message. Si le patient semble en détresse, dites-lui que vous êtes là pour l'aider et appelez les secours.": {
+    "en": "Withdraw this message. If the patient seems distressed, tell them you are there to help and call emergency services.",
+    "ar": "اسحب هذه الرسالة. إذا بدا المريض في ضيق، فقل له إنك هنا لمساعدته واتصل بخدمات الطوارئ."
+  },
+  "décision bloquée par une règle contraignante : aucune dérogation possible.": {
+    "en": "decision blocked by a binding rule: no override possible.",
+    "ar": "قرار محظور بحكم ملزم: لا استثناء ممكن."
+  },
+  "seule une décision « à revoir » peut être maintenue (statut actuel : {}).": {
+    "en": "only a “to review” decision can be maintained (current status: {0}).",
+    "ar": "لا يمكن الإبقاء إلا على قرار «بحاجة إلى مراجعة» (الحالة الحالية: {0})."
+  },
+  "{} n'est pas un praticien autorisé et actif.": {
+    "en": "{0} is not an authorised, active practitioner.",
+    "ar": "{0} ليس ممارسًا مرخّصًا وفي الخدمة."
+  },
+  "une justification écrite est obligatoire.": {
+    "en": "a written justification is required.",
+    "ar": "التبرير المكتوب إلزامي."
+  },
+  "Antécédents non renseignés : vérifiez l'absence de {} avant {}.": {
+    "en": "Medical history not recorded: check the absence of {0} before {1}.",
+    "ar": "السوابق المرضية غير مسجّلة: تحقّق من عدم وجود {0} قبل {1}."
+  },
+  "Remplissez « Maladies connues, antécédents » dans la fiche (même « aucun »).": {
+    "en": "Fill in “Known conditions, medical history” in the record (even “none”).",
+    "ar": "املأ «الأمراض المعروفة والسوابق» في الملف (ولو «لا شيء»)."
+  },
+  "Lecture de MEDIMCOM IA": {
+    "en": "MEDIMCOM AI reading",
+    "ar": "قراءة MEDIMCOM IA"
+  },
+  "« {} » lu comme {} (faute de frappe ou de dictée) : vérifiez.": {
+    "en": "“{0}” read as {1} (typing or dictation error): check.",
+    "ar": "«{0}» قُرئت كـ{1} (خطأ كتابة أو إملاء): تحقّق."
+  },
+  "Dose impossible ({}) : erreur de saisie probable, risque vital.": {
+    "en": "Impossible dose ({0}): probable typing error, life-threatening risk.",
+    "ar": "جرعة مستحيلة ({0}): خطأ إدخال مرجّح، وخطر على الحياة."
+  },
+  "Corrigez la dose (en mg ou en g) et le rythme (« 3 fois par jour »).": {
+    "en": "Correct the dose (in mg or g) and the frequency (“3 times a day”).",
+    "ar": "صحّح الجرعة (بالملغ أو الغرام) وعدد المرات («3 مرات يوميًا»)."
+  },
+  "Dose illisible (« {} ») : la prescription écrite doit préciser la dose.": {
+    "en": "Unreadable dose (“{0}”): the written prescription must state the dose.",
+    "ar": "جرعة غير مقروءة («{0}»): يجب أن تحدد الوصفة المكتوبة الجرعة."
+  },
+  "Écrivez par exemple « 500 mg ».": {
+    "en": "Write for example “500 mg”.",
+    "ar": "اكتب مثلًا «500 ملغ»."
+  },
+  "Évocation, pas une consigne ni une incitation : {} (indices : {}).": {
+    "en": "Mention, not an instruction nor an incitement: {0} (clues: {1}).",
+    "ar": "مجرد ذكر، وليس تعليمة ولا تحريضًا: {0} (المؤشرات: {1})."
+  },
+  "« {} » : ": {
+    "en": "“{0}”: ",
+    "ar": "«{0}»: "
+  },
+  "{} : {} mg par jour, soit {} fois la dose maximale ({} mg/j) : surdosage dangereux.": {
+    "en": "{0}: {1} mg a day, i.e. {2} times the maximum dose ({3} mg/day): dangerous overdose.",
+    "ar": "{0}: {1} ملغ يوميًا، أي {2} أضعاف الجرعة القصوى ({3} ملغ/يوم): جرعة زائدة خطيرة."
+  },
+  "Ne dépassez pas {} mg par jour ; vérifiez la dose et le nombre de prises.": {
+    "en": "Do not exceed {0} mg a day; check the dose and the number of intakes.",
+    "ar": "لا تتجاوز {0} ملغ يوميًا؛ تحقّق من الجرعة وعدد المرات."
+  },
+  "Rythme des prises illisible (« {} ») : impossible de vérifier la dose par jour.": {
+    "en": "Unreadable frequency (“{0}”): impossible to check the daily dose.",
+    "ar": "عدد المرات غير مقروء («{0}»): يستحيل التحقق من الجرعة اليومية."
+  },
+  "Écrivez par exemple « 3 fois par jour » ou « toutes les 8 heures ».": {
+    "en": "Write for example “3 times a day” or “every 8 hours”.",
+    "ar": "اكتب مثلًا «3 مرات يوميًا» أو «كل 8 ساعات»."
+  },
+  "Sens confirmé par {} : ni consigne ni incitation ({}).": {
+    "en": "Meaning confirmed by {0}: neither an instruction nor an incitement ({1}).",
+    "ar": "أكّد {0} المعنى: ليست تعليمة ولا تحريضًا ({1})."
+  },
+  "Sens à confirmer : {}.": {
+    "en": "Meaning to confirm: {0}.",
+    "ar": "المعنى بحاجة إلى تأكيد: {0}."
+  },
+  "Reformulez (qui, quoi, question ou récit), ou confirmez en validant que ce n'est ni une consigne ni une incitation : votre nom est enregistré.": {
+    "en": "Rephrase (who, what, question or narrative), or confirm by approving that it is neither an instruction nor an incitement: your name is recorded.",
+    "ar": "أعد الصياغة (من، ماذا، سؤال أم سرد)، أو أكّد باعتمادك أنها ليست تعليمة ولا تحريضًا: يُسجَّل اسمك."
+  },
+  "{} : {} mg par jour, au-delà de la dose maximale de {} mg par jour.": {
+    "en": "{0}: {1} mg a day, above the maximum dose of {2} mg a day.",
+    "ar": "{0}: {1} ملغ يوميًا، فوق الجرعة القصوى البالغة {2} ملغ يوميًا."
+  },
+  "« {} » → {}": {
+    "en": "“{0}” → {1}",
+    "ar": "«{0}» ← {1}"
+  },
+  "Modèle en ligne indisponible au démarrage": {
+    "en": "Online model unavailable at start-up",
+    "ar": "النموذج عبر الإنترنت غير متاح عند التشغيل"
+  },
+  "Modèle en échec : repli sur les règles écrites": {
+    "en": "Model failing: falling back on the written rules",
+    "ar": "النموذج يُخفق: العودة إلى القواعد المكتوبة"
+  },
+  "Nouvel essai du modèle": {
+    "en": "New attempt with the model",
+    "ar": "محاولة جديدة مع النموذج"
+  },
+  "Modèle rétabli": {
+    "en": "Model restored",
+    "ar": "عاد النموذج للعمل"
+  },
+  "Modèle demandé absent : remplacé": {
+    "en": "Requested model absent: replaced",
+    "ar": "النموذج المطلوب غير موجود: تم استبداله"
+  },
+  "Contrôle oublié par un agent, rattrapé par le filet de sécurité": {
+    "en": "Check forgotten by an agent, caught by the safety net",
+    "ar": "تحقّق نسيه وكيل، التقطته شبكة الأمان"
+  },
+  "Le modèle répétait la même action : arrêté": {
+    "en": "The model kept repeating the same action: stopped",
+    "ar": "كان النموذج يكرر الإجراء نفسه: أُوقف"
+  },
+  "Validation refusée (contenu bloqué ou message vide)": {
+    "en": "Approval refused (blocked content or empty message)",
+    "ar": "رُفض الاعتماد (محتوى محظور أو رسالة فارغة)"
+  },
+  "Traduction de l'IA corrigée par le médecin": {
+    "en": "AI translation corrected by the doctor",
+    "ar": "صحّح الطبيب ترجمة الذكاء الاصطناعي"
+  },
+  "Suggestion de l'assistant écartée par le médecin": {
+    "en": "Assistant's suggestion dismissed by the doctor",
+    "ar": "تجاهل الطبيب اقتراح المساعد"
+  },
+  "Message d'un agent écarté par le médecin": {
+    "en": "Agent's message dismissed by the doctor",
+    "ar": "تجاهل الطبيب رسالة وكيل"
+  },
+  "Proposition de l'IA annulée par le médecin": {
+    "en": "AI proposal cancelled by the doctor",
+    "ar": "ألغى الطبيب اقتراح الذكاء الاصطناعي"
+  },
+  "Erreur technique pendant un événement": {
+    "en": "Technical error during an event",
+    "ar": "خطأ تقني أثناء حدث"
+  },
+  "Erreur technique pendant la réflexion du modèle": {
+    "en": "Technical error while the model was reasoning",
+    "ar": "خطأ تقني أثناء تفكير النموذج"
+  },
+  "a validé l'envoi": {
+    "en": "approved the sending",
+    "ar": "اعتمد الإرسال"
+  },
+  "a maintenu la décision malgré l'avis « à revoir »": {
+    "en": "maintained the decision despite the “to review” opinion",
+    "ar": "أبقى على القرار رغم رأي «بحاجة إلى مراجعة»"
+  },
+  "a confirmé le sens d'un message ambigu": {
+    "en": "confirmed the meaning of an ambiguous message",
+    "ar": "أكّد معنى رسالة ملتبسة"
+  },
+  "a retiré un message de l'écran du patient": {
+    "en": "removed a message from the patient's screen",
+    "ar": "أزال رسالة من شاشة المريض"
+  },
+  "a choisi une question de l'assistant": {
+    "en": "chose a question from the assistant",
+    "ar": "اختار سؤالًا من المساعد"
+  },
+  "a changé la langue": {
+    "en": "changed the language",
+    "ar": "غيّر اللغة"
+  },
+  "Document du patient non lu automatiquement": {
+    "en": "Patient document not read automatically",
+    "ar": "مستند المريض لم يُقرأ تلقائيًا"
+  },
+  "décision humaine : ": {
+    "en": "human decision: ",
+    "ar": "قرار بشري: "
+  },
+  "bloqué par le juriste avant toute décision humaine": {
+    "en": "blocked by the legal agent before any human decision",
+    "ar": "حظره الوكيل القانوني قبل أي قرار بشري"
+  },
+  "en attente d'une décision humaine": {
+    "en": "waiting for a human decision",
+    "ar": "بانتظار قرار بشري"
+  },
+  "envoyé au patient": {
+    "en": "sent to the patient",
+    "ar": "أُرسل إلى المريض"
+  },
+  "annulé": {
+    "en": "cancelled",
+    "ar": "أُلغي"
+  },
+  "annulé par le médecin": {
+    "en": "cancelled by the doctor",
+    "ar": "ألغاه الطبيب"
+  },
+  "incitation à se faire du mal": {
+    "en": "incitement to self-harm",
+    "ar": "تحريض على إيذاء النفس"
+  },
+  "« {} » sans contexte clair : impossible de savoir si c'est une incitation, une question ou un récit": {
+    "en": "“{0}” without a clear context: impossible to know whether it is an incitement, a question or a narrative",
+    "ar": "«{0}» دون سياق واضح: يستحيل معرفة ما إذا كان تحريضًا أم سؤالًا أم سردًا"
+  },
+  "« {} » cité dans {}": {
+    "en": "“{0}” mentioned in {1}",
+    "ar": "«{0}» مذكور في {1}"
+  },
+  "{} cité sans que l'on sache si c'est une consigne de prise": {
+    "en": "{0} mentioned without knowing whether it is an instruction to take it",
+    "ar": "{0} مذكور دون معرفة ما إذا كان تعليمة بتناوله"
+  },
+  "{} cité dans {}": {
+    "en": "{0} mentioned in {1}",
+    "ar": "{0} مذكور في {1}"
+  },
+  "Aucun message n'atteint le patient sans avoir été validé avant par un médecin humain, autorisé et actif.": {
+    "en": "No message reaches the patient without first being approved by a human doctor, authorised and active.",
+    "ar": "لا تصل أي رسالة إلى المريض قبل أن يعتمدها طبيب بشري مرخّص وفي الخدمة."
+  },
+  "Aucun message n'atteint le patient sans un verdict « conforme » du juriste, rendu après la validation.": {
+    "en": "No message reaches the patient without a “compliant” verdict from the legal agent, given after the approval.",
+    "ar": "لا تصل أي رسالة إلى المريض دون حكم «مطابق» من الوكيل القانوني يصدر بعد الاعتماد."
+  },
+  "Un message de traitement n'atteint le patient que si la prescription expliquée est conforme ou maintenue.": {
+    "en": "A treatment message reaches the patient only if the explained prescription is compliant or maintained.",
+    "ar": "لا تصل رسالة العلاج إلى المريض إلا إذا كانت الوصفة المشروحة مطابقة أو مُبقًى عليها."
+  },
+  "Seule une décision « à revoir » peut être maintenue, par un médecin autorisé et actif, avec une justification écrite.": {
+    "en": "Only a “to review” decision can be maintained, by an authorised and active doctor, with a written justification.",
+    "ar": "لا يمكن الإبقاء إلا على قرار «بحاجة إلى مراجعة»، من طبيب مرخّص وفي الخدمة، مع تبرير مكتوب."
+  },
+  "Chaque verdict enregistré est le plus strict de ses constats, et chaque constat restrictif cite au moins une fiche.": {
+    "en": "Each recorded verdict is the strictest of its findings, and each restrictive finding cites at least one provision.",
+    "ar": "كل حكم مسجّل هو الأشد بين ملاحظاته، وكل ملاحظة تقييدية تستشهد بحكم واحد على الأقل."
+  },
+  "Toute décision soumise (prescription, partage, message validé) a reçu au moins un verdict du juriste.": {
+    "en": "Every submitted decision (prescription, sharing, approved message) has received at least one verdict from the legal agent.",
+    "ar": "كل قرار مُقدَّم (وصفة، مشاركة، رسالة معتمدة) حصل على حكم واحد على الأقل من الوكيل القانوني."
+  },
+  "Le journal est intact (chaîne d'empreintes SHA-256).": {
+    "en": "The log is intact (SHA-256 hash chain).",
+    "ar": "السجل سليم (سلسلة بصمات SHA-256)."
+  },
+  "Un maintien ne couvre que les motifs « à revoir » examinés par le médecin : un nouveau motif exige un nouveau maintien.": {
+    "en": "A maintenance only covers the “to review” reasons examined by the doctor: a new reason requires a new maintenance.",
+    "ar": "لا يغطي الإبقاء إلا أسباب «بحاجة إلى مراجعة» التي فحصها الطبيب: أي سبب جديد يتطلب إبقاءً جديدًا."
+  },
+  "Le cycle de vie de chaque décision suit la machine à états spécifiée (aucune transition interdite).": {
+    "en": "The life cycle of each decision follows the specified state machine (no forbidden transition).",
+    "ar": "تتبع دورة حياة كل قرار آلة الحالات المحددة (دون أي انتقال محظور)."
+  },
+  "Le juriste ne juge « conforme » un message au patient que si une validation par un médecin autorisé a été enregistrée avant.": {
+    "en": "The legal agent judges a message to the patient “compliant” only if an approval by an authorised doctor was recorded before.",
+    "ar": "لا يحكم الوكيل القانوني بأن رسالة إلى المريض «مطابقة» إلا إذا سُجّل اعتماد طبيب مرخّص قبل ذلك."
+  },
+  "{} propriétés vérifiées : aucune violation.": {
+    "en": "{0} properties checked: no violation.",
+    "ar": "تم التحقق من {0} خاصية: لا انتهاك."
+  },
+  "ligne {} : décision #{} {} → {} ({}) : transition interdite": {
+    "en": "line {0}: decision #{1} {2} → {3} ({4}): forbidden transition",
+    "ar": "السطر {0}: القرار رقم {1} {2} ← {3} ({4}): انتقال محظور"
+  },
+  "création": {
+    "en": "creation",
+    "ar": "إنشاء"
+  },
+  "décision #{} ({}) jamais contrôlée par le juriste": {
+    "en": "decision #{0} ({1}) never checked by the legal agent",
+    "ar": "القرار رقم {0} ({1}) لم يتحقق منه الوكيل القانوني قط"
+  },
+  "retrait par le médecin": {
+    "en": "removal by the doctor",
+    "ar": "إزالة من قبل الطبيب"
+  },
+  "ligne {} : constat {} sans fiche": {
+    "en": "line {0}: finding {1} without a provision",
+    "ar": "السطر {0}: الملاحظة {1} دون حكم"
+  },
+  "ligne {} : décision #{} restée « maintenue » malgré un verdict {} (motifs {})": {
+    "en": "line {0}: decision #{1} still “maintained” despite a {2} verdict (reasons {3})",
+    "ar": "السطر {0}: القرار رقم {1} ما زال «مُبقًى عليه» رغم حكم {2} (الأسباب {3})"
+  },
+  "ligne {} : message #{} jugé conforme sans validation enregistrée (valide_par déclaré : {})": {
+    "en": "line {0}: message #{1} judged compliant without a recorded approval (declared approver: {2})",
+    "ar": "السطر {0}: الرسالة رقم {1} اعتُبرت مطابقة دون اعتماد مسجّل (المعتمِد المعلن: {2})"
+  },
+  "ligne {} : décision #{} maintenue (dernier verdict {}, par {})": {
+    "en": "line {0}: decision #{1} maintained (last verdict {2}, by {3})",
+    "ar": "السطر {0}: القرار رقم {1} مُبقًى عليه (آخر حكم {2}، من {3})"
+  },
+  "ligne {} : message #{} envoyé sans validation d'un médecin autorisé (validation : {})": {
+    "en": "line {0}: message #{1} sent without the approval of an authorised doctor (approval: {2})",
+    "ar": "السطر {0}: الرسالة رقم {1} أُرسلت دون اعتماد طبيب مرخّص (الاعتماد: {2})"
+  },
+  "ligne {} : message #{} envoyé sans verdict conforme postérieur à la validation ({})": {
+    "en": "line {0}: message #{1} sent without a compliant verdict after the approval ({2})",
+    "ar": "السطر {0}: الرسالة رقم {1} أُرسلت دون حكم مطابق بعد الاعتماد ({2})"
+  },
+  "ligne {} : traitement #{} envoyé ; prescription liée #{} : {}": {
+    "en": "line {0}: treatment #{1} sent; linked prescription #{2}: {3}",
+    "ar": "السطر {0}: العلاج رقم {1} أُرسل؛ الوصفة المرتبطة رقم {2}: {3}"
+  },
+  "diabète": {
+    "en": "diabetes",
+    "ar": "السكري"
+  },
+  "insuffisance rénale": {
+    "en": "kidney failure",
+    "ar": "القصور الكلوي"
+  },
+  "insuffisance hépatique": {
+    "en": "liver failure",
+    "ar": "القصور الكبدي"
+  },
+  "hépatite": {
+    "en": "hepatitis",
+    "ar": "التهاب الكبد"
+  },
+  "drépanocytose": {
+    "en": "sickle-cell disease",
+    "ar": "فقر الدم المنجلي"
+  },
+  "épilepsie": {
+    "en": "epilepsy",
+    "ar": "الصرع"
+  },
+  "hémorragie digestive": {
+    "en": "gastrointestinal bleeding",
+    "ar": "نزيف هضمي"
+  },
+  "antécédents familiaux": {
+    "en": "family history",
+    "ar": "السوابق العائلية"
+  },
+  "héréditaire": {
+    "en": "hereditary",
+    "ar": "وراثي"
+  },
+  "carnet de vaccination": {
+    "en": "vaccination record",
+    "ar": "سجل التطعيم"
+  },
+  "déjà opéré": {
+    "en": "previous surgery",
+    "ar": "عملية جراحية سابقة"
+  },
+  "déjà hospitalisé": {
+    "en": "previous hospital stay",
+    "ar": "دخول سابق إلى المستشفى"
+  },
+  "négation ou mise en garde": {
+    "en": "negation or warning",
+    "ar": "نفي أو تحذير"
+  },
+  "consigne adressée au patient": {
+    "en": "instruction addressed to the patient",
+    "ar": "تعليمة موجهة إلى المريض"
+  },
+  "incitation adressée au patient": {
+    "en": "incitement addressed to the patient",
+    "ar": "تحريض موجه إلى المريض"
+  },
+  "atteinte à soi adressée au patient": {
+    "en": "self-harm addressed to the patient",
+    "ar": "إيذاء للنفس موجه إلى المريض"
+  },
+  "temps passé ou marqueur de temps passé": {
+    "en": "past tense or past-time marker",
+    "ar": "زمن ماضٍ أو مؤشر على الماضي"
+  },
+  "propos rapportés ou récit": {
+    "en": "reported speech or narrative",
+    "ar": "كلام منقول أو سرد"
+  },
+  "phrase générale sur le produit": {
+    "en": "general statement about the product",
+    "ar": "عبارة عامة عن المنتج"
+  },
+  "question de dépistage": {
+    "en": "screening question",
+    "ar": "سؤال تحرٍّ"
+  },
+  "une consigne de traitement": {
+    "en": "a treatment instruction",
+    "ar": "تعليمة علاج"
+  },
+  "une incitation à se faire du mal": {
+    "en": "an incitement to self-harm",
+    "ar": "تحريض على إيذاء النفس"
+  },
+  "une menace": {
+    "en": "a threat",
+    "ar": "تهديد"
+  },
+  "une question": {
+    "en": "a question",
+    "ar": "سؤال"
+  },
+  "une mise en garde": {
+    "en": "a warning",
+    "ar": "تحذير"
+  },
+  "un récit": {
+    "en": "a narrative",
+    "ar": "سرد"
+  },
+  "une information générale": {
+    "en": "general information",
+    "ar": "معلومة عامة"
+  },
+  "la personne parle d'elle-même": {
+    "en": "the person is talking about themselves",
+    "ar": "الشخص يتحدث عن نفسه"
+  },
+  "État mis à jour : {} = {} ({}).": {
+    "en": "State updated: {0} = {1} ({2}).",
+    "ar": "حُدّثت الحالة: {0} = {1} ({2})."
+  },
+  "Question {} transmise au traducteur (à valider par le médecin) : {}": {
+    "en": "Question {0} passed to the translator (to be approved by the doctor): {1}",
+    "ar": "أُحيل السؤال {0} إلى المترجم (بانتظار اعتماد الطبيب): {1}"
+  },
+  "Suggestion {} proposée au médecin.": {
+    "en": "Suggestion {0} proposed to the doctor.",
+    "ar": "عُرض الاقتراح {0} على الطبيب."
+  },
+  "Suggestion {} retirée.": {
+    "en": "Suggestion {0} withdrawn.",
+    "ar": "سُحب الاقتراح {0}."
+  },
+  "Décision {} maintenue par {} : {}": {
+    "en": "Decision {0} maintained by {1}: {2}",
+    "ar": "أبقى {1} على القرار {0}: {2}"
+  },
+  "Lacune enregistrée : {}": {
+    "en": "Gap recorded: {0}",
+    "ar": "سُجّلت ثغرة: {0}"
+  },
+  "Cette question est déjà en attente : rien de plus à faire.": {
+    "en": "This question is already pending: nothing more to do.",
+    "ar": "هذا السؤال معلّق بالفعل: لا شيء آخر يُفعل."
+  },
+  "Refusé : décision {} introuvable.": {
+    "en": "Refused: decision {0} not found.",
+    "ar": "مرفوض: القرار {0} غير موجود."
+  },
+  "Lacune déjà enregistrée : {}": {
+    "en": "Gap already recorded: {0}",
+    "ar": "الثغرة مسجّلة بالفعل: {0}"
+  },
+  "confirmé": {
+    "en": "confirmed",
+    "ar": "مؤكَّد"
+  },
+  "non confirmé": {
+    "en": "not confirmed",
+    "ar": "غير مؤكَّد"
+  },
+  "NON confirmé": {
+    "en": "NOT confirmed",
+    "ar": "غير مؤكَّد"
+  },
+  "proposition de vendre ou d'acheter un enfant ou un organe : infraction pénale grave": {
+    "en": "offer to sell or buy a child or an organ: serious criminal offence",
+    "ar": "عرض بيع طفل أو عضو أو شرائه: جريمة جنائية خطيرة"
+  },
+  "Retirez ce message. Si le patient évoque une telle situation, protégez-le et alertez les services de protection de l'enfance ou les autorités.": {
+    "en": "Withdraw this message. If the patient mentions such a situation, protect them and alert child protection services or the authorities.",
+    "ar": "اسحب هذه الرسالة. إذا ذكر المريض حالة كهذه، فاحمِه وأبلغ خدمات حماية الطفل أو السلطات."
+  },
+  "propos à caractère sexuel ou intime adressés au patient : abus de la relation de soin": {
+    "en": "sexual or intimate remarks addressed to the patient: abuse of the care relationship",
+    "ar": "عبارات ذات طابع جنسي أو حميم موجهة إلى المريض: إساءة لعلاقة الرعاية"
+  },
+  "Retirez ce message. La relation de soin exclut tout propos de séduction ou sexuel. Un examen intime s'annonce, s'explique et se fait avec l'accord du patient, si possible avec un témoin.": {
+    "en": "Withdraw this message. The care relationship excludes any seductive or sexual remark. An intimate examination is announced, explained and done with the patient's agreement, if possible with a witness.",
+    "ar": "اسحب هذه الرسالة. تستبعد علاقة الرعاية أي عبارات إغواء أو ذات طابع جنسي. يُعلَن الفحص الحميم ويُشرح ويُجرى بموافقة المريض، وبحضور شاهد إن أمكن."
+  },
+  "proposition d'avortement par message : acte strictement encadré par la loi": {
+    "en": "proposal of abortion by message: an act strictly regulated by law",
+    "ar": "اقتراح الإجهاض برسالة: إجراء ينظمه القانون بصرامة"
+  },
+  "Pas par message. Aux Émirats, seules deux exceptions (danger pour la vie de la mère ; malformation grave du fœtus avant 120 jours), décidées par un gynécologue-obstétricien et un comité, avec l'accord écrit des époux. Ailleurs : vérifiez la loi du pays.": {
+    "en": "Not by message. In the UAE, only two exceptions (danger to the mother's life; serious foetal malformation before 120 days), decided by an obstetrician-gynaecologist and a committee, with the spouses' written consent. Elsewhere: check the country's law.",
+    "ar": "ليس برسالة. في الإمارات استثناءان فقط (خطر على حياة الأم؛ تشوّه خطير للجنين قبل 120 يومًا)، يقررهما طبيب نساء وولادة ولجنة، بموافقة مكتوبة من الزوجين. في غيرها: تحقّق من قانون البلد."
+  },
+  "propos injurieux (« {} »)": {
+    "en": "insulting remarks (“{0}”)",
+    "ar": "عبارات مسيئة («{0}»)"
+  },
+  "Retirez ce message : le respect du patient est un devoir du soignant.": {
+    "en": "Withdraw this message: respect for the patient is a duty of the carer.",
+    "ar": "اسحب هذه الرسالة: احترام المريض واجب على مقدّم الرعاية."
+  },
+  "conseil de consommer « {} »": {
+    "en": "advice to consume “{0}”",
+    "ar": "نصيحة بتناول «{0}»"
+  },
+  ". Si le patient en consomme : en parler sans jugement et proposer un accompagnement (addictologie).": {
+    "en": ". If the patient uses it: talk about it without judgement and offer support (addiction care).",
+    "ar": ". إذا كان المريض يتعاطاه: تحدّث عنه دون إصدار أحكام واقترح المرافقة (علاج الإدمان)."
+  },
+  " pendant la grossesse ou à un enfant": {
+    "en": " during pregnancy or to a child",
+    "ar": " أثناء الحمل أو لطفل"
+  },
+  " — encore moins pendant la grossesse": {
+    "en": " — even less during pregnancy",
+    "ar": " — وأقل من ذلك أثناء الحمل"
+  },
+  "MEDIMCOM IA - consultation {} - données fictives (démonstration)": {
+    "en": "MEDIMCOM AI - consultation {0} - fictitious data (demonstration)",
+    "ar": "MEDIMCOM IA - الاستشارة {0} - بيانات وهمية (عرض توضيحي)"
+  },
+  "En images (montré au patient) : {}": {
+    "en": "In pictures (shown to the patient): {0}",
+    "ar": "بالصور (معروضة على المريض): {0}"
+  },
+  "Ne dépassez pas la dose prescrite. En cas de doute ou d'effet inattendu, montrez cette ordonnance à un médecin": {
+    "en": "Do not exceed the prescribed dose. If in doubt or in case of an unexpected effect, show this prescription to a doctor",
+    "ar": "لا تتجاوز الجرعة الموصوفة. عند الشك أو ظهور أثر غير متوقع، أرِ هذه الوصفة لطبيب"
+  },
+  "Document produit par un prototype de recherche (ITU AI for Good) : il ne remplace pas une ordonnance officielle.": {
+    "en": "Document produced by a research prototype (ITU AI for Good): it does not replace an official prescription.",
+    "ar": "مستند صادر عن نموذج بحثي أولي (ITU AI for Good): لا يحل محل وصفة رسمية."
+  },
+  "Patient : ": {
+    "en": "Patient: ",
+    "ar": "المريض: "
+  },
+  "Prescrit par {} le {} ; explication validée par {}.": {
+    "en": "Prescribed by {0} on {1}; explanation approved by {2}.",
+    "ar": "وصفه {0} بتاريخ {1}؛ واعتمد الشرح {2}."
+  },
+  "Vérifiée par le juriste de MEDIMCOM IA : {}. Empreinte du journal : {}": {
+    "en": "Checked by the MEDIMCOM AI legal agent: {0}. Log fingerprint: {1}",
+    "ar": "تحقّق منه الوكيل القانوني في MEDIMCOM IA: {0}. بصمة السجل: {1}"
+  },
+  "Justification du médecin : {}": {
+    "en": "Doctor's justification: {0}",
+    "ar": "تبرير الطبيب: {0}"
+  },
+  "ou à un pharmacien.": {
+    "en": "or to a pharmacist.",
+    "ar": "أو لصيدلي."
+  },
+  "non renseigné": {
+    "en": "not recorded",
+    "ar": "غير مسجّل"
+  },
+  " Urgence aux Émirats : 998.": {
+    "en": " Emergency in the UAE: 998.",
+    "ar": " الطوارئ في الإمارات: 998."
+  },
+  "voir avec le médecin": {
+    "en": "see with the doctor",
+    "ar": "راجع الطبيب"
+  },
+  "maintenue par le médecin": {
+    "en": "maintained by the doctor",
+    "ar": "أبقاه الطبيب"
+  },
+  "facture de pharmacie": {
+    "en": "pharmacy receipt",
+    "ar": "فاتورة صيدلية"
+  },
+  "boîte ou notice de médicament": {
+    "en": "medicine box or leaflet",
+    "ar": "علبة دواء أو نشرته"
+  },
+  "radiographie ou imagerie": {
+    "en": "X-ray or imaging",
+    "ar": "صورة أشعة أو تصوير"
+  },
+  "résultat d'analyse": {
+    "en": "test result",
+    "ar": "نتيجة تحليل"
+  },
+  "compte rendu médical": {
+    "en": "medical report",
+    "ar": "تقرير طبي"
+  },
+  "format accepté : image (photo), PDF ou texte": {
+    "en": "accepted format: image (photo), PDF or text",
+    "ar": "الصيغ المقبولة: صورة، PDF أو نص"
+  },
+  "lecture directe du PDF": {
+    "en": "direct reading of the PDF",
+    "ar": "قراءة مباشرة لملف PDF"
+  },
+  "modèle local Ollama, rien n'est sorti de l'ordinateur": {
+    "en": "local Ollama model, nothing left the computer",
+    "ar": "نموذج Ollama محلي، لم يغادر أي شيء الحاسوب"
+  },
+  "modèle en ligne": {
+    "en": "online model",
+    "ar": "نموذج عبر الإنترنت"
+  },
+  "Photo jointe au dossier : lecture automatique impossible sans modèle en ligne acceptant les images. Lisez-la et reportez les informations utiles dans la fiche.": {
+    "en": "Photo attached to the record: automatic reading impossible without an online model accepting images. Read it and enter the useful information in the record.",
+    "ar": "أُرفقت الصورة بالملف: تتعذر القراءة التلقائية دون نموذج عبر الإنترنت يقبل الصور. اقرأها وأدخل المعلومات المفيدة في الملف."
+  },
+  "Message {} envoyé à {}.": {
+    "en": "Message {0} sent to {1}.",
+    "ar": "أُرسلت الرسالة {0} إلى {1}."
+  },
+  "Refusé : type « {} » inconnu (types permis : {}).": {
+    "en": "Refused: unknown type “{0}” (allowed types: {1}).",
+    "ar": "مرفوض: نوع غير معروف «{0}» (الأنواع المسموح بها: {1})."
+  },
+  "Refusé : destinataire « {} » inconnu (permis : {}).": {
+    "en": "Refused: unknown recipient “{0}” (allowed: {1}).",
+    "ar": "مرفوض: مستلم غير معروف «{0}» (المسموح بهم: {1})."
+  },
+  "Refusé : un agent ne s'écrit pas à lui-même.": {
+    "en": "Refused: an agent does not write to itself.",
+    "ar": "مرفوض: الوكيل لا يراسل نفسه."
+  },
+  "Ligne {} modifiée": {
+    "en": "Line {0} modified",
+    "ar": "السطر {0} مُعدَّل"
+  },
+  "Chaîne rompue à la ligne {}": {
+    "en": "Chain broken at line {0}",
+    "ar": "السلسلة مقطوعة عند السطر {0}"
+  },
+  "VOUS": {
+    "en": "YOU",
+    "ar": "أنت"
+  },
+  "ne pas": {
+    "en": "do not",
+    "ar": "لا"
+  },
+  "bébé": {
+    "en": "baby",
+    "ar": "رضيع"
+  },
+  "tête": {
+    "en": "head",
+    "ar": "الرأس"
+  },
+  "médicament": {
+    "en": "medicine",
+    "ar": "دواء"
+  },
+  "comprimé": {
+    "en": "tablet",
+    "ar": "قرص"
+  },
+  "hôpital": {
+    "en": "hospital",
+    "ar": "مستشفى"
+  },
+  "an (année)": {
+    "en": "year",
+    "ar": "سنة"
+  },
+  "fois (répéter)": {
+    "en": "times (repeat)",
+    "ar": "مرات (تكرار)"
+  },
+  "moins (réduire)": {
+    "en": "less (reduce)",
+    "ar": "أقل (تخفيض)"
+  },
+  "au maximum (jusqu'à)": {
+    "en": "at most (up to)",
+    "ar": "كحد أقصى (حتى)"
+  },
+  "après": {
+    "en": "after",
+    "ar": "بعد"
+  },
+  "médicament (nom)": {
+    "en": "medicine (name)",
+    "ar": "دواء (الاسم)"
+  },
+  "image générée": {
+    "en": "generated image",
+    "ar": "صورة مولّدة"
+  },
+  "combinaison refusée {}": {
+    "en": "combination refused {0}",
+    "ar": "تركيب مرفوض {0}"
+  },
+  "médicament {}": {
+    "en": "medicine {0}",
+    "ar": "دواء {0}"
+  },
+  "simulé": {
+    "en": "simulated",
+    "ar": "محاكى"
+  },
+  "aucun fournisseur n'a pu lire le document — ": {
+    "en": "no provider could read the document — ",
+    "ar": "لم يتمكن أي مزوّد من قراءة المستند — "
+  },
+  "États-Unis": {
+    "en": "United States",
+    "ar": "الولايات المتحدة"
+  },
+  "OpenRouter (routage vers plusieurs hébergeurs)": {
+    "en": "OpenRouter (routing to several hosts)",
+    "ar": "OpenRouter (توجيه إلى عدة مضيفين)"
+  },
+  "France (Union européenne)": {
+    "en": "France (European Union)",
+    "ar": "فرنسا (الاتحاد الأوروبي)"
+  },
+  "grossesse": {
+    "en": "pregnancy",
+    "ar": "الحمل"
+  },
+  "allergies": {
+    "en": "allergies",
+    "ar": "الحساسية"
+  },
+  "traitements_en_cours": {
+    "en": "current treatments",
+    "ar": "العلاجات الحالية"
+  },
+  "traitements en cours": {
+    "en": "current treatments",
+    "ar": "العلاجات الحالية"
+  },
+  "age": {
+    "en": "age",
+    "ar": "العمر"
+  },
+  "sexe": {
+    "en": "sex",
+    "ar": "الجنس"
+  },
+  "poids": {
+    "en": "weight",
+    "ar": "الوزن"
+  },
+  "antecedents": {
+    "en": "medical history",
+    "ar": "السوابق المرضية"
+  },
+  "douleur": {
+    "en": "pain",
+    "ar": "الألم"
+  },
+  "fievre": {
+    "en": "fever",
+    "ar": "الحمّى"
+  },
+  "nausees": {
+    "en": "nausea",
+    "ar": "الغثيان"
+  },
+  "nausées": {
+    "en": "nausea",
+    "ar": "الغثيان"
+  },
+  "maladies_connues": {
+    "en": "known conditions",
+    "ar": "الأمراض المعروفة"
+  },
+  "maladies connues": {
+    "en": "known conditions",
+    "ar": "الأمراض المعروفة"
+  },
+  "medicaments_declares": {
+    "en": "reported medicines",
+    "ar": "الأدوية المُصرَّح بها"
+  },
+  "consentement_traitement": {
+    "en": "agreement to the treatment",
+    "ar": "الموافقة على العلاج"
+  },
+  "accord pour le traitement": {
+    "en": "agreement to the treatment",
+    "ar": "الموافقة على العلاج"
+  },
+  "informe_usage_ia": {
+    "en": "informed about the use of AI",
+    "ar": "أُبلغ باستخدام الذكاء الاصطناعي"
+  },
+  "informé de l'usage de l'IA": {
+    "en": "informed about the use of AI",
+    "ar": "أُبلغ باستخدام الذكاء الاصطناعي"
+  },
+  "urgence": {
+    "en": "emergency",
+    "ar": "طوارئ"
+  },
+  "localisation_douleur": {
+    "en": "pain location",
+    "ar": "موضع الألم"
+  },
+  "siège de la douleur": {
+    "en": "pain location",
+    "ar": "موضع الألم"
+  },
+  "intensite_douleur": {
+    "en": "pain intensity",
+    "ar": "شدة الألم"
+  },
+  "intensité de la douleur": {
+    "en": "pain intensity",
+    "ar": "شدة الألم"
+  },
+  "mode": {
+    "en": "consultation mode",
+    "ar": "نوع الاستشارة"
+  },
+  "allaitement": {
+    "en": "breastfeeding",
+    "ar": "الرضاعة الطبيعية"
+  },
+  "maladie_renale": {
+    "en": "kidney disease",
+    "ar": "مرض كلوي"
+  },
+  "maladie rénale": {
+    "en": "kidney disease",
+    "ar": "مرض كلوي"
+  },
+  "maladie_hepatique": {
+    "en": "liver disease",
+    "ar": "مرض الكبد"
+  },
+  "ulcere_digestif": {
+    "en": "peptic ulcer",
+    "ar": "قرحة هضمية"
+  },
+  "ulcère digestif": {
+    "en": "peptic ulcer",
+    "ar": "قرحة هضمية"
+  },
+  "anticoagulant": {
+    "en": "anticoagulant",
+    "ar": "مضاد تخثّر"
+  },
+  "maladie_cardiaque": {
+    "en": "heart disease",
+    "ar": "مرض القلب"
+  },
+  "maladie cardiaque": {
+    "en": "heart disease",
+    "ar": "مرض القلب"
+  },
+  "moyen_communication": {
+    "en": "means of communication",
+    "ar": "وسيلة التواصل"
+  },
+  "moyen de communication": {
+    "en": "means of communication",
+    "ar": "وسيلة التواصل"
+  },
+  "duree_symptomes": {
+    "en": "duration of symptoms",
+    "ar": "مدة الأعراض"
+  },
+  "durée des symptômes": {
+    "en": "duration of symptoms",
+    "ar": "مدة الأعراض"
+  },
+  "symptome": {
+    "en": "reason for visit",
+    "ar": "سبب الزيارة"
+  },
+  "motif": {
+    "en": "reason for visit",
+    "ar": "سبب الزيارة"
+  },
+  "toux": {
+    "en": "cough",
+    "ar": "السعال"
+  },
+  "oui": {
+    "en": "yes",
+    "ar": "نعم"
+  },
+  "non": {
+    "en": "no",
+    "ar": "لا"
+  },
+  "à revoir": {
+    "en": "to review",
+    "ar": "بحاجة إلى مراجعة"
+  },
+  "bloqué": {
+    "en": "blocked",
+    "ar": "محظور"
+  },
+  "conforme": {
+    "en": "compliant",
+    "ar": "مطابق"
+  },
+  "preuves insuffisantes": {
+    "en": "insufficient evidence",
+    "ar": "أدلة غير كافية"
+  },
+  "information": {
+    "en": "information",
+    "ar": "معلومة"
+  },
+  "alerte": {
+    "en": "alert",
+    "ar": "تنبيه"
+  },
+  "demande": {
+    "en": "request",
+    "ar": "طلب"
+  },
+  "réponse": {
+    "en": "answer",
+    "ar": "إجابة"
+  },
+  "ordonnance": {
+    "en": "prescription",
+    "ar": "وصفة طبية"
+  },
+  "autre": {
+    "en": "other",
+    "ar": "أخرى"
+  },
+  "femme": {
+    "en": "woman",
+    "ar": "امرأة"
+  },
+  "homme": {
+    "en": "man",
+    "ar": "رجل"
+  },
+  "{} en attente : preuves insuffisantes. {}": {
+    "en": "{0} pending: insufficient evidence. {1}",
+    "ar": "{0} معلّق: أدلة غير كافية. {1}"
+  },
+  "Prescription #{} ({})": {
+    "en": "Prescription #{0} ({1})",
+    "ar": "الوصفة رقم {0} ({1})"
+  },
+  "Message au patient #{} ({})": {
+    "en": "Message to the patient #{0} ({1})",
+    "ar": "الرسالة إلى المريض رقم {0} ({1})"
+  },
+  "Demande de partage #{} ({})": {
+    "en": "Sharing request #{0} ({1})",
+    "ar": "طلب المشاركة رقم {0} ({1})"
+  },
+  "{} : {}": {
+    "en": "{0}: {1}",
+    "ar": "{0}: {1}"
+  },
+  "{}, {}": {
+    "en": "{0}, {1}",
+    "ar": "{0}، {1}"
+  },
+  "Pourquoi :": {
+    "en": "Why:",
+    "ar": "السبب:"
+  },
+  "enceinte": {
+    "en": "pregnant",
+    "ar": "حامل"
+  },
+  "F": {
+    "en": "F",
+    "ar": "أنثى"
+  },
+  "M": {
+    "en": "M",
+    "ar": "ذكر"
+  },
+  "Ne pas prescrire {} en l'état.": {
+    "en": "Do not prescribe {0} as things stand.",
+    "ar": "لا تصف {0} في الوضع الحالي."
+  },
+  "Fiche du patient prise en compte : {}": {
+    "en": "Patient record taken into account: {0}",
+    "ar": "أُخذ ملف المريض في الحسبان: {0}"
+  },
+  "Alternative à discuter : {} (source : {}) ; contrôlée par le moteur du juriste : aucune contre-indication connue pour ce patient. Dose à adapter à l'âge et au poids": {
+    "en": "Alternative to discuss: {0} (source: {1}); checked by the legal agent's engine: no known contraindication for this patient. Dose to adjust to age and weight",
+    "ar": "بديل للنقاش: {0} (المصدر: {1})؛ تحقّق منه محرك الوكيل القانوني: لا موانع معروفة لهذا المريض. تُعدَّل الجرعة حسب العمر والوزن"
+  },
+  "Alternative à discuter : {} (source : {}) ; contrôlée par le moteur du juriste : aucune contre-indication connue pour ce patient. Dose à adapter à l'âge et au poids (maximum {} mg par jour chez l'adulte).": {
+    "en": "Alternative to discuss: {0} (source: {1}); checked by the legal agent's engine: no known contraindication for this patient. Dose to adjust to age and weight (at most {2} mg a day in adults).",
+    "ar": "بديل للنقاش: {0} (المصدر: {1})؛ تحقّق منه محرك الوكيل القانوني: لا موانع معروفة لهذا المريض. تُعدَّل الجرعة حسب العمر والوزن (بحد أقصى {2} ملغ يوميًا لدى البالغين)."
+  },
+  "Alternative à discuter : {} (source : {}) ; contrôlée par le moteur du juriste : aucune contre-indication connue pour ce patient. Dose à adapter à l'âge et au poids.": {
+    "en": "Alternative to discuss: {0} (source: {1}); checked by the legal agent's engine: no known contraindication for this patient. Dose to adjust to age and weight.",
+    "ar": "بديل للنقاش: {0} (المصدر: {1})؛ تحقّق منه محرك الوكيل القانوني: لا موانع معروفة لهذا المريض. تُعدَّل الجرعة حسب العمر والوزن."
+  },
+  "aucune": {
+    "en": "none",
+    "ar": "لا شيء"
+  },
+  "aucun": {
+    "en": "none",
+    "ar": "لا شيء"
+  },
+  "présentiel": {
+    "en": "in person",
+    "ar": "حضوري"
+  },
+  "téléconsultation": {
+    "en": "teleconsultation",
+    "ar": "استشارة عن بعد"
+  },
+  "L'alternative {} est elle aussi à vérifier : {}": {
+    "en": "The alternative {0} must also be checked: {1}",
+    "ar": "يجب التحقق من البديل {0} أيضًا: {1}"
+  },
+  "Information manquante ({}) pour écarter : {}": {
+    "en": "Missing information ({0}) needed to rule out: {1}",
+    "ar": "معلومة ناقصة ({0}) للاستبعاد: {1}"
+  },
+  "Pour ce patient : {}": {
+    "en": "For this patient: {0}",
+    "ar": "لهذا المريض: {0}"
+  },
+  "OBLIGATION : {}": {
+    "en": "OBLIGATION: {0}",
+    "ar": "التزام: {0}"
+  },
+  "INFORMATION : {}": {
+    "en": "INFORMATION: {0}",
+    "ar": "معلومة: {0}"
+  },
+  "CONSEIL : {}": {
+    "en": "ADVICE: {0}",
+    "ar": "نصيحة: {0}"
+  },
+  "Piste conforme : {}": {
+    "en": "Compliant option: {0}",
+    "ar": "خيار مطابق: {0}"
+  },
+  "{} Piste conforme : {}": {
+    "en": "{0} Compliant option: {1}",
+    "ar": "{0} خيار مطابق: {1}"
+  },
+  "Consultation d'un homme sourd allergique à l'aspirine : un autre patient, un autre déroulé": {
+    "en": "Consultation of a deaf man allergic to aspirin: another patient, another course",
+    "ar": "استشارة رجل أصم يعاني حساسية من الأسبرين: مريض آخر ومسار آخر"
+  },
+  "Le patient décrit ses symptômes en pictogrammes": {
+    "en": "The patient describes his symptoms in pictograms",
+    "ar": "يصف المريض أعراضه بالرموز المصوّرة"
+  },
+  "Patient, 40 ans. Pictogrammes : [douleur] [tête]. Allergie : aspirine. Traitements : aucun. Il accepte l'aide de l'IA.": {
+    "en": "Patient, 40 years old. Pictograms: [pain] [head]. Allergy: aspirin. Treatments: none. He accepts the AI's help.",
+    "ar": "مريض، 40 سنة. الرموز: [ألم] [رأس]. الحساسية: الأسبرين. العلاجات: لا شيء. يقبل مساعدة الذكاء الاصطناعي."
+  },
+  "Le médecin prescrit de l'ibuprofène": {
+    "en": "The doctor prescribes ibuprofen",
+    "ar": "يصف الطبيب الإيبوبروفين"
+  },
+  "Ibuprofène 400 mg.": {
+    "en": "Ibuprofen 400 mg.",
+    "ar": "إيبوبروفين 400 ملغ."
+  },
+  "Le médecin change pour du paracétamol": {
+    "en": "The doctor switches to paracetamol",
+    "ar": "ينتقل الطبيب إلى الباراسيتامول"
+  },
+  "Finalement : paracétamol 500 mg.": {
+    "en": "In the end: paracetamol 500 mg.",
+    "ar": "في النهاية: باراسيتامول 500 ملغ."
+  },
+  "Le médecin valide l'explication préparée par l'agent 1": {
+    "en": "The doctor approves the explanation prepared by agent 1",
+    "ar": "يعتمد الطبيب الشرح الذي أعدّه الوكيل 1"
+  },
+  "Le patient répond « oui » (d'accord)": {
+    "en": "The patient answers “yes” (agrees)",
+    "ar": "يجيب المريض «نعم» (موافق)"
+  },
+  "Homme : aucune question de grossesse": {
+    "en": "Man: no pregnancy question",
+    "ar": "رجل: لا سؤال عن الحمل"
+  },
+  "L'allergie de classe (aspirine → AINS) est repérée": {
+    "en": "The class allergy (aspirin → NSAIDs) is detected",
+    "ar": "رُصدت الحساسية من الفئة (الأسبرين ← مضادات الالتهاب غير الستيرويدية)"
+  },
+  "Le médecin est alerté de l'allergie": {
+    "en": "The doctor is alerted to the allergy",
+    "ar": "يُنبَّه الطبيب إلى الحساسية"
+  },
+  "Le paracétamol est conforme": {
+    "en": "Paracetamol is compliant",
+    "ar": "الباراسيتامول مطابق"
+  },
+  "L'explication validée est envoyée": {
+    "en": "The approved explanation is sent",
+    "ar": "يُرسَل الشرح المعتمد"
+  },
+  "L'accord du patient (OUI) est enregistré comme consentement": {
+    "en": "The patient's agreement (YES) is recorded as consent",
+    "ar": "تُسجَّل موافقة المريض (نعم) كموافقة على العلاج"
+  },
+  "Crise : maladie transmissible, téléconsultation d'un patient sourd et coordination des institutions": {
+    "en": "Crisis: communicable disease, teleconsultation of a deaf patient and coordination of the institutions",
+    "ar": "أزمة: مرض معدٍ، واستشارة عن بُعد لمريض أصم، وتنسيق المؤسسات"
+  },
+  "Téléconsultation : un homme sourd décrit fièvre et toux en pictogrammes": {
+    "en": "Teleconsultation: a deaf man describes fever and cough in pictograms",
+    "ar": "استشارة عن بُعد: رجل أصم يصف الحمّى والسعال بالرموز"
+  },
+  "Patient, 40 ans, téléconsultation. Pictogrammes : [fièvre] [toux] [3 jours]. Allergies : aucune. Traitements : aucun.": {
+    "en": "Patient, 40 years old, teleconsultation. Pictograms: [fever] [cough] [3 days]. Allergies: none. Treatments: none.",
+    "ar": "مريض، 40 سنة، استشارة عن بُعد. الرموز: [حمّى] [سعال] [3 أيام]. الحساسية: لا شيء. العلاجات: لا شيء."
+  },
+  "Le médecin prescrit du tramadol à distance": {
+    "en": "The doctor prescribes tramadol remotely",
+    "ar": "يصف الطبيب الترامادول عن بُعد"
+  },
+  "Tramadol 50 mg contre la douleur thoracique.": {
+    "en": "Tramadol 50 mg for the chest pain.",
+    "ar": "ترامادول 50 ملغ لألم الصدر."
+  },
+  "Le médecin tente de maintenir le tramadol malgré le blocage": {
+    "en": "The doctor tries to maintain tramadol despite the block",
+    "ar": "يحاول الطبيب الإبقاء على الترامادول رغم الحظر"
+  },
+  "Douleur importante.": {
+    "en": "Severe pain.",
+    "ar": "ألم شديد."
+  },
+  "L'autorité signale un foyer épidémique ; le médecin suspecte une maladie du groupe A": {
+    "en": "The authority reports an outbreak; the doctor suspects a Group A disease",
+    "ar": "تُبلغ السلطة عن بؤرة وبائية؛ ويشتبه الطبيب في مرض من المجموعة أ"
+  },
+  "Alerte de l'autorité : foyer dans le quartier. Je suspecte une maladie transmissible du groupe A.": {
+    "en": "Alert from the authority: outbreak in the district. I suspect a Group A communicable disease.",
+    "ar": "تنبيه من السلطة: بؤرة في الحي. أشتبه في مرض معدٍ من المجموعة أ."
+  },
+  "Le médecin déclare le cas à l'autorité de santé (sans que personne ne dicte la suite)": {
+    "en": "The doctor declares the case to the health authority (with nobody dictating what follows)",
+    "ar": "يُبلغ الطبيب السلطة الصحية بالحالة (دون أن يُملي أحد ما يلي)"
+  },
+  "Déclaration : cas suspect de maladie transmissible du groupe A, vu en téléconsultation le 16/10, quartier Al Nahda.": {
+    "en": "Declaration: suspected case of a Group A communicable disease, seen by teleconsultation on 16/10, Al Nahda district.",
+    "ar": "إبلاغ: حالة مشتبه بها لمرض معدٍ من المجموعة أ، فُحصت عن بُعد بتاريخ 16/10، حي النهدة."
+  },
+  "Un laboratoire étranger demande les résultats d'analyse avec l'identité du patient": {
+    "en": "A foreign laboratory asks for the test results with the patient's identity",
+    "ar": "يطلب مختبر أجنبي نتائج التحاليل مع هوية المريض"
+  },
+  "Envoyez-nous les résultats et l'identité du patient pour confirmer le diagnostic.": {
+    "en": "Send us the results and the patient's identity to confirm the diagnosis.",
+    "ar": "أرسلوا إلينا النتائج وهوية المريض لتأكيد التشخيص."
+  },
+  "Le médecin autorise nominativement l'envoi au laboratoire étranger": {
+    "en": "The doctor authorises, by name, the sending to the foreign laboratory",
+    "ar": "يأذن الطبيب باسمه بالإرسال إلى المختبر الأجنبي"
+  },
+  "Confirmation diagnostique indispensable ; consentement écrit signé ; données chiffrées ; copie conservée aux Émirats.": {
+    "en": "Diagnostic confirmation essential; written consent signed; data encrypted; copy kept in the UAE.",
+    "ar": "تأكيد التشخيص ضروري؛ موافقة كتابية موقّعة؛ بيانات مشفّرة؛ نسخة محفوظة في الإمارات."
+  },
+  "Un agent de l'autorité de santé interroge le juriste (mode conseiller)": {
+    "en": "An officer of the health authority questions the legal agent (advisory mode)",
+    "ar": "موظف في السلطة الصحية يسأل الوكيل القانوني (وضع الاستشارة)"
+  },
+  "Sans interprète en langue des signes pendant la crise, un consentement donné en pictogrammes par un patient sourd est-il valable ?": {
+    "en": "Without a sign-language interpreter during the crisis, is consent given with pictograms by a deaf patient valid?",
+    "ar": "في غياب مترجم لغة الإشارة أثناء الأزمة، هل الموافقة التي يعطيها مريض أصم بالرموز المصوّرة صحيحة؟"
+  },
+  "Le patient s'aggrave : urgence": {
+    "en": "The patient gets worse: emergency",
+    "ar": "تتدهور حالة المريض: طوارئ"
+  },
+  "Pictogrammes : [respirer] [difficile] [très]. Le patient ne peut plus répondre.": {
+    "en": "Pictograms: [breathe] [difficult] [very]. The patient can no longer answer.",
+    "ar": "الرموز: [تنفّس] [صعب] [جدًّا]. لم يعد المريض قادرًا على الإجابة."
+  },
+  "Fragment pour l'hôpital seulement : un cas grave arrive": {
+    "en": "Fragment for the hospital only: a severe case is arriving",
+    "ar": "جزء للمستشفى فقط: حالة خطيرة قادمة"
+  },
+  "Un patient sourd en détresse respiratoire, cas suspect, est transféré vers vous.": {
+    "en": "A deaf patient in respiratory distress, suspected case, is being transferred to you.",
+    "ar": "مريض أصم في ضائقة تنفسية، حالة مشتبه بها، يُنقل إليكم."
+  },
+  "Fragment pour la cellule de crise seulement : la presse réclame des noms": {
+    "en": "Fragment for the crisis cell only: the press wants names",
+    "ar": "جزء لخلية الأزمة فقط: الصحافة تطلب أسماء"
+  },
+  "La presse réclame la liste des personnes infectées du quartier.": {
+    "en": "The press is asking for the list of infected people in the district.",
+    "ar": "تطلب الصحافة قائمة المصابين في الحي."
+  },
+  "Fragment pour la cellule de crise seulement : défaillance de l'IA de traduction": {
+    "en": "Fragment for the crisis cell only: failure of the translation AI",
+    "ar": "جزء لخلية الأزمة فقط: خلل في الذكاء الاصطناعي للترجمة"
+  },
+  "Panne : le modèle de traduction affiche un mauvais pictogramme dans 3 établissements depuis ce matin.": {
+    "en": "Failure: the translation model has been showing a wrong pictogram in 3 facilities since this morning.",
+    "ar": "عطل: يعرض نموذج الترجمة رمزًا خاطئًا في 3 منشآت منذ هذا الصباح."
+  },
+  "Le tramadol en téléconsultation est bloqué et ne peut pas être maintenu": {
+    "en": "Tramadol by teleconsultation is blocked and cannot be maintained",
+    "ar": "الترامادول عن بُعد محظور ولا يمكن الإبقاء عليه"
+  },
+  "Le juriste rappelle la déclaration sous 24 heures": {
+    "en": "The legal agent reminds the 24-hour notification",
+    "ar": "يُذكّر الوكيل القانوني بالإبلاغ خلال 24 ساعة"
+  },
+  "L'autorité ouvre l'enquête sur une base légale": {
+    "en": "The authority opens the investigation on a legal basis",
+    "ar": "تفتح السلطة التحقيق على أساس قانوني"
+  },
+  "L'autorité consulte le juriste puis déclare la zone infectée": {
+    "en": "The authority consults the legal agent, then declares the infected area",
+    "ar": "تستشير السلطة الوكيل القانوني ثم تعلن المنطقة موبوءة"
+  },
+  "La demande de surveillance de l'autorité est jugée conforme": {
+    "en": "The authority's surveillance request is judged compliant",
+    "ar": "يُعتبر طلب الرصد المقدَّم من السلطة مطابقًا"
+  },
+  "Le transfert au laboratoire étranger est autorisé nominativement": {
+    "en": "The transfer to the foreign laboratory is authorised by name",
+    "ar": "يُؤذن بالنقل إلى المختبر الأجنبي باسم صاحب الإذن"
+  },
+  "L'hôpital réserve un lit d'isolement": {
+    "en": "The hospital reserves an isolation bed",
+    "ar": "يحجز المستشفى سرير عزل"
+  },
+  "La publication nominative des malades est bloquée": {
+    "en": "The publication of the patients' names is blocked",
+    "ar": "يُحظر نشر أسماء المرضى"
+  },
+  "L'autorité suit la piste conforme : chiffres anonymes": {
+    "en": "The authority follows the compliant option: anonymous figures",
+    "ar": "تتبع السلطة الخيار المطابق: أرقام مجهولة الهوية"
+  },
+  "Le juriste conseille l'autorité en citant le droit des personnes handicapées": {
+    "en": "The legal agent advises the authority, citing disability law",
+    "ar": "ينصح الوكيل القانوني السلطة مستشهدًا بقانون ذوي الإعاقة"
+  },
+  "Le juriste répond à la cellule de crise sur l'incident d'IA": {
+    "en": "The legal agent answers the crisis cell about the AI incident",
+    "ar": "يجيب الوكيل القانوني خلية الأزمة بشأن حادثة الذكاء الاصطناعي"
+  },
+  "L'assistant alerte en priorité en cas d'urgence": {
+    "en": "The assistant alerts first in an emergency",
+    "ar": "ينبّه المساعد أولًا في حالة الطوارئ"
+  },
+  "Lacunes : incidents d'IA et urgences accessibles": {
+    "en": "Gaps: AI incidents and accessible emergencies",
+    "ar": "ثغرات: حوادث الذكاء الاصطناعي والطوارئ الميسَّرة"
+  },
+  "Consultation d'une patiente sourde : douleur au ventre, grossesse non renseignée": {
+    "en": "Consultation of a deaf woman: abdominal pain, pregnancy not recorded",
+    "ar": "استشارة امرأة صماء: ألم في البطن، والحمل غير مسجّل"
+  },
+  "La patiente décrit ses symptômes en pictogrammes": {
+    "en": "The patient describes her symptoms in pictograms",
+    "ar": "تصف المريضة أعراضها بالرموز المصوّرة"
+  },
+  "Patiente, 25 ans. Pictogrammes : [douleur] [ventre] [envie de vomir]. Allergies : aucune. Traitements : aucun. Elle a vu l'écran « un assistant IA aide le médecin » et l'accepte.": {
+    "en": "Female patient, 25 years old. Pictograms: [pain] [belly] [nausea]. Allergies: none. Treatments: none. She saw the screen “an AI assistant helps the doctor” and accepts it.",
+    "ar": "مريضة، 25 سنة. الرموز: [ألم] [بطن] [غثيان]. الحساسية: لا شيء. العلاجات: لا شيء. رأت الشاشة «مساعد ذكاء اصطناعي يساعد الطبيب» وقبلت."
+  },
+  "Le médecin valide la question traduite par l'agent 1": {
+    "en": "The doctor approves the question translated by agent 1",
+    "ar": "يعتمد الطبيب السؤال الذي ترجمه الوكيل 1"
+  },
+  "Ibuprofène 400 mg, 3 fois par jour pendant 3 jours.": {
+    "en": "Ibuprofen 400 mg, 3 times a day for 3 days.",
+    "ar": "إيبوبروفين 400 ملغ، 3 مرات يوميًا لمدة 3 أيام."
+  },
+  "La patiente répond « oui » en touchant le pictogramme OUI": {
+    "en": "The patient answers “yes” by touching the YES pictogram",
+    "ar": "تجيب المريضة «نعم» بلمس رمز نعم"
+  },
+  "Le médecin suit la piste de l'assistant : paracétamol": {
+    "en": "The doctor follows the assistant's option: paracetamol",
+    "ar": "يتبع الطبيب خيار المساعد: الباراسيتامول"
+  },
+  "Erreur simulée : un module externe tente d'envoyer un message au patient sans validation": {
+    "en": "Simulated error: an external module tries to send a message to the patient without approval",
+    "ar": "خطأ محاكى: وحدة خارجية تحاول إرسال رسالة إلى المريض دون اعتماد"
+  },
+  "[médicament] [paracétamol] [matin] [midi] [soir]": {
+    "en": "[medicine] [paracetamol] [morning] [noon] [evening]",
+    "ar": "[دواء] [باراسيتامول] [صباحًا] [ظهرًا] [مساءً]"
+  },
+  "Le médecin valide l'explication du traitement préparée par l'agent 1": {
+    "en": "The doctor approves the treatment explanation prepared by agent 1",
+    "ar": "يعتمد الطبيب شرح العلاج الذي أعدّه الوكيل 1"
+  },
+  "Une entreprise demande la liste des patientes enceintes pour de la publicité": {
+    "en": "A company asks for the list of pregnant patients for advertising",
+    "ar": "تطلب شركة قائمة المريضات الحوامل لأغراض الإعلان"
+  },
+  "Transmettez-nous la liste des patientes enceintes pour une campagne publicitaire.": {
+    "en": "Send us the list of pregnant patients for an advertising campaign.",
+    "ar": "أرسلوا إلينا قائمة المريضات الحوامل لحملة إعلانية."
+  },
+  "Panne du modèle local : quelqu'un propose d'envoyer la consultation à une IA en ligne hébergée hors des Émirats": {
+    "en": "Local model failure: someone proposes sending the consultation to an online AI hosted outside the UAE",
+    "ar": "تعطّل النموذج المحلي: يقترح أحدهم إرسال الاستشارة إلى ذكاء اصطناعي عبر الإنترنت مستضاف خارج الإمارات"
+  },
+  "Le modèle local est lent : on peut envoyer le texte de la consultation à une API d'IA hébergée à l'étranger ?": {
+    "en": "The local model is slow: can we send the text of the consultation to an AI API hosted abroad?",
+    "ar": "النموذج المحلي بطيء: هل يمكن إرسال نص الاستشارة إلى واجهة ذكاء اصطناعي مستضافة في الخارج؟"
+  },
+  "L'assistant fait poser de lui-même la question de la grossesse": {
+    "en": "The assistant has the pregnancy question asked on its own",
+    "ar": "يطرح المساعد سؤال الحمل من تلقاء نفسه"
+  },
+  "La réponse OUI du patient devient un fait confirmé": {
+    "en": "The patient's YES answer becomes a confirmed fact",
+    "ar": "تصبح إجابة المريضة بـ«نعم» معلومة مؤكدة"
+  },
+  "Le juriste réclame l'information puis revérifie de lui-même": {
+    "en": "The legal agent asks for the information, then re-checks on its own",
+    "ar": "يطلب الوكيل القانوني المعلومة ثم يعيد التحقق من تلقاء نفسه"
+  },
+  "L'assistant propose une alternative sourcée": {
+    "en": "The assistant proposes a sourced alternative",
+    "ar": "يقترح المساعد بديلًا موثّقًا"
+  },
+  "Le paracétamol est jugé conforme": {
+    "en": "Paracetamol is judged compliant",
+    "ar": "يُعتبر الباراسيتامول مطابقًا"
+  },
+  "Le traducteur envoie la question puis l'explication du traitement": {
+    "en": "The translator sends the question, then the treatment explanation",
+    "ar": "يرسل المترجم السؤال ثم شرح العلاج"
+  },
+  "Un message non validé est bloqué": {
+    "en": "An unapproved message is blocked",
+    "ar": "تُحظر رسالة غير معتمدة"
+  },
+  "La vente de données à une entreprise est bloquée": {
+    "en": "The sale of data to a company is blocked",
+    "ar": "يُحظر بيع البيانات لشركة"
+  },
+  "L'envoi à une IA hébergée hors des Émirats est bloqué": {
+    "en": "Sending to an AI hosted outside the UAE is blocked",
+    "ar": "يُحظر الإرسال إلى ذكاء اصطناعي مستضاف خارج الإمارات"
+  },
+  "Les lacunes de responsabilité, de consentement et de localisation sont signalées": {
+    "en": "The gaps on liability, consent and data localisation are reported",
+    "ar": "يُبلَّغ عن ثغرات المسؤولية والموافقة وتوطين البيانات"
+  },
+  "{} {}, {}. Do you agree?": {
+    "en": "{0} {1}, {2}. Do you agree?",
+    "ar": "{0} {1}، {2}. هل توافق؟"
+  },
+  "{} {}, {}. هل توافق؟": {
+    "en": "{0} {1}, {2}. Do you agree?",
+    "ar": "{0} {1}، {2}. هل توافق؟"
+  },
+  "Information obligatoire avant toute prescription.": {
+    "en": "Required before any prescription.",
+    "ar": "معلومة إلزامية قبل أي وصفة."
+  },
+  "Journal intact": {
+    "en": "Log intact",
+    "ar": "السجل سليم"
+  },
+  "ibuprofene": {
+    "en": "ibuprofen",
+    "ar": "الإيبوبروفين"
+  },
+  "paracetamol": {
+    "en": "paracetamol",
+    "ar": "الباراسيتامول"
+  },
+  "tramadol": {
+    "en": "tramadol",
+    "ar": "الترامادول"
+  },
+  "aspirine": {
+    "en": "aspirin",
+    "ar": "الأسبرين"
+  },
+  "amoxicilline": {
+    "en": "amoxicillin",
+    "ar": "الأموكسيسيلين"
+  },
+  "metformine": {
+    "en": "metformin",
+    "ar": "الميتفورمين"
+  },
+  "warfarine": {
+    "en": "warfarin",
+    "ar": "الوارفارين"
+  },
+  "Fièvre et toux depuis {} : une maladie transmissible à potentiel épidémique est possible": {
+    "en": "Fever and cough for {}: a communicable disease with epidemic potential is possible",
+    "ar": "حمّى وسعال منذ {}: من المحتمل وجود مرض معدٍ ذي قابلية وبائية"
+  },
+  "Fièvre et toux : une maladie transmissible à potentiel épidémique est possible": {
+    "en": "Fever and cough: a communicable disease with epidemic potential is possible",
+    "ar": "حمّى وسعال: من المحتمل وجود مرض معدٍ ذي قابلية وبائية"
+  },
+  "Si vous la suspectez, confirmez-le : le juriste rappellera la déclaration aux autorités sanitaires et les précautions (isolement) avant tout traitement": {
+    "en": "If you suspect it, confirm it: the jurist will remind you to notify the health authorities and to take precautions (isolation) before any treatment",
+    "ar": "إذا كنت تشتبه فيه فأكّد ذلك: سيذكّرك الوكيل القانوني بإبلاغ السلطات الصحية وباتخاذ الاحتياطات (العزل) قبل أي علاج"
+  },
+  "Vous décidez ; tout est consigné au journal": {
+    "en": "You decide; everything is recorded in the log",
+    "ar": "القرار لك؛ وكل شيء يُسجَّل في السجل"
+  },
+  "Le patient a de la fièvre et tousse : je signale au médecin une possible maladie contagieuse": {
+    "en": "The patient has a fever and a cough: I tell the doctor a contagious disease is possible",
+    "ar": "المريض مصاب بالحمّى والسعال: أنبّه الطبيب إلى احتمال وجود مرض معدٍ"
+  },
+  "Maladie contagieuse suspectée : le médecin passe outre, le journal établit les responsabilités": {
+    "en": "Suspected contagious disease: the doctor overrides, the log establishes responsibilities",
+    "ar": "اشتباه في مرض معدٍ: الطبيب يتجاوز التنبيه، والسجل يحدّد المسؤوليات"
+  },
+  "Patient, 34 ans. Pictogrammes : [fièvre] [toux] [5 jours]. Allergies : aucune. Traitements : aucun. Il accepte l'aide de l'IA": {
+    "en": "Patient, 34 years old. Pictograms: [fever] [cough] [5 days]. Allergies: none. Treatments: none. He accepts the AI's help",
+    "ar": "مريض، 34 سنة. الرموز: [حمّى] [سعال] [5 أيام]. الحساسية: لا شيء. العلاجات: لا شيء. يقبل مساعدة الذكاء الاصطناعي"
+  },
+  "Le médecin confirme la suspicion d'une maladie contagieuse à potentiel épidémique": {
+    "en": "The doctor confirms the suspicion of a contagious disease with epidemic potential",
+    "ar": "يؤكد الطبيب الاشتباه في مرض معدٍ ذي قابلية وبائية"
+  },
+  "Je suspecte une maladie contagieuse à potentiel épidémique": {
+    "en": "I suspect a contagious disease with epidemic potential",
+    "ar": "أشتبه في مرض معدٍ ذي قابلية وبائية"
+  },
+  "Le médecin prescrit un antibiotique et laisse repartir le patient, sans déclaration ni isolement": {
+    "en": "The doctor prescribes an antibiotic and lets the patient go home, without notification or isolation",
+    "ar": "يصف الطبيب مضادًا حيويًا ويترك المريض يعود دون إبلاغ أو عزل"
+  },
+  "Amoxicilline 500 mg, 3 fois par jour pendant 7 jours ; retour à domicile": {
+    "en": "Amoxicillin 500 mg, 3 times a day for 7 days; back home",
+    "ar": "أموكسيسيلين 500 ملغ، 3 مرات يوميًا لمدة 7 أيام؛ عودة إلى المنزل"
+  },
+  "Le médecin passe outre l'avis du juriste, avec une justification écrite à son nom": {
+    "en": "The doctor overrides the jurist's opinion, with a written justification under his name",
+    "ar": "يتجاوز الطبيب رأي الوكيل القانوني، مع تبرير مكتوب باسمه"
+  },
+  "Le patient veut rentrer chez lui ; je traite d'abord, je déclarerai plus tard": {
+    "en": "The patient wants to go home; I treat first, I will notify later",
+    "ar": "يريد المريض العودة إلى منزله؛ أعالج أولًا وسأبلّغ لاحقًا"
+  },
+  "Dix jours plus tard : des proches du patient sont malades ; l'établissement doit établir les responsabilités": {
+    "en": "Ten days later: the patient's relatives are ill; the facility must establish responsibilities",
+    "ar": "بعد عشرة أيام: أقارب المريض مرضى؛ ويجب على المنشأة تحديد المسؤوليات"
+  },
+  "Suivi à 10 jours : 4 personnes de l'entourage du patient présentent les mêmes symptômes": {
+    "en": "10-day follow-up: 4 people close to the patient have the same symptoms",
+    "ar": "متابعة بعد 10 أيام: 4 أشخاص من محيط المريض لديهم الأعراض نفسها"
+  },
+  "Rapport de responsabilité demandé à partir du journal": {
+    "en": "Responsibility report requested from the log",
+    "ar": "طُلب تقرير المسؤولية انطلاقًا من السجل"
+  },
+  "L'assistant signale de lui-même une maladie contagieuse possible": {
+    "en": "The assistant flags a possible contagious disease on its own",
+    "ar": "ينبّه المساعد من تلقاء نفسه إلى مرض معدٍ محتمل"
+  },
+  "Le juriste rappelle la déclaration aux autorités sanitaires": {
+    "en": "The jurist reminds notification to the health authorities",
+    "ar": "يذكّر الوكيل القانوني بالإبلاغ إلى السلطات الصحية"
+  },
+  "La prescription sans déclaration ni isolement n'est pas jugée conforme": {
+    "en": "The prescription without notification or isolation is not judged compliant",
+    "ar": "لا تُعتبر الوصفة دون إبلاغ أو عزل مطابقة"
+  },
+  "Le médecin passe outre nominativement, avec justification": {
+    "en": "The doctor overrides by name, with a justification",
+    "ar": "يتجاوز الطبيب باسمه مع تبرير"
+  },
+  "Lacunes : responsabilité et déclaration d'une maladie épidémique": {
+    "en": "Gaps: responsibility and notification of an epidemic disease",
+    "ar": "ثغرات: المسؤولية والإبلاغ عن مرض وبائي"
+  },
+  "{} jours": {
+    "en": "{} days",
+    "ar": "{} أيام"
+  },
+  "{} jour": {
+    "en": "{} day",
+    "ar": "{} يوم"
+  },
+  "{} semaines": {
+    "en": "{} weeks",
+    "ar": "{} أسابيع"
+  },
+  "{} heures": {
+    "en": "{} hours",
+    "ar": "{} ساعات"
+  },
+  "{} mois": {
+    "en": "{} months",
+    "ar": "{} أشهر"
+  },
+  "{} fois par jour pendant {}": {
+    "en": "{} times a day for {}",
+    "ar": "{} مرات يوميًا لمدة {}"
+  },
+  "{} fois par jour": {
+    "en": "{} times a day",
+    "ar": "{} مرات يوميًا"
+  },
+  "Si vous la suspectez, cochez « Maladie contagieuse à potentiel épidémique suspectée » dans la fiche patient : le juriste rappellera la déclaration aux autorités sanitaires et l'isolement avant tout traitement": {
+    "en": "If you suspect it, tick “Suspected contagious disease with epidemic potential” in the patient record: the jurist will remind you to notify the health authorities and to organise isolation before any treatment",
+    "ar": "إذا كنت تشتبه فيه فضع علامة على «اشتباه في مرض معدٍ ذي قابلية وبائية» في ملف المريض: سيذكّرك الوكيل القانوني بإبلاغ السلطات الصحية وتنظيم العزل قبل أي علاج"
+  },
+  "Transmis aux agents : traitement en cours (l'écran se met à jour tout seul)": {
+    "en": "Passed to the agents: in progress (the screen updates by itself)",
+    "ar": "أُرسل إلى الوكلاء: جارٍ المعالجة (تتحدث الشاشة تلقائيًا)"
+  },
+  "Déjà transmis : la traduction arrive (inutile de renvoyer)": {
+    "en": "Already sent: the translation is coming (no need to send again)",
+    "ar": "أُرسل مسبقًا: الترجمة في الطريق (لا داعي لإعادة الإرسال)"
+  },
+  "Déjà transmis : la traduction arrive": {
+    "en": "Already sent: the translation is coming",
+    "ar": "أُرسل مسبقًا: الترجمة في الطريق"
+  },
+  "Lu comme : {}": {
+    "en": "Read as: {}",
+    "ar": "قُرئ على أنه: {}"
+  }
+}

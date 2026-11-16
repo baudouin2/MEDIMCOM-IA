@@ -1,5 +1,5 @@
-"""Sécurité clinique des prescriptions : notices officielles (FDA / DailyMed) traduites en règles du juriste, rapprochées
-de la fiche du patient (grossesse, âge, rein, foie, ulcère, anticoagulant, allergie) et de la dose par jour."""
+"""Clinical safety of prescriptions: official labels (FDA / DailyMed) turned into jurist rules, matched against the
+patient record (pregnancy, age, kidney, liver, ulcer, anticoagulant, allergy) and the daily dose."""
 import sys
 from pathlib import Path
 
@@ -35,7 +35,7 @@ def regles(r):
     ("metformine", "850 mg", "2 fois par jour", {"maladie_renale": True}, "A_REVOIR", "contre_indication:metformine:maladie_renale"),
     ("metformine", "850 mg", "2 fois par jour", {"maladie_hepatique": True}, "A_REVOIR", "contre_indication:metformine:maladie_hepatique"),
     ("metformine", "1000 mg", "3 fois par jour", {}, "A_REVOIR", "dose_max:metformine"),
-    ("metformine", "1000 mg", "2 fois par jour", {"age": 14}, "CONFORME", None),          # 2000 mg/j : maximum de l'enfant
+    ("metformine", "1000 mg", "2 fois par jour", {"age": 14}, "CONFORME", None),          # 2000 mg/day: maximum for children
     ("metformine", "850 mg", "3 fois par jour", {"age": 14}, "A_REVOIR", "dose_max:metformine"),  # 2550 > 2000 chez l'enfant
     ("amoxicilline", "500 mg", "3 fois par jour", {"allergies": "pénicilline"}, "A_REVOIR", "allergie:amoxicilline"),
     ("paracetamol", "1 g", "6 fois par jour", {}, "A_REVOIR", "dose_max:paracetamol"),

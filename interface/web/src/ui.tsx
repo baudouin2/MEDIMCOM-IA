@@ -5,7 +5,7 @@ import { lire, urlPicto, type Libelles } from "./api";
 
 export const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(" ");
 
-// ------------------------------------------------------------------ boutons
+// ------------------------------------------------------------------ buttons
 type Variante = "primary" | "secondary" | "ghost" | "danger" | "success" | "subtle";
 const VARIANTES: Record<Variante, string> = {
   primary: "bg-action text-white hover:bg-action-hover shadow-sm",
@@ -30,7 +30,7 @@ export function Bouton({ variante = "secondary", taille = "md", icone, className
   );
 }
 
-// ------------------------------------------------------------------ pastilles
+// ------------------------------------------------------------------ badges
 export type Ton = "neutre" | "ok" | "warn" | "review" | "danger" | "held" | "action" | "brand";
 const TONS: Record<Ton, string> = {
   neutre: "bg-canvas text-ink-soft ring-line",
@@ -51,7 +51,7 @@ export function Pastille({ ton = "neutre", icone, children, className }: { ton?:
   );
 }
 
-/** Statut d'une décision ou verdict du juriste, en mots simples. */
+/** Status of a decision or verdict of the jurist, in plain words. */
 export const STATUTS: Record<string, { texte: string; ton: Ton }> = {
   CONFORME: { texte: "Conforme", ton: "ok" },
   PREUVES_INSUFFISANTES: { texte: "Information manquante", ton: "warn" },
@@ -70,7 +70,7 @@ export function Statut({ statut }: { statut: string }) {
   return <Pastille ton={s.ton}>{s.texte}</Pastille>;
 }
 
-// ------------------------------------------------------------------ pictogrammes
+// ------------------------------------------------------------------ pictograms
 const ContexteLibelles = createContext<Libelles | null>(null);
 export function FournisseurLibelles({ children }: { children: ReactNode }) {
   const [l, setL] = useState<Libelles | null>(null);
@@ -81,12 +81,12 @@ export function useLibelle() {
   const l = useContext(ContexteLibelles);
   return useCallback((id: string, langue: "fr" | "en" | "ar" = "fr"): string => {
     const un = (x: string) => l?.[langue]?.[x] ?? (x.includes(":") ? x.slice(x.indexOf(":") + 1).replace(/_/g, " ").toLowerCase() : "");
-    if (id.includes("+")) return id.split("+").map((x) => un(x) || x).join(" + ");   // « paracetamol + 1g », pas « MEDICAMENT:… »
+    if (id.includes("+")) return id.split("+").map((x) => un(x) || x).join(" + ");   // "paracetamol + 1g", not "MEDICAMENT:…"
     return un(id);
   }, [l]);
 }
 
-// Langue d'affichage des légendes (écran médecin : choisie par le médecin)
+// Display language of the captions (doctor screen: chosen by the doctor)
 export const ContexteLangue = createContext<"fr" | "en" | "ar">("fr");
 export function Picto({ id, taille = 56, legende, className }: { id: string; taille?: number; legende?: boolean; className?: string }) {
   const libelle = useLibelle();
@@ -100,7 +100,7 @@ export function Picto({ id, taille = 56, legende, className }: { id: string; tai
   );
 }
 
-// ------------------------------------------------------------------ champs
+// ------------------------------------------------------------------ fields
 export const champ = "w-full rounded-lg border border-line-strong bg-surface px-3 text-sm text-ink placeholder:text-ink-faint " +
   "shadow-tile transition-colors focus:border-action focus:outline-none focus:ring-4 focus:ring-action/10";
 export function Champ({ libelle, aide, htmlFor, children, className }: { libelle: string; aide?: string; htmlFor?: string; children: ReactNode; className?: string }) {
@@ -122,7 +122,7 @@ export function Case({ id, coche, onChange, children }: { id: string; coche: boo
   );
 }
 
-// ------------------------------------------------------------------ panneau
+// ------------------------------------------------------------------ panel
 export function Panneau({ titre, aide, actions, children, className, corps = "p-4" }:
   { titre?: ReactNode; aide?: ReactNode; actions?: ReactNode; children: ReactNode; className?: string; corps?: string }) {
   return (
@@ -151,7 +151,7 @@ export function Vide({ icone, titre, texte }: { icone?: ReactNode; titre: string
   );
 }
 
-// ------------------------------------------------------------------ boîte de dialogue
+// ------------------------------------------------------------------ dialog
 export function Dialogue({ ouvert, titre, description, children, actions, onFermer }:
   { ouvert: boolean; titre: string; description?: string; children?: ReactNode; actions: ReactNode; onFermer: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -210,7 +210,7 @@ export function FournisseurNotif({ children }: { children: ReactNode }) {
 }
 export const useNotifier = () => useContext(ContexteNotif);
 
-/** Interroge régulièrement une adresse ; s'arrête quand l'onglet est caché. */
+/** Polls an address regularly; stops when the tab is hidden. */
 export function useSondage<T>(charger: () => Promise<T>, intervalle = 1500) {
   const [donnees, setDonnees] = useState<T | null>(null);
   const [erreur, setErreur] = useState<unknown>(null);
@@ -227,8 +227,8 @@ export function useSondage<T>(charger: () => Promise<T>, intervalle = 1500) {
   return { donnees, erreur, rafraichir };
 }
 
-// ------------------------------------------------------------------ recherche de pictogrammes par le sens (serveur)
-// Mots-clés + ressemblance d'écriture + sens (si la base est vectorisée) : « essouflement », « tête qui tourne ».
+// ------------------------------------------------------------------ pictogram search by meaning (server)
+// Keywords + spelling similarity + meaning (if the base is vectorised): "essouflement", "tête qui tourne".
 export function useRechercheSens(q: string, actif = true): string[] {
   const [ids, setIds] = useState<string[]>([]);
   useEffect(() => {

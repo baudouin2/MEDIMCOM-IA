@@ -38,7 +38,20 @@
       "medimcom_response": "Every AI suggestion carries its author agent, sources and status; overriding an A_REVOIR verdict requires a named doctor; the hash-chained journal can be produced as evidence.",
       "triggers": [
         "suggestion_ia_validee"
-      ]
+      ],
+      "title_ar": "من يُسأل عن اقتراح ذكاء اصطناعي اعتمده الطبيب؟",
+      "situation_ar": "يقترح الوكيل المساعد علاجًا بديلًا؛ يقبله الطبيب؛ ثم يتبيّن لاحقًا أنه خاطئ.",
+      "existing_texts_cm": [
+        {
+          "fiche": "CM90-A16-17",
+          "says": "Only a registered physician diagnoses and prescribes, and answers for it; silent on AI suggestions."
+        },
+        {
+          "fiche": "WHO21-PRINC",
+          "says": "Accountability is a guiding principle for AI in health (non-binding)."
+        }
+      ],
+      "missing_cm": "No Cameroonian text allocates liability between clinician, software developer and facility when a validated AI suggestion causes harm, and none says what evidential value AI logs have in a dispute."
     },
     {
       "id": "L02",
@@ -74,7 +87,16 @@
       "medimcom_response": "Designed to meet the 'reviewable basis' test: every suggestion and verdict shows its source text; the doctor decides.",
       "triggers": [
         "statut_logiciel"
-      ]
+      ],
+      "title_ar": "متى يُعدّ مساعد دعم القرار أو التواصل جهازًا طبيًا؟",
+      "situation_ar": "يترجم MEDIMCOM ويقترح ويتحقق؛ لا يصف أيٌّ من وكلائه دواءً، لكن مخرجاته تؤثر في القرارات.",
+      "existing_texts_cm": [
+        {
+          "fiche": "CM-PHARM",
+          "says": "Pharmacy and medicines law (to be read): no software classification criteria found."
+        }
+      ],
+      "missing_cm": "No criteria distinguish regulated decision-support software from communication aids and compliance checkers."
     },
     {
       "id": "L03",
@@ -106,7 +128,24 @@
       "medimcom_response": "The communication need is stored in the patient state and travels with the record; the translator agent adapts every message; the doctor validates each pictogram sequence.",
       "triggers": [
         "besoin_communication"
-      ]
+      ],
+      "title_ar": "لا يوجد معيار تشغيلي لتلبية احتياجات التواصل لدى المرضى الصم في الرعاية",
+      "situation_ar": "مريض أصم محدود القراءة والكتابة يراجع الطبيب دون مترجم لغة إشارة.",
+      "existing_texts_cm": [
+        {
+          "fiche": "CM10-A3",
+          "says": "Deaf persons are persons with a sensory disability."
+        },
+        {
+          "fiche": "CM10-A32",
+          "says": "Access of persons with disabilities to information technologies."
+        },
+        {
+          "fiche": "CRPD-A21",
+          "says": "Accessible information and alternative communication (binding on Cameroon)."
+        }
+      ],
+      "missing_cm": "No operational standard requires providers to identify, record and meet a patient's communication need; the 2010 law does not mention sign language."
     },
     {
       "id": "L04",
@@ -146,7 +185,24 @@
       "medimcom_response": "Consent is recorded with its means of expression, a comprehension check (teach-back with pictograms) and the doctor's attestation, all in the journal.",
       "triggers": [
         "consentement_pictogrammes"
-      ]
+      ],
+      "title_ar": "هل الموافقة المعطاة بالرموز المصوّرة موافقة مستنيرة صحيحة؟",
+      "situation_ar": "يوافق المريض على علاج باختيار رموز مصوّرة.",
+      "existing_texts_cm": [
+        {
+          "fiche": "CM-DEONTO",
+          "says": "Free and informed consent and patient information (articles to confirm)."
+        },
+        {
+          "fiche": "CRPD-A12",
+          "says": "Legal capacity and support in exercising it."
+        },
+        {
+          "fiche": "CRPD-A25",
+          "says": "Care on the basis of free and informed consent."
+        }
+      ],
+      "missing_cm": "Consent through alternative communication (pictograms) is not recognised, and no rule says how comprehension must be checked or documented."
     },
     {
       "id": "L05",
@@ -165,14 +221,18 @@
       "medimcom_response": "Pictogram library tested with deaf users following the ISO 9186-1 method before use; every sequence validated by the doctor.",
       "triggers": [
         "pictogramme_non_valide"
-      ]
+      ],
+      "title_ar": "لا يوجد معيار لاعتماد الرموز الطبية المصوّرة",
+      "situation_ar": "يولّد نموذج رموزًا مصوّرة أو يختارها وتُعرض على المرضى.",
+      "existing_texts_cm": [],
+      "missing_cm": "No standard on testing health pictograms or AI-generated images shown to patients."
     },
     {
       "id": "L06",
       "domain": "Data governance and innovation",
       "title": "Strict health-data localisation versus cloud AI and international sandboxes",
       "title_fr": "Localisation stricte des données de santé contre IA en nuage et bacs à sable internationaux",
-      "situation": "A model or vector store hosted outside the UAE (e.g. an international sandbox) would process consultation content.",
+      "situation": "A model or vector store hosted outside the country (e.g. an international sandbox) would process consultation content.",
       "existing_texts": [
         {
           "fiche": "ICT19-A13",
@@ -201,7 +261,20 @@
       "medimcom_response": "Local models only; synthetic data in the prototype; the jurist blocks any outbound transfer without an exception and its conditions.",
       "triggers": [
         "transfert_hors_eau"
-      ]
+      ],
+      "title_ar": "توطين صارم للبيانات الصحية في مقابل الذكاء الاصطناعي السحابي وبيئات الاختبار الدولية",
+      "situation_ar": "نموذج أو قاعدة متجهات مستضافة خارج البلد (مثل بيئة اختبار دولية) ستعالج محتوى الاستشارة.",
+      "existing_texts_cm": [
+        {
+          "fiche": "CM24-SENSIBLES",
+          "says": "Health data are sensitive data."
+        },
+        {
+          "fiche": "CM24-TRANSFERT",
+          "says": "Transfers of personal data outside Cameroon are subject to conditions and authorisation."
+        }
+      ],
+      "missing_cm": "No pathway for testing AI in international or cross-border sandboxes, and no statement on whether synthetic or de-identified data fall outside the transfer rules."
     },
     {
       "id": "L07",
@@ -237,13 +310,26 @@
       "medimcom_response": "Typed messages between agents, per-agent tool permissions, deterministic verdicts, SHA-256 chained journal.",
       "triggers": [
         "multi_agents"
-      ]
+      ],
+      "title_ar": "قواعد الرقابة لا تتناول الأنظمة متعددة الوكلاء",
+      "situation_ar": "يتبادل عدة وكلاء ذكاء اصطناعي الرسائل ويتصرفون في ملف مشترك قبل أن يرى إنسان النتيجة.",
+      "existing_texts_cm": [
+        {
+          "fiche": "WHO21-PRINC",
+          "says": "WHO principles: human autonomy, transparency, accountability (non-binding)."
+        },
+        {
+          "fiche": "AU-AI",
+          "says": "African Union continental AI strategy (non-binding)."
+        }
+      ],
+      "missing_cm": "No Cameroonian text on AI in health; nothing on agent-to-agent communication, agent autonomy, tool permissions or tamper-evident logs."
     },
     {
       "id": "L08",
       "domain": "Crisis coordination",
-      "title": "No unified channel for AI incidents in health across emirates",
-      "title_fr": "Pas de canal unifié pour les incidents d'IA en santé entre émirats",
+      "title": "No unified channel for AI incidents in health",
+      "title_fr": "Pas de canal unifié pour les incidents d'IA en santé",
       "situation": "During a crisis an AI component fails or gives harmful output in several facilities.",
       "existing_texts": [
         {
@@ -273,7 +359,16 @@
       "medimcom_response": "The journal exports an incident record (what, when, which agent, which sources); the jurist reminds the time limits that do exist.",
       "triggers": [
         "incident_ia"
-      ]
+      ],
+      "title_ar": "لا توجد قناة موحّدة لحوادث الذكاء الاصطناعي في الصحة",
+      "situation_ar": "أثناء أزمة، يتعطل مكوّن ذكاء اصطناعي أو يعطي مخرجات ضارة في عدة منشآت.",
+      "existing_texts_cm": [
+        {
+          "fiche": "IHR-A6",
+          "says": "Time-bound notification model exists for public health events."
+        }
+      ],
+      "missing_cm": "No duty, time limit or channel to report an AI incident in health."
     },
     {
       "id": "L09",
@@ -305,7 +400,61 @@
       "medimcom_response": "Emergency pictogram set always available offline; urgent alerts are prioritised by the assistant agent.",
       "triggers": [
         "urgence_communication"
-      ]
+      ],
+      "title_ar": "بروتوكولات الطوارئ لا تضمن وصولًا متكافئًا للصم",
+      "situation_ar": "في حالة طوارئ، لا تتوفر القنوات الصوتية المعتادة ولا المترجمون.",
+      "existing_texts_cm": [
+        {
+          "fiche": "CRPD-A11",
+          "says": "Situations of risk and humanitarian emergencies (binding on Cameroon)."
+        }
+      ],
+      "missing_cm": "Emergency protocols do not require equivalent non-voice access for deaf people."
+    },
+    {
+      "id": "L10",
+      "domain": "Public health and accountability",
+      "title": "Who answers when a clinician overrides an AI warning of a suspected epidemic disease?",
+      "title_fr": "Qui répond quand le médecin passe outre une alerte de l'IA sur une maladie épidémique suspectée ?",
+      "situation": "The assistant flags a possible epidemic-prone disease; the doctor confirms the suspicion but lets the patient go home without notification or isolation; contacts are later infected.",
+      "existing_texts": [
+        {
+          "fiche": "IHR-A6",
+          "says": "States notify WHO within 24 hours of assessment; national notification duties are left to each State."
+        },
+        {
+          "fiche": "CM90-A16-17",
+          "says": "Only a registered physician diagnoses and prescribes, and answers for it."
+        }
+      ],
+      "missing": "No national text read in the knowledge base sets the clinician's notification duty, time limit and channel, nor says what weight an AI warning (and its override) has when responsibility for onward transmission is established.",
+      "global_examples": [
+        {
+          "fiche": "IHR-A6",
+          "how": "Time-bound notification through a single national focal point."
+        },
+        {
+          "fiche": "AIA-A14",
+          "how": "Human oversight: the user may override the system, and the override is traceable."
+        }
+      ],
+      "medimcom_response": "The override needs a written justification under the doctor's name; the hash-chained journal shows who warned, on which basis, who decided and when, so responsibility can be established afterwards.",
+      "triggers": [
+        "contagion_non_declaree"
+      ],
+      "title_ar": "من يُسأل عندما يتجاوز الطبيب تنبيه الذكاء الاصطناعي بشأن مرض وبائي مشتبه به؟",
+      "situation_ar": "ينبّه المساعد إلى مرض محتمل ذي قابلية وبائية؛ يؤكد الطبيب الاشتباه لكنه يترك المريض يعود إلى منزله دون إبلاغ أو عزل؛ ثم يُصاب المخالطون.",
+      "existing_texts_cm": [
+        {
+          "fiche": "IHR-A6",
+          "says": "States notify WHO within 24 hours of assessment; national notification duties are left to each State."
+        },
+        {
+          "fiche": "CM90-A16-17",
+          "says": "The registered physician answers for diagnosis and treatment."
+        }
+      ],
+      "missing_cm": "No national text read sets the clinician's notification duty, time limit and channel, nor the weight of an AI warning and of its override when responsibility for onward transmission is established."
     }
   ]
 }

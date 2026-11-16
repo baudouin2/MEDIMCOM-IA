@@ -1,0 +1,1670 @@
+{
+ "Urgence signalée par le patient.": [
+  "The patient has signalled an emergency.",
+  "أبلغ المريض عن حالة طارئة."
+ ],
+ "Il a appuyé sur le bouton d'urgence : prenez-le en charge en priorité. Son écran lui indique que vous êtes prévenu.": [
+  "They pressed the emergency button: attend to them first. Their screen tells them you have been alerted.",
+  "ضغط على زر الطوارئ: اعتنِ به أولًا. تُخبره شاشته بأنك تلقّيت التنبيه."
+ ],
+ "Une photo est envoyée au modèle en ligne pour être lue : patients fictifs uniquement. Sans modèle, elle est jointe au dossier et vous la lisez.": [
+  "A photo is sent to the online model to be read: fictitious patients only. Without a model, it is attached to the record and you read it.",
+  "تُرسل الصورة إلى النموذج عبر الإنترنت لقراءتها: لمرضى وهميين فقط. من دون نموذج، تُرفق بالملف وتقرؤها أنت."
+ ],
+ "envoyé par le patient": [
+  "sent by the patient",
+  "أرسله المريض"
+ ],
+ "Médicaments :": [
+  "Medicines:",
+  "الأدوية:"
+ ],
+ "Maladies :": [
+  "Conditions:",
+  "الأمراض:"
+ ],
+ "Allergies :": [
+  "Allergies:",
+  "الحساسية:"
+ ],
+ "Examens :": [
+  "Tests:",
+  "الفحوص:"
+ ],
+ "Confirmer dans la fiche": [
+  "Confirm in the record",
+  "تأكيد في الملف"
+ ],
+ "Référence introuvable dans la base.": [
+  "Reference not found in the knowledge base.",
+  "المرجع غير موجود في قاعدة المعرفة."
+ ],
+ "Médecin connecté": [
+  "Signed-in doctor",
+  "الطبيب المتصل"
+ ],
+ "Étape suivante": [
+  "Next step",
+  "الخطوة التالية"
+ ],
+ "Communique en pictogrammes": [
+  "Communicates with pictograms",
+  "يتواصل بالرموز المصوّرة"
+ ],
+ "Informé de l'IA": [
+  "Informed about the AI",
+  "أُبلغ بالذكاء الاصطناعي"
+ ],
+ "à confirmer": [
+  "to confirm",
+  "بانتظار التأكيد"
+ ],
+ "Non renseignée": [
+  "Not recorded",
+  "غير مسجّلة"
+ ],
+ "Non renseigné": [
+  "Not recorded",
+  "غير مسجّل"
+ ],
+ "+ Ajouter un renseignement": [
+  "+ Add information",
+  "+ إضافة معلومة"
+ ],
+ "Informé qu'une IA aide le médecin": [
+  "Informed that an AI assists the doctor",
+  "أُبلغ بأن ذكاءً اصطناعيًا يساعد الطبيب"
+ ],
+ "Le patient refuse l'aide de l'IA": [
+  "The patient refuses the AI's help",
+  "يرفض المريض مساعدة الذكاء الاصطناعي"
+ ],
+ "Message d'accueil (IA, droit de refuser)": [
+  "Welcome message (AI, right to refuse)",
+  "رسالة ترحيب (الذكاء الاصطناعي، حق الرفض)"
+ ],
+ "Prescription :": [
+  "Prescription:",
+  "الوصفة:"
+ ],
+ "Rapproché automatiquement": [
+  "Matched automatically",
+  "مُطابَق تلقائيًا"
+ ],
+ "Lecture du juriste :": [
+  "Legal agent's reading:",
+  "قراءة الوكيل القانوني:"
+ ],
+ "Sens à confirmer avant l'envoi": [
+  "Meaning to confirm before sending",
+  "المعنى بحاجة إلى تأكيد قبل الإرسال"
+ ],
+ "Je confirme : ni consigne ni incitation, envoyer": [
+  "I confirm: neither an instruction nor an incitement — send",
+  "أؤكد: ليس تعليمة ولا تحريضًا، أرسِل"
+ ],
+ "Bloqué par le juriste : ce message ne partira pas au patient": [
+  "Blocked by the legal agent: this message will not be sent to the patient",
+  "حظره الوكيل القانوني: لن تُرسل هذه الرسالة إلى المريض"
+ ],
+ "Que faire :": [
+  "What to do:",
+  "ما العمل:"
+ ],
+ "Transcription en cours…": [
+  "Transcribing…",
+  "جارٍ التفريغ…"
+ ],
+ "Message au patient": [
+  "Message to the patient",
+  "رسالة إلى المريض"
+ ],
+ "Dictée : ajoutez une clé Groq (Whisper, open source) ou xAI, ou utilisez Chrome": [
+  "Dictation: add a Groq key (Whisper, open source) or an xAI key, or use Chrome",
+  "الإملاء: أضف مفتاح Groq (Whisper، مفتوح المصدر) أو xAI، أو استخدم Chrome"
+ ],
+ "Enregistrer la réponse comme": [
+  "Record the answer as",
+  "تسجيل الإجابة كـ"
+ ],
+ "texte seulement": [
+  "text only",
+  "نص فقط"
+ ],
+ "Détails": [
+  "Details",
+  "التفاصيل"
+ ],
+ "Ce qui est possible :": [
+  "What is possible:",
+  "ما هو ممكن:"
+ ],
+ "L'assistant est actif en": [
+  "The assistant is running in",
+  "المساعد يعمل في"
+ ],
+ "mode règles": [
+  "rules mode",
+  "وضع القواعد"
+ ],
+ "Pourquoi le modèle ne répond pas": [
+  "Why the model does not answer",
+  "لماذا لا يجيب النموذج"
+ ],
+ "L'assistant suit la consultation en temps réel : chaque message, prescription, document et réponse du patient est confronté à sa fiche.": [
+  "The assistant follows the consultation in real time: every message, prescription, document and patient answer is checked against the patient's record.",
+  "يتابع المساعد الاستشارة لحظة بلحظة: تُقارن كل رسالة ووصفة ومستند وإجابة من المريض بملفه."
+ ],
+ "Proposées par l'assistant. Rien n'arrive dans la conversation tant que vous ne les envoyez pas.": [
+  "Proposed by the assistant. Nothing appears in the conversation until you send it.",
+  "يقترحها المساعد. لا يظهر شيء في المحادثة حتى ترسله أنت."
+ ],
+ "Modifier d'abord": [
+  "Edit first",
+  "عدّل أولًا"
+ ],
+ "L'assistant n'a pas de question en attente.": [
+  "The assistant has no pending question.",
+  "لا توجد أسئلة معلّقة لدى المساعد."
+ ],
+ "L'assistant propose, vous décidez. « Ignorer » masque aussitôt la suggestion (enregistré au journal).": [
+  "The assistant proposes, you decide. “Dismiss” hides the suggestion at once (recorded in the log).",
+  "المساعد يقترح وأنت تقرّر. «تجاهل» يُخفي الاقتراح فورًا (يُسجَّل في السجل)."
+ ],
+ "Préremplir l'ordonnance": [
+  "Prefill the prescription",
+  "تعبئة الوصفة مسبقًا"
+ ],
+ "Proposition de l'assistant (contrôlée par le juriste pour ce patient)": [
+  "Assistant's proposal (checked by the legal agent for this patient)",
+  "اقتراح المساعد (تحقّق منه الوكيل القانوني لهذا المريض)"
+ ],
+ "En présentiel": [
+  "In person",
+  "حضوريًا"
+ ],
+ "Téléconsultation": [
+  "Teleconsultation",
+  "استشارة عن بُعد"
+ ],
+ "Inspirée d'une suggestion de l'assistant": [
+  "Based on a suggestion from the assistant",
+  "مستوحاة من اقتراح المساعد"
+ ],
+ "Chaque prescription est vérifiée par le juriste avant d'être transmise.": [
+  "Every prescription is checked by the legal agent before it is passed on.",
+  "يتحقّق الوكيل القانوني من كل وصفة قبل إرسالها."
+ ],
+ "Il manque, pour que le juriste puisse conclure :": [
+  "Still missing for the legal agent to conclude:",
+  "ما ينقص لكي يتمكّن الوكيل القانوني من الحكم:"
+ ],
+ "Ou remplissez la fiche patient : la prescription est revérifiée aussitôt.": [
+  "Or fill in the patient record: the prescription is re-checked at once.",
+  "أو املأ ملف المريض: يُعاد التحقّق من الوصفة فورًا."
+ ],
+ "Maintenir en justifiant": [
+  "Maintain with a justification",
+  "الإبقاء مع التبرير"
+ ],
+ "Lacunes du droit signalées": [
+  "Legal gaps reported",
+  "الثغرات القانونية المُبلّغ عنها"
+ ],
+ "Situations que les textes en vigueur ne règlent pas, relevées pendant la consultation.": [
+  "Situations that the texts in force do not settle, found during the consultation.",
+  "حالات لا تحسمها النصوص النافذة، رُصدت أثناء الاستشارة."
+ ],
+ "Aucune lacune relevée pour cette consultation.": [
+  "No gap found for this consultation.",
+  "لم تُرصد أي ثغرة في هذه الاستشارة."
+ ],
+ "Vérifications du juriste": [
+  "Legal agent's checks",
+  "تحقّقات الوكيل القانوني"
+ ],
+ "Aucune vérification pour l'instant.": [
+  "No check yet.",
+  "لا توجد تحقّقات حتى الآن."
+ ],
+ "Échanges entre institutions, sans données de patients.": [
+  "Exchanges between institutions, without patient data.",
+  "مراسلات بين المؤسسات، دون بيانات المرضى."
+ ],
+ "Accès réservé au médecin": [
+  "Doctor access only",
+  "الدخول مخصّص للطبيب"
+ ],
+ "Ouvrez le lien privé affiché dans le terminal au démarrage du serveur. Il contient une clé secrète : ne le partagez pas.": [
+  "Open the private link shown in the terminal when the server starts. It contains a secret key: do not share it.",
+  "افتح الرابط الخاص المعروض في الطرفية عند تشغيل الخادم. يحتوي على مفتاح سري: لا تشاركه."
+ ],
+ "Ouvrir l'écran patient": [
+  "Open the patient screen",
+  "فتح شاشة المريض"
+ ],
+ "Cliquez un pictogramme pour le sélectionner, puis choisissez-en un dans la base pour le": [
+  "Click a pictogram to select it, then choose one in the library to",
+  "انقر على رمز لتحديده، ثم اختر رمزًا من المكتبة من أجل"
+ ],
+ ". Sans sélection, le pictogramme choisi s'ajoute à la fin. La proposition reste à valider.": [
+  ". Without a selection, the chosen pictogram is added at the end. The proposal still has to be approved.",
+  ". من دون تحديد، يُضاف الرمز المختار في النهاية. يبقى الاقتراح بحاجة إلى اعتماد."
+ ],
+ "Aucun pictogramme : ajoutez-en ci-dessous.": [
+  "No pictogram: add some below.",
+  "لا توجد رموز: أضف بعضها أدناه."
+ ],
+ "Sélectionnez un pictogramme pour le remplacer, le déplacer, le retirer ou insérer à côté.": [
+  "Select a pictogram to replace it, move it, remove it or insert next to it.",
+  "حدّد رمزًا لاستبداله أو نقله أو حذفه أو الإدراج بجانبه."
+ ],
+ "Insérer après": [
+  "Insert after",
+  "إدراج بعد"
+ ],
+ "Combiner avec le suivant": [
+  "Combine with the next one",
+  "دمج مع التالي"
+ ],
+ "Enregistrer la modification": [
+  "Save the change",
+  "حفظ التعديل"
+ ],
+ "Type de document": [
+  "Document type",
+  "نوع المستند"
+ ],
+ "Chaque action est enregistrée dans un journal chaîné : toute modification après coup est détectée.": [
+  "Every action is written to a chained log: any later change is detected.",
+  "يُسجَّل كل إجراء في سجل متسلسل: يُكتشف أي تعديل لاحق."
+ ],
+ "Les agents (traducteur, juriste, assistant…) sont ceux de MEDIMCOM IA, avec leurs règles et leurs garde-fous. Le modèle de langage en ligne n'est qu'un outil de l'assistant : il ne décide rien seul.": [
+  "The agents (translator, legal agent, assistant…) are MEDIMCOM AI's own, with their rules and safeguards. The online language model is only a tool of the assistant: it decides nothing on its own.",
+  "الوكلاء (المترجم، الوكيل القانوني، المساعد…) هم وكلاء MEDIMCOM IA بقواعدهم وضماناتهم. النموذج اللغوي عبر الإنترنت مجرد أداة للمساعد: لا يقرّر شيئًا وحده."
+ ],
+ "L'assistant interroge le modèle en ligne en arrière-plan. Vous pouvez continuer : vos clics passent avant lui.": [
+  "The assistant queries the online model in the background. You can carry on: your clicks come first.",
+  "يستشير المساعد النموذج عبر الإنترنت في الخلفية. يمكنك المتابعة: نقراتك لها الأولوية."
+ ],
+ "Journal lisible": [
+  "Readable log",
+  "سجل مقروء"
+ ],
+ "Crédits des pictogrammes": [
+  "Pictogram credits",
+  "حقوق الرموز المصوّرة"
+ ],
+ "confirmé": [
+  "confirmed",
+  "مؤكَّد"
+ ],
+ "non confirmé": [
+  "not confirmed",
+  "غير مؤكَّد"
+ ],
+ "ans": [
+  "years",
+  "سنة"
+ ],
+ "ou « aucune »": [
+  "or “none”",
+  "أو «لا شيء»"
+ ],
+ "ou « aucun »": [
+  "or “none”",
+  "أو «لا شيء»"
+ ],
+ "Renseignement": [
+  "Information",
+  "معلومة"
+ ],
+ "Renseignement (ex. tabac)": [
+  "Information (e.g. smoking)",
+  "معلومة (مثل: التدخين)"
+ ],
+ "Valeur": [
+  "Value",
+  "القيمة"
+ ],
+ "Supprimer": [
+  "Delete",
+  "حذف"
+ ],
+ "Message d'accueil en pictogrammes : un ordinateur aide à traduire, le médecin décide, le patient peut refuser. Sa réponse est enregistrée.": [
+  "Welcome message in pictograms: a computer helps to translate, the doctor decides, the patient may refuse. Their answer is recorded.",
+  "رسالة ترحيب بالرموز: حاسوب يساعد في الترجمة، والطبيب يقرّر، ويحق للمريض الرفض. تُسجَّل إجابته."
+ ],
+ "Annuler : ce message ne partira pas": [
+  "Cancel: this message will not be sent",
+  "إلغاء: لن تُرسل هذه الرسالة"
+ ],
+ "Annuler et remettre le texte dans la zone de saisie pour le corriger": [
+  "Cancel and put the text back in the input box to correct it",
+  "إلغاء وإعادة النص إلى خانة الكتابة لتصحيحه"
+ ],
+ "Votre confirmation et votre nom sont enregistrés au journal": [
+  "Your confirmation and your name are recorded in the log",
+  "يُسجَّل تأكيدك واسمك في السجل"
+ ],
+ "Le patient ne verra plus ce message (le journal le garde)": [
+  "The patient will no longer see this message (the log keeps it)",
+  "لن يرى المريض هذه الرسالة بعد الآن (يحتفظ بها السجل)"
+ ],
+ "Langue de la dictée": [
+  "Dictation language",
+  "لغة الإملاء"
+ ],
+ "Masquer ce message (enregistré au journal)": [
+  "Hide this message (recorded in the log)",
+  "إخفاء هذه الرسالة (يُسجَّل في السجل)"
+ ],
+ "Masquer ce message": [
+  "Hide this message",
+  "إخفاء هذه الرسالة"
+ ],
+ "Par exemple : un consentement donné en pictogrammes est-il valable ?": [
+  "For example: is consent given with pictograms valid?",
+  "مثال: هل الموافقة المعطاة بالرموز المصوّرة صحيحة؟"
+ ],
+ "La traduction arrive dans la conversation : vous la modifiez puis la validez": [
+  "The translation appears in the conversation: you edit it, then approve it",
+  "تظهر الترجمة في المحادثة: تعدّلها ثم تعتمدها"
+ ],
+ "Envoyée en votre nom avec ces pictogrammes, après le contrôle du juriste": [
+  "Sent in your name with these pictograms, after the legal agent's check",
+  "تُرسل باسمك بهذه الرموز بعد تحقّق الوكيل القانوني"
+ ],
+ "Envoyer": [
+  "Send",
+  "إرسال"
+ ],
+ "Rechercher": [
+  "Search",
+  "بحث"
+ ],
+ "3 fois par jour pendant 3 jours": [
+  "3 times a day for 3 days",
+  "3 مرات يوميًا لمدة 3 أيام"
+ ],
+ "Fermer": [
+  "Close",
+  "إغلاق"
+ ],
+ "Que fait un clic dans la base ?": [
+  "What does a click in the library do?",
+  "ماذا تفعل النقرة في المكتبة؟"
+ ],
+ "Déplacer à gauche": [
+  "Move left",
+  "تحريك إلى اليسار"
+ ],
+ "Déplacer à droite": [
+  "Move right",
+  "تحريك إلى اليمين"
+ ],
+ "Une seule image : celui-ci en grand, le suivant en médaillon": [
+  "One image: this one large, the next one as a badge",
+  "صورة واحدة: هذا كبيرًا، والتالي شارة صغيرة"
+ ],
+ "Chercher dans toute la base (ex. ventre, brûlure, avaler)": [
+  "Search the whole library (e.g. belly, burning, swallow)",
+  "ابحث في المكتبة كلها (مثل: بطن، حرقة، بلع)"
+ ],
+ "Catégorie": [
+  "Category",
+  "الفئة"
+ ],
+ "Remplacer": [
+  "Replace",
+  "استبدال"
+ ],
+ "Retirer": [
+  "Remove",
+  "إزالة"
+ ],
+ "Sexe": [
+  "Sex",
+  "الجنس"
+ ],
+ "Âge": [
+  "Age",
+  "العمر"
+ ],
+ "Poids": [
+  "Weight",
+  "الوزن"
+ ],
+ "Motif": [
+  "Reason for visit",
+  "سبب الزيارة"
+ ],
+ "Douleur": [
+  "Pain",
+  "الألم"
+ ],
+ "Siège de la douleur": [
+  "Pain location",
+  "موضع الألم"
+ ],
+ "Intensité de la douleur": [
+  "Pain intensity",
+  "شدة الألم"
+ ],
+ "Nausées": [
+  "Nausea",
+  "الغثيان"
+ ],
+ "Fièvre": [
+  "Fever",
+  "الحمّى"
+ ],
+ "Grossesse": [
+  "Pregnancy",
+  "الحمل"
+ ],
+ "Allergies": [
+  "Allergies",
+  "الحساسية"
+ ],
+ "Traitements en cours": [
+  "Current treatments",
+  "العلاجات الحالية"
+ ],
+ "Communication": [
+  "Communication",
+  "التواصل"
+ ],
+ "Informé de l'usage de l'IA": [
+  "Informed about the use of AI",
+  "أُبلغ باستخدام الذكاء الاصطناعي"
+ ],
+ "Accord pour le traitement": [
+  "Agreement to the treatment",
+  "الموافقة على العلاج"
+ ],
+ "Urgence signalée": [
+  "Emergency reported",
+  "حالة طارئة مُبلّغ عنها"
+ ],
+ "Antécédents (texte libre)": [
+  "Medical history (free text)",
+  "السوابق المرضية (نص حر)"
+ ],
+ "Maladies repérées": [
+  "Conditions identified",
+  "الأمراض المرصودة"
+ ],
+ "Autres informations": [
+  "Other information",
+  "معلومات أخرى"
+ ],
+ "Maladie rénale": [
+  "Kidney disease",
+  "مرض كلوي"
+ ],
+ "Maladie du foie": [
+  "Liver disease",
+  "مرض الكبد"
+ ],
+ "Ulcère digestif": [
+  "Peptic ulcer",
+  "قرحة هضمية"
+ ],
+ "Sous anticoagulant": [
+  "On anticoagulants",
+  "يتناول مضادات التخثّر"
+ ],
+ "Maladie cardiaque": [
+  "Heart disease",
+  "مرض القلب"
+ ],
+ "Allaitement": [
+  "Breastfeeding",
+  "الرضاعة الطبيعية"
+ ],
+ "Médicaments déclarés par le patient": [
+  "Medicines reported by the patient",
+  "الأدوية التي صرّح بها المريض"
+ ],
+ "Depuis": [
+  "Since",
+  "منذ"
+ ],
+ "Aucune": [
+  "None",
+  "لا شيء"
+ ],
+ "Aucun": [
+  "None",
+  "لا شيء"
+ ],
+ "aucune": [
+  "none",
+  "لا شيء"
+ ],
+ "aucun": [
+  "none",
+  "لا شيء"
+ ],
+ "Pas enceinte": [
+  "Not pregnant",
+  "ليست حاملًا"
+ ],
+ "Enceinte": [
+  "Pregnant",
+  "حامل"
+ ],
+ "Êtes-vous allergique à un médicament ?": [
+  "Are you allergic to any medicine?",
+  "هل لديك حساسية من أي دواء؟"
+ ],
+ "Prenez-vous des médicaments en ce moment ?": [
+  "Are you taking any medicines at the moment?",
+  "هل تتناول أدوية حاليًا؟"
+ ],
+ "Êtes-vous enceinte ?": [
+  "Are you pregnant?",
+  "هل أنتِ حامل؟"
+ ],
+ "Allergies (oui / non)": [
+  "Allergies (yes / no)",
+  "الحساسية (نعم / لا)"
+ ],
+ "Traitements en cours (oui / non)": [
+  "Current treatments (yes / no)",
+  "العلاجات الحالية (نعم / لا)"
+ ],
+ "Accord pour l'aide de l'IA": [
+  "Agreement to the AI's help",
+  "الموافقة على مساعدة الذكاء الاصطناعي"
+ ],
+ "Traducteur": [
+  "Translator",
+  "المترجم"
+ ],
+ "Assistant médical": [
+  "Medical assistant",
+  "المساعد الطبي"
+ ],
+ "Juriste": [
+  "Legal agent",
+  "الوكيل القانوني"
+ ],
+ "Coordinateur": [
+  "Coordinator",
+  "المنسّق"
+ ],
+ "Médecin": [
+  "Doctor",
+  "الطبيب"
+ ],
+ "Autorité de santé": [
+  "Health authority",
+  "السلطة الصحية"
+ ],
+ "Hôpital": [
+  "Hospital",
+  "المستشفى"
+ ],
+ "Cellule de crise": [
+  "Crisis cell",
+  "خلية الأزمة"
+ ],
+ "Document du patient": [
+  "Patient document",
+  "مستند المريض"
+ ],
+ "Oui": [
+  "Yes",
+  "نعم"
+ ],
+ "Non": [
+  "No",
+  "لا"
+ ],
+ "Femme": [
+  "Woman",
+  "امرأة"
+ ],
+ "Homme": [
+  "Man",
+  "رجل"
+ ],
+ "Pictogrammes": [
+  "Pictograms",
+  "الرموز المصوّرة"
+ ],
+ "pictogrammes": [
+  "pictograms",
+  "الرموز المصوّرة"
+ ],
+ "Le serveur ne répond pas. Vérifiez qu'il tourne toujours.": [
+  "The server is not answering. Check that it is still running.",
+  "الخادم لا يستجيب. تحقّق من أنه ما زال يعمل."
+ ],
+ "Retirer ce message de l'écran du patient ?": [
+  "Remove this message from the patient's screen?",
+  "إزالة هذه الرسالة من شاشة المريض؟"
+ ],
+ "Le patient ne le verra plus. Le journal garde le message et son retrait, avec votre nom.": [
+  "The patient will no longer see it. The log keeps the message and its removal, with your name.",
+  "لن يراها المريض بعد الآن. يحتفظ السجل بالرسالة وبإزالتها مع اسمك."
+ ],
+ "Message erroné": [
+  "Incorrect message",
+  "رسالة خاطئة"
+ ],
+ "Retirer de l'écran du patient": [
+  "Remove from patient screen",
+  "إزالة من شاشة المريض"
+ ],
+ "Maintenir la prescription": [
+  "Maintain the prescription",
+  "الإبقاء على الوصفة"
+ ],
+ "Le juriste demande une révision. Vous pouvez maintenir votre décision par écrit : votre nom et votre justification sont enregistrés dans le journal.": [
+  "The legal agent asks for a review. You can maintain your decision in writing: your name and your justification are recorded in the log.",
+  "يطلب الوكيل القانوني مراجعة. يمكنك الإبقاء على قرارك كتابةً: يُسجَّل اسمك وتبريرك في السجل."
+ ],
+ "Justification médicale": [
+  "Medical justification",
+  "التبرير الطبي"
+ ],
+ "Maintenir": [
+  "Maintain",
+  "إبقاء"
+ ],
+ "Démarrer une nouvelle consultation ?": [
+  "Start a new consultation?",
+  "بدء استشارة جديدة؟"
+ ],
+ "Le dossier, la conversation et le journal actuels sont remplacés. L'écran patient repart de zéro.": [
+  "The current record, conversation and log are replaced. The patient screen starts again from scratch.",
+  "يُستبدل الملف والمحادثة والسجل الحاليّون. تبدأ شاشة المريض من جديد."
+ ],
+ "Ordonnance (même manuscrite)": [
+  "Prescription (even handwritten)",
+  "وصفة طبية (حتى لو كانت بخط اليد)"
+ ],
+ "Facture de pharmacie": [
+  "Pharmacy receipt",
+  "فاتورة صيدلية"
+ ],
+ "Boîte ou notice de médicament": [
+  "Medicine box or leaflet",
+  "علبة دواء أو نشرته"
+ ],
+ "Radiographie ou imagerie": [
+  "X-ray or imaging",
+  "صورة أشعة أو تصوير"
+ ],
+ "Résultat d'analyse": [
+  "Test result",
+  "نتيجة تحليل"
+ ],
+ "Compte rendu médical": [
+  "Medical report",
+  "تقرير طبي"
+ ],
+ "Autre": [
+  "Other",
+  "أخرى"
+ ],
+ "Ajouter": [
+  "Add",
+  "إضافة"
+ ],
+ "Documents du patient": [
+  "Patient documents",
+  "مستندات المريض"
+ ],
+ "Photo d'ordonnance (même manuscrite), facture, boîte de médicament, radio, analyse… Les agents la lisent ; ce qu'ils en tirent reste « à confirmer ».": [
+  "Photo of a prescription (even handwritten), receipt, medicine box, X-ray, test… The agents read it; what they extract stays “to confirm”.",
+  "صورة وصفة (حتى لو كانت بخط اليد)، فاتورة، علبة دواء، أشعة، تحليل… يقرؤها الوكلاء؛ ويبقى ما يستخرجونه «بانتظار التأكيد»."
+ ],
+ "Agents MEDIMCOM · règles écrites, sans modèle en ligne": [
+  "MEDIMCOM agents · written rules, no online model",
+  "وكلاء MEDIMCOM · قواعد مكتوبة، دون نموذج عبر الإنترنت"
+ ],
+ "Identité non renseignée": [
+  "Identity not recorded",
+  "الهوية غير مسجّلة"
+ ],
+ "Aucune information pour l'instant": [
+  "No information yet",
+  "لا توجد معلومات حتى الآن"
+ ],
+ "Remplissez la fiche ci-dessous ou posez une question au patient.": [
+  "Fill in the record below or ask the patient a question.",
+  "املأ الملف أدناه أو اطرح سؤالًا على المريض."
+ ],
+ "Tout est facultatif. Saisi par vous, enregistré comme information confirmée.": [
+  "Everything is optional. Entered by you, recorded as confirmed information.",
+  "كل شيء اختياري. ما تُدخله يُسجَّل كمعلومة مؤكَّدة."
+ ],
+ "Maladies connues, antécédents": [
+  "Known conditions, medical history",
+  "الأمراض المعروفة والسوابق"
+ ],
+ "Texte libre, par exemple : diabète, HTA, insuffisance rénale, opéré de l'appendicite.": [
+  "Free text, for example: diabetes, hypertension, kidney failure, appendix operation.",
+  "نص حر، مثل: السكري، ارتفاع ضغط الدم، القصور الكلوي، عملية الزائدة."
+ ],
+ "Tout ce qui peut aider : contexte, mode de vie, entourage…": [
+  "Anything that may help: context, lifestyle, family…",
+  "كل ما قد يساعد: السياق، نمط الحياة، المحيط…"
+ ],
+ "✓ Enregistré automatiquement : les agents l'utilisent déjà": [
+  "✓ Saved automatically: the agents are already using it",
+  "✓ حُفظ تلقائيًا: يستخدمه الوكلاء بالفعل"
+ ],
+ "Modification en cours : enregistrée dès que vous quittez le champ": [
+  "Editing: saved as soon as you leave the field",
+  "تعديل جارٍ: يُحفظ بمجرد مغادرة الخانة"
+ ],
+ "Non enregistré : réessayez avec le bouton": [
+  "Not saved: try again with the button",
+  "لم يُحفظ: أعد المحاولة بالزر"
+ ],
+ "Enregistrement automatique à la sortie de chaque champ": [
+  "Saved automatically when you leave each field",
+  "حفظ تلقائي عند مغادرة كل خانة"
+ ],
+ "Commencez par informer le patient qu'un ordinateur vous aide à traduire et qu'il peut refuser ; puis posez votre première question.": [
+  "Start by telling the patient that a computer helps you translate and that they may refuse; then ask your first question.",
+  "ابدأ بإبلاغ المريض بأن حاسوبًا يساعدك في الترجمة وبأن له حق الرفض؛ ثم اطرح سؤالك الأول."
+ ],
+ "annulé par le médecin": [
+  "cancelled by the doctor",
+  "ألغاه الطبيب"
+ ],
+ "à reformuler": [
+  "to rephrase",
+  "بحاجة إلى إعادة صياغة"
+ ],
+ "répond à": [
+  "answers",
+  "يجيب عن"
+ ],
+ "Phrase formulée par le modèle à partir de ces seuls pictogrammes": [
+  "Sentence written by the model from these pictograms only",
+  "جملة صاغها النموذج من هذه الرموز وحدها"
+ ],
+ "Phrase formée par les règles à partir de ces seuls pictogrammes": [
+  "Sentence built by the rules from these pictograms only",
+  "جملة كوّنتها القواعد من هذه الرموز وحدها"
+ ],
+ "a mis à jour la fiche patient.": [
+  "updated the patient record.",
+  "حدّث ملف المريض."
+ ],
+ "Question proposée par l'assistant (à valider ou annuler)": [
+  "Question proposed by the assistant (approve or cancel)",
+  "سؤال اقترحه المساعد (اعتمده أو ألغِه)"
+ ],
+ "Consignes de traitement": [
+  "Treatment instructions",
+  "تعليمات العلاج"
+ ],
+ "Pour ce patient": [
+  "For this patient",
+  "لهذا المريض"
+ ],
+ "Sûreté du système": [
+  "System safety",
+  "سلامة النظام"
+ ],
+ "Non envoyé : bloqué par le juriste (voir l'onglet Agents).": [
+  "Not sent: blocked by the legal agent (see the Agents tab).",
+  "لم يُرسل: حظره الوكيل القانوني (انظر تبويب الوكلاء)."
+ ],
+ "Retiré de l'écran du patient par le médecin.": [
+  "Removed from the patient's screen by the doctor.",
+  "أزاله الطبيب من شاشة المريض."
+ ],
+ "Non envoyé : annulé par le médecin.": [
+  "Not sent: cancelled by the doctor.",
+  "لم يُرسل: ألغاه الطبيب."
+ ],
+ "Micro refusé : autorisez-le dans le navigateur.": [
+  "Microphone refused: allow it in the browser.",
+  "رُفض الميكروفون: اسمح به في المتصفح."
+ ],
+ "Enregistrement trop court : maintenez la dictée au moins une seconde.": [
+  "Recording too short: keep dictating for at least one second.",
+  "التسجيل قصير جدًا: واصل الإملاء ثانية واحدة على الأقل."
+ ],
+ "Micro inaccessible : autorisez le micro pour cette page (icône à gauche de l'adresse), puis réessayez.": [
+  "Microphone unavailable: allow the microphone for this page (icon left of the address), then try again.",
+  "الميكروفون غير متاح: اسمح به لهذه الصفحة (الأيقونة يسار العنوان)، ثم أعد المحاولة."
+ ],
+ "Écrire, ou cliquer sur le micro et parler, par exemple : Avez-vous mal au ventre ?": [
+  "Write, or click the microphone and speak, e.g.: Do you have stomach pain?",
+  "اكتب، أو انقر على الميكروفون وتحدّث، مثل: هل تشعر بألم في البطن؟"
+ ],
+ "Write, or click the microphone and speak, e.g.: Do you have stomach pain?": [
+  "Write, or click the microphone and speak, e.g.: Do you have stomach pain?",
+  "اكتب، أو انقر على الميكروفون وتحدّث، مثل: هل تشعر بألم في البطن؟"
+ ],
+ "Dicter": [
+  "Dictate",
+  "إملاء"
+ ],
+ "Arrêter": [
+  "Stop",
+  "إيقاف"
+ ],
+ "Désaccord": [
+  "Disagreement",
+  "عدم موافقة"
+ ],
+ "Aucun message des agents": [
+  "No messages from the agents",
+  "لا رسائل من الوكلاء"
+ ],
+ "Le juriste, l'assistant et le traducteur vous écrivent ici quand une décision les concerne.": [
+  "The legal agent, the assistant and the translator write to you here when a decision concerns them.",
+  "يكتب إليك هنا الوكيل القانوني والمساعد والمترجم عندما يخصّهم قرار."
+ ],
+ "Répondue": [
+  "Answered",
+  "أُجيب عنه"
+ ],
+ "Posée": [
+  "Asked",
+  "طُرح"
+ ],
+ "Aucune suggestion en cours": [
+  "No current suggestion",
+  "لا توجد اقتراحات حالية"
+ ],
+ "Partage de données": [
+  "Data sharing",
+  "مشاركة البيانات"
+ ],
+ "Les prescriptions et leur vérification par le juriste apparaissent ici.": [
+  "Prescriptions and their check by the legal agent appear here.",
+  "تظهر هنا الوصفات وتحقّق الوكيل القانوني منها."
+ ],
+ "Le serveur ne répond pas. Vérifiez qu'il est lancé (python interface/serveur.py).": [
+  "The server is not answering. Check that it is running (python interface/serveur.py).",
+  "الخادم لا يستجيب. تحقّق من تشغيله (python interface/serveur.py)."
+ ],
+ "Ouverture de la consultation…": [
+  "Opening the consultation…",
+  "جارٍ فتح الاستشارة…"
+ ],
+ "Sélectionné": [
+  "Selected",
+  "محدّد"
+ ],
+ "Sélectionner": [
+  "Select",
+  "تحديد"
+ ],
+ "Un clic ajoute à la fin": [
+  "A click adds at the end",
+  "النقرة تُضيف في النهاية"
+ ],
+ "À revoir": [
+  "To review",
+  "بحاجة إلى مراجعة"
+ ],
+ "À REVOIR": [
+  "TO REVIEW",
+  "بحاجة إلى مراجعة"
+ ],
+ "Bloquée": [
+  "Blocked",
+  "محظورة"
+ ],
+ "Bloqué": [
+  "Blocked",
+  "محظور"
+ ],
+ "Maintenue par le médecin": [
+  "Maintained by the doctor",
+  "أبقاها الطبيب"
+ ],
+ "Envoyé": [
+  "Sent",
+  "أُرسل"
+ ],
+ "À valider": [
+  "To approve",
+  "بانتظار الاعتماد"
+ ],
+ "Vérification en cours": [
+  "Being checked",
+  "قيد التحقّق"
+ ],
+ "Remplacée": [
+  "Replaced",
+  "استُبدلت"
+ ],
+ "Annulé": [
+  "Cancelled",
+  "أُلغي"
+ ],
+ "Annulée": [
+  "Cancelled",
+  "أُلغيت"
+ ],
+ "Retiré": [
+  "Removed",
+  "أُزيل"
+ ],
+ "Conforme": [
+  "Compliant",
+  "مطابق"
+ ],
+ "Preuves insuffisantes": [
+  "Insufficient evidence",
+  "أدلة غير كافية"
+ ],
+ "Une consultation médicale avec un patient sourd, en pictogrammes.": [
+  "A medical consultation with a deaf patient, in pictograms.",
+  "استشارة طبية مع مريض أصم، بالرموز المصوّرة."
+ ],
+ "Le médecin écrit, des agents traduisent en pictogrammes et vérifient chaque décision au regard du droit. Le patient répond en touchant des images. Le médecin valide tout ce qui est envoyé.": [
+  "The doctor writes; agents translate into pictograms and check every decision against the law. The patient answers by touching pictures. The doctor approves everything that is sent.",
+  "يكتب الطبيب، ويترجم الوكلاء إلى رموز مصوّرة ويتحقّقون من كل قرار وفق القانون. يجيب المريض بلمس الصور. ويعتمد الطبيب كل ما يُرسل."
+ ],
+ "Sur cet ordinateur ou sur une tablette connectée au même réseau.": [
+  "On this computer or on a tablet connected to the same network.",
+  "على هذا الحاسوب أو على جهاز لوحي متصل بالشبكة نفسها."
+ ],
+ "Écran médecin": [
+  "Doctor screen",
+  "شاشة الطبيب"
+ ],
+ "Ouvrez le lien privé affiché dans le terminal au démarrage du serveur.": [
+  "Open the private link shown in the terminal when the server starts.",
+  "افتح الرابط الخاص المعروض في الطرفية عند تشغيل الخادم."
+ ],
+ "Il contient une clé secrète : ne le partagez pas.": [
+  "It contains a secret key: do not share it.",
+  "يحتوي على مفتاح سري: لا تشاركه."
+ ],
+ "Prototype en cours de développement pour le hackathon UIT AI for Good. Patients fictifs uniquement ; ce n'est pas un dispositif médical.": [
+  "Prototype under development for the ITU AI for Good hackathon. Fictitious patients only; this is not a medical device.",
+  "نموذج أولي قيد التطوير لهاكاثون الاتحاد الدولي للاتصالات «الذكاء الاصطناعي من أجل الخير». لمرضى وهميين فقط؛ ليس جهازًا طبيًا."
+ ],
+ "Écran patient": [
+  "Patient screen",
+  "شاشة المريض"
+ ],
+ "Journal": [
+  "Log",
+  "السجل"
+ ],
+ "Crédits": [
+  "Credits",
+  "الاعتمادات"
+ ],
+ "Nouvelle consultation": [
+  "New consultation",
+  "استشارة جديدة"
+ ],
+ "Données fictives": [
+  "Fictitious data",
+  "بيانات وهمية"
+ ],
+ "Conversation": [
+  "Conversation",
+  "المحادثة"
+ ],
+ "Vos messages sont traduits en pictogrammes. Rien ne part sans votre validation.": [
+  "Your messages are translated into pictograms. Nothing is sent without your approval.",
+  "تُترجم رسائلك إلى رموز مصوّرة. لا يُرسل شيء دون اعتمادك."
+ ],
+ "Informer le patient de l'IA": [
+  "Tell the patient about the AI",
+  "إبلاغ المريض بالذكاء الاصطناعي"
+ ],
+ "Traduction en pictogrammes": [
+  "Pictogram translation",
+  "الترجمة إلى رموز"
+ ],
+ "Annuler": [
+  "Cancel",
+  "إلغاء"
+ ],
+ "Reformuler": [
+  "Rephrase",
+  "إعادة الصياغة"
+ ],
+ "Modifier les pictogrammes": [
+  "Edit pictograms",
+  "تعديل الرموز"
+ ],
+ "Valider et envoyer": [
+  "Approve and send",
+  "اعتماد وإرسال"
+ ],
+ "Masquer": [
+  "Hide",
+  "إخفاء"
+ ],
+ "C'est une question": [
+  "It is a question",
+  "إنه سؤال"
+ ],
+ "Faire traduire": [
+  "Translate",
+  "ترجمة"
+ ],
+ "Agents": [
+  "Agents",
+  "الوكلاء"
+ ],
+ "Assistant": [
+  "Assistant",
+  "المساعد"
+ ],
+ "Ordonnance": [
+  "Prescription",
+  "الوصفة"
+ ],
+ "Droit": [
+  "Law",
+  "القانون"
+ ],
+ "Crise": [
+  "Crisis",
+  "أزمة"
+ ],
+ "Suggestions": [
+  "Suggestions",
+  "اقتراحات"
+ ],
+ "Questions à poser": [
+  "Questions to ask",
+  "أسئلة للطرح"
+ ],
+ "Ignorer": [
+  "Dismiss",
+  "تجاهل"
+ ],
+ "Médicament": [
+  "Medicine",
+  "الدواء"
+ ],
+ "Dose": [
+  "Dose",
+  "الجرعة"
+ ],
+ "Mode d'emploi": [
+  "Directions",
+  "طريقة الاستعمال"
+ ],
+ "Consultation": [
+  "Consultation",
+  "الاستشارة"
+ ],
+ "Remplace": [
+  "Replaces",
+  "يستبدل"
+ ],
+ "Prescrire": [
+  "Prescribe",
+  "وصف"
+ ],
+ "Décisions": [
+  "Decisions",
+  "القرارات"
+ ],
+ "Patient": [
+  "Patient",
+  "المريض"
+ ],
+ "Informations cliniques": [
+  "Clinical information",
+  "معلومات سريرية"
+ ],
+ "Fiche patient": [
+  "Patient record",
+  "ملف المريض"
+ ],
+ "Enregistrer la fiche": [
+  "Save record",
+  "حفظ الملف"
+ ],
+ "Demander au juriste": [
+  "Ask the legal agent",
+  "اسأل الوكيل القانوني"
+ ],
+ "Envoyer la question": [
+  "Send question",
+  "إرسال السؤال"
+ ],
+ "Votre message": [
+  "Your message",
+  "رسالتك"
+ ],
+ "Pris en charge": [
+  "Taken care of",
+  "تمت المعالجة"
+ ],
+ "Demander au patient": [
+  "Ask the patient",
+  "اسأل المريض"
+ ],
+ "Ordonnance du patient (PDF)": [
+  "Patient prescription (PDF)",
+  "وصفة المريض (PDF)"
+ ],
+ "Texte cité par le juriste": [
+  "Text cited by the legal agent",
+  "النص الذي استشهد به الوكيل القانوني"
+ ],
+ "Ouvrir la source officielle": [
+  "Open the official source",
+  "فتح المصدر الرسمي"
+ ],
+ "Extrait exact": [
+  "Exact quote",
+  "الاقتباس الحرفي"
+ ],
+ "Résumé": [
+  "Summary",
+  "ملخص"
+ ],
+ "Langue": [
+  "Language",
+  "اللغة"
+ ],
+ "Envoyer un document au médecin": [
+  "Send a document to the doctor",
+  "إرسال مستند إلى الطبيب"
+ ],
+ "Langue des étiquettes": [
+  "Label language",
+  "لغة التسميات"
+ ],
+ "Écrire quelques mots": [
+  "Write a few words",
+  "اكتب بضع كلمات"
+ ],
+ "Chercher un pictogramme": [
+  "Search a pictogram",
+  "ابحث عن رمز"
+ ],
+ "Catégories": [
+  "Categories",
+  "الفئات"
+ ],
+ "Ma réponse": [
+  "My answer",
+  "إجابتي"
+ ],
+ "à vous de répondre": [
+  "your turn to answer",
+  "دورك في الإجابة"
+ ],
+ "Documents déjà envoyés": [
+  "Documents already sent",
+  "مستندات أُرسلت سابقًا"
+ ],
+ "Envoyé au médecin": [
+  "Sent to the doctor",
+  "أُرسل إلى الطبيب"
+ ],
+ "Télécharger (PDF)": [
+  "Download (PDF)",
+  "تنزيل (PDF)"
+ ],
+ "combiner les deux derniers pictogrammes": [
+  "combine the last two pictograms",
+  "دمج آخر رمزين"
+ ],
+ "retirer le dernier pictogramme": [
+  "remove the last pictogram",
+  "إزالة آخر رمز"
+ ],
+ "je ne comprends pas": [
+  "I don't understand",
+  "لا أفهم"
+ ],
+ "Je ne comprends pas": [
+  "I don't understand",
+  "لا أفهم"
+ ],
+ "Où avez-vous mal ?": [
+  "Where does it hurt?",
+  "أين تشعر بالألم؟"
+ ],
+ "Comment est la douleur ?": [
+  "What is the pain like?",
+  "كيف هو الألم؟"
+ ],
+ "Combien avez-vous mal ? (0 = pas du tout, 10 = le pire)": [
+  "How much does it hurt? (0 = not at all, 10 = the worst)",
+  "ما شدة الألم؟ (0 = لا ألم، 10 = أسوأ ألم)"
+ ],
+ "Depuis combien de temps ? Choisissez un nombre, puis jours, semaines, mois…": [
+  "For how long? Choose a number, then days, weeks, months…",
+  "منذ متى؟ اختر رقمًا ثم أيامًا أو أسابيع أو أشهرًا…"
+ ],
+ "Avez-vous aussi… ? (plusieurs choix possibles)": [
+  "Do you also have…? (several choices possible)",
+  "هل لديك أيضًا…؟ (يمكن اختيار أكثر من إجابة)"
+ ],
+ "Prenez-vous déjà un médicament ? (plusieurs choix possibles)": [
+  "Are you already taking a medicine? (several choices possible)",
+  "هل تتناول دواءً حاليًا؟ (يمكن اختيار أكثر من إجابة)"
+ ],
+ "Rien à choisir ici : passez.": [
+  "Nothing to choose here: skip.",
+  "لا شيء لاختياره هنا: تخطَّ."
+ ],
+ "Ajouter à ma réponse": [
+  "Add to my answer",
+  "إضافة إلى إجابتي"
+ ],
+ "Boîte de médicament": [
+  "Medicine box",
+  "علبة دواء"
+ ],
+ "Envoyé : le médecin l'a reçu.": [
+  "Sent: the doctor has it.",
+  "أُرسل: وصل إلى الطبيب."
+ ],
+ "Prendre une photo": [
+  "Take a photo",
+  "التقاط صورة"
+ ],
+ "Choisir un fichier": [
+  "Choose a file",
+  "اختيار ملف"
+ ],
+ "Mon ordonnance": [
+  "My prescription",
+  "وصفتي الطبية"
+ ],
+ "Envoyer un document": [
+  "Send a document",
+  "إرسال مستند"
+ ],
+ "Réponses": [
+  "Answers",
+  "الإجابات"
+ ],
+ "Intensité": [
+  "Intensity",
+  "الشدة"
+ ],
+ "Symptômes": [
+  "Symptoms",
+  "الأعراض"
+ ],
+ "Hygiène, vie": [
+  "Hygiene, daily life",
+  "النظافة والحياة اليومية"
+ ],
+ "Tous les mots": [
+  "All words",
+  "كل الكلمات"
+ ],
+ "Émojis, symboles": [
+  "Emojis, symbols",
+  "رموز تعبيرية ورموز"
+ ],
+ "Le médecin est prévenu.": [
+  "The doctor has been alerted.",
+  "تم إبلاغ الطبيب."
+ ],
+ "Le médecin s'occupe de vous.": [
+  "The doctor is taking care of you.",
+  "الطبيب يعتني بك."
+ ],
+ "Prescrit": [
+  "Prescribed",
+  "موصوف"
+ ],
+ "Statut": [
+  "Status",
+  "الحالة"
+ ],
+ "Verdict": [
+  "Verdict",
+  "الحكم"
+ ],
+ "Sources": [
+  "Sources",
+  "المصادر"
+ ],
+ "Obligations": [
+  "Obligations",
+  "الالتزامات"
+ ],
+ "Lacunes": [
+  "Gaps",
+  "الثغرات"
+ ],
+ "Mesures": [
+  "Measures",
+  "التدابير"
+ ],
+ "Incidents": [
+  "Incidents",
+  "الحوادث"
+ ],
+ "Fermer la fenêtre": [
+  "Close the window",
+  "إغلاق النافذة"
+ ],
+ "Confirmer": [
+  "Confirm",
+  "تأكيد"
+ ],
+ "Valider": [
+  "Approve",
+  "اعتماد"
+ ],
+ "Modifier": [
+  "Edit",
+  "تعديل"
+ ],
+ "Prescription": [
+  "Prescription",
+  "وصفة"
+ ],
+ "Message": [
+  "Message",
+  "رسالة"
+ ],
+ "Question": [
+  "Question",
+  "سؤال"
+ ],
+ "Information": [
+  "Information",
+  "معلومة"
+ ],
+ "Alerte": [
+  "Alert",
+  "تنبيه"
+ ],
+ "Demande": [
+  "Request",
+  "طلب"
+ ],
+ "Réponse": [
+  "Answer",
+  "إجابة"
+ ],
+ "Suggestion": [
+  "Suggestion",
+  "اقتراح"
+ ],
+ "Proposition": [
+  "Proposal",
+  "اقتراح"
+ ],
+ "Lecture du contexte par MEDIMCOM IA": [
+  "Context reading by MEDIMCOM AI",
+  "قراءة السياق بواسطة MEDIMCOM IA"
+ ],
+ "Lecture de MEDIMCOM IA": [
+  "MEDIMCOM AI reading",
+  "قراءة MEDIMCOM IA"
+ ],
+ "Garde-fou de sûreté de MEDIMCOM IA (dose)": [
+  "MEDIMCOM AI safety guard (dose)",
+  "ضمانة السلامة في MEDIMCOM IA (الجرعة)"
+ ],
+ "Garde-fou éthique de MEDIMCOM IA": [
+  "MEDIMCOM AI ethics guard",
+  "الضمانة الأخلاقية في MEDIMCOM IA"
+ ],
+ "Information manquante": [
+  "Missing information",
+  "معلومات ناقصة"
+ ],
+ "Session": [
+  "Session",
+  "الجلسة"
+ ],
+ "ventre": [
+  "belly",
+  "البطن"
+ ],
+ "tête": [
+  "head",
+  "الرأس"
+ ],
+ "tete": [
+  "head",
+  "الرأس"
+ ],
+ "poitrine": [
+  "chest",
+  "الصدر"
+ ],
+ "gorge": [
+  "throat",
+  "الحلق"
+ ],
+ "dos": [
+  "back",
+  "الظهر"
+ ],
+ "bras": [
+  "arm",
+  "الذراع"
+ ],
+ "jambe": [
+  "leg",
+  "الساق"
+ ],
+ "pied": [
+  "foot",
+  "القدم"
+ ],
+ "main": [
+  "hand",
+  "اليد"
+ ],
+ "oreille": [
+  "ear",
+  "الأذن"
+ ],
+ "oeil": [
+  "eye",
+  "العين"
+ ],
+ "dent": [
+  "tooth",
+  "السن"
+ ],
+ "coeur": [
+  "heart",
+  "القلب"
+ ],
+ "peau": [
+  "skin",
+  "الجلد"
+ ],
+ "ventre, tête": [
+  "belly, head",
+  "البطن، الرأس"
+ ],
+ "femme": [
+  "woman",
+  "امرأة"
+ ],
+ "homme": [
+  "man",
+  "رجل"
+ ],
+ "oui": [
+  "yes",
+  "نعم"
+ ],
+ "non": [
+  "no",
+  "لا"
+ ],
+ "oui, à préciser": [
+  "yes, to specify",
+  "نعم، يجب التحديد"
+ ],
+ "aspirine": [
+  "aspirin",
+  "الأسبرين"
+ ],
+ "metformine": [
+  "metformin",
+  "الميتفورمين"
+ ],
+ "paracetamol": [
+  "paracetamol",
+  "الباراسيتامول"
+ ],
+ "paracétamol": [
+  "paracetamol",
+  "الباراسيتامول"
+ ],
+ "ibuprofene": [
+  "ibuprofen",
+  "الإيبوبروفين"
+ ],
+ "ibuprofène": [
+  "ibuprofen",
+  "الإيبوبروفين"
+ ],
+ "tramadol": [
+  "tramadol",
+  "الترامادول"
+ ],
+ "amoxicilline": [
+  "amoxicillin",
+  "الأموكسيسيلين"
+ ],
+ "diabète": [
+  "diabetes",
+  "السكري"
+ ],
+ "présentiel": [
+  "in person",
+  "حضوري"
+ ],
+ "teleconsultation": [
+  "teleconsultation",
+  "استشارة عن بُعد"
+ ],
+ "téléconsultation": [
+  "teleconsultation",
+  "استشارة عن بُعد"
+ ],
+ "céphalée": [
+  "headache",
+  "صداع"
+ ],
+ "fièvre et toux": [
+  "fever and cough",
+  "حمّى وسعال"
+ ],
+ "Dr Amal (fictive)": [
+  "Dr Amal (fictitious)",
+  "د. أمل (شخصية وهمية)"
+ ],
+ "jours": [
+  "days",
+  "أيام"
+ ],
+ "jour": [
+  "day",
+  "يوم"
+ ],
+ "semaines": [
+  "weeks",
+  "أسابيع"
+ ],
+ "mois": [
+  "months",
+  "أشهر"
+ ],
+ "Refuser": [
+  "Decline",
+  "رفض"
+ ],
+ "Envoyé au patient, validé par": [
+  "Sent to the patient, approved by",
+  "أُرسل إلى المريض، اعتمده"
+ ],
+ "Information obligatoire avant toute prescription.": [
+  "Required before any prescription.",
+  "معلومة إلزامية قبل أي وصفة."
+ ],
+ "Toux": [
+  "Cough",
+  "السعال"
+ ],
+ "Maladie contagieuse suspectée": [
+  "Suspected contagious disease",
+  "مرض معدٍ مشتبه به"
+ ],
+ "Déclaration faite aux autorités sanitaires": [
+  "Notified to the health authorities, isolation organised",
+  "تم الإبلاغ إلى السلطات الصحية وتنظيم العزل"
+ ],
+ "à potentiel épidémique": [
+  "with epidemic potential",
+  "ذو قابلية وبائية"
+ ],
+ "Oui, à potentiel épidémique": [
+  "Yes, with epidemic potential",
+  "نعم، ذو قابلية وبائية"
+ ],
+ "Mode de consultation": [
+  "Consultation mode",
+  "نوع الاستشارة"
+ ],
+ "Présentiel": [
+  "In person",
+  "حضوري"
+ ],
+ "Démonstration": [
+  "Demo",
+  "عرض توضيحي"
+ ],
+ "Scénario terminé": [
+  "Scenario finished",
+  "انتهى السيناريو"
+ ],
+ "traduction automatique": [
+  "automatic translation",
+  "ترجمة آلية"
+ ],
+ "Maladie contagieuse à potentiel épidémique suspectée": [
+  "Suspected contagious disease with epidemic potential",
+  "اشتباه في مرض معدٍ ذي قابلية وبائية"
+ ],
+ "Cas déclaré aux autorités sanitaires et isolement organisé": [
+  "Case notified to the health authorities and isolation organised",
+  "تم إبلاغ السلطات الصحية بالحالة وتنظيم العزل"
+ ],
+ "Maintenir et signer": [
+  "Maintain and sign",
+  "الإبقاء والتوقيع"
+ ],
+ "Préremplir": [
+  "Prefill",
+  "تعبئة مسبقة"
+ ],
+ "toutes les 6 heures si besoin, 4 fois par jour au maximum": [
+  "every 6 hours if needed, at most 4 times a day",
+  "كل 6 ساعات عند الحاجة، 4 مرات يوميًا كحد أقصى"
+ ],
+ "toutes les 8 heures au cours d'un repas, 3 fois par jour au maximum": [
+  "every 8 hours with a meal, at most 3 times a day",
+  "كل 8 ساعات مع الطعام، 3 مرات يوميًا كحد أقصى"
+ ],
+ "Maintenue par": [
+  "Maintained by",
+  "أبقى عليها"
+ ]
+}

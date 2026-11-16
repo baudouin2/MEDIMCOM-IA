@@ -1,12 +1,13 @@
-"""Documents du patient joints par le médecin : photo d'ordonnance manuscrite, facture de pharmacie, boîte de
-médicament, compte rendu, radiographie, analyse… Les agents en tirent ce qui sert à la sécurité du patient.
+"""Patient documents attached by the doctor or sent by the patient: photo of a handwritten prescription,
+pharmacy receipt, medicine box, medical report, X-ray, lab result… The agents extract what serves patient safety.
 
-  - Texte (.txt) et PDF à texte : lus directement (pypdf s'il est installé).
-  - Photos et PDF scannés : lus par le modèle en ligne s'il est branché et accepte les images (Grok le fait) ;
-    sinon le document est joint au dossier et le médecin le lit lui-même (dit clairement, jamais en silence).
-  - Ce qui est extrait (médicaments, maladies, allergies) entre dans le dossier comme fait NON CONFIRMÉ, avec la
-    source « document » : l'assistant vérifie les risques pour ce patient, le médecin confirme ou corrige.
-Seule l'empreinte (SHA-256) du document est inscrite au journal, jamais son contenu.
+  - Text (.txt) and text PDFs: read directly (pypdf if installed).
+  - Photos and scanned PDFs: read by the language model if one is plugged in and accepts images (online
+    vision model, or local Ollama model with MEDIMCOM_MODELE_VISION); otherwise the document is attached to
+    the record and the doctor reads it (said plainly, never silently).
+  - What is extracted (medicines, diseases, allergies) enters the record as an UNCONFIRMED fact, with the
+    source "document": the assistant checks the risks for this patient, the doctor confirms or corrects.
+Only the document's fingerprint (SHA-256) is written in the journal, never its content.
 """
 from __future__ import annotations
 
@@ -67,8 +68,8 @@ def _json(texte: str) -> dict:
 
 
 def lire(doc: dict, octets: bytes, cerveau, medicaments: dict) -> dict:
-    """Extraction : texte direct (txt, PDF à texte), puis modèle en ligne pour les images ; enfin lecture déterministe
-    (médicaments, maladies) du texte obtenu, pour ne jamais dépendre du seul modèle."""
+    """Extraction: direct text (txt, text PDF), then the model for images; finally a deterministic reading
+    (medicines, diseases) of the text obtained, never to depend on the model alone."""
     from .faits import extraire_faits
     from .lecture import trouver_medicaments
     ex = dict(doc["extraction"])
@@ -82,30 +83,38 @@ def lire(doc: dict, octets: bytes, cerveau, medicaments: dict) -> dict:
     if hasattr(cerveau, "lire_document") and (doc["mime"].startswith("image/") or (texte and len(texte) > 40)):
         try:
             lu = _json(cerveau.lire_document(octets if doc["mime"].startswith("image/") else None, doc["mime"], CONSIGNE, texte))
-            ex["par"] = f"modèle en ligne ({getattr(cerveau, 'modele', '?')})" + (" + lecture directe" if texte else "")
+            ou = "modèle local Ollama, rien n'est sorti de l'ordinateur" if getattr(cerveau, "nom", "") == "ollama" else "modèle en ligne"
+            ex["par"] = f"{ou} ({getattr(cerveau, 'modele_document', None) or getattr(cerveau, 'modele', '?')})" + (" + lecture directe" if texte else "")
         except Exception as e:  # noqa: BLE001 — modèle indisponible ou sans vision : on le dit
             ex["erreur_modele"] = str(e)[:200]
     if not texte and not lu:
         ex.update(statut="non_lu", resume=("Photo jointe au dossier : lecture automatique impossible sans modèle en ligne "
                                           "acceptant les images. Lisez-la et reportez les informations utiles dans la fiche."))
         return ex
-    # Lecture déterministe en plus du modèle : les médicaments connus sont toujours repérés, même si le modèle les oublie
-    meds = {m["nom"]: m for m in trouver_medicaments(texte + " " + json.dumps(lu, ensure_ascii=False), medicaments)}
+    # Deterministic reading on top of the model: known medicines are always spotted, even if the model misses them.
+    # A medicine named on an allergy line ("Known allergy: aspirin") is an allergy, not a current treatment.
+    lignes = re.split(r"[\n;]|\.\s", texte)
+    allergiques = {m["nom"] for l in lignes if re.search(r"allerg", l, re.I) for m in trouver_medicaments(l, medicaments)}
+    sans_allergies = " ".join(l for l in lignes if not re.search(r"allerg", l, re.I))
+    lu_meds = json.dumps(lu.get("medicaments") or [], ensure_ascii=False)
+    meds = {m["nom"]: m for m in trouver_medicaments(sans_allergies + " " + lu_meds, medicaments)}
     for m in lu.get("medicaments") or []:
         if isinstance(m, dict) and m.get("nom"):
             nom = (trouver_medicaments(str(m["nom"]), medicaments) or [{"nom": str(m["nom"]).lower()}])[0]["nom"]
             meds[nom] = {"nom": nom, "dose": m.get("dose", ""), "posologie": m.get("posologie", "")}
-    faits = extraire_faits(texte + " " + " ".join(map(str, lu.get("maladies") or [])))
+    faits = extraire_faits(sans_allergies + " " + " ".join(map(str, lu.get("maladies") or [])))
+    allergies = [str(x) for x in (lu.get("allergies") or [])]
+    allergies += [n for n in sorted(allergiques) if not any(n[:5].lower() in a.lower() for a in allergies)]
     ex.update(statut="lu", texte=texte[:3000], resume=str(lu.get("resume") or (texte[:200] + ("…" if len(texte) > 200 else ""))),
               medicaments=[{"nom": n, "dose": m.get("dose", ""), "posologie": m.get("posologie", "")} for n, m in meds.items()],
               maladies=list(dict.fromkeys([str(x) for x in (lu.get("maladies") or [])] + faits.get("maladies_connues", []))),
-              allergies=[str(x) for x in (lu.get("allergies") or [])], examens=lu.get("examens") or [],
+              allergies=allergies, examens=lu.get("examens") or [],
               lisibilite=lu.get("lisibilite"), faits={k: v for k, v in faits.items() if k != "maladies_connues"})
     return ex
 
 
 def faits_du_document(doc: dict) -> dict:
-    """Faits à proposer au dossier (NON confirmés) : le médecin les confirme ou les corrige."""
+    """Facts to propose for the record (UNconfirmed): the doctor confirms or corrects them."""
     ex = doc["extraction"]
     donnees = dict(ex.get("faits") or {})
     if ex.get("medicaments"):

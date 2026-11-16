@@ -1,5 +1,6 @@
-"""Rejeu du journal du 7 novembre (patiente fictive de 22 ans, enceinte, diabétique, Grok indisponible) : ce qui est
-passé ce jour-là ne doit plus passer, et l'assistant doit être présent même sans modèle en ligne."""
+"""Replay of the journal of 7 November (fictitious 22-year-old patient, pregnant, diabetic, online model
+unavailable): what got through that day must no longer get through, and the assistant must be present even without
+an online model."""
 import sys
 from pathlib import Path
 
@@ -46,15 +47,15 @@ def test_medicaments_dans_les_messages_et_fiche_du_patient():
         d = _dire(app, texte)
         assert d["statut"] == "BLOQUE", texte
         assert "Refusé" in app.evenement({"type": "validation", "auteur": "medecin", "medecin": "DR-001", "decision_id": d["id"]})
-    # « pendre » seul : sens inconnu -> ne part pas sans confirmation nominative du médecin
+    # "pendre" alone: unknown meaning -> not sent without the doctor's named confirmation
     d = _dire(app, "pendre")
     assert d["statut"] == "attente_validation" and d["precontrole"]["verdict"] == "A_REVOIR"
     assert "Refusé" in app.evenement({"type": "validation", "auteur": "medecin", "medecin": "DR-001", "decision_id": d["id"]})
     assert app.vue_patient()["messages"] == [], "rien de tout cela ne doit arriver au patient"
-    # une vraie question de dépistage, elle, part
+    # a real screening question is sent
     d = _dire(app, "Avez-vous des idées de vous tuer ?")
     assert d["statut"] == "attente_validation", d.get("precontrole")
-    # traitement en cours sans nom de médicament : l'assistant demande de préciser
+    # current treatment without a medicine name: the assistant asks to specify
     assert any("Préciser le traitement en cours" in x for x in _suggestions(app))
 
 
@@ -70,13 +71,13 @@ def test_medicament_declare_par_le_patient_et_questions():
     assert q["statut"] == "repondue"
     assert any("Le patient dit prendre tramadol" in x and "grossesse" in x.lower() for x in _suggestions(app)), _suggestions(app)
 
-    # annuler une proposition : elle n'est PAS reproposée d'office (le médecin reformule s'il veut)
+    # cancelling a proposal: it is NOT proposed again automatically (the doctor rephrases if they want)
     d = _dire(app, "ou avez vous mal")
     app.evenement({"type": "rejet", "auteur": "medecin", "decision_id": d["id"], "raison": "à reformuler"})
     envois = [x for x in app.ctx.dossier.decisions.values() if x.get("type") == "envoi_patient" and x.get("texte") == "ou avez vous mal"]
     assert len(envois) == 1 and envois[0]["statut"] == "rejete", "la proposition annulée a été refaite"
 
-    # retirer un message envoyé de l'écran du patient, puis le masquer de la conversation
+    # remove a sent message from the patient screen, then hide it from the conversation
     envoye = next(x for x in app.ctx.dossier.decisions.values() if x.get("statut") == "envoye")
     app.evenement({"type": "retrait_message", "auteur": "medecin", "medecin": "DR-001", "decision_id": envoye["id"]})
     assert envoye["statut"] == "retire" and app.vue_patient()["messages"] == []
@@ -88,7 +89,7 @@ def test_medicament_declare_par_le_patient_et_questions():
 
 
 def test_fiche_completee_apres_coup_recontrole():
-    """Le message est proposé AVANT que le médecin saisisse la grossesse : le juriste le recontrôle avec la nouvelle fiche."""
+    """The message is proposed BEFORE the doctor enters the pregnancy: the jurist checks it again with the new record."""
     app = Application(Config(verbeux=False, base="aucune"), asynchrone=False)
     d = _dire(app, "Prenez-vous de l'ibuprofène ?")        # question : permise
     assert d["statut"] == "attente_validation"
@@ -131,6 +132,6 @@ def test_modele_absent_remplace_et_alias_acceptes():
         assert c.verifier() == (True, "ok"), "un alias est un nom valide"
         c = CerveauOpenAI(url, "grok-4.7", cle="x")
         ok, msg = c.verifier()
-        assert ok and c.modele == "grok-4.20-0309-non-reasoning" and "à la place" in msg
+        assert ok and c.modele == "grok-4.20-0309-non-reasoning" and "instead" in msg
     finally:
         srv.shutdown()

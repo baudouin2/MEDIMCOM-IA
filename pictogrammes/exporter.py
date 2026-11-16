@@ -1,9 +1,9 @@
-"""Exporte la bibliothèque de pictogrammes : fichiers SVG, manifeste et planche PDF.
+"""Exports the pictogram library: SVG files, manifest and PDF sheet.
 
     python pictogrammes/exporter.py            # -> pictogrammes/svg/*.svg, pictogrammes/manifeste.json
-    python pictogrammes/exporter.py --pdf      # + docs/pictogrammes/Planche_pictogrammes.pdf (nécessite playwright + chromium)
+    python pictogrammes/exporter.py --pdf      # + docs/pictogrammes/Planche_pictogrammes.pdf (needs playwright + chromium)
 
-Les dessins sont dans medimcom/bibliotheque.py : c'est là qu'on les corrige après les tests.
+The drawings are in medimcom/bibliotheque.py: that is where they are corrected after the tests.
 """
 import argparse
 import json

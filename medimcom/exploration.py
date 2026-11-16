@@ -1,11 +1,11 @@
-"""Exploration automatique du système réel : des milliers de suites d'événements, y compris malveillantes,
-passées aux vrais agents ; le moniteur (surveillance.py) contrôle chaque journal obtenu.
+"""Automatic exploration of the real system: thousands of event sequences, including malicious ones, fed to
+the real agents; the monitor (surveillance.py) checks each resulting journal.
 
-C'est du test fondé sur les propriétés avec état (Claessen & Hughes, QuickCheck, ICFP 2000) : les événements
-sont tirés au hasard (graine fixée, donc reproductible) dans un alphabet qui couvre les actions du médecin, du
-patient, des institutions et d'attaquants (module externe qui envoie un message, faux nom de médecin, assistant
-qui prescrit, maintien sans justification…). Une suite fautive est RÉDUITE automatiquement à une suite minimale
-qui reproduit la violation (« shrinking », delta debugging de Zeller & Hildebrandt, 2002).
+This is stateful property-based testing (Claessen & Hughes, QuickCheck, ICFP 2000): events are drawn at random
+(fixed seed, hence reproducible) from an alphabet covering the actions of the doctor, the patient, the
+institutions and attackers (external module sending a message, fake doctor name, assistant prescribing,
+override without justification…). A faulty sequence is automatically SHRUNK to a minimal sequence that
+reproduces the violation ("shrinking", delta debugging by Zeller & Hildebrandt, 2002).
 """
 import io
 import json
@@ -17,7 +17,7 @@ from .session import Config, construire
 from .surveillance import surveiller
 
 SCENARIOS = Path(__file__).resolve().parent.parent / "scenarios"
-# Débuts de suites réalistes (pour atteindre les états profonds : prescription à revoir, maintien, envoi d'un traitement)
+# Realistic sequence openings (to reach deep states: prescription to review, override, sending a treatment)
 AMORCES = [
     [{"type": "echange", "auteur": "medecin", "texte": "Fiche.", "confirme": True,
       "donnees": {"sexe": "F", "age": 25, "grossesse": True, "allergies": "aucune", "traitements_en_cours": "aucun",
@@ -33,8 +33,8 @@ CLES = ["grossesse", "fievre", "douleur", "nausees", "consentement_traitement", 
 
 
 def evenement(h: random.Random, ctx=None) -> dict:
-    """Un événement tiré au hasard (dont des tentatives d'abus). Avec ctx, les identifiants visés sont choisis le plus
-    souvent parmi les décisions réellement en attente ou à revoir (exploration guidée par l'état, comme un modèle)."""
+    """A random event (including abuse attempts). With ctx, the targeted identifiers are mostly chosen among
+    the decisions actually pending or to review (state-guided exploration, like a model)."""
     en_attente, a_revoir, tous = [], [], list(range(1, 12))
     if ctx is not None:
         dec = ctx.dossier.decisions.values()
@@ -87,7 +87,7 @@ def evenement(h: random.Random, ctx=None) -> dict:
                     "destinataire_type": h.choice(["hopital", "entreprise", "public", None]),
                     "lieu": h.choice(["EAU", "hors_EAU", "Cameroun", None]), "consentement_ecrit": h.choice([True, False, None]),
                     "anonymise": h.choice([True, False, None])}.items() if v is not None}}
-    if genre == "envoi_force":         # un module externe tente d'écrire au patient, parfois avec un faux validateur
+    if genre == "envoi_force":         # an external module tries to write to the patient, sometimes with a fake validator
         return {"type": "envoi_patient", "auteur": "module_externe", "contenu_type": h.choice(["traitement", "information", "question"]),
                 "valide_par": h.choice(["DR-001", None, "DR-002"]), "texte": "Prenez 3 comprimés."}
     return {"type": "suggestion_ignoree", "suggestion_id": h.choice(range(1, 12))}
@@ -97,7 +97,7 @@ def executer(suite: list, pays: str = "AE"):
     ctx, agents, orch = construire(Config(verbeux=False, pays=pays))
     with redirect_stdout(io.StringIO()):
         for evt in suite:
-            _pas(ctx, orch, evt)             # un événement refusé (exception) est le comportement attendu
+            _pas(ctx, orch, evt)             # a refused event (exception) is the expected behaviour
     return ctx
 
 
@@ -107,7 +107,7 @@ def violations(suite: list, pays: str) -> dict:
 
 
 def reduire(suite: list, pays: str, propriete: str) -> list:
-    """Retire les événements un à un tant que la même propriété reste violée (suite minimale)."""
+    """Removes the events one by one as long as the same property stays violated (minimal sequence)."""
     courant, change = list(suite), True
     while change:
         change = False

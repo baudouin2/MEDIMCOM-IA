@@ -1,0 +1,11 @@
+.env
+*.env
+base_v2/
+MEDIMCOM_base*/
+interface/web/node_modules/
+.venv/
+sortie/
+archives/
+**/__pycache__/
+.pytest_cache/
+.git/

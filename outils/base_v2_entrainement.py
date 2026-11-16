@@ -1,17 +1,17 @@
-"""Étape « entrainement » de constituer_base_v2.py : jeux de données prêts pour améliorer ou entraîner un modèle.
+""""entrainement" step of constituer_base_v2.py: data sets ready to improve or train a model.
 
-Construits uniquement à partir de ce que les autres étapes ont téléchargé (rien n'est inventé) + phrases synthétiques
-explicitement marquées comme telles. Partition train / validation / test stable (empreinte de l'identifiant).
+Built only from what the other steps downloaded (nothing is invented) + synthetic sentences explicitly marked as
+such. Stable train / validation / test split (fingerprint of the identifier).
 
 05_jeux_entrainement/
-├── FICHE_DE_DONNEES.md                 provenance, licences, usages permis et interdits, limites, effectifs
-├── pictogrammes_images.jsonl           image -> libellés fr / en / ar, catégorie, notions (classification, CLIP)
-│   (+ 02_pictogrammes/metadata.jsonl   même contenu au format « imagefolder » de Hugging Face)
-├── phrases_pictogrammes.jsonl          suite de notions (et leurs images) <-> phrase fr / en  [synthétique]
-├── juridique_classification.jsonl      article -> juridiction, exigences du hackathon, thèmes, type de texte
-├── juridique_recherche.jsonl           requête -> article pertinent (dispositions du juriste) pour entraîner un moteur de recherche
-├── references_qr.jsonl                 question -> réponse tirée des fiches de l'OMS (fr / en / ar)
-└── lexique_traduction.jsonl            notion -> fr / en / ar (vocabulaire + Wikidata)
+├── FICHE_DE_DONNEES.md                 provenance, licences, allowed and forbidden uses, limits, counts
+├── pictogrammes_images.jsonl           image -> fr / en / ar labels, category, concepts (classification, CLIP)
+│   (+ 02_pictogrammes/metadata.jsonl   same content in Hugging Face "imagefolder" format)
+├── phrases_pictogrammes.jsonl          sequence of concepts (and their images) <-> fr / en sentence  [synthetic]
+├── juridique_classification.jsonl      article -> jurisdiction, hackathon requirements, themes, type of text
+├── juridique_recherche.jsonl           query -> relevant article (jurist provisions) to train a search engine
+├── references_qr.jsonl                 question -> answer taken from the WHO fact sheets (fr / en / ar)
+└── lexique_traduction.jsonl            concept -> fr / en / ar (vocabulary + Wikidata)
 """
 import hashlib
 import json
@@ -51,7 +51,7 @@ def jeu_images(sortie, notions) -> int:
     return len(lignes)
 
 
-# Articles français des parties du corps et des médicaments (pour des phrases correctes : « au ventre », « à la tête »…)
+# French articles of body parts and medicines (for correct sentences: "au ventre", "à la tête"…)
 A_CORPS = {"TETE": "à la", "VISAGE": "au", "OEIL": "à l'", "OREILLE": "à l'", "NEZ": "au", "BOUCHE": "à la", "DENT": "à la",
            "LANGUE": "à la", "GORGE": "à la", "COU": "au", "EPAULE": "à l'", "BRAS": "au", "COUDE": "au", "POIGNET": "au",
            "MAIN": "à la", "DOIGT": "au", "POITRINE": "à la", "SEIN": "au", "VENTRE": "au", "ESTOMAC": "à l'", "DOS": "au",
@@ -59,7 +59,7 @@ A_CORPS = {"TETE": "à la", "VISAGE": "au", "OEIL": "à l'", "OREILLE": "à l'",
            "ARTICULATION": "à l'", "MUSCLE": "au", "COLONNE_VERTEBRALE": "à la", "ORGANES_GENITAUX": "aux", "LEVRES": "aux"}
 A_MED = {"COMPRIME": "le", "GELULE": "la", "SIROP": "le", "ANTIBIOTIQUE": "l'", "ANTIDOULEUR": "l'", "PARACETAMOL": "le",
          "ANTIPALUDIQUE": "l'", "VITAMINE": "la", "MEDICAMENT": "le", "SOLUTION_DE_REHYDRATATION": "la", "FER": "le", "VERMIFUGE": "le"}
-# Formes locales : pas de « prendre », pas de moment du repas
+# Local forms: no "take", no meal time
 A_MED_LOCAL = {"POMMADE": ("Appliquez", "la", "Apply the"), "CREME": ("Appliquez", "la", "Apply the"), "COLLYRE": ("Mettez", "le", "Put in the"),
                "GOUTTES_POUR_LES_OREILLES": ("Mettez", "les", "Put in the"), "INHALATEUR": ("Utilisez", "l'", "Use the")}
 SYMPTOMES_NOMS = ["FIEVRE", "TOUX", "DIARRHEE", "NAUSEE", "VERTIGE", "FATIGUE", "FAIBLESSE", "ESSOUFFLEMENT", "FRISSONS",
@@ -169,7 +169,7 @@ def phrases(notions) -> list[dict]:
 QUALITES = ["BRULURE", "DOULEUR_EN_PIQURE", "COUP_DE_COUTEAU", "SERREMENT", "PRESSION", "LOURDEUR", "BATTEMENT", "ELANCEMENT",
             "CRAMPE", "DECHARGE_ELECTRIQUE", "FOURMILLEMENTS", "TIRAILLEMENT"]
 DECLENCHEURS_COMMUNS = ["LA_NUIT", "LE_MATIN_AU_REVEIL", "QUAND_ON_APPUIE", "AU_REPOS"]
-# Déclencheurs plausibles selon la région du corps (évite « mal à la dent quand je marche »)
+# Plausible triggers depending on the body region (avoids "toothache when I walk")
 DECLENCHEURS_PAR_REGION = {
     ("DENT", "BOUCHE", "LANGUE", "GORGE", "LEVRES"): ["QUAND_JE_MANGE", "APRES_AVOIR_MANGE"],
     ("POITRINE", "DOS", "COLONNE_VERTEBRALE", "EPAULE"): ["QUAND_JE_RESPIRE", "QUAND_JE_TOUSSE", "A_L_EFFORT", "QUAND_JE_BOUGE"],
@@ -181,8 +181,8 @@ DECLENCHEURS_PAR_REGION = {
 }
 DECLENCHEURS = ["QUAND_JE_MANGE", "APRES_AVOIR_MANGE", "QUAND_JE_MARCHE", "A_L_EFFORT", "AU_REPOS", "QUAND_JE_RESPIRE", "QUAND_JE_TOUSSE",
                 "QUAND_J_URINE", "QUAND_JE_BOUGE", "QUAND_ON_APPUIE", "LA_NUIT", "LE_MATIN_AU_REVEIL"]
-# Conseils d'hygiène de vie généraux et consensuels, associés seulement aux maladies pour lesquelles ils sont pertinents
-# (à faire valider par un médecin avant tout entraînement ; aucune posologie).
+# General, consensual lifestyle advice, associated only with the diseases for which it is relevant (to be validated by a
+# doctor before any training; no dosage).
 CONSEILS_PAR_MALADIE = {
     "DIABETE": ["SANS_SUCRE", "PETITES_PORTIONS", "REPAS_A_HEURES_FIXES", "MARCHER_CHAQUE_JOUR", "CONTROLER_LA_GLYCEMIE", "PESER_CHAQUE_SEMAINE"],
     "HYPERTENSION": ["SANS_SEL", "MARCHER_CHAQUE_JOUR", "ARRETER_DE_FUMER", "PAS_D_ALCOOL", "PRENDRE_LA_TENSION"],
@@ -200,7 +200,7 @@ CONSEILS_PAR_MALADIE = {
 
 
 def _deplier(n, ids, profondeur=0):
-    """Remplace chaque notion composée par ses composants : la suite ne contient que des pictogrammes de base."""
+    """Replaces each compound concept by its components: the sequence only contains basic pictograms."""
     sortie = []
     for i in ids:
         x = n.get(i)
@@ -212,7 +212,7 @@ def _deplier(n, ids, profondeur=0):
 
 
 def phrases_fonctions(n) -> list[dict]:
-    """Phrases pour les intentions de communication : notions composées, douleur détaillée, consignes, conseils, réassurance, opération."""
+    """Sentences for communication intents: compound concepts, detailed pain, instructions, advice, reassurance, surgery."""
     sorties = []
 
     def add(seq, fr, en, intention, locuteur):
@@ -312,7 +312,7 @@ def jeu_juridique(sortie) -> tuple[int, int]:
     return len(classif), len(recherche)
 
 
-# ----------------------------------------------------------------------------------------- références
+# ----------------------------------------------------------------------------------------- references
 QUESTIONS = [
     (("symptôme", "symptom", "signes", "الأعراض", "أعراض"), {"fr": "Quels sont les symptômes : {m} ?", "en": "What are the symptoms of {m}?", "ar": "ما هي أعراض {m}؟"}),
     (("traitement", "treatment", "prise en charge", "العلاج"), {"fr": "Comment traite-t-on : {m} ?", "en": "How is {m} treated?", "ar": "كيف يتم علاج {m}؟"}),

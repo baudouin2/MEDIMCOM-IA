@@ -1,4 +1,4 @@
-# Outils de développement et de vérification (le prototype lui-même n'a besoin d'aucune dépendance)
+# Development and verification tools (the prototype itself needs no dependency)
 -r requirements.txt
 pytest>=8
-z3-solver==4.13.3.0      # preuves SMT des règles du juriste (medimcom/formel_smt.py)
+z3-solver==4.13.3.0      # SMT proofs of the jurist's rules (medimcom/formel_smt.py)

@@ -225,7 +225,8 @@
     "ML16-A4-1"
    ],
    "detail": "Prescripteur absent du registre des praticiens autorisés : seul un praticien autorisé peut prescrire.",
-   "detail_en": "Prescriber not in the register of authorised practitioners: only an authorised practitioner may prescribe."
+   "detail_en": "Prescriber not in the register of authorised practitioners: only an authorised practitioner may prescribe.",
+   "detail_ar": "الواصف غير مسجّل في سجل الممارسين المرخّصين: لا يحق الوصف إلا لممارس مرخّص."
   },
   "inactif": {
    "niveau": "BLOQUE",
@@ -234,7 +235,8 @@
     "MP24-A42-2"
    ],
    "detail": "Licence du prescripteur inactive : prescription impossible.",
-   "detail_en": "Prescriber licence inactive: prescription not allowed."
+   "detail_en": "Prescriber licence inactive: prescription not allowed.",
+   "detail_ar": "ترخيص الواصف غير ساري: لا يجوز الوصف."
   },
   "non_humain": {
    "niveau": "BLOQUE",
@@ -245,7 +247,8 @@
     "RAI25-3.1.7.2.2"
    ],
    "detail": "Une prescription doit être faite par écrit par le médecin (nom, signature, date) ; un agent d'IA ne prescrit jamais.",
-   "detail_en": "A prescription must be written by the physician (name, signature, date); an AI agent never prescribes."
+   "detail_en": "A prescription must be written by the physician (name, signature, date); an AI agent never prescribes.",
+   "detail_ar": "يجب أن يكتب الطبيب الوصفة (الاسم، التوقيع، التاريخ)؛ ولا يصف وكيل ذكاء اصطناعي أي دواء أبدًا."
   }
  },
  "champs_obligatoires_avant_prescription": [
@@ -261,7 +264,8 @@
     "ML16-A4-2"
    ],
    "detail": "Grossesse non renseignée chez une femme en âge de procréer : l'état du patient doit être consigné avant le traitement.",
-   "detail_en": "Pregnancy status unknown for a woman of childbearing age: the patient's condition must be recorded before treatment."
+   "detail_en": "Pregnancy status unknown for a woman of childbearing age: the patient's condition must be recorded before treatment.",
+   "detail_ar": "حالة الحمل غير معروفة لدى امرأة في سن الإنجاب: يجب تسجيل حالة المريضة قبل العلاج."
   },
   {
    "champ": "allergies",
@@ -271,7 +275,8 @@
     "ML16-A4-2"
    ],
    "detail": "Allergies non renseignées : les antécédents doivent être consignés avant le traitement.",
-   "detail_en": "Allergies unknown: medical history must be recorded before treatment."
+   "detail_en": "Allergies unknown: medical history must be recorded before treatment.",
+   "detail_ar": "الحساسية غير معروفة: يجب تسجيل السوابق المرضية قبل العلاج."
   },
   {
    "champ": "traitements_en_cours",
@@ -281,7 +286,8 @@
     "ML16-A4-2"
    ],
    "detail": "Traitements en cours non renseignés : les antécédents doivent être consignés avant le traitement.",
-   "detail_en": "Current treatments unknown: medical history must be recorded before treatment."
+   "detail_en": "Current treatments unknown: medical history must be recorded before treatment.",
+   "detail_ar": "العلاجات الحالية غير معروفة: يجب تسجيل السوابق المرضية قبل العلاج."
   }
  ],
  "axiomes": [
@@ -351,7 +357,8 @@
       "OTC-APAP-FOIE"
      ],
      "detail": "Paracétamol et maladie du foie : risque d'atteinte hépatique grave ; dose à réduire et avis médical.",
-     "detail_en": "Paracetamol and liver disease: risk of severe liver damage; reduce the dose and seek medical advice."
+     "detail_en": "Paracetamol and liver disease: risk of severe liver damage; reduce the dose and seek medical advice.",
+     "detail_ar": "الباراسيتامول مع مرض الكبد: خطر تلف كبدي شديد؛ تُخفَّض الجرعة ويُطلب رأي طبي."
     },
     {
      "si": {
@@ -363,7 +370,8 @@
       "OTC-APAP-FOIE"
      ],
      "detail": "Paracétamol sous anticoagulant (warfarine) : surveiller l'INR en cas de prise régulière.",
-     "detail_en": "Paracetamol with an anticoagulant (warfarin): monitor INR with regular use."
+     "detail_en": "Paracetamol with an anticoagulant (warfarin): monitor INR with regular use.",
+     "detail_ar": "الباراسيتامول مع مضاد تخثّر (الوارفارين): يُراقَب INR عند الاستعمال المنتظم."
     }
    ],
    "synonymes": [
@@ -399,7 +407,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "مضادات الالتهاب غير الستيرويدية: تُتجنَّب ابتداءً من الأسبوع 20 من الحمل ما لم يُنصح بها صراحةً؛ ويُذكر الأسيتامينوفين بديلًا. قاعدة سريرية على سبيل المثال، يجب أن يعتمدها طبيب."
     },
     {
      "si": {
@@ -415,7 +424,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "الإيبوبروفين: لا يُستعمل في الأشهر الثلاثة الأخيرة من الحمل."
     },
     {
      "si": {
@@ -431,7 +441,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "الإيبوبروفين مع سوابق قرحة أو نزيف: خطر نزف."
     },
     {
      "si": {
@@ -447,7 +458,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "الإيبوبروفين مع مضاد تخثّر: خطر نزيف هضمي."
     },
     {
      "si": {
@@ -463,7 +475,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "الإيبوبروفين مع مرض الكلى: يلزم رأي طبي، خطر تفاقم."
     },
     {
      "si": {
@@ -479,7 +492,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "الإيبوبروفين مع مرض القلب: يلزم رأي طبي."
     },
     {
      "si": {
@@ -493,7 +507,8 @@
       "OTC-IBU-SAIGNEMENT"
      ],
      "detail": "Ibuprofène après 60 ans : risque de saignement digestif plus élevé.",
-     "detail_en": "Ibuprofen at 60 or older: higher risk of stomach bleeding."
+     "detail_en": "Ibuprofen at 60 or older: higher risk of stomach bleeding.",
+     "detail_ar": "الإيبوبروفين في سن 60 فما فوق: خطر أعلى لنزيف المعدة."
     }
    ],
    "synonymes": [
@@ -533,7 +548,8 @@
       "CYTOTEC-BW"
      ],
      "detail": "Interdit : prescription pouvant provoquer un avortement chez une femme enceinte. Les exceptions de la loi (danger pour la vie de la mère, malformation grave) exigent une procédure (rapport médical, comité, consentement écrit des époux) qui ne peut pas être validée d'un clic dans ce système : orienter vers cette procédure, hors du système.",
-     "detail_en": "Prohibited: prescribing anything that may cause abortion of a pregnant woman. The legal exceptions (danger to the mother's life, serious fetal deformity) require a procedure (medical report, committee, written consent of both spouses) that cannot be cleared by one click in this system: refer to that procedure, outside the system."
+     "detail_en": "Prohibited: prescribing anything that may cause abortion of a pregnant woman. The legal exceptions (danger to the mother's life, serious fetal deformity) require a procedure (medical report, committee, written consent of both spouses) that cannot be cleared by one click in this system: refer to that procedure, outside the system.",
+     "detail_ar": "ممنوع: وصف أي شيء قد يُسبّب إجهاض امرأة حامل. الاستثناءات القانونية (خطر على حياة الأم، تشوّه جنيني خطير) تتطلب إجراءً (تقرير طبي، لجنة، موافقة كتابية من الزوجين) لا يمكن إجازته بنقرة في هذا النظام: يُحال إلى ذلك الإجراء خارج النظام."
     }
    ],
    "synonymes": [
@@ -559,7 +575,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "الترامادول أثناء الحمل: خطر متلازمة انسحاب الأفيونيات لدى المولود، وقد تهدد حياته. يُتجنَّب ما لم يُبرَّر صراحةً."
     },
     {
      "si": {
@@ -573,7 +590,8 @@
       "FDA-TRAM-ENFANT"
      ],
      "detail": "Tramadol chez l'enfant de moins de 12 ans : contre-indiqué par l'étiquette de la FDA (référence étrangère, à confirmer par la notice émiratie).",
-     "detail_en": "Tramadol in a child under 12: contraindicated by the FDA label (foreign reference, to be confirmed by the UAE product information)."
+     "detail_en": "Tramadol in a child under 12: contraindicated by the FDA label (foreign reference, to be confirmed by the UAE product information).",
+     "detail_ar": "الترامادول لطفل دون 12 سنة: ممنوع وفق نشرة FDA (مرجع أجنبي، يُؤكَّد بمعلومات المنتج في الإمارات)."
     },
     {
      "si": {
@@ -587,7 +605,8 @@
       "FDA-TRAM-ENFANT"
      ],
      "detail": "Tramadol chez un mineur : à éviter chez l'adolescent de 12 à 18 ans qui a d'autres facteurs de risque ; justification nécessaire.",
-     "detail_en": "Tramadol in a minor: avoid in adolescents aged 12 to 18 with other risk factors; justification required."
+     "detail_en": "Tramadol in a minor: avoid in adolescents aged 12 to 18 with other risk factors; justification required.",
+     "detail_ar": "الترامادول لقاصر: يُتجنَّب لدى المراهقين من 12 إلى 18 سنة مع عوامل خطر أخرى؛ يلزم تبرير."
     }
    ],
    "synonymes": [
@@ -609,7 +628,8 @@
     "MP24-A5-1"
    ],
    "detail": "Médicament sans autorisation de mise sur le marché aux Émirats : utilisation interdite.",
-   "detail_en": "Medicine without UAE marketing approval: use prohibited."
+   "detail_en": "Medicine without UAE marketing approval: use prohibited.",
+   "detail_ar": "دواء دون ترخيص تسويق في الإمارات: استعماله ممنوع."
   },
   "aspirine": {
    "categorie": "standard",
@@ -643,7 +663,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "الأسبرين للأطفال أو المراهقين: متلازمة راي (نادرة وخطيرة) مع جدري الماء أو أعراض شبيهة بالإنفلونزا."
     },
     {
      "si": {
@@ -659,7 +680,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "الأسبرين: لا يُستعمل في الأشهر الثلاثة الأخيرة من الحمل."
     },
     {
      "si": {
@@ -675,7 +697,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "الأسبرين مع سوابق قرحة أو نزيف: خطر نزف."
     },
     {
      "si": {
@@ -691,7 +714,8 @@
      "alternative": "paracetamol",
      "fiches_alternative": [
       "FDA20-NSAID"
-     ]
+     ],
+     "detail_ar": "الأسبرين مع مضاد تخثّر: خطر نزيف."
     }
    ],
    "dose_max_jour_mg": {
@@ -730,7 +754,8 @@
       "DM-AMOX-REIN"
      ],
      "detail": "Amoxicilline et insuffisance rénale sévère (DFG < 30) : pas de dose de 875 mg ; 250 ou 500 mg toutes les 12 h.",
-     "detail_en": "Amoxicillin and severe renal impairment (GFR < 30): no 875 mg dose; 250 or 500 mg every 12 hours."
+     "detail_en": "Amoxicillin and severe renal impairment (GFR < 30): no 875 mg dose; 250 or 500 mg every 12 hours.",
+     "detail_ar": "الأموكسيسيلين مع قصور كلوي شديد (معدل الترشيح < 30): لا تُعطى جرعة 875 ملغ؛ بل 250 أو 500 ملغ كل 12 ساعة."
     }
    ],
    "allergie_fiches": [
@@ -757,7 +782,8 @@
       "DM-METF-REIN"
      ],
      "detail": "Metformine et maladie des reins : contre-indiquée si DFG < 30, à ne pas débuter entre 30 et 45 ; vérifier le DFG.",
-     "detail_en": "Metformin and kidney disease: contraindicated if eGFR < 30, not to be started between 30 and 45; check eGFR."
+     "detail_en": "Metformin and kidney disease: contraindicated if eGFR < 30, not to be started between 30 and 45; check eGFR.",
+     "detail_ar": "الميتفورمين مع مرض الكلى: ممنوع إذا كان eGFR < 30، ولا يُبدأ بين 30 و45؛ تحقّق من eGFR."
     },
     {
      "si": {
@@ -769,7 +795,8 @@
       "DM-METF-FOIE"
      ],
      "detail": "Metformine et maladie du foie : non recommandée (risque d'acidose lactique).",
-     "detail_en": "Metformin and liver disease: not recommended (risk of lactic acidosis)."
+     "detail_en": "Metformin and liver disease: not recommended (risk of lactic acidosis).",
+     "detail_ar": "الميتفورمين مع مرض الكبد: غير موصى به (خطر الحماض اللبني)."
     }
    ],
    "dose_max_jour_mg": {
@@ -794,7 +821,8 @@
    "MP24-A5-1"
   ],
   "detail": "Médicament absent de la base : impossible de vérifier son autorisation de mise sur le marché.",
-  "detail_en": "Medicine not in the knowledge base: marketing approval cannot be checked."
+  "detail_en": "Medicine not in the knowledge base: marketing approval cannot be checked.",
+  "detail_ar": "دواء غير موجود في قاعدة المعرفة: لا يمكن التحقق من ترخيص تسويقه."
  },
  "regle_amm_a_confirmer": {
   "niveau": "INFORMATION",
@@ -803,7 +831,8 @@
    "MP24-A5-1"
   ],
   "detail": "Autorisation de mise sur le marché supposée pour la démonstration : à confirmer dans le registre de l'Emirates Drug Establishment.",
-  "detail_en": "Marketing approval assumed for the demo: to be confirmed in the Emirates Drug Establishment register."
+  "detail_en": "Marketing approval assumed for the demo: to be confirmed in the Emirates Drug Establishment register.",
+  "detail_ar": "ترخيص التسويق مفترض لأغراض العرض: يجب تأكيده في سجل مؤسسة الإمارات للدواء."
  },
  "regle_allergie": {
   "niveau": "A_REVOIR",
@@ -813,7 +842,8 @@
    "ML16-A4-2"
   ],
   "detail": "Le patient a déclaré une allergie à ce médicament ou à sa classe (y compris l'aspirine pour les AINS) : à revoir par le médecin.",
-  "detail_en": "The patient declared an allergy to this medicine or its class (including aspirin for NSAIDs): to be reviewed by the physician."
+  "detail_en": "The patient declared an allergy to this medicine or its class (including aspirin for NSAIDs): to be reviewed by the physician.",
+  "detail_ar": "صرّح المريض بحساسية من هذا الدواء أو من فئته (بما في ذلك الأسبرين لمضادات الالتهاب غير الستيرويدية): يجب أن يراجعه الطبيب."
  },
  "regles_prescription": [
   {
@@ -829,7 +859,8 @@
     "ML16-A4-6"
    ],
    "detail": "Dose non précisée : la prescription doit indiquer le médicament, sa dose et son mode d'emploi, par écrit.",
-   "detail_en": "Dose missing: the prescription must state the medicine, its dose and usage, in writing."
+   "detail_en": "Dose missing: the prescription must state the medicine, its dose and usage, in writing.",
+   "detail_ar": "الجرعة مفقودة: يجب أن تذكر الوصفة الدواء وجرعته وطريقة استعماله كتابةً."
   },
   {
    "id": "RX-ECRITE-POSOLOGIE",
@@ -844,7 +875,8 @@
     "ML16-A4-6"
    ],
    "detail": "Mode d'emploi (fréquence, durée) non précisé : la prescription écrite doit l'indiquer.",
-   "detail_en": "Usage (frequency, duration) missing: the written prescription must state it."
+   "detail_en": "Usage (frequency, duration) missing: the written prescription must state it.",
+   "detail_ar": "طريقة الاستعمال (عدد المرات، المدة) مفقودة: يجب أن تذكرها الوصفة المكتوبة."
   },
   {
    "id": "TELE-CONTROLE",
@@ -866,7 +898,8 @@
    ],
    "juridiction": "AE-DU",
    "detail": "Médicament contrôlé ou stupéfiant : interdit de le prescrire en téléconsultation (norme de Dubaï).",
-   "detail_en": "Controlled or narcotic medicine: may not be prescribed through telehealth (Dubai standard)."
+   "detail_en": "Controlled or narcotic medicine: may not be prescribed through telehealth (Dubai standard).",
+   "detail_ar": "دواء خاضع للرقابة أو مخدّر: لا يجوز وصفه عبر الرعاية الصحية عن بُعد (معيار دبي)."
   },
   {
    "id": "TELE-CADRE",
@@ -881,7 +914,8 @@
     "DHATH-10"
    ],
    "detail": "Téléconsultation : pas de prescription sans examen clinique hors du cadre de télésanté fixé par l'autorité ; identifier le patient (au moins trois identifiants) et documenter son consentement à chaque rencontre.",
-   "detail_en": "Telehealth: no prescription without clinical examination outside the authority's telehealth framework; identify the patient (at least three identifiers) and document consent at each encounter."
+   "detail_en": "Telehealth: no prescription without clinical examination outside the authority's telehealth framework; identify the patient (at least three identifiers) and document consent at each encounter.",
+   "detail_ar": "الرعاية الصحية عن بُعد: لا وصفة دون فحص سريري خارج إطار الرعاية عن بُعد المعتمد من السلطة؛ يجب التعرّف على المريض (ثلاثة مُعرّفات على الأقل) وتوثيق الموافقة في كل لقاء."
   },
   {
    "id": "CONSENTEMENT",
@@ -896,7 +930,8 @@
     "ML16-A5-1"
    ],
    "detail": "Recueillir et consigner le consentement du patient avant d'administrer le traitement.",
-   "detail_en": "Obtain and record the patient's consent before administering the treatment."
+   "detail_en": "Obtain and record the patient's consent before administering the treatment.",
+   "detail_ar": "احصل على موافقة المريض وسجّلها قبل إعطاء العلاج."
   },
   {
    "id": "CONSENTEMENT-PICTO",
@@ -915,7 +950,8 @@
    ],
    "lacune": "L04",
    "detail": "Consentement exprimé en pictogrammes : vérifier la compréhension (reformulation par pictogrammes) et faire attester le médecin ; aucun texte ne précise la valeur d'un tel consentement.",
-   "detail_en": "Consent expressed with pictograms: check understanding (teach-back with pictograms) and have the physician attest; no text states the value of such consent."
+   "detail_en": "Consent expressed with pictograms: check understanding (teach-back with pictograms) and have the physician attest; no text states the value of such consent.",
+   "detail_ar": "موافقة معبَّر عنها بالرموز المصوّرة: تحقّق من الفهم (إعادة الشرح بالرموز) واطلب شهادة الطبيب؛ لا يحدد أي نص قيمة هذه الموافقة."
   },
   {
    "id": "URGENCE-CONSENTEMENT",
@@ -928,7 +964,8 @@
     "ML16-A5-1"
    ],
    "detail": "Urgence : la loi permet de traiter sans consentement si celui-ci ne peut pas être obtenu ; consigner la raison.",
-   "detail_en": "Emergency: the law allows treatment without consent where it cannot be obtained; record the reason."
+   "detail_en": "Emergency: the law allows treatment without consent where it cannot be obtained; record the reason.",
+   "detail_ar": "طوارئ: يسمح القانون بالعلاج دون موافقة إذا تعذّر الحصول عليها؛ سجّل السبب."
   },
   {
    "id": "INFORMATION-PATIENT",
@@ -940,7 +977,8 @@
     "ML16-A4-6"
    ],
    "detail": "Expliquer au patient l'importance du traitement et les options disponibles.",
-   "detail_en": "Explain to the patient the importance of the treatment and the available options."
+   "detail_en": "Explain to the patient the importance of the treatment and the available options.",
+   "detail_ar": "اشرح للمريض أهمية العلاج والخيارات المتاحة."
   },
   {
    "id": "INFORMATION-ACCESSIBLE",
@@ -956,7 +994,8 @@
    ],
    "lacune": "L03",
    "detail": "Informer dans un moyen de communication que le patient comprend (pictogrammes validés par le médecin).",
-   "detail_en": "Inform the patient through a means of communication they understand (pictograms validated by the physician)."
+   "detail_en": "Inform the patient through a means of communication they understand (pictograms validated by the physician).",
+   "detail_ar": "أبلغ المريض بوسيلة تواصل يفهمها (رموز مصوّرة يعتمدها الطبيب)."
   },
   {
    "id": "IA-INFORMER",
@@ -972,7 +1011,8 @@
     "RAI25-3.1.6.1.3"
    ],
    "detail": "Informer le patient que des agents d'IA assistent le médecin (rôle, limites) et qu'il peut refuser.",
-   "detail_en": "Inform the patient that AI agents assist the physician (role, limits) and that they may opt out."
+   "detail_en": "Inform the patient that AI agents assist the physician (role, limits) and that they may opt out.",
+   "detail_ar": "أبلغ المريض بأن وكلاء ذكاء اصطناعي يساعدون الطبيب (الدور والحدود) وبأن له حق الرفض."
   },
   {
    "id": "IA-SUGGESTION",
@@ -988,7 +1028,8 @@
    ],
    "lacune": "L01",
    "detail": "Décision inspirée d'une suggestion de l'IA : le médecin reste le décideur et le responsable ; la répartition de la responsabilité n'est fixée par aucun texte.",
-   "detail_en": "Decision inspired by an AI suggestion: the physician remains the decision-maker and responsible; no text allocates liability."
+   "detail_en": "Decision inspired by an AI suggestion: the physician remains the decision-maker and responsible; no text allocates liability.",
+   "detail_ar": "قرار مستوحى من اقتراح ذكاء اصطناعي: يبقى الطبيب صاحب القرار والمسؤول؛ ولا يحدد أي نص توزيع المسؤولية."
   }
  ],
  "regles_partage": [
@@ -1005,7 +1046,8 @@
     "ICT19-A13"
    ],
    "detail": "Lieu de stockage ou de traitement non précisé (Émirats ou étranger) : impossible de vérifier.",
-   "detail_en": "Storage or processing location not stated (UAE or abroad): cannot be checked."
+   "detail_en": "Storage or processing location not stated (UAE or abroad): cannot be checked.",
+   "detail_ar": "مكان التخزين أو المعالجة غير محدد (داخل الإمارات أو خارجها): لا يمكن التحقق."
   },
   {
    "id": "HORS-EAU-SANS-EXCEPTION",
@@ -1027,7 +1069,9 @@
    "detail": "Données de santé hors des Émirats sans exception prévue : interdit (amende de 500 000 à 700 000 AED).",
    "detail_en": "Health data outside the UAE without a listed exception: prohibited (fine AED 500,000-700,000).",
    "piste": "Utiliser un modèle hébergé aux Émirats ou en local ; ou invoquer une exception prévue avec ses conditions.",
-   "piste_en": "Use a model hosted in the UAE or locally, or invoke a listed exception with its conditions."
+   "piste_en": "Use a model hosted in the UAE or locally, or invoke a listed exception with its conditions.",
+   "detail_ar": "بيانات صحية خارج الإمارات دون استثناء منصوص عليه: ممنوع (غرامة من 500,000 إلى 700,000 درهم).",
+   "piste_ar": "استخدم نموذجًا مستضافًا في الإمارات أو محليًا، أو استند إلى استثناء منصوص عليه مع شروطه."
   },
   {
    "id": "HORS-EAU-CONSENTEMENT",
@@ -1045,7 +1089,8 @@
     "RES51-COND"
    ],
    "detail": "Exception invoquée mais sans consentement écrit du patient : l'exception ne s'applique pas, l'interdiction de la loi demeure (conditions connues par source secondaire, à confirmer sur le texte officiel).",
-   "detail_en": "Exception invoked but no written patient consent: the exception does not apply and the legal prohibition stands (conditions known from a secondary source, to confirm on the official text)."
+   "detail_en": "Exception invoked but no written patient consent: the exception does not apply and the legal prohibition stands (conditions known from a secondary source, to confirm on the official text).",
+   "detail_ar": "استُند إلى استثناء دون موافقة كتابية من المريض: لا ينطبق الاستثناء ويبقى الحظر القانوني (الشروط معروفة من مصدر ثانوي، تُؤكَّد بالنص الرسمي)."
   },
   {
    "id": "HORS-EAU-CONSENTEMENT-INCONNU",
@@ -1064,7 +1109,8 @@
     "RES51-COND"
    ],
    "detail": "Exception invoquée : condition « consentement_ecrit » non renseignée.",
-   "detail_en": "Exception invoked: condition 'consentement_ecrit' not documented."
+   "detail_en": "Exception invoked: condition 'consentement_ecrit' not documented.",
+   "detail_ar": "استُند إلى استثناء: الشرط «consentement_ecrit» غير موثّق."
   },
   {
    "id": "HORS-EAU-CHIFFREMENT",
@@ -1082,7 +1128,8 @@
     "RES51-COND"
    ],
    "detail": "Exception invoquée mais données non chiffrées : l'exception ne s'applique pas, l'interdiction de la loi demeure (conditions connues par source secondaire, à confirmer sur le texte officiel).",
-   "detail_en": "Exception invoked but data not encrypted: the exception does not apply and the legal prohibition stands (conditions known from a secondary source, to confirm on the official text)."
+   "detail_en": "Exception invoked but data not encrypted: the exception does not apply and the legal prohibition stands (conditions known from a secondary source, to confirm on the official text).",
+   "detail_ar": "استُند إلى استثناء لكن البيانات غير مشفّرة: لا ينطبق الاستثناء ويبقى الحظر القانوني (الشروط معروفة من مصدر ثانوي، تُؤكَّد بالنص الرسمي)."
   },
   {
    "id": "HORS-EAU-CHIFFREMENT-INCONNU",
@@ -1101,7 +1148,8 @@
     "RES51-COND"
    ],
    "detail": "Exception invoquée : condition « chiffrement » non renseignée.",
-   "detail_en": "Exception invoked: condition 'chiffrement' not documented."
+   "detail_en": "Exception invoked: condition 'chiffrement' not documented.",
+   "detail_ar": "استُند إلى استثناء: الشرط «chiffrement» غير موثّق."
   },
   {
    "id": "HORS-EAU-COPIE",
@@ -1119,7 +1167,8 @@
     "RES51-COND"
    ],
    "detail": "Exception invoquée mais aucune copie conservée aux Émirats : l'exception ne s'applique pas, l'interdiction de la loi demeure (conditions connues par source secondaire, à confirmer sur le texte officiel).",
-   "detail_en": "Exception invoked but no copy kept in the UAE: the exception does not apply and the legal prohibition stands (conditions known from a secondary source, to confirm on the official text)."
+   "detail_en": "Exception invoked but no copy kept in the UAE: the exception does not apply and the legal prohibition stands (conditions known from a secondary source, to confirm on the official text).",
+   "detail_ar": "استُند إلى استثناء دون الاحتفاظ بنسخة داخل الإمارات: لا ينطبق الاستثناء ويبقى الحظر القانوني (الشروط معروفة من مصدر ثانوي، تُؤكَّد بالنص الرسمي)."
   },
   {
    "id": "HORS-EAU-COPIE-INCONNU",
@@ -1138,7 +1187,8 @@
     "RES51-COND"
    ],
    "detail": "Exception invoquée : condition « copie_eau » non renseignée.",
-   "detail_en": "Exception invoked: condition 'copie_eau' not documented."
+   "detail_en": "Exception invoked: condition 'copie_eau' not documented.",
+   "detail_ar": "استُند إلى استثناء: الشرط «copie_eau» غير موثّق."
   },
   {
    "id": "HORS-EAU-AUTORISATION",
@@ -1159,7 +1209,8 @@
     "ICT19-A13"
    ],
    "detail": "Transfert hors des Émirats couvert par une exception, conditions remplies : autorisation nominative d'un responsable requise.",
-   "detail_en": "Transfer outside the UAE under a listed exception with all conditions met: named authorisation by a responsible person required."
+   "detail_en": "Transfer outside the UAE under a listed exception with all conditions met: named authorisation by a responsible person required.",
+   "detail_ar": "نقل إلى خارج الإمارات بموجب استثناء منصوص عليه مع استيفاء كل الشروط: يلزم إذن باسم شخص مسؤول."
   },
   {
    "id": "SOINS",
@@ -1181,7 +1232,8 @@
     "ICT19-A16"
    ],
    "detail": "Transmission pour les soins à un professionnel de santé, aux Émirats : permise, sous secret.",
-   "detail_en": "Transmission for care to a health professional, inside the UAE: permitted, under confidentiality."
+   "detail_en": "Transmission for care to a health professional, inside the UAE: permitted, under confidentiality.",
+   "detail_ar": "إرسال لأغراض الرعاية إلى مهني صحي داخل الإمارات: مسموح، مع السرية."
   },
   {
    "id": "COMMERCIAL-SANS-ACCORD",
@@ -1202,7 +1254,9 @@
    "detail": "Usage non médical sans accord écrit du patient : interdit (aucune des exceptions de la loi ne s'applique).",
    "detail_en": "Non-health use without the patient's written approval: prohibited (none of the legal exceptions applies).",
    "piste": "Ne rien transmettre ; seul un accord écrit du patient permettrait d'examiner la demande.",
-   "piste_en": "Share nothing; only the patient's written approval would allow the request to be examined."
+   "piste_en": "Share nothing; only the patient's written approval would allow the request to be examined.",
+   "detail_ar": "استخدام غير صحي دون موافقة كتابية من المريض: ممنوع (لا ينطبق أي من الاستثناءات القانونية).",
+   "piste_ar": "لا تشارك شيئًا؛ وحدها موافقة المريض الكتابية تسمح بدراسة الطلب."
   },
   {
    "id": "COMMERCIAL-ACCORD-INCONNU",
@@ -1223,7 +1277,8 @@
     "ICT19-A16"
    ],
    "detail": "Usage non médical : l'accord écrit du patient doit être produit.",
-   "detail_en": "Non-health use: the patient's written approval must be produced."
+   "detail_en": "Non-health use: the patient's written approval must be produced.",
+   "detail_ar": "استخدام غير صحي: يجب تقديم موافقة المريض الكتابية."
   },
   {
    "id": "COMMERCIAL-AVEC-ACCORD",
@@ -1242,7 +1297,8 @@
     "ICT19-A16"
    ],
    "detail": "Usage non médical avec accord écrit : à autoriser nominativement par un responsable.",
-   "detail_en": "Non-health use with written approval: needs named authorisation."
+   "detail_en": "Non-health use with written approval: needs named authorisation.",
+   "detail_ar": "استخدام غير صحي مع موافقة كتابية: يلزم إذن باسم شخص."
   },
   {
    "id": "RECHERCHE-ANONYME",
@@ -1257,7 +1313,8 @@
     "ICT19-A16"
    ],
    "detail": "Recherche sans divulguer l'identité des patients : exception prévue par la loi.",
-   "detail_en": "Research without disclosing patients' identity: legal exception."
+   "detail_en": "Research without disclosing patients' identity: legal exception.",
+   "detail_ar": "بحث دون كشف هوية المرضى: استثناء قانوني."
   },
   {
    "id": "RECHERCHE-IDENTIFIANTE",
@@ -1274,7 +1331,9 @@
    "detail": "Recherche avec données identifiantes et sans accord écrit : interdit.",
    "detail_en": "Research with identifiable data and no written approval: prohibited.",
    "piste": "Anonymiser les données, ou obtenir l'accord écrit du patient.",
-   "piste_en": "De-identify the data, or obtain the patient's written approval."
+   "piste_en": "De-identify the data, or obtain the patient's written approval.",
+   "detail_ar": "بحث ببيانات قابلة للتعريف دون موافقة كتابية: ممنوع.",
+   "piste_ar": "أزل التعريف عن البيانات، أو احصل على موافقة المريض الكتابية."
   },
   {
    "id": "RECHERCHE-ANONYMISATION-INCONNUE",
@@ -1290,7 +1349,8 @@
     "ICT19-A16"
    ],
    "detail": "Recherche : préciser si les données sont anonymisées.",
-   "detail_en": "Research: state whether the data is de-identified."
+   "detail_en": "Research: state whether the data is de-identified.",
+   "detail_ar": "بحث: حدّد ما إذا كانت البيانات مُزالًا عنها التعريف."
   },
   {
    "id": "RECHERCHE-IDENTIFIANTE-ACCORD",
@@ -1305,7 +1365,8 @@
     "ICT19-A16"
    ],
    "detail": "Recherche avec données identifiantes et accord écrit : autorisation nominative (et avis éthique) requise.",
-   "detail_en": "Research with identifiable data and written approval: named authorisation (and ethics review) required."
+   "detail_en": "Research with identifiable data and written approval: named authorisation (and ethics review) required.",
+   "detail_ar": "بحث ببيانات قابلة للتعريف مع موافقة كتابية: يلزم إذن باسم شخص (ومراجعة أخلاقية)."
   },
   {
    "id": "RECHERCHE-ACCORD-INCONNU",
@@ -1322,7 +1383,8 @@
     "ICT19-A16"
    ],
    "detail": "Recherche avec données identifiantes : l'accord écrit du patient doit être produit.",
-   "detail_en": "Research with identifiable data: the patient's written approval must be produced."
+   "detail_en": "Research with identifiable data: the patient's written approval must be produced.",
+   "detail_ar": "بحث ببيانات قابلة للتعريف: يجب تقديم موافقة المريض الكتابية."
   },
   {
    "id": "ASSURANCE",
@@ -1336,7 +1398,8 @@
     "ICT19-A16"
    ],
    "detail": "Demande d'un assureur ou financeur pour vérifier les droits liés aux soins : exception prévue.",
-   "detail_en": "Request by an insurer or funder to verify entitlements for care received: legal exception."
+   "detail_en": "Request by an insurer or funder to verify entitlements for care received: legal exception.",
+   "detail_ar": "طلب من شركة تأمين أو جهة ممولة للتحقق من الاستحقاقات عن رعاية مقدَّمة: استثناء قانوني."
   },
   {
    "id": "SANTE-PUBLIQUE",
@@ -1352,7 +1415,8 @@
     "CD14-A29"
    ],
    "detail": "Mesures de santé publique : exception prévue ; ne transmettre que le nécessaire, sous secret.",
-   "detail_en": "Public-health measures: legal exception; share only what is necessary, under confidentiality."
+   "detail_en": "Public-health measures: legal exception; share only what is necessary, under confidentiality.",
+   "detail_ar": "تدابير الصحة العامة: استثناء قانوني؛ لا تُشارَك إلا البيانات الضرورية، مع السرية."
   },
   {
    "id": "AUTORITE-JUDICIAIRE",
@@ -1366,7 +1430,8 @@
     "ICT19-A16"
    ],
    "detail": "Demande d'une autorité judiciaire compétente : exception prévue.",
-   "detail_en": "Request by a competent judicial authority: legal exception."
+   "detail_en": "Request by a competent judicial authority: legal exception.",
+   "detail_ar": "طلب من سلطة قضائية مختصة: استثناء قانوني."
   },
   {
    "id": "AUTORITE-SANTE",
@@ -1380,7 +1445,8 @@
     "ICT19-A16"
    ],
    "detail": "Demande de l'autorité de santé (contrôle, inspection, santé publique) : exception prévue.",
-   "detail_en": "Request by the Health Authority (monitoring, inspection, public health): legal exception."
+   "detail_en": "Request by the Health Authority (monitoring, inspection, public health): legal exception.",
+   "detail_ar": "طلب من الهيئة الصحية (الرقابة، التفتيش، الصحة العامة): استثناء قانوني."
   },
   {
    "id": "ENTRAINEMENT-IA",
@@ -1398,7 +1464,8 @@
    ],
    "lacune": "L06",
    "detail": "Entraînement d'un modèle avec des données identifiantes : aucun texte ne dit s'il s'agit d'une finalité de santé ; décision humaine nominative requise.",
-   "detail_en": "Training a model on identifiable data: no text says whether this is a health purpose; named human decision required."
+   "detail_en": "Training a model on identifiable data: no text says whether this is a health purpose; named human decision required.",
+   "detail_ar": "تدريب نموذج على بيانات قابلة للتعريف: لا يحدد أي نص ما إذا كان هذا غرضًا صحيًا؛ يلزم قرار بشري باسم صاحبه."
   },
   {
    "id": "PUBLICATION-NOMINATIVE",
@@ -1415,7 +1482,9 @@
    "detail": "Publier l'identité de personnes infectées : interdit (secret des informations sur la maladie ; usage hors soins sans accord).",
    "detail_en": "Publishing the identity of infected persons: prohibited (confidentiality of disease information; non-health use without approval).",
    "piste": "Publier des chiffres agrégés et anonymisés (par exemple le nombre de cas par quartier).",
-   "piste_en": "Publish aggregated, de-identified figures (e.g. number of cases per district)."
+   "piste_en": "Publish aggregated, de-identified figures (e.g. number of cases per district).",
+   "detail_ar": "نشر هوية المصابين: ممنوع (سرية معلومات المرض؛ استخدام غير صحي دون موافقة).",
+   "piste_ar": "انشر أرقامًا مجمّعة مُزالًا عنها التعريف (مثل عدد الحالات في كل حي)."
   },
   {
    "id": "PUBLICATION-ANONYME",
@@ -1431,7 +1500,8 @@
     "CD14-A29"
    ],
    "detail": "Information du public par des chiffres anonymisés, pour une mesure de santé publique : permise.",
-   "detail_en": "Informing the public with de-identified figures for a public-health measure: permitted."
+   "detail_en": "Informing the public with de-identified figures for a public-health measure: permitted.",
+   "detail_ar": "إبلاغ الجمهور بأرقام مُزال عنها التعريف ضمن تدبير للصحة العامة: مسموح."
   },
   {
    "id": "PUBLICATION-ANONYMISATION-INCONNUE",
@@ -1447,7 +1517,8 @@
     "CD14-A29"
    ],
    "detail": "Publication : préciser si les données sont anonymisées.",
-   "detail_en": "Publication: state whether the data is de-identified."
+   "detail_en": "Publication: state whether the data is de-identified.",
+   "detail_ar": "النشر: حدّد ما إذا كانت البيانات مُزالًا عنها التعريف."
   }
  ],
  "regle_partage_non_couvert": {
@@ -1457,7 +1528,8 @@
    "ICT19-A16"
   ],
   "detail": "Aucune règle ne couvre cette demande : à soumettre à un humain.",
-  "detail_en": "No rule covers this request: refer to a human."
+  "detail_en": "No rule covers this request: refer to a human.",
+  "detail_ar": "لا يغطي أي حكم هذا الطلب: يُحال إلى إنسان."
  },
  "regles_envoi_patient": [
   {
@@ -1475,7 +1547,9 @@
    "detail_en": "Message harmful to the patient (incitement to self-harm, violent or abusive words): contrary to the practitioner's duty of care and to the requirement of a safe AI. It will not be sent.",
    "piste": "Retirez ce message. Si le patient semble en détresse, dites-lui que vous êtes là pour l'aider et appelez les urgences (998 aux Émirats).",
    "piste_en": "Withdraw this message. If the patient seems distressed, tell them you are there to help and call emergency services (998 in the UAE).",
-   "note": "Contenu repéré par medimcom/surete.py (déterministe) : le message est bloqué AVANT que le médecin puisse le valider."
+   "note": "Contenu repéré par medimcom/surete.py (déterministe) : le message est bloqué AVANT que le médecin puisse le valider.",
+   "detail_ar": "رسالة مؤذية للمريض (تحريض على إيذاء النفس، أو كلمات عنيفة أو مسيئة): تخالف واجب العناية لدى الممارس وشرط الذكاء الاصطناعي الآمن. لن تُرسل.",
+   "piste_ar": "اسحب هذه الرسالة. إذا بدا المريض في ضيق، فقل له إنك هنا لمساعدته واتصل بخدمات الطوارئ (998 في الإمارات)."
   },
   {
    "id": "ENVOI-PRODUIT-CONTROLE",
@@ -1494,7 +1568,9 @@
    "detail": "Consigne de prise d'un produit contrôlé sans ordonnance : il n'est délivré que sur prescription écrite d'un médecin humain autorisé.",
    "detail_en": "Instruction to take a controlled product without a prescription: it may only be dispensed on a written prescription by an authorised human physician.",
    "piste": "Pour un traitement, passez par l'onglet Ordonnance (médicament, dose, posologie) : le juriste contrôle la prescription, puis le traducteur prépare l'explication pour le patient.",
-   "piste_en": "For a treatment, use the Prescription tab (medicine, dose, dosage): the jurist checks the prescription, then the translator prepares the explanation for the patient."
+   "piste_en": "For a treatment, use the Prescription tab (medicine, dose, dosage): the jurist checks the prescription, then the translator prepares the explanation for the patient.",
+   "detail_ar": "تعليمة بتناول منتج خاضع للرقابة دون وصفة: لا يُصرف إلا بوصفة مكتوبة من طبيب بشري مرخّص.",
+   "piste_ar": "للعلاج، استخدم تبويب الوصفة (الدواء، الجرعة، طريقة الاستعمال): يتحقق الوكيل القانوني من الوصفة، ثم يُعدّ المترجم الشرح للمريض."
   },
   {
    "id": "ENVOI-NON-VALIDE",
@@ -1511,7 +1587,8 @@
     "RAI25-3.1.7.2.2"
    ],
    "detail": "Message au patient non validé par un médecin autorisé et actif : l'IA ne communique jamais seule avec le patient.",
-   "detail_en": "Message to the patient not validated by an authorised, active physician: the AI never communicates alone with the patient."
+   "detail_en": "Message to the patient not validated by an authorised, active physician: the AI never communicates alone with the patient.",
+   "detail_ar": "رسالة إلى المريض لم يعتمدها طبيب مرخّص وفي الخدمة: لا يتواصل الذكاء الاصطناعي وحده مع المريض أبدًا."
   },
   {
    "id": "ENVOI-PRESCRIPTION-NON-CONFORME",
@@ -1531,7 +1608,8 @@
    ],
    "detail": "Le message explique une prescription qui n'est plus conforme : il ne doit pas partir.",
    "detail_en": "The message explains a prescription that is no longer compliant: it must not be sent.",
-   "note": "Liste d'autorisation (et non liste d'exclusion) : tout statut autre que conforme ou maintenu bloque l'envoi. Défaut trouvé par la vérification formelle (outils/verifier_formel.py)."
+   "note": "Liste d'autorisation (et non liste d'exclusion) : tout statut autre que conforme ou maintenu bloque l'envoi. Défaut trouvé par la vérification formelle (outils/verifier_formel.py).",
+   "detail_ar": "تشرح الرسالة وصفة لم تعد مطابقة: يجب ألا تُرسل."
   },
   {
    "id": "ENVOI-TRAITEMENT-SANS-PRESCRIPTION",
@@ -1550,7 +1628,9 @@
    "detail": "Consigne de traitement sans prescription du médecin : seul le médecin prescrit, par écrit, avec dose et posologie ; l'IA ne fait qu'expliquer une prescription contrôlée.",
    "detail_en": "Treatment message with no physician prescription: only the physician prescribes; the AI only explains the prescription.",
    "piste": "Pour un traitement, passez par l'onglet Ordonnance (médicament, dose, posologie) : le juriste contrôle la prescription, puis le traducteur prépare l'explication pour le patient.",
-   "piste_en": "For a treatment, use the Prescription tab (medicine, dose, dosage): the jurist checks the prescription, then the translator prepares the explanation for the patient."
+   "piste_en": "For a treatment, use the Prescription tab (medicine, dose, dosage): the jurist checks the prescription, then the translator prepares the explanation for the patient.",
+   "detail_ar": "رسالة علاج دون وصفة من الطبيب: الطبيب وحده يصف؛ والذكاء الاصطناعي يشرح الوصفة فقط.",
+   "piste_ar": "للعلاج، استخدم تبويب الوصفة (الدواء، الجرعة، طريقة الاستعمال): يتحقق الوكيل القانوني من الوصفة، ثم يُعدّ المترجم الشرح للمريض."
   },
   {
    "id": "ENVOI-VALIDE",
@@ -1563,7 +1643,8 @@
     "DHA21-4.4"
    ],
    "detail": "Message validé par un médecin autorisé : peut être envoyé.",
-   "detail_en": "Message validated by an authorised physician: may be sent."
+   "detail_en": "Message validated by an authorised physician: may be sent.",
+   "detail_ar": "رسالة اعتمدها طبيب مرخّص: يمكن إرسالها."
   },
   {
    "id": "ENVOI-DIAGNOSTIC",
@@ -1583,7 +1664,8 @@
    ],
    "lacune": "L05",
    "detail": "Annonce d'un diagnostic ou d'un traitement : vérifier que le patient a compris (aucune norme ne valide les pictogrammes médicaux).",
-   "detail_en": "Diagnosis or treatment message: check that the patient understood (no standard validates medical pictograms)."
+   "detail_en": "Diagnosis or treatment message: check that the patient understood (no standard validates medical pictograms).",
+   "detail_ar": "رسالة تشخيص أو علاج: تحقّق من أن المريض فهم (لا يوجد معيار يعتمد الرموز الطبية المصوّرة)."
   }
  ],
  "regles_etat": [
@@ -1600,7 +1682,8 @@
     "CD14-A29"
    ],
    "detail": "Maladie transmissible du groupe A suspectée : déclaration à l'autorité au plus tard 24 heures après la suspicion ; secret sur l'identité du patient.",
-   "detail_en": "Suspected Group A communicable disease: notify the authority within 24 hours of suspicion; keep the patient's information confidential."
+   "detail_en": "Suspected Group A communicable disease: notify the authority within 24 hours of suspicion; keep the patient's information confidential.",
+   "detail_ar": "اشتباه في مرض معدٍ من المجموعة أ: أبلغ السلطة خلال 24 ساعة من الاشتباه؛ وحافظ على سرية معلومات المريض."
   },
   {
    "id": "DECLARATION-B",
@@ -1614,7 +1697,8 @@
     "CD14-A29"
    ],
    "detail": "Maladie transmissible du groupe B : déclaration par l'établissement au plus tard 7 jours après.",
-   "detail_en": "Group B communicable disease: notification by the facility within 7 days."
+   "detail_en": "Group B communicable disease: notification by the facility within 7 days.",
+   "detail_ar": "مرض معدٍ من المجموعة ب: تُبلغ عنه المنشأة خلال 7 أيام."
   },
   {
    "id": "CONSENTEMENT-INFECTIEUX",
@@ -1632,7 +1716,8 @@
     "ML16-A5-1"
    ],
    "detail": "Maladie infectieuse menaçant la santé publique : la loi prévoit une exception au consentement pour le traitement.",
-   "detail_en": "Infectious disease threatening public health: the law provides an exception to consent for treatment."
+   "detail_en": "Infectious disease threatening public health: the law provides an exception to consent for treatment.",
+   "detail_ar": "مرض معدٍ يهدد الصحة العامة: ينص القانون على استثناء من الموافقة على العلاج."
   },
   {
    "id": "URGENCE-ACCESSIBLE",
@@ -1649,7 +1734,8 @@
    ],
    "lacune": "L09",
    "detail": "Urgence chez un patient sourd : utiliser le jeu de pictogrammes d'urgence et ne pas retarder l'orientation vers les secours.",
-   "detail_en": "Emergency for a deaf patient: use the emergency pictogram set and do not delay referral to emergency services."
+   "detail_en": "Emergency for a deaf patient: use the emergency pictogram set and do not delay referral to emergency services.",
+   "detail_ar": "طوارئ لمريض أصم: استخدم مجموعة رموز الطوارئ ولا تؤخر التوجيه إلى خدمات الطوارئ."
   }
  ],
  "regle_mode_inconnu": {
@@ -1659,7 +1745,8 @@
    "ML16-A5-5"
   ],
   "detail": "Mode de consultation inconnu (présentiel ou téléconsultation) : les règles de prescription à distance ne peuvent pas être vérifiées.",
-  "detail_en": "Consultation mode unknown (in person or telehealth): remote-prescribing rules cannot be checked."
+  "detail_en": "Consultation mode unknown (in person or telehealth): remote-prescribing rules cannot be checked.",
+  "detail_ar": "نوع الاستشارة غير معروف (حضوري أو عن بُعد): لا يمكن التحقق من قواعد الوصف عن بُعد."
  },
  "regle_mode_contradictoire": {
   "niveau": "PREUVES_INSUFFISANTES",
@@ -1668,6 +1755,7 @@
    "ML16-A5-5"
   ],
   "detail": "Le mode indiqué sur la prescription contredit le dossier du patient (présentiel / téléconsultation) : à clarifier.",
-  "detail_en": "The mode on the prescription contradicts the patient record (in person / telehealth): to be clarified."
+  "detail_en": "The mode on the prescription contradicts the patient record (in person / telehealth): to be clarified.",
+  "detail_ar": "نوع الاستشارة في الوصفة يناقض ملف المريض (حضوري / عن بُعد): يجب التوضيح."
  }
 }

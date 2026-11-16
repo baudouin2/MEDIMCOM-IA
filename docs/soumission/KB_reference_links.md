@@ -1,25 +1,14 @@
 # MEDIMCOM IA — reference links of the materials proposed to the knowledge base
 
-Team ShifaMiko · generated from `kb/sources.json` · 47 sources · 139 provisions in `kb/fiches.jsonl`.
+Team ShifaMiko · generated from `kb/sources.json` and `kb/fiches.jsonl`.
 Verification level: *official text* = read on the official publisher's site; *secondary source* = known through a law firm or the press; *to confirm* = listed, not yet read.
+
+## 1. Sources used for Cameroon (country of the submission): 32 sources, 63 provisions
+
+Cameroonian laws and decrees, international and African instruments (binding or not, as stated), ITU references, clinical references (medicine labels) and foreign texts used only as global examples in the gap analysis.
 
 | ID | Title | Authority | Date | Role | Verification | Link |
 |---|---|---|---|---|---|---|
-| AE-ML-2016 | Federal Decree-Law No. (4) of 2016 Concerning Medical Liability | UAE Federal Government | 2016-08-02 | primary | official text | https://uaelegislation.gov.ae/en/legislations/1192 |
-| AE-ICT-2019 | Federal Law No. (2) of 2019 Concerning the Use of Information and Communication Technology in Health Fields | UAE Federal Government | 2019-02-06 | primary | official text | https://uaelegislation.gov.ae/en/legislations/1209 |
-| AE-RES51-2021 | Ministry of Health and Prevention Resolution No. (51) of 2021 on cases where health data may be stored or transferred outside the State | Ministry of Health and Prevention (MOHAP) | 2021-04-28 | primary | secondary source | https://mohap.gov.ae/en/w/ministerial-decree-no.-51-of-the-year-2021-regarding-cases-in-which-health-data-and-information-may-be-stored-or-transferred-outside-the-country |
-| AE-PDPL-2021 | Federal Decree-Law No. (45) of 2021 Concerning the Protection of Personal Data | UAE Federal Government | 2021-09-20 | primary | official text | https://uaelegislation.gov.ae/en/legislations/1972 |
-| AE-MP-2024 | Federal Decree-Law No. (38) of 2024 Governing Medical Products, Pharmacists and Pharmaceutical Establishments | UAE Federal Government; Emirates Drug Establishment (EDE) | 2024-10-01 | primary | official text | https://uaelegislation.gov.ae/en/legislations/2751 |
-| AE-POD-2006 | Federal Law No. (29) of 2006 Concerning the Rights of People with Special Needs (People of Determination), as amended by Federal Law No. (14) of 2009 | UAE Federal Government | 2006-08-13 | primary | official text | https://elaws.moj.gov.ae/UAE-MOJ_LC-En/00_SOCIAL%20WELFARE/UAE-LC-En_2006-08-13_00029_Kait.html |
-| AE-CD-2014 | Federal Law No. (14) of 2014 On Control of Communicable Diseases | UAE Federal Government; Ministry of Health and Prevention | 2014-11-20 | primary | official text | https://uaelegislation.gov.ae/en/legislations/1198 |
-| AE-DOH-AI-2018 | Department of Health Abu Dhabi - Policy on Use of Artificial Intelligence in the Healthcare Sector (Policy/AI/0.9) | Department of Health - Abu Dhabi (DoH) | 2018-04-30 | primary | official text | https://www.doh.gov.ae/-/media/E9C1470A575146B18015DEBE57E47F8D.ashx |
-| AE-DOH-RAI-2025 | Department of Health Abu Dhabi - Responsible Artificial Intelligence (AI) Standard (DoH/ST/DDGO/RAI/V1/2025) | Department of Health - Abu Dhabi, Data and Digital Governance Office | 2025-10 | primary | official text | https://www.doh.gov.ae/-/media/B84FF5DD027846699C51F36C439A580F.ashx |
-| AE-DHA-AI-2021 | Dubai Health Authority - Policy: Artificial Intelligence in the Healthcare (DHA/HISHD/PP-09) | Dubai Health Authority (DHA) | 2021-07-01 | primary | official text | https://www.dha.gov.ae/uploads/082022/Artificial%20Intelligence%20Policy20228457.pdf |
-| AE-DHA-TH-2025 | Dubai Health Authority - Standards for Telehealth Services (DHA/HRS/HPSD/ST-14, version 4) | Dubai Health Authority, Health Regulation Sector | 2025-09-26 | primary | official text | https://dha.gov.ae/uploads/012023/Standards%20for%20Telehealth%20Services2023158613.pdf |
-| AE-DOH-TM-2020 | Department of Health Abu Dhabi - Standard on Tele-Medicine | Department of Health - Abu Dhabi | 2020-09 | primary | official text | https://www.doh.gov.ae/-/media/Feature/Resources/Standards/Telemedicine-Standard-Final-with-Appendices.ashx |
-| AE-CHARTER-2024 | The UAE Charter for the Development and Use of Artificial Intelligence | UAE Government (published on ai.gov.ae) | 2024-07 | primary | official text | https://ai.gov.ae/wp-content/uploads/2024/07/UAEAI-Methaq-EN2-3.pdf |
-| AE-NSAI-2031 | UAE National Strategy for Artificial Intelligence 2031 | UAE Minister of State for Artificial Intelligence / AI Office | 2018 | primary | official text | https://u.ae/-/media/AI-publications/UAE-National-Strategy-for-Artificial-Intelligence-2031.pdf |
-| AE-CRPD-REPORT | Initial report of the United Arab Emirates to the Committee on the Rights of Persons with Disabilities (CRPD/C/ARE/1) | United Nations, Committee on the Rights of Persons with Disabilities | 2014 | primary | official text | https://digitallibrary.un.org/record/811055/files/CRPD_C_ARE_1-EN.pdf |
 | UN-CRPD-2006 | Convention on the Rights of Persons with Disabilities | United Nations | 2006-12-13 | global_example | official text | https://social.desa.un.org/issues/disability/crpd/convention-on-the-rights-of-persons-with-disabilities-articles |
 | WHO-IHR-2005 | International Health Regulations (2005) | World Health Organization | 2005-05-23 | global_example | official text | https://apps.who.int/gb/bd/pdf_files/IHR_2022-en.pdf |
 | WHO-AI-2021 | Ethics and governance of artificial intelligence for health: WHO guidance | World Health Organization | 2021-06-28 | global_example | official text | https://who.int/publications/i/item/9789240029200 |
@@ -52,3 +41,25 @@ Verification level: *official text* = read on the official publisher's site; *se
 | US-OTC-IBUPROFEN | Ibuprofen 200 mg tablets — FDA OTC Drug Facts label (reproduced by NDC List) | U.S. Food and Drug Administration (labelling) | None | clinical_reference | secondary source | https://ndclist.com/ndc/72927-805/label |
 | US-RX-IBUPROFEN | Ibuprofen tablets USP — prescription label (reproduced by MedLibrary) | U.S. Food and Drug Administration (labelling) | None | clinical_reference | secondary source | https://medlibrary.org/lib/rx/meds/ibuprofen-16/page/6/ |
 | US-OTC-ASPIRIN | Aspirin 325 mg tablets — FDA OTC Drug Facts label (reproduced by NDC List) | U.S. Food and Drug Administration (labelling) | None | clinical_reference | secondary source | https://ndclist.com/ndc/41250-681/label |
+
+## 2. Second country file: United Arab Emirates (15 sources)
+
+Not used by the Cameroonian rules; shows that the knowledge base and the rules file can be swapped (`--pays AE`).
+
+| ID | Title | Authority | Date | Role | Verification | Link |
+|---|---|---|---|---|---|---|
+| AE-CD-2014 | Federal Law No. (14) of 2014 On Control of Communicable Diseases | UAE Federal Government; Ministry of Health and Prevention | 2014-11-20 | primary | official text | https://uaelegislation.gov.ae/en/legislations/1198 |
+| AE-CHARTER-2024 | The UAE Charter for the Development and Use of Artificial Intelligence | UAE Government (published on ai.gov.ae) | 2024-07 | primary | official text | https://ai.gov.ae/wp-content/uploads/2024/07/UAEAI-Methaq-EN2-3.pdf |
+| AE-CRPD-REPORT | Initial report of the United Arab Emirates to the Committee on the Rights of Persons with Disabilities (CRPD/C/ARE/1) | United Nations, Committee on the Rights of Persons with Disabilities | 2014 | primary | official text | https://digitallibrary.un.org/record/811055/files/CRPD_C_ARE_1-EN.pdf |
+| AE-DHA-AI-2021 | Dubai Health Authority - Policy: Artificial Intelligence in the Healthcare (DHA/HISHD/PP-09) | Dubai Health Authority (DHA) | 2021-07-01 | primary | official text | https://www.dha.gov.ae/uploads/082022/Artificial%20Intelligence%20Policy20228457.pdf |
+| AE-DHA-TH-2025 | Dubai Health Authority - Standards for Telehealth Services (DHA/HRS/HPSD/ST-14, version 4) | Dubai Health Authority, Health Regulation Sector | 2025-09-26 | primary | official text | https://dha.gov.ae/uploads/012023/Standards%20for%20Telehealth%20Services2023158613.pdf |
+| AE-DOH-AI-2018 | Department of Health Abu Dhabi - Policy on Use of Artificial Intelligence in the Healthcare Sector (Policy/AI/0.9) | Department of Health - Abu Dhabi (DoH) | 2018-04-30 | primary | official text | https://www.doh.gov.ae/-/media/E9C1470A575146B18015DEBE57E47F8D.ashx |
+| AE-DOH-RAI-2025 | Department of Health Abu Dhabi - Responsible Artificial Intelligence (AI) Standard (DoH/ST/DDGO/RAI/V1/2025) | Department of Health - Abu Dhabi, Data and Digital Governance Office | 2025-10 | primary | official text | https://www.doh.gov.ae/-/media/B84FF5DD027846699C51F36C439A580F.ashx |
+| AE-DOH-TM-2020 | Department of Health Abu Dhabi - Standard on Tele-Medicine | Department of Health - Abu Dhabi | 2020-09 | primary | official text | https://www.doh.gov.ae/-/media/Feature/Resources/Standards/Telemedicine-Standard-Final-with-Appendices.ashx |
+| AE-ICT-2019 | Federal Law No. (2) of 2019 Concerning the Use of Information and Communication Technology in Health Fields | UAE Federal Government | 2019-02-06 | primary | official text | https://uaelegislation.gov.ae/en/legislations/1209 |
+| AE-ML-2016 | Federal Decree-Law No. (4) of 2016 Concerning Medical Liability | UAE Federal Government | 2016-08-02 | primary | official text | https://uaelegislation.gov.ae/en/legislations/1192 |
+| AE-MP-2024 | Federal Decree-Law No. (38) of 2024 Governing Medical Products, Pharmacists and Pharmaceutical Establishments | UAE Federal Government; Emirates Drug Establishment (EDE) | 2024-10-01 | primary | official text | https://uaelegislation.gov.ae/en/legislations/2751 |
+| AE-NSAI-2031 | UAE National Strategy for Artificial Intelligence 2031 | UAE Minister of State for Artificial Intelligence / AI Office | 2018 | primary | official text | https://u.ae/-/media/AI-publications/UAE-National-Strategy-for-Artificial-Intelligence-2031.pdf |
+| AE-PDPL-2021 | Federal Decree-Law No. (45) of 2021 Concerning the Protection of Personal Data | UAE Federal Government | 2021-09-20 | primary | official text | https://uaelegislation.gov.ae/en/legislations/1972 |
+| AE-POD-2006 | Federal Law No. (29) of 2006 Concerning the Rights of People with Special Needs (People of Determination), as amended by Federal Law No. (14) of 2009 | UAE Federal Government | 2006-08-13 | primary | official text | https://elaws.moj.gov.ae/UAE-MOJ_LC-En/00_SOCIAL%20WELFARE/UAE-LC-En_2006-08-13_00029_Kait.html |
+| AE-RES51-2021 | Ministry of Health and Prevention Resolution No. (51) of 2021 on cases where health data may be stored or transferred outside the State | Ministry of Health and Prevention (MOHAP) | 2021-04-28 | primary | secondary source | https://mohap.gov.ae/en/w/ministerial-decree-no.-51-of-the-year-2021-regarding-cases-in-which-health-data-and-information-may-be-stored-or-transferred-outside-the-country |

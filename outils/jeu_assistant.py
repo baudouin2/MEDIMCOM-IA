@@ -1,22 +1,22 @@
-"""Jeu de données de l'assistant (agent 3) : questions complémentaires, signes d'alerte et pistes à évoquer.
+"""Data set of the assistant (agent 3): follow-up questions, warning signs and options to consider.
 
-    python outils/jeu_assistant.py --sortie donnees/jeu_assistant            # 30 variantes par présentation
-    python outils/jeu_assistant.py --sortie /chemin --variantes 100 --graine 7
+    python outils/jeu_assistant.py --sortie donnees/jeu_assistant            # 30 variants per presentation
+    python outils/jeu_assistant.py --sortie /path --variantes 100 --graine 7
 
-À partir de donnees/presentations_cliniques.json (médecine générale, À VALIDER PAR UN MÉDECIN), le script fabrique des
-cas FICTIFS (âge, sexe, pays, ce qui est déjà connu, signes d'alerte présents ou non) et, pour chacun, la réponse
-attendue de l'assistant, calculée par des règles explicites (donc vérifiable et corrigeable) :
-- les questions complémentaires à faire poser par le traducteur (avec leurs pictogrammes), par priorité ;
-- les signes d'alerte déjà présents et l'orientation (urgence ou consultation) ;
-- les pistes à évoquer par le médecin, avec les éléments qui les soutiennent et les examens utiles.
-Ce ne sont jamais des diagnostics : le médecin examine et décide.
+From donnees/presentations_cliniques.json (general practice, TO BE VALIDATED BY A DOCTOR), the script builds
+FICTITIOUS cases (age, sex, country, what is already known, warning signs present or not) and, for each, the
+assistant's expected answer, computed by explicit rules (hence verifiable and correctable):
+- the follow-up questions to have the translator ask (with their pictograms), by priority;
+- the warning signs already present and the orientation (emergency or consultation);
+- the options for the doctor to consider, with the elements that support them and the useful examinations.
+These are never diagnoses: the doctor examines and decides.
 
-Fichiers produits :
-- sft_entrainement.jsonl, sft_validation.jsonl, sft_test.jsonl : conversations {"messages": [system, user, assistant]},
-  au format accepté par la plupart des outils d'ajustement (Ollama Modelfile, Unsloth, Axolotl, TRL, OpenAI) ;
-- cas.jsonl : les mêmes cas en données structurées (entrée, sortie attendue) ;
-- a_valider_par_medecin.csv : chaque question, alerte et piste, avec des colonnes pour la validation ;
-- FICHE_DE_DONNEES.md : provenance, composition, limites et usages autorisés.
+Files produced:
+- sft_entrainement.jsonl, sft_validation.jsonl, sft_test.jsonl: conversations {"messages": [system, user, assistant]},
+  in the format accepted by most fine-tuning tools (Ollama Modelfile, Unsloth, Axolotl, TRL, OpenAI);
+- cas.jsonl: the same cases as structured data (input, expected output);
+- a_valider_par_medecin.csv: each question, warning and option, with columns for validation;
+- FICHE_DE_DONNEES.md: provenance, composition, limits and allowed uses.
 """
 import argparse
 import csv
@@ -101,7 +101,7 @@ def reponse_attendue(p: dict, entree: dict) -> dict:
         a_confirmer = [k for k in cond if k not in etat]
         presents = []
         for k in h.get("arguments", []):
-            if k.startswith("!"):                      # argument négatif : présent quand la réponse est NON
+            if k.startswith("!"):                      # negative argument: present when the answer is NO
                 if etat.get(k[1:]) is False:
                     presents.append(f"{k[1:]} = non")
             elif _vrai(etat.get(k)) or (isinstance(etat.get(k), str) and etat[k] not in ("aucune", "aucun")):

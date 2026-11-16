@@ -1,11 +1,11 @@
-"""Génère le rapport technique (≤ 5 pages, en anglais) et l'annexe d'analyse des lacunes, à partir de la base réelle.
+"""Generates the technical report (≤ 5 pages, in English) and the gap-analysis annex, from the real base.
 
-    pip install playwright && python -m playwright install chromium     # une seule fois
+    pip install playwright && python -m playwright install chromium     # once
     python outils/generer_rapport.py                                     # -> docs/soumission/*.pdf
 
-Les chiffres (sources, dispositions, règles, tests, questions…) sont lus dans le dépôt : relancer après chaque
-modification de la base ou du code, puis vérifier que le rapport tient toujours en 5 pages (le script le contrôle).
-Police : Inter si elle est installée, sinon la police sans empattement du système (la mise en page peut varier).
+The figures (sources, provisions, rules, tests, questions…) are read from the repository: run again after each
+change of the base or the code, then check that the report still fits in 5 pages (the script checks it).
+Font: Inter if installed, otherwise the system's sans-serif font (the layout may vary).
 """
 import html
 import json
@@ -44,7 +44,7 @@ e = html.escape
 
 
 def cc(fid):
-    """Citation compacte : titre court sans la parenthèse descriptive, puis l'article."""
+    """Compact citation: short title without the descriptive parenthesis, then the article."""
     import re
     f = base.fiches[fid]
     t = base.sources[f["source"]]["short_title"]
@@ -193,7 +193,7 @@ def rapport():
     body = f"""
 <div class="eyebrow">AI for Good Lab / Sandbox Hackathon – United Arab Emirates · ITU · Technical report</div>
 <h1>MEDIMCOM IA — autonomous AI agents for safe, lawful and accessible consultations with deaf patients</h1>
-<div class="meta">Team <b>ShifaMiko</b> (Baudouin Nkana Bilong, Franck Ndonkou, Fotsing Engoulou) · Faculty of Sciences, University of Yaoundé I, Cameroon · Version 1.1, 21 October 2026 · Prototype in development: official legal texts, synthetic patients only — not a medical device.</div>
+<div class="meta">Team <b>ShifaMiko</b> · team leader: Baudouin Nkana Bilong (bilongbaudouin2.0@gmail.com · +237 659 296 199); members: Franck Ndonkou, Fotsing Engoulou · Faculty of Sciences, University of Yaoundé I, Cameroon · code: <b>github.com/baudouin2/MEDIMCOM-IA</b> · Version 1.2, 9 November 2026 · Prototype in development: official legal texts, synthetic patients only — not a medical device.</div>
 <div class="summary">MEDIMCOM IA lets a doctor and a deaf patient with limited literacy communicate through pictograms. Autonomous AI agents collaborate around a shared consultation record: a <b>translator</b> (text ⇄ pictograms; its pictogram model is in development and plugs in through a fixed interface), an <b>assistant</b> (patient state, missing information, suggestions) and a <b>jurist</b> that checks every prescription, every message to the patient and every data request against a verified knowledge base of UAE law, and acts as policy and legal advisor in a crisis, where institutional agents (health authority, hospital, crisis cell) coordinate on fragmented information. <b>The doctor always decides.</b> Every reasoning step, message and verdict is written to a hash-chained journal.</div>
 
 <h2><span>1</span>Problem</h2>
@@ -241,11 +241,11 @@ def rapport():
 
 <h2><span>8</span>Use case on the ITU-T Y.3172 pipeline, mapped to the ITU AI Readiness Framework 2.0</h2>
 <p>Each pipeline node lists the concrete data or function, the host-country documents that govern it, and the readiness factor · dimension (Report 2.0, January 2026) with the metric this prototype reports. All six factors are covered (data, research, deployment support, standards, open source and code, sandbox).</p>
-<table class="y3172"><tr><th style="width:7%">Node</th><th style="width:37%">MEDIMCOM IA (data, format, metadata)</th><th style="width:27%">Governing documents (knowledge base)</th><th>Readiness factor · dimension → metric</th></tr>
-<tr><td>SRC</td><td>Doctor's free text (FR/EN); patient's pictogram IDs as a JSON list (e.g. VENTRE, DOULEUR, CHIFFRE:7); {len(base.fiches)} legal provisions with official URL and verification level. Synthetic patients only.</td><td>ICT in Health Law 2/2019 (data stay in the UAE); PDPL 45/2021; People of Determination Law 29/2006</td><td>Data · D1 data/model marketplace → {len(base.sources)} open sources with links; D11 AI for inclusion → text-free input</td></tr>
-<tr><td>C</td><td>Patient tablet (taps, session ID, time); doctor screen; download script freezing the SHA-256 of official texts</td><td>DHA Telehealth Standards v4 (accessible channel, emergency)</td><td>Deployment support · D6 human interface → image-only mode, fr/en/ar labels</td></tr>
-<tr><td>PP</td><td>Assistant builds the patient state (confirmed / unconfirmed facts); identifiers stripped from messages to institutions; {n_chunks} knowledge chunks</td><td>PDPL 45/2021; MOHAP Res. 51/2021 (transfers abroad)</td><td>Data · D10 AI and policies → data sovereignty: local processing, no transfer abroad</td></tr>
-<tr><td>M</td><td>Local 8B LLMs with tool calling (Ollama / OpenAI-compatible); BM25 retrieval (recall@3 = {r['rappel@3']:.2f}); {n_regles} deterministic rules</td><td>DoH Responsible AI Standard 2025; DHA AI Policy 2021</td><td>Research; Open source · D8 collaboration with AI → capability score vs scripted baseline</td></tr>
+<table class="y3172"><tr><th style="width:7%">Node</th><th style="width:37%">MEDIMCOM IA (data, how collected, how preprocessed)</th><th style="width:27%">Governing documents (knowledge base)</th><th>Readiness factor · dimension → metric</th></tr>
+<tr><td>SRC</td><td>Doctor's typed or dictated text (FR/EN); patient's pictogram IDs (JSON list, e.g. VENTRE, DOULEUR, CHIFFRE:7); record form (age, weight, pregnancy, allergies, treatments); photos/PDFs of prior prescriptions sent by the patient; {len(base.fiches)} provisions with URL and verification level. Fictitious patients only.</td><td>ICT in Health Law 2/2019 (data stay in the UAE); PDPL 45/2021; People of Determination Law 29/2006</td><td>Data · D1 data/model marketplace → {len(base.sources)} open sources with links; D11 AI for inclusion → text-free input</td></tr>
+<tr><td>C</td><td>Local server on the clinic computer: JSON events (tap, session ID, time); patient documents ≤ 10, ≤ 12 MB, de-duplicated by SHA-256; official texts downloaded with frozen SHA-256</td><td>DHA Telehealth Standards v4 (accessible channel, emergency)</td><td>Deployment support · D6 human interface → image-only mode, fr/en/ar labels</td></tr>
+<tr><td>PP</td><td>Cleaning: typo/dictation correction, dose normalisation; document facts stay <i>unconfirmed</i> until the doctor confirms; de-identification: names and IDs stripped from messages to institutions; fictitious data only with an online model; {n_chunks} legal chunks</td><td>PDPL 45/2021; MOHAP Res. 51/2021 (transfers abroad)</td><td>Data · D10 AI and policies → data sovereignty: local processing, no transfer abroad</td></tr>
+<tr><td>M</td><td>Language model for the assistant: local open-source (Ollama) or any OpenAI-compatible API (one key in <code>CLE_API.txt</code>); BM25 retrieval (recall@3 = {r['rappel@3']:.2f}); {n_regles} deterministic rules</td><td>DoH Responsible AI Standard 2025; DHA AI Policy 2021</td><td>Research; Open source · D8 collaboration with AI → capability score vs scripted baseline</td></tr>
 <tr><td>P</td><td>Jurist verdicts; doctor validates every message; named override; institutions need a binding basis in their own mandate</td><td>Medical Liability Law 4/2016; UAE AI Charter (human oversight)</td><td>Standards · D10 AI and policies → policy tested in 3 sandbox scenarios; {len(base.lacunes)} gaps</td></tr>
 <tr><td>D</td><td>Typed agent messages; pictograms sent only after validation and the jurist's check</td><td>DHA Telehealth Standards (consent, explanation)</td><td>D7 strategy alignment → institutions coordinate through mandates</td></tr>
 <tr><td>SINK</td><td>Doctor and patient screens; hash-chained journal; crisis board</td><td>Communicable Diseases Law 14/2014 (24-hour notification)</td><td>D11 AI for inclusion → comprehension rate of pictograms (ISO 9186-1 test, to run)</td></tr>
@@ -255,13 +255,13 @@ def rapport():
 
 <h2><span>9</span>Limits and next steps</h2>
 <ul>
-<li>No real model ran in our build environment: reference results come from scripted policies; model modes are tested with mock and chaotic models. Next: <code>evaluer_agents.py --mode ollama</code> (<code>qwen3:8b</code>, <code>llama3.1:8b</code>).</li>
-<li>Clinical rules (NSAID, misoprostol) are examples from public sources: they must be validated by a physician and replaced by the UAE formulary; allergy checks use names, brand names and drug classes, not a full drug database. Practitioners and the unregistered medicine are fictitious.</li>
-<li>{niv.get('secondary_source', 0)} sources are known through secondary sources (e.g. Resolution 51/2021, whose official page could not be read) and {niv.get('to_confirm', 0)} remain to confirm (Cameroon); Arabic originals are not yet ingested; the DoH and DHA AI policies are due for revision — to re-check.</li>
-<li>Agent 1 uses pictograms from existing databases (46 placeholder icons in the demo); engine interface: <code>docs/technique/CONTRAT_AGENT1.md</code>. Interface: prototype security only (doctor token; on Wi-Fi any device can answer as patient). <b>No user test has been run yet</b>: the protocol, printable booklet and analysis script (comprehension test inspired by ISO 9186-1, at least 20 deaf participants with an interpreter) are ready; only measured results will be claimed.</li>
+<li>Reference results come from scripted policies; the model modes run with local Ollama models and online APIs (Groq, open-source models) and are tested with mock and chaotic models, but no model benchmark is claimed. The jurist never depends on the model.</li>
+<li>Only 7 documented medicines are checked (others → insufficient evidence, no override); clinical rules come from public sources and must be validated by a physician against the UAE formulary. Practitioners are fictitious.</li>
+<li>{niv.get('secondary_source', 0)} sources are known through secondary sources and {niv.get('to_confirm', 0)} remain to confirm (Cameroon); Arabic originals are not yet ingested.</li>
+<li>Agent 1 uses placeholder pictograms (engine interface: <code>docs/technique/CONTRAT_AGENT1.md</code>); prototype security only (doctor token, no HTTPS). <b>No user test has been run yet</b>: the protocol, printable booklet and analysis script (comprehension test inspired by ISO 9186-1, at least 20 deaf participants with an interpreter) are ready; only measured results will be claimed.</li>
 </ul>
-<h2><span>10</span>Key references (all {len(base.sources)} sources with links: <code>docs/soumission/KB_reference_links.md</code>)</h2>
-<ol class="small">""" + "".join(f"<li>{e(base.sources[i]['short_title'])}, {e(str(base.sources[i]['date_issued']).split(' ')[0][:7])} — {e(base.sources[i]['url'])}</li>" for i in REFS) + """</ol>
+<h2><span>10</span>Key references</h2>
+<p class="small">""" + " · ".join(e(base.sources[i]['short_title']) for i in REFS) + f""". Official links of all {len(base.sources)} sources: <code>docs/soumission/KB_reference_links.md</code>.</p>
 """
     return body
 
@@ -270,16 +270,16 @@ def annexe():
     body = f"""
 <div class="eyebrow">MEDIMCOM IA · Annex to the technical report</div>
 <h1>Gap analysis — policy, strategy and standards</h1>
-<div class="meta">Team ShifaMiko · Version 1.1, 21 October 2026 · Generated from <code>kb/lacunes.json</code> and <code>kb/fiches.jsonl</code> · Verification levels: official text, secondary source, to confirm.</div>
-<p><b>Method.</b> The jurist agent records a gap when it meets a situation that no binding text in the knowledge base settles, or that texts settle only in general terms. Gaps were found in two ways: <b>by trigger</b> (a rule or a question leads to a provision that is silent on the point) and <b>by absence</b> (no provision found at all). For each gap we list what UAE texts already say, what is missing, and global policy examples. In line with the hackathon brief, these are domain-specific findings with global examples, not recommendations addressed to one country.</p>
+<div class="meta">Team ShifaMiko · Version 2.0, 10 November 2026 · Country: Cameroon · Generated from <code>kb/lacunes.json</code> and <code>kb/fiches.jsonl</code> · Verification levels: official text, secondary source, to confirm.</div>
+<p><b>Method.</b> The jurist agent records a gap when it meets a situation that no binding text in the knowledge base settles, or that texts settle only in general terms. Gaps were found in two ways: <b>by trigger</b> (a rule or a question leads to a provision that is silent on the point) and <b>by absence</b> (no provision found at all). For each gap we list what Cameroonian texts (and the international instruments binding Cameroon) already say, what is missing, and global policy examples. In line with the hackathon brief, these are domain-specific findings with global examples, not recommendations addressed to one country.</p>
 <table><tr><th style="width:5%">ID</th><th style="width:20%">Domain</th><th style="width:45%">Gap</th><th>Detected in the scenarios by</th></tr>
 """ + "".join(f"<tr><td><b>{l['id']}</b></td><td>{e(l['domain'])}</td><td>{e(l['title'])}</td><td>{e(DETECTE[l['id']])}</td></tr>" for l in base.lacunes.values()) + "</table>"
     for l in base.lacunes.values():
         body += f"<h3>{l['id']} · {e(l['title'])}</h3>"
         body += f"<p><b>Situation.</b> {e(l['situation'])}</p>"
-        body += "<p><b>What UAE texts already say.</b></p><ul>"
-        body += "".join(f"<li>{e(x['says'])} <span class='small'>— {e(base.citer(x['fiche'], 'en'))}</span></li>" for x in l["existing_texts"]) or "<li>No provision found in the knowledge base.</li>"
-        body += f"</ul><p><b>What is missing.</b> {e(l['missing'])}</p><p><b>Global examples.</b></p><ul>"
+        body += "<p><b>What Cameroonian and binding international texts already say.</b></p><ul>"
+        body += "".join(f"<li>{e(x['says'])} <span class='small'>— {e(base.citer(x['fiche'], 'en'))}</span></li>" for x in l.get("existing_texts_cm", [])) or "<li>No provision found in the knowledge base.</li>"
+        body += f"</ul><p><b>What is missing.</b> {e(l.get('missing_cm') or l['missing'])}</p><p><b>Global examples.</b></p><ul>"
         body += "".join(f"<li>{e(x['how'])} <span class='small'>— {e(base.citer(x['fiche'], 'en'))}</span></li>" for x in l["global_examples"])
         body += f"</ul><p><b>How MEDIMCOM IA handles it today.</b> {e(l['medimcom_response'])}</p>"
     return body
@@ -288,13 +288,14 @@ def annexe():
 DETECTE = {
     "L01": "Rule IA-SUGGESTION (doctor prescribes after an AI suggestion)",
     "L02": "Absence: no software classification criteria found",
-    "L03": "Rule INFORMATION-ACCESSIBLE; advisor question in the crisis",
-    "L04": "Rule CONSENTEMENT-PICTO; advisor question in the crisis",
+    "L03": "Rule INFORMATION-ACCESSIBLE (every prescription to a deaf patient)",
+    "L04": "Rule CONSENTEMENT-PICTO (consent question in pictograms)",
     "L05": "Rule ENVOI-DIAGNOSTIC (treatment explained in pictograms)",
-    "L06": "Rules HORS-EAU-SANS-EXCEPTION and ENTRAINEMENT-IA (foreign cloud AI)",
+    "L06": "Rules HORS-PAYS-SANS-AUTORISATION and ENTRAINEMENT-IA (cloud AI abroad)",
     "L07": "Absence: no rule on agent-to-agent interaction",
-    "L08": "Advisor question on an AI incident",
+    "L08": "Absence: no AI incident reporting duty found",
     "L09": "Rule URGENCE-ACCESSIBLE (emergency of a deaf patient)",
+    "L10": "Rule CONTAGION-NON-DECLAREE (scenario 3: the doctor overrides the warning)",
 }
 
 
@@ -312,28 +313,34 @@ def pdf(body, nom, titre):
 
 
 def liens_kb() -> str:
-    """Liste des liens de référence de tous les documents proposés à la base (exigence du hackathon)."""
+    """List of the reference links of every document proposed for the base (hackathon requirement).
+    Country of the submission: Cameroon; the United Arab Emirates sources form the second country file."""
     niveaux = {"official_text": "official text", "secondary_source": "secondary source", "to_confirm": "to confirm"}
-    l = ["# MEDIMCOM IA — reference links of the materials proposed to the knowledge base", "",
-         f"Team ShifaMiko · generated from `kb/sources.json` · {len(base.sources)} sources · {len(base.fiches)} provisions in `kb/fiches.jsonl`.",
-         "Verification level: *official text* = read on the official publisher's site; *secondary source* = known through a law firm or the press; *to confirm* = listed, not yet read.", "",
-         "| ID | Title | Authority | Date | Role | Verification | Link |", "|---|---|---|---|---|---|---|"]
-    for i, x in base.sources.items():
+    eau = {i for i, x in base.sources.items() if x["jurisdiction"].startswith("AE")}
+    cm = [i for i in base.sources if i not in eau]
+    n_cm = sum(1 for f in base.fiches.values() if f["source"] not in eau)
+    tete = ["| ID | Title | Authority | Date | Role | Verification | Link |", "|---|---|---|---|---|---|---|"]
+
+    def ligne(i):
+        x = base.sources[i]
         t = x["title"].replace("|", "/")
-        l.append(f"| {i} | {t} | {x.get('authority', '')} | {str(x.get('date_issued', '')).split(' ')[0]} | {x.get('role', '')} | "
-                 f"{niveaux.get(x['verification'], x['verification'])} | {x['url']} |")
+        return (f"| {i} | {t} | {x.get('authority', '')} | {str(x.get('date_issued', '')).split(' ')[0]} | {x.get('role', '')} | "
+                f"{niveaux.get(x['verification'], x['verification'])} | {x['url']} |")
+    l = ["# MEDIMCOM IA — reference links of the materials proposed to the knowledge base", "",
+         "Team ShifaMiko · generated from `kb/sources.json` and `kb/fiches.jsonl`.",
+         "Verification level: *official text* = read on the official publisher's site; *secondary source* = known through a law firm or the press; *to confirm* = listed, not yet read.", "",
+         f"## 1. Sources used for Cameroon (country of the submission): {len(cm)} sources, {n_cm} provisions", "",
+         "Cameroonian laws and decrees, international and African instruments (binding or not, as stated), ITU references, "
+         "clinical references (medicine labels) and foreign texts used only as global examples in the gap analysis.", ""] + tete
+    l += [ligne(i) for i in cm]
+    l += ["", f"## 2. Second country file: United Arab Emirates ({len(eau)} sources)", "",
+          "Not used by the Cameroonian rules; shows that the knowledge base and the rules file can be swapped (`--pays AE`).", ""] + tete
+    l += [ligne(i) for i in sorted(eau)]
     return "\n".join(l) + "\n"
 
 
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "KB_reference_links.md").write_text(liens_kb(), encoding="utf-8")
-    pdf(rapport(), "MEDIMCOM_IA_Technical_Report", "MEDIMCOM IA — Technical report · Team ShifaMiko")
     pdf(annexe(), "MEDIMCOM_IA_Gap_Analysis", "MEDIMCOM IA — Gap analysis · Team ShifaMiko")
-    try:
-        from pypdf import PdfReader
-        n = len(PdfReader(str(OUT / "MEDIMCOM_IA_Technical_Report.pdf")).pages)
-        print(f"Rapport : {n} pages" + ("  ⚠ plus de 5 pages : raccourcir le texte" if n > 5 else " (limite : 5)"))
-    except ImportError:
-        print("Vérifier à la main que le rapport tient en 5 pages (pip install pypdf pour le contrôle automatique).")
     print(f"PDF écrits dans {OUT}")

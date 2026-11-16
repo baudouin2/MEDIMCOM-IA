@@ -1,5 +1,5 @@
-"""Branchement de base_v2 sur les agents : une petite base est constituée par le vrai script (réseau simulé), puis
-utilisée par le traducteur, la recherche des agents, la palette du patient et le script d'évaluation."""
+"""Plugging base_v2 into the agents: a small base is built by the real script (simulated network), then used
+by the translator, the agents' search, the patient palette and the evaluation script."""
 import json
 import os
 import sys
@@ -27,7 +27,7 @@ def constituer(dossier: Path) -> Path:
         cb.etape_juridique(sortie, ReseauSimule(pages_juridiques()), journal, forcer=False)
         fr = [{"_id": i, "keywords": [{"keyword": m}], "tags": [], "downloads": 1} for i, m in enumerate(MOTS_IMAGES, 1)]
         en = [{"_id": i, "keywords": [{"keyword": "x"}], "tags": []} for i in range(1, len(MOTS_IMAGES) + 1)]
-        fr.append({"_id": 900, "keywords": [{"keyword": "otite externe"}], "tags": ["health", "illness"], "downloads": 1})   # sans notion
+        fr.append({"_id": 900, "keywords": [{"keyword": "otite externe"}], "tags": ["health", "illness"], "downloads": 1})   # without a concept
         en.append({"_id": 900, "keywords": [{"keyword": "swimmer's ear"}], "tags": ["health", "illness"]})
         pages = {f"{cb.ARASAAC_API}/pictograms/all/fr": (json.dumps(fr).encode(), "application/json"),
                  f"{cb.ARASAAC_API}/pictograms/all/en": (json.dumps(en).encode(), "application/json")}

@@ -1,12 +1,12 @@
-"""Vérification à l'exécution (« runtime verification ») : un moniteur relit le journal chaîné et contrôle des
-propriétés de sûreté écrites en logique temporelle du passé (« à chaque fois que X arrive, Y est arrivé avant »).
+"""Runtime verification: a monitor rereads the hash-chained journal and checks safety properties written in
+past-time temporal logic ("whenever X happens, Y has happened before").
 
-Le moniteur est indépendant des agents : il ne fait confiance à aucun d'eux et ne lit que le journal, qui est
-infalsifiable. Il sert trois fois : en test (scénarios), en exploration automatique (outils/explorer_etats.py)
-et a posteriori sur n'importe quel journal (python outils/verifier_formel.py --journal sortie/journal.json).
+The monitor is independent of the agents: it trusts none of them and only reads the journal, which is
+tamper-evident. It is used three times: in tests (scenarios), in automatic exploration (medimcom/exploration.py)
+and afterwards on any journal (python outils/verifier_formel.py --journal sortie/journal.json).
 
-Références : Leucker & Schallhart, « A brief account of runtime verification », J. Logic and Algebraic
-Programming 78(5), 2009 ; Havelund & Roşu, logique temporelle du passé pour la surveillance.
+References: Leucker & Schallhart, "A brief account of runtime verification", J. Logic and Algebraic
+Programming 78(5), 2009; Havelund & Roşu, past-time temporal logic for monitoring.
 """
 from .regles import NON_VERDICTS, ORDRE
 
@@ -24,30 +24,30 @@ PROPRIETES = {
 }
 
 
-# Machine à états du cycle de vie d'une décision (spécification). Clé : statut courant ; valeur : statuts permis ensuite.
+# State machine of a decision's life cycle (specification). Key: current status; value: statuses allowed next.
 VERDICTS = {"CONFORME", "PREUVES_INSUFFISANTES", "A_REVOIR", "BLOQUE"}
 TRANSITIONS = {
     None: {"a_verifier", "attente_validation"},
-    "attente_validation": {"a_verifier", "rejete", "annulee", "BLOQUE"},  # validation, rejet, ou blocage du contenu
-                                                                          # par le pré-contrôle du juriste
-    "a_verifier": VERDICTS | {"annulee"},                                 # contrôle du juriste
-    **{v: VERDICTS | {"annulee"} for v in VERDICTS},                      # nouveau contrôle après un changement d'état
-    "A_REVOIR": VERDICTS | {"annulee", "MAINTENUE"},                      # seul « à revoir » peut être maintenu
-    "CONFORME": VERDICTS | {"annulee", "envoye", "MAINTENUE"},            # seul un message conforme part ; un maintien
-                                                                          # encore valable reprend si « à revoir » revient
+    "attente_validation": {"a_verifier", "rejete", "annulee", "BLOQUE"},  # validation, rejection, or content block
+                                                                          # by the jurist's pre-check
+    "a_verifier": VERDICTS | {"annulee"},                                 # jurist's check
+    **{v: VERDICTS | {"annulee"} for v in VERDICTS},                      # new check after a change of state
+    "A_REVOIR": VERDICTS | {"annulee", "MAINTENUE"},                      # only "to review" can be overridden
+    "CONFORME": VERDICTS | {"annulee", "envoye", "MAINTENUE"},            # only a compliant message is sent; an override
+                                                                          # still valid resumes if "to review" comes back
     "MAINTENUE": VERDICTS | {"MAINTENUE", "annulee"},
-    "envoye": {"retire"},                                                 # le médecin peut retirer un message envoyé
-    "retire": set(), "rejete": set(), "annulee": set(),                   # états terminaux
+    "envoye": {"retire"},                                                 # the doctor can remove a sent message
+    "retire": set(), "rejete": set(), "annulee": set(),                   # terminal states
 }
 
 
 def surveiller(journal, regles) -> dict:
-    """Rejoue le journal et renvoie {propriété: [violations]}. regles : MoteurRegles (liste des prescripteurs)."""
+    """Replays the journal and returns {property: [violations]}. regles: MoteurRegles (list of prescribers)."""
     autorise = lambda p: bool((regles.kb["prescripteurs"].get(p) or {}).get("humain") and  # noqa: E731
                               (regles.kb["prescripteurs"].get(p) or {}).get("actif"))
     v = {k: [] for k in PROPRIETES}
     decisions, validations, derniers_verdicts, maintiens = {}, {}, {}, {}
-    couverts = {}          # décision -> motifs « à revoir » couverts par un maintien encore valable (None : aucun)
+    couverts = {}          # decision -> "to review" reasons covered by a still-valid override (None: none)
     statut = {}
 
     def passer(i, nouveau, n, cause):
@@ -85,7 +85,7 @@ def surveiller(journal, regles) -> dict:
                 derniers_verdicts[i] = (n, c["verdict"])
                 motifs = {k["regle"] for k in c.get("constats", []) if k["niveau"] == "A_REVOIR"}
                 if couverts.get(i) is not None and not (c["verdict"] in ("A_REVOIR", "CONFORME") and motifs <= couverts[i]):
-                    couverts[i] = None              # verdict aggravé ou nouveau motif : le maintien ne vaut plus
+                    couverts[i] = None              # verdict worsened or new reason: the override no longer holds
                 if c.get("statut_decision"):
                     passer(i, c["statut_decision"], n, "verdict")
                 if c.get("statut_decision") == "MAINTENUE" and couverts.get(i) is None:

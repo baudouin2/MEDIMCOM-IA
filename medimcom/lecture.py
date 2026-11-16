@@ -1,17 +1,17 @@
-"""Lecture d'un message comme le ferait un soignant : QUI parle de QUOI, et POUR FAIRE QUOI.
+"""Reads a message as a caregiver would: WHO speaks about WHAT, and TO DO WHAT.
 
-Un mot ne suffit pas à juger un message. « Prenez du tramadol » est une consigne ; « Votre frère a pris du tramadol
-hier ? » est une question ; « Le tramadol peut donner des nausées » est une information ; « Il s'est pendu l'an
-dernier » est un récit ; « Allez vous pendre » est une incitation. Ce module lit le contexte (personne, temps,
-question, négation, discours rapporté) et rend une intention ACCOMPAGNÉE DE SES INDICES : le juriste, l'assistant et le
-médecin voient pourquoi un message est lu comme une consigne ou comme un récit. Déterministe, rapide, vérifiable.
+A single word is not enough to judge a message. "Prenez du tramadol" (take tramadol) is an instruction; "Votre
+frère a pris du tramadol hier ?" is a question; "Le tramadol peut donner des nausées" is information; "Il s'est
+pendu l'an dernier" is a narrative; "Allez vous pendre" is an incitement. This module reads the context (person,
+tense, question, negation, reported speech) and returns an intention WITH ITS CLUES: the jurist, the assistant and
+the doctor see why a message is read as an instruction or as a narrative. Deterministic, fast, verifiable.
 
-Il corrige aussi les fautes de frappe et de dictée sur ce qui compte pour la sûreté :
-  - noms de médicaments : « tramadole », « paracetamole », « para c'est tamol » (dictée), « ibuprophène » ;
-  - mots d'atteinte à soi écrits phonétiquement : « pandre », « suisider » ;
-  - mots courants tapés sur un clavier QWERTY par un utilisateur AZERTY (« sentew » -> « sentez »).
-Une correction n'est faite que si elle est sûre (variante phonétique ou faute d'un caractère sur un mot long et
-distinctif) ; elle est toujours affichée (« lu comme »), jamais silencieuse.
+It also corrects typing and dictation errors on what matters for safety:
+  - medicine names: "tramadole", "paracetamole", "para c'est tamol" (dictation), "ibuprophène";
+  - self-harm words written phonetically: "pandre", "suisider";
+  - common words typed on a QWERTY keyboard by an AZERTY user ("sentew" -> "sentez").
+A correction is only made when it is safe (phonetic variant or one-character error on a long, distinctive word);
+it is always shown ("read as"), never silent.
 """
 from __future__ import annotations
 
@@ -28,9 +28,9 @@ def mots(texte: str) -> list[str]:
     return re.findall(r"[a-z0-9]+", normaliser(texte))
 
 
-# ------------------------------------------------------------------ fautes de frappe et de dictée
+# ------------------------------------------------------------------ typing and dictation errors
 def distance(a: str, b: str, maxi: int = 2) -> int:
-    """Distance d'édition avec transposition (« tramdaol »), arrêtée au-delà de `maxi`."""
+    """Edit distance with transposition ("tramdaol"), stopped beyond `maxi`."""
     if abs(len(a) - len(b)) > maxi:
         return maxi + 1
     d = [[0] * (len(b) + 1) for _ in range(len(a) + 1)]
@@ -48,24 +48,24 @@ def distance(a: str, b: str, maxi: int = 2) -> int:
 
 
 def cle_phonetique(mot: str) -> str:
-    """Clé de prononciation française simplifiée : « pandre » = « pendre », « suisider » = « suicider »,
-    « paracetamole » = « paracetamol », « ibuprophene » = « ibuprofene »."""
+    """Simplified French pronunciation key: "pandre" = "pendre", "suisider" = "suicider",
+    "paracetamole" = "paracetamol", "ibuprophene" = "ibuprofene"."""
     m = normaliser(mot).replace(" ", "")
     for a, b in (("ph", "f"), ("qu", "k"), ("ck", "k"), ("ch", "$"), ("sch", "$"), ("eau", "o"), ("au", "o"),
                  ("ain", "in"), ("ein", "in"), ("aim", "in"), ("an", "en"), ("am", "en"), ("em", "en"), ("y", "i"),
                  ("h", ""), ("z", "s"), ("ce", "se"), ("ci", "si"), ("ca", "ka"), ("co", "ko"), ("cu", "ku"),
                  ("c", "k"), ("ai", "e"), ("ei", "e"), ("er", "e"), ("ez", "e"), ("et", "e")):
         m = m.replace(a, b)
-    m = re.sub(r"(.)\1+", r"\1", m)          # lettres doublées
+    m = re.sub(r"(.)\1+", r"\1", m)          # doubled letters
     return re.sub(r"[estxd]+$", "", m) or m   # finales muettes
 
 
-# Clavier QWERTY utilisé par un francophone habitué à l'AZERTY : z<->w, a<->q, m<->;
+# QWERTY keyboard used by a French speaker used to AZERTY: z<->w, a<->q, m<->;
 _CLAVIER = {"w": "z", "z": "w", "q": "a", "a": "q"}
 
 
 def variantes(mot: str) -> list[str]:
-    """Variantes d'un mot pour les fautes les plus fréquentes (clavier, lettre doublée, e final)."""
+    """Variants of a word for the most frequent errors (keyboard, doubled letter, final e)."""
     m = normaliser(mot)
     v = []
     for i, c in enumerate(m):
@@ -76,8 +76,8 @@ def variantes(mot: str) -> list[str]:
     return [x for x in dict.fromkeys(v) if x and x != m]
 
 
-# ------------------------------------------------------------------ médicaments (avec fautes et dictée)
-# Noms commerciaux et formes courantes -> nom des règles
+# ------------------------------------------------------------------ medicines (with typos and dictation)
+# Brand names and common forms -> name used by the rules
 NOMS_COURANTS = {"doliprane": "paracetamol", "efferalgan": "paracetamol", "dafalgan": "paracetamol", "panadol": "paracetamol",
                  "acetaminophene": "paracetamol", "advil": "ibuprofene", "nurofen": "ibuprofene", "brufen": "ibuprofene",
                  "aspegic": "aspirine", "kardegic": "aspirine", "glucophage": "metformine", "clamoxyl": "amoxicilline",
@@ -106,22 +106,22 @@ _VIDES = {"le", "la", "les", "un", "une", "des", "du", "de", "d", "l", "et", "ou
 
 
 def trouver_medicaments(texte: str, medicaments: dict) -> list[dict]:
-    """[{nom, lu, corrige}] : médicaments cités, y compris mal écrits (« tramadole ») ou mal dictés (« para c'est
-    tamol », « trama dol »). Une correction n'est retenue que pour un mot d'au moins 6 lettres, à une faute près (deux
-    pour 9 lettres et plus) ou de même prononciation, et sans ambiguïté entre deux médicaments."""
+    """[{nom, lu, corrige}]: medicines mentioned, including misspelt ("tramadole") or mis-dictated ("para c'est
+    tamol", "trama dol"). A correction is kept only for a word of at least 6 letters, one error away (two for 9
+    letters and more) or with the same pronunciation, and without ambiguity between two medicines."""
     formes = _formes(medicaments)
     cles = {}
     for f, nom in formes.items():
         cles.setdefault(cle_phonetique(f), set()).add(nom)
     jetons = mots(texte)
     trouves, pris = [], set()
-    for taille in (1, 4, 3, 2):                   # mots seuls d'abord ; puis noms coupés par la dictée (« trama dol »)
+    for taille in (1, 4, 3, 2):                   # single words first; then names split by dictation ("trama dol")
         for i in range(len(jetons) - taille + 1):
             if any(k in pris for k in range(i, i + taille)):
                 continue
             fenetre = jetons[i:i + taille]
             if taille > 1 and (fenetre[0] in _VIDES or fenetre[-1] in _VIDES or any(w in formes for w in fenetre)):
-                continue                          # « du tramadol » n'est pas une faute de « tramadol »
+                continue                          # "du tramadol" is not a typo of "tramadol"
             brut = "".join(jetons[i:i + taille])
             lu = " ".join(jetons[i:i + taille])
             if len(brut) < 5 or (taille > 1 and len(brut) < 7):
@@ -137,7 +137,7 @@ def trouver_medicaments(texte: str, medicaments: dict) -> list[dict]:
                 if len(candidats) == 1:
                     nom, corrige = next(iter(candidats)), True
             if nom and taille > 1:
-                corrige = True                    # nom coupé par la dictée et recollé
+                corrige = True                    # name split by dictation and glued back
             if nom and (taille == 1 or corrige):
                 trouves.append({"nom": nom, "lu": lu, "corrige": corrige or lu.replace(" ", "") != nom})
                 pris.update(range(i, i + taille))
@@ -152,11 +152,11 @@ def trouver_medicaments(texte: str, medicaments: dict) -> list[dict]:
     return sortie
 
 
-# ------------------------------------------------------------------ mots d'atteinte à soi ou à autrui
+# ------------------------------------------------------------------ words of harm to self or others
 MOTS_DE_MORT = {"pendre", "pendez", "pends", "pendu", "pendue", "pendaison", "suicide", "suicider", "suicidez", "suicidaire",
                 "tuer", "tue", "tuez", "tuee", "mourir", "meurs", "mourez", "mort", "morte", "crever", "creve", "crevez",
                 "egorger", "poignarder", "empoisonner", "etrangler", "noyer", "noyez", "defenestrer"}
-# Correction phonétique seulement vers des mots longs et sans homophone courant (« noyer » ~ « noix » : exclu)
+# Phonetic correction only towards long words without a common homophone ("noyer" ~ "noix": excluded)
 _CORRIGIBLES = ["pendre", "suicider", "suicide", "mourir", "crever", "egorger", "poignarder", "empoisonner", "etrangler",
                 "defenestrer", "pendue", "pendaison", "suicidaire", "pendez", "suicidez"]       # infinitifs d'abord
 _CLES_MORT: dict = {}
@@ -165,8 +165,8 @@ for _m in _CORRIGIBLES:
 
 
 def corriger_mots_de_mort(texte: str) -> tuple[str, dict]:
-    """« pandre » -> « pendre », « suisider » -> « suicider » : seulement à PRONONCIATION ÉGALE (jamais « prendre »,
-    « rendre » ou « vendre », qui ne se prononcent pas pareil)."""
+    """"pandre" -> "pendre", "suisider" -> "suicider": only with the SAME PRONUNCIATION (never "prendre",
+    "rendre" or "vendre", which are not pronounced the same)."""
     corrections = {}
 
     def remplacer(m):
@@ -182,9 +182,9 @@ def corriger_mots_de_mort(texte: str) -> tuple[str, dict]:
     return re.sub(r"[A-Za-zÀ-ÿ]+", remplacer, texte), corrections
 
 
-# ------------------------------------------------------------------ lecture du contexte
-# Inversion interrogative (« avez-vous », « prenez-vous ») : seulement avec ces verbes, sinon c'est un impératif
-# pronominal (« lavez-vous les mains », « pendez-vous »)
+# ------------------------------------------------------------------ context reading
+# Interrogative inversion ("avez-vous", "prenez-vous"): only with these verbs, otherwise it is a reflexive
+# imperative ("lavez-vous les mains", "pendez-vous")
 _VERBES_QUESTION = (r"avez|as|a|etes|es|est|sont|ont|pouvez|peux|voulez|veux|prenez|prends|buvez|bois|sentez|sens|faites|fais|"
                     r"dormez|mangez|savez|sais|connaissez|souffrez|toussez|vomissez|saignez|allez|vas|va|habitez|fumez|"
                     r"travaillez|comprenez|entendez|voyez|vivez|utilisez|aviez|etiez|prenait|prenez")
@@ -202,13 +202,13 @@ CONSIGNE = re.compile(
     r"\b(?:je|on|nous)\s+(?:vais\s+|va\s+|allons\s+)?(?:vous\s+|te\s+|t')?(?:prescri\w*|donne\w*|conseill\w*|recommand\w*|"
     r"mets|mettre|ajoute\w*)\b|"
     r"\ba prendre\b|\b\d+\s*(?:fois|x)\s*(?:par|/)\s*(?:jour|j)\b")
-# Incitation FORTE : impératif adressé au patient (« allez vous pendre », « pendez-vous », « tu devrais mourir »)
+# STRONG incitement: imperative addressed to the patient ("allez vous pendre", "pendez-vous", "tu devrais mourir")
 INCITATION = re.compile(r"\b(?:va|vas|allez|aller)\s+(?:te|vous|t')\s*(?:pendre|tuer|suicider|jeter|noyer|empoisonner)\b|"
                         r"\b(?:pends|pendez|tue|tuez|suicide|suicidez|noie|noyez|jette|jetez)[- ](?:toi|vous)\b|"
                         r"\b(?:tu|vous)\s+(?:devrais|devriez|dois|devez|ferais mieux de|feriez mieux de)\s+"
                         r"(?:mourir|te tuer|vous tuer|te pendre|vous pendre|disparaitre|en finir)\b|"
                         r"\b(?:va|allez)\s+mourir\b|\b(?:kill|hang)\s+yourself\b")
-# Incitation FAIBLE : « (et) vous pendre » — infinitif adressé au patient, sans question ni récit
+# WEAK incitement: "(et) vous pendre" — infinitive addressed to the patient, without question or narrative
 ATTEINTE = re.compile(r"\b(?:vous|te|t')\s*(?:pendre|tuer|suicider|noyer|empoisonner|etrangler|jeter par)\b")
 MENACE = re.compile(r"\bje\s+(?:vais\s+)?(?:te|vous)\s+(?:tuer|frapper|buter|etrangler)\b")
 DEPISTAGE = re.compile(r"\b(?:idees?|envie|pense[sz]?|pensez|penser|songe[sz]?|songez|voulu|voulez|veux|essaye|tente|"
@@ -216,7 +216,7 @@ DEPISTAGE = re.compile(r"\b(?:idees?|envie|pense[sz]?|pensez|penser|songe[sz]?|s
 PASSE = re.compile(r"\b(?:ai|as|a|avons|avez|ont|avait|avais|avaient|aviez|avions|etait|etais|etaient|est|es|sont|"
                    r"s'est|se sont|m'a|t'a|l'a|lui a|leur a)\s+(?:deja\s+|voulu\s+|essaye\s+de\s+|tente\s+de\s+)?"
                    r"(?:pris|bu|mis|avale|voulu|essaye|tente|dit|fait|eu|ete|mort|morte|pendu|pendue|suicide|suicidee|tue|tuee|"
-                   r"(?!\w*(?:er|re|ir)\b)\w+(?:e|i|u|is|it)s?)\b|"      # participe, pas un infinitif (« à vendre », « à manger »)
+                   r"(?!\w*(?:er|re|ir)\b)\w+(?:e|i|u|is|it)s?)\b|"      # participle, not an infinitive ("à vendre", "à manger")
                    r"\b(?:hier|avant-hier|la semaine derniere|le mois dernier|l'an dernier|l'annee derniere|il y a|autrefois|"
                    r"jadis|quand j'etais|quand il etait|quand elle etait|en \d{4})\b|\b\w{3,}(?:ait|aient)\b")
 TIERS = re.compile(r"\b(?:il|elle|ils|elles)\b|\b(?:mon|ma|mes|ton|ta|tes|son|sa|ses|votre|vos|leur|leurs|notre|nos|un|une|le|la)\s+"
@@ -235,7 +235,7 @@ LIBELLES = {"question": "question", "negation": "négation ou mise en garde", "c
 
 
 def lire_contexte(texte: str) -> dict:
-    """Indices de contexte d'un message (personne, temps, question, négation…) et intention qui en découle :
+    """Context clues of a message (person, tense, question, negation…) and the resulting intention:
     consigne | incitation | menace | question | mise_en_garde | recit | information | ambigu."""
     t = " " + normaliser(texte) + " "
     vus = {nom: bool(rx.search(t)) for nom, rx in (("question", QUESTION), ("negation", NEGATION), ("consigne", CONSIGNE),
@@ -243,13 +243,13 @@ def lire_contexte(texte: str) -> dict:
                                                     ("tiers", TIERS), ("rapporte", RAPPORTE), ("generique", GENERIQUE),
                                                     ("depistage", DEPISTAGE))}
     recit = vus["rapporte"] or (vus["passe"] and (vus["tiers"] or not vus["consigne"]))
-    cite = vus["rapporte"] and vus["tiers"]           # « il m'a dit d'aller me pendre » : on CITE une incitation
+    cite = vus["rapporte"] and vus["tiers"]           # "il m'a dit d'aller me pendre": an incitement is QUOTED
     if vus["menace"]:
         intention = "menace"
     elif vus["incitation"] and not cite:
-        intention = "incitation"       # un impératif reste une incitation, même suivi d'un point d'interrogation
+        intention = "incitation"       # an imperative stays an incitement, even followed by a question mark
     elif vus["incitation"]:
-        intention = "ambigu"           # citation d'une incitation : le médecin confirme ce qu'il veut dire
+        intention = "ambigu"           # quoted incitement: the doctor confirms what they mean
     elif vus["question"]:
         intention = "question"
     elif vus["atteinte"] and not recit and not vus["negation"]:
@@ -280,8 +280,8 @@ MORT_SOI = re.compile(r"\b(?:mourir|mort|morte|suicide|suicider|suicidee|pendre|
 
 
 def risque_suicidaire(texte: str) -> dict | None:
-    """Le PATIENT exprime-t-il une idée de mort pour lui-même (« moi vouloir mourir », « je veux me pendre ») ?
-    Un récit sur un tiers (« mon frère s'est pendu ») n'en est pas une, mais reste signalé comme information."""
+    """Does the PATIENT express a thought of death for themself ("moi vouloir mourir", "je veux me pendre")?
+    A story about someone else ("mon frère s'est pendu") is not one, but is still reported as information."""
     t = " " + normaliser(texte) + " "
     if not MORT_SOI.search(t):
         return None

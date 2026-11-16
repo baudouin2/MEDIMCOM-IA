@@ -1,0 +1,16 @@
+# Déploiement Render (offre gratuite) : Dashboard Render > New > Blueprint > ce dépôt.
+# Version LÉGÈRE : 512 Mo de mémoire, sans la base base_v2 (hors dépôt) ni recherche par le sens ;
+# le service s'endort après 15 min sans visite (réveil ~1 min) et la consultation repart à zéro à chaque redémarrage.
+services:
+  - type: web
+    name: medimcom-ia
+    runtime: docker
+    plan: free
+    healthCheckPath: /patient
+    envVars:
+      - key: XAI_API_KEY          # à saisir dans le tableau de bord Render (jamais dans le dépôt)
+        sync: false
+      - key: MEDIMCOM_JETON       # lien médecin fixe, généré par Render ; visible dans Environment
+        generateValue: true
+      - key: MEDIMCOM_ARGS
+        value: "--fournisseur xai --effort low --donnees-fictives --agents-ia assistant"

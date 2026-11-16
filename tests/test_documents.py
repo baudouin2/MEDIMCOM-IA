@@ -1,5 +1,5 @@
-"""Documents du patient : texte lu directement ; photo lue par le modèle en ligne (faux serveur compatible OpenAI) ;
-sans modèle, la photo est jointe et le médecin est prévenu. Les faits extraits sont NON confirmés et vérifiés."""
+"""Patient documents: text read directly; photo read by the online model (fake OpenAI-compatible server);
+without a model, the photo is attached and the doctor is warned. Extracted facts are UNconfirmed and checked."""
 import base64
 import json
 import sys
@@ -87,3 +87,16 @@ def test_rapport_de_responsabilites():
     assert par_id[d["id"]]["decideur"] == "DR-001" and par_id[d["id"]]["fin"] == "envoyé au patient"
     assert any(c["responsabilite"].startswith("bloqué par le juriste") for c in r["chaines"])
     assert r["bilan"]["decisions_humaines"] >= 1
+
+
+def test_medicament_sur_une_ligne_d_allergie_est_une_allergie():
+    """« Known allergy: aspirin » on an earlier prescription: aspirin is an allergy, not a current treatment."""
+    from medimcom import documents
+    meds = json.loads((RACINE / "kb" / "regles_uae.json").read_text(encoding="utf-8"))["medicaments"]
+    texte = "Patient A, 40 years.\nKnown allergy: aspirin (rash)\nChronic condition: type 2 diabetes\nMetformin 500 mg twice a day"
+    doc, octets = documents.nouveau("o.txt", "ordonnance", "text/plain", base64.b64encode(texte.encode()).decode(), 1)
+    ex = documents.lire(doc, octets, None, meds)
+    assert [m["nom"] for m in ex["medicaments"]] == ["metformine"]
+    assert ex["allergies"] == ["aspirine"]
+    doc["extraction"] = ex
+    assert documents.faits_du_document(doc)["allergies"] == "aspirine"

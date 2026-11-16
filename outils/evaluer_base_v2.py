@@ -1,15 +1,15 @@
-"""Mesure ce que la base_v2 apporte aux agents, sur la partie « test » des jeux de 05_jeux_entrainement (jamais vue
-pour régler le système). Aucune IA, aucun réseau : chiffres reproductibles, à citer dans le rapport.
+"""Measures what base_v2 brings to the agents, on the "test" part of the 05_jeux_entrainement sets (never
+seen to tune the system). No AI, no network: reproducible figures, to quote in the report.
 
-    python outils/evaluer_base_v2.py                       # base trouvée automatiquement (base_v2/ ou ~/MEDIMCOM_base_v2)
+    python outils/evaluer_base_v2.py                       # base found automatically (base_v2/ or ~/MEDIMCOM_base_v2)
     python outils/evaluer_base_v2.py --base D:/MEDIMCOM_base_v2
-    python outils/evaluer_base_v2.py --recherche fastembed:e5   # + comparaison mots-clés / sens / hybride
+    python outils/evaluer_base_v2.py --recherche fastembed:e5   # + keyword / meaning / hybrid comparison
 
-1. Traduction texte -> pictogrammes (agent 1) : phrases_pictogrammes.jsonl ; précision, rappel, F1 sur les notions,
-   rappel « atteignable » (notions dont une image existe), négations conservées.
-2. Recherche dans les textes officiels (juriste) : juridique_recherche.jsonl ; le bon article est-il dans les k premiers ?
-3. Recherche dans les fiches de l'OMS (assistant) : references_qr.jsonl ; la bonne section est-elle dans les k premiers ?
-Résultats : <base>/06_evaluation/resultats.json et RESULTATS.md
+1. Text -> pictogram translation (agent 1): phrases_pictogrammes.jsonl; precision, recall, F1 on concepts,
+   "reachable" recall (concepts for which an image exists), negations kept.
+2. Search in the official texts (jurist): juridique_recherche.jsonl; is the right article in the first k?
+3. Search in the WHO fact sheets (assistant): references_qr.jsonl; is the right section in the first k?
+Results: <base>/06_evaluation/resultats.json and RESULTATS.md
 """
 import argparse
 import json
@@ -25,8 +25,8 @@ EQUIVALENTS = {"AVOIR_MAL": "DOULEUR"}
 
 
 def lire(f: Path, split: str | None = "test") -> list[dict]:
-    """split=None : tous les exemples. La recherche n'est jamais entraînée sur ces jeux (BM25 sans apprentissage) :
-    l'évaluer sur toutes les paires est donc légitime et donne un chiffre plus stable quand le jeu est petit."""
+    """split=None: every example. Search is never trained on these sets (BM25 without learning): evaluating it
+    on every pair is therefore legitimate and gives a steadier figure when the set is small."""
     if not f.exists():
         return []
     lignes = [json.loads(l) for l in f.read_text(encoding="utf-8").splitlines() if l.strip()]

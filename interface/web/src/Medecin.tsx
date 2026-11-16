@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { tr as traduireUi, choisirLangue } from "./i18n";
 import type { ReactNode } from "react";
 import {
   AlertTriangle, BookOpen, Bot, Building2, Check, ChevronDown, ClipboardList, FileText, Gavel, Hand, Info,
@@ -14,61 +15,11 @@ import { Bouton, Case, Champ, champ, ContexteLangue, cx, Dialogue, Panneau, Past
 import { Marque } from "./Marque";
 
 
-// Langue d'expression du médecin : interface, légendes, juriste et agents (voir /api/medecin/langue)
+// Doctor's language: interface, captions, jurist and agents (see /api/medecin/langue)
 let LANGUE_UI: "fr" | "en" | "ar" = "fr";
-const TRAD: Record<string, [string, string]> = {
-  'Écran patient': ['Patient screen', 'شاشة المريض'],
-  'Journal': ['Log', 'السجل'],
-  'Crédits': ['Credits', 'الاعتمادات'],
-  'Nouvelle consultation': ['New consultation', 'استشارة جديدة'],
-  'Données fictives': ['Fictitious data', 'بيانات وهمية'],
-  'Conversation': ['Conversation', 'المحادثة'],
-  'Vos messages sont traduits en pictogrammes. Rien ne part sans votre validation.': ['Your messages are translated into pictograms. Nothing is sent without your approval.', 'تُترجم رسائلك إلى رموز مصورة. لا يُرسل شيء دون موافقتك.'],
-  "Informer le patient de l'IA": ['Tell the patient about the AI', 'إبلاغ المريض بالذكاء الاصطناعي'],
-  'Traduction en pictogrammes': ['Pictogram translation', 'الترجمة إلى رموز'],
-  'Annuler': ['Cancel', 'إلغاء'],
-  'Reformuler': ['Rephrase', 'إعادة الصياغة'],
-  'Modifier les pictogrammes': ['Edit pictograms', 'تعديل الرموز'],
-  'Valider et envoyer': ['Approve and send', 'اعتماد وإرسال'],
-  "Retirer de l'écran du patient": ['Remove from patient screen', 'إزالة من شاشة المريض'],
-  'Masquer': ['Hide', 'إخفاء'],
-  "C'est une question": ['It is a question', 'إنه سؤال'],
-  'Faire traduire': ['Translate', 'ترجمة'],
-  'Agents': ['Agents', 'الوكلاء'],
-  'Assistant': ['Assistant', 'المساعد'],
-  'Ordonnance': ['Prescription', 'الوصفة'],
-  'Droit': ['Law', 'القانون'],
-  'Crise': ['Crisis', 'أزمة'],
-  'Suggestions': ['Suggestions', 'اقتراحات'],
-  'Questions à poser': ['Questions to ask', 'أسئلة للطرح'],
-  'Ignorer': ['Dismiss', 'تجاهل'],
-  'Médicament': ['Medicine', 'الدواء'],
-  'Dose': ['Dose', 'الجرعة'],
-  "Mode d'emploi": ['Directions', 'طريقة الاستعمال'],
-  'Consultation': ['Consultation', 'الاستشارة'],
-  'Remplace': ['Replaces', 'يستبدل'],
-  'Prescrire': ['Prescribe', 'وصف'],
-  'Décisions': ['Decisions', 'القرارات'],
-  'Patient': ['Patient', 'المريض'],
-  'Informations cliniques': ['Clinical information', 'معلومات سريرية'],
-  'Fiche patient': ['Patient record', 'ملف المريض'],
-  'Enregistrer la fiche': ['Save record', 'حفظ الملف'],
-  'Demander au juriste': ['Ask the legal agent', 'اسأل الوكيل القانوني'],
-  'Envoyer la question': ['Send question', 'إرسال السؤال'],
-  'Votre message': ['Your message', 'رسالتك'],
-  'Pris en charge': ['Taken care of', 'تمت المعالجة'],
-  "Message d'accueil (IA, droit de refuser)": ['Welcome message (AI, right to refuse)', 'رسالة ترحيب (الذكاء الاصطناعي، حق الرفض)'],
-  'Demander au patient': ['Ask the patient', 'اسأل المريض'],
-  'Ordonnance du patient (PDF)': ['Patient prescription (PDF)', 'وصفة المريض (PDF)'],
-  'Texte cité par le juriste': ['Text cited by the legal agent', 'النص الذي استشهد به الوكيل القانوني'],
-  'Ouvrir la source officielle': ['Open the official source', 'فتح المصدر الرسمي'],
-  'Extrait exact': ['Exact quote', 'الاقتباس الحرفي'],
-  'Résumé': ['Summary', 'ملخص'],
-  'Langue': ['Language', 'اللغة'],
-};
-const tr = (fr: string) => (LANGUE_UI === "fr" ? fr : (TRAD[fr]?.[LANGUE_UI === "en" ? 0 : 1] ?? fr));
+const tr = (fr: string) => traduireUi(fr, LANGUE_UI);
 
-// ------------------------------------------------------------------ vocabulaire affiché
+// ------------------------------------------------------------------ displayed vocabulary
 const FAITS: Record<string, string> = {
   sexe: "Sexe", age: "Âge", symptome: "Motif", douleur: "Douleur", localisation_douleur: "Siège de la douleur",
   intensite_douleur: "Intensité de la douleur", nausees: "Nausées", fievre: "Fièvre", grossesse: "Grossesse",
@@ -77,10 +28,11 @@ const FAITS: Record<string, string> = {
   antecedents: "Antécédents (texte libre)", maladies_connues: "Maladies repérées", autres_informations: "Autres informations",
   poids: "Poids", maladie_renale: "Maladie rénale", maladie_hepatique: "Maladie du foie", ulcere_digestif: "Ulcère digestif",
   anticoagulant: "Sous anticoagulant", maladie_cardiaque: "Maladie cardiaque", allaitement: "Allaitement",
-  medicaments_declares: "Médicaments déclarés par le patient", duree_symptomes: "Depuis",
+  medicaments_declares: "Médicaments déclarés par le patient", duree_symptomes: "Depuis", toux: "Toux", mode_consultation: "Mode de consultation",
+  maladie_declarable_groupe: "Maladie contagieuse suspectée", declaration_faite: "Déclaration faite aux autorités sanitaires",
 };
 const ORDRE_FAITS = Object.keys(FAITS);
-// Informations manquantes avant une prescription : réponse directe du médecin, ou question au patient (traduite, validée)
+// Missing information before a prescription: direct answer of the doctor, or question to the patient (translated, validated)
 const REMPLIR: Record<string, { valeurs: [string, unknown][]; question?: string }> = {
   allergies: { valeurs: [["Aucune", "aucune"]], question: "Êtes-vous allergique à un médicament ?" },
   traitements_en_cours: { valeurs: [["Aucun", "aucun"]], question: "Prenez-vous des médicaments en ce moment ?" },
@@ -112,10 +64,12 @@ function valeur(cle: string, v: unknown): string {
   if (Array.isArray(v)) return v.join(", ");
   if (cle === "intensite_douleur") return `${v} sur 10`;
   if (cle === "moyen_communication" && v === "pictogrammes") return "Pictogrammes";
+  if (cle === "mode_consultation" || cle === "mode") return v === "distance" ? "Téléconsultation" : v === "presentiel" ? "Présentiel" : String(v);
+  if (cle === "maladie_declarable_groupe") return v === "A" ? "Oui, à potentiel épidémique" : "Oui";
   const t = String(v ?? "");
   return t.charAt(0).toUpperCase() + t.slice(1);
 }
-/** Message d'agent → en-tête (« #10 BLOQUÉ … »), texte, références entre crochets et piste proposée. */
+/** Agent message → header ("#10 BLOCKED …"), text, references in brackets and suggested next step. */
 function analyserMessage(t: string) {
   const refs = [...t.matchAll(/\[([^\]]+)\]/g)].map((m) => m[1]);
   let texte = t.replace(/\s*\[[^\]]+\]/g, "").trim();
@@ -129,7 +83,7 @@ function analyserMessage(t: string) {
 }
 const nomMedicament = (m?: string | null) => (m ? m.charAt(0).toUpperCase() + m.slice(1).replace(/_/g, " ") : "");
 
-// ================================================================== écran
+// ================================================================== screen
 export default function EcranMedecin() {
   const jeton = useMemo(jetonMedecin, []);
   const notifier = useNotifier();
@@ -140,19 +94,19 @@ export default function EcranMedecin() {
   const [edition, setEdition] = useState<null | { id: number; pictos: string[] }>(null);
   const [brouillon, setBrouillon] = useState<null | { texte: string; n: number }>(null);
 
-  const poster = useCallback(async (url: string, corps: object = {}) => {
-    setOccupe(true);
+  const poster = useCallback(async (url: string, corps: object = {}, silencieux = false) => {
+    if (!silencieux) setOccupe(true);
     try {
       const j = await envoyer<{ retour?: string; description?: string }>(url, corps, jeton);
       const msg = j.retour?.replace(/^[✔✖⚑]\s*/, "") || (j.description ? `Étape : ${j.description}` : "");
-      if (msg) notifier(msg, /^✖/.test(j.retour ?? ""));
+      if (msg && !silencieux) notifier(msg, /^✖/.test(j.retour ?? ""));
       await rafraichir();
       return j;
     } catch (e) {
       notifier(e instanceof ErreurApi ? e.message : "Le serveur ne répond pas. Vérifiez qu'il tourne toujours.", true);
       return null;
     } finally {
-      setOccupe(false);
+      if (!silencieux) setOccupe(false);
     }
   }, [jeton, notifier, rafraichir]);
 
@@ -160,6 +114,7 @@ export default function EcranMedecin() {
   if (erreur instanceof ErreurApi && erreur.statut === 403) return <AccesRefuse />;
   if (!vue) return <Chargement erreur={!!erreur} />;
   LANGUE_UI = (vue.langue as "fr" | "en" | "ar") || "fr";
+  queueMicrotask(() => choisirLangue(LANGUE_UI));      // the whole page in the doctor's language
 
   const urgence = vue.etat.urgence?.valeur === true;
   return (
@@ -219,7 +174,7 @@ export default function EcranMedecin() {
   );
 }
 
-// ------------------------------------------------------------------ documents du patient
+// ------------------------------------------------------------------ patient documents
 const TYPES_DOC: [string, string][] = [["ordonnance", "Ordonnance (même manuscrite)"], ["facture", "Facture de pharmacie"],
   ["traitement", "Boîte ou notice de médicament"], ["radio", "Radiographie, imagerie"], ["analyse", "Résultat d'analyse"],
   ["compte_rendu", "Compte rendu médical"], ["autre", "Autre"]];
@@ -270,7 +225,9 @@ function DocumentsPatient({ vue, occupe, poster }: { vue: VueMedecin; occupe: bo
               <Pastille ton={d.extraction.statut === "lu" ? "ok" : d.extraction.statut === "en_cours" ? "action" : "warn"}>
                 {d.extraction.statut === "lu" ? "Lu" : d.extraction.statut === "en_cours" ? "Lecture…" : "Non lu"}</Pastille>
             </div>
-            <p className="mt-1 text-ink-muted">{TYPES_DOC.find(([k]) => k === d.type)?.[1]}{d.extraction.par ? ` · lu par ${d.extraction.par}` : ""}</p>
+            <p className="mt-1 text-ink-muted">
+              {d.auteur === "patient" && <span className="mr-1 rounded bg-action-50 px-1 font-medium text-action">envoyé par le patient</span>}
+              {TYPES_DOC.find(([k]) => k === d.type)?.[1]}{d.extraction.par ? ` · lu par ${d.extraction.par}` : ""}</p>
             {d.extraction.resume && <p className="mt-1 text-ink-soft">{d.extraction.resume}</p>}
             {d.extraction.medicaments.length > 0 && <p className="mt-1 text-ink"><b>Médicaments :</b> {d.extraction.medicaments.map((m) => `${nomMedicament(m.nom)} ${m.dose} ${m.posologie}`.trim()).join(" ; ")}</p>}
             {d.extraction.maladies.length > 0 && <p className="mt-0.5 text-ink"><b>Maladies :</b> {d.extraction.maladies.join(", ")}</p>}
@@ -287,10 +244,10 @@ function DocumentsPatient({ vue, occupe, poster }: { vue: VueMedecin; occupe: bo
   );
 }
 
-// ------------------------------------------------------------------ textes de loi cités par le juriste
+// ------------------------------------------------------------------ law texts cited by the jurist
 const ContexteLoi = createContext<(q: string) => void>(() => {});
 
-/** Références (« A ; B ») cliquables : le médecin lit le texte cité. */
+/** Clickable references ("A ; B"): the doctor reads the cited text. */
 function Refs({ texte, className }: { texte: string; className?: string }) {
   const ouvrir = useContext(ContexteLoi);
   const parts = [...new Set((texte || "").split(" ; ").map((x) => x.trim()).filter(Boolean))];
@@ -336,9 +293,9 @@ function TexteLoi({ q, jeton, onFermer }: { q: string; jeton: string; onFermer: 
   );
 }
 
-type Poster = (url: string, corps?: object) => Promise<unknown>;
+type Poster = (url: string, corps?: object, silencieux?: boolean) => Promise<unknown>;
 
-// ------------------------------------------------------------------ barre haute
+// ------------------------------------------------------------------ top bar
 function BarreHaute({ vue, jeton, medecin, setMedecin, onReinit, onLangue }:
   { vue: VueMedecin; jeton: string; medecin: string; setMedecin: (m: string) => void; onReinit: () => void; onLangue: (l: string) => void }) {
   const intact = vue.journal === "Journal intact";
@@ -359,16 +316,18 @@ function BarreHaute({ vue, jeton, medecin, setMedecin, onReinit, onLangue }:
               {intact ? `Journal intact, ${vue.lignes} entrées` : vue.journal}
             </span>
           </Pastille>
-          {vue.modele && !vue.modele.disponible ? (
+          {vue.modele && !vue.modele.disponible ? (<>
             <Pastille ton="warn" icone={<WifiOff size={13} />}>
               <span id="modeleIndisponible" title={`${vue.modele.modele} : ${vue.modele.message}. L'assistant continue en mode règles (veille clinique) et réessaie le modèle toutes les 90 s.`}>
                 {vue.modele.modele} indisponible : assistant en mode règles
               </span>
             </Pastille>
-          ) : (
+            {/* the cause must be readable without hovering: it says what to do (key, quota, Internet, certificates…) */}
+            <span id="causeModele" className="max-w-xl text-xs text-warn">Cause : {vue.modele.message}</span>
+          </>) : (
             <Pastille ton="brand" icone={<Bot size={13} />}>
               <span id="modeAgents" title="Les agents (traducteur, juriste, assistant…) sont ceux de MEDIMCOM IA, avec leurs règles et leurs garde-fous. Le modèle de langage en ligne n'est qu'un outil de l'assistant : il ne décide rien seul.">
-                {vue.modele ? `Agents MEDIMCOM · modèle ${vue.modele.modele} (xAI)` : "Agents MEDIMCOM · règles écrites, sans modèle en ligne"}
+                {vue.modele ? `Agents MEDIMCOM · modèle ${vue.modele.modele} (${vue.modele.fournisseur || "xAI"})` : "Agents MEDIMCOM · règles écrites, sans modèle en ligne"}
               </span>
             </Pastille>
           )}
@@ -426,7 +385,7 @@ function BarreDemo({ vue, occupe, onSuivant }: { vue: VueMedecin; occupe: boolea
         <div className="hidden w-32 sm:block" aria-hidden>
           <div className="h-1.5 rounded-full bg-action-100"><div className="h-1.5 rounded-full bg-action transition-all" style={{ width: `${(100 * etape) / Math.max(total, 1)}%` }} /></div>
         </div>
-        <span className="text-xs text-ink-muted tabulaire">Étape {etape} sur {total}</span>
+        <span className="text-xs text-ink-muted tabulaire">{`Étape ${etape} sur ${total}`}</span>
         <span className="hidden max-w-[320px] truncate text-xs text-ink-muted md:inline" title={prochaine ?? ""}>{prochaine ? `Ensuite : ${prochaine}` : "Scénario terminé"}</span>
         <Bouton id="demoSuivant" taille="sm" variante="primary" disabled={occupe || !prochaine} onClick={onSuivant}>Étape suivante</Bouton>
       </div>
@@ -434,7 +393,7 @@ function BarreDemo({ vue, occupe, onSuivant }: { vue: VueMedecin; occupe: boolea
   );
 }
 
-// ------------------------------------------------------------------ dossier patient
+// ------------------------------------------------------------------ patient record
 function DossierPatient({ vue, occupe, poster }: { vue: VueMedecin; occupe: boolean; poster: Poster }) {
   const e = vue.etat;
   const identite = [e.sexe && valeur("sexe", e.sexe.valeur), e.age && valeur("age", e.age.valeur)].filter(Boolean).join(", ");
@@ -455,7 +414,7 @@ function DossierPatient({ vue, occupe, poster }: { vue: VueMedecin; occupe: bool
           {e.moyen_communication?.valeur === "pictogrammes" && <Pastille ton="action" icone={<Hand size={12} />}>Communique en pictogrammes</Pastille>}
           {e.informe_usage_ia?.valeur === true && <Pastille ton="ok" icone={<Check size={12} />}>Informé de l'IA</Pastille>}
           {e.grossesse?.valeur === true && <Pastille ton="review">Enceinte</Pastille>}
-          {e.allergies && e.allergies.valeur !== "aucune" && <Pastille ton="danger" icone={<AlertTriangle size={12} />}>Allergie : {String(e.allergies.valeur)}</Pastille>}
+          {e.allergies && !/^(aucune?|none|no|non|rien|لا شيء|لا)$/i.test(String(e.allergies.valeur).trim()) && <Pastille ton="danger" icone={<AlertTriangle size={12} />}>{`Allergie : ${String(e.allergies.valeur)}`}</Pastille>}
         </div>
         <div className="border-t border-line">
           <div className="flex items-center justify-between px-4 pb-1 pt-3">
@@ -477,78 +436,109 @@ function DossierPatient({ vue, occupe, poster }: { vue: VueMedecin; occupe: bool
           ) : <Vide titre="Aucune information pour l'instant" texte="Remplissez la fiche ci-dessous ou posez une question au patient." />}
         </div>
       </Panneau>
-      <FichePatient occupe={occupe} poster={poster} />
+      <FichePatient occupe={occupe} poster={poster} etat={vue.etat} />
       <DocumentsPatient vue={vue} occupe={occupe} poster={poster} />
     </>
   );
 }
 
-function FichePatient({ occupe, poster }: { occupe: boolean; poster: Poster }) {
-  // Rien n'est obligatoire : le médecin renseigne ce qu'il sait, en texte libre si besoin ; les agents en tirent les faits utiles.
-  const [f, setF] = useState({ sexe: "", age: "", poids: "", grossesse: "", allergies: "", traitements: "", antecedents: "", autres: "", pictos: true, ia: false });
+function FichePatient({ occupe, poster, etat }: { occupe: boolean; poster: Poster; etat: VueMedecin["etat"] }) {
+  // Nothing is mandatory: the doctor fills in what they know, in free text if needed; the agents extract the useful facts.
+  const [f, setF] = useState({ sexe: "", age: "", poids: "", grossesse: "", allergies: "", traitements: "", antecedents: "", autres: "", pictos: true, ia: false, contagion: false, declare: false });
   const [libres, setLibres] = useState<{ cle: string; valeur: string }[]>([]);
   const maj = (k: keyof typeof f) => (v: string | boolean) => setF((x) => ({ ...x, [k]: v }));
-  const enregistrer = () => {
+  // AUTOMATIC saving (feedback of 9 November: a record filled in but not saved made the jurist say "missing
+  // information"): when leaving each field, and at once for lists and check boxes. Only what changed is sent,
+  // without an on-screen message; the state is shown under the record.
+  const sauve = useRef<Record<string, unknown>>({});
+  const [etatSauve, setEtatSauve] = useState<"" | "modifie" | "en_cours" | "ok" | "erreur">("");
+  const majEtSauver = (k: keyof typeof f) => (v: string | boolean) => { const y = { ...f, [k]: v }; setF(y); void enregistrer(y); };
+  const changer = (k: keyof typeof f) => (v: string | boolean) => { maj(k)(v); setEtatSauve("modifie"); };
+  const enregistrer = async (x: typeof f = f, tout = false) => {
+    const donnees = construire(x);
+    const diff = Object.fromEntries(Object.entries(donnees).filter(([k, v]) =>
+      v !== "" && v !== undefined && (tout || JSON.stringify(sauve.current[k]) !== JSON.stringify(v))));
+    if (!Object.keys(diff).length) { setEtatSauve((e) => (e === "modifie" ? "ok" : e)); return; }
+    setEtatSauve("en_cours");
+    const r = await poster("/api/medecin/faits", { donnees: diff }, !tout);
+    if (r) { Object.assign(sauve.current, diff); setEtatSauve("ok"); } else setEtatSauve("erreur");
+  };
+  function construire(f: { sexe: string; age: string; poids: string; grossesse: string; allergies: string; traitements: string; antecedents: string; autres: string; pictos: boolean; ia: boolean; contagion: boolean; declare: boolean }) {
     const donnees: Record<string, unknown> = {
       sexe: f.sexe, age: f.age, poids: f.poids ? Number(f.poids) : "", allergies: f.allergies.trim(), traitements_en_cours: f.traitements.trim(),
       antecedents: f.antecedents.trim(), autres_informations: f.autres.trim(),
       grossesse: f.grossesse === "oui" ? true : f.grossesse === "non" ? false : "",
       moyen_communication: f.pictos ? "pictogrammes" : "", informe_usage_ia: f.ia || "",
+      // suspected epidemic-prone disease, then notification to the health authorities (done outside the application,
+      // through the national surveillance channel) and isolation: recorded here, logged with the doctor's name and time
+      maladie_declarable_groupe: f.contagion ? "A" : "", declaration_faite: f.declare || "",
     };
     for (const l of libres) if (l.cle.trim() && l.valeur.trim()) donnees[l.cle.trim().toLowerCase().replace(/\s+/g, "_")] = l.valeur.trim();
-    poster("/api/medecin/faits", { donnees });
-  };
+    return donnees;
+  }
+  const quitter = () => { void enregistrer(); };
   return (
     <Panneau titre="Fiche patient" aide="Tout est facultatif. Saisi par vous, enregistré comme information confirmée.">
       <div className="flex flex-col gap-3">
         <div className="grid grid-cols-3 gap-2">
           <Champ libelle="Sexe" htmlFor="sexe">
-            <select id="sexe" value={f.sexe} onChange={(e) => maj("sexe")(e.target.value)} className={cx(champ, "h-9 px-2")}>
+            <select id="sexe" value={f.sexe} onChange={(e) => majEtSauver("sexe")(e.target.value)} className={cx(champ, "h-9 px-2")}>
               <option value="">—</option><option value="F">Femme</option><option value="M">Homme</option>
             </select>
           </Champ>
           <Champ libelle="Âge" htmlFor="age">
-            <input id="age" type="number" min={0} max={120} inputMode="numeric" value={f.age} onChange={(e) => maj("age")(e.target.value)} className={cx(champ, "h-9 tabulaire")} placeholder="ans" />
+            <input id="age" type="number" min={0} max={120} inputMode="numeric" value={f.age} onChange={(e) => changer("age")(e.target.value)} onBlur={quitter} className={cx(champ, "h-9 tabulaire")} placeholder="ans" />
           </Champ>
           <Champ libelle="Poids" htmlFor="poids">
-            <input id="poids" type="number" min={0} max={400} inputMode="decimal" value={f.poids} onChange={(e) => maj("poids")(e.target.value)} className={cx(champ, "h-9 tabulaire")} placeholder="kg" />
+            <input id="poids" type="number" min={0} max={400} inputMode="decimal" value={f.poids} onChange={(e) => changer("poids")(e.target.value)} onBlur={quitter} className={cx(champ, "h-9 tabulaire")} placeholder="kg" />
           </Champ>
         </div>
         {f.sexe !== "M" && (
           <Champ libelle="Grossesse" htmlFor="grossesse">
-            <select id="grossesse" value={f.grossesse} onChange={(e) => maj("grossesse")(e.target.value)} className={cx(champ, "h-9")}>
+            <select id="grossesse" value={f.grossesse} onChange={(e) => majEtSauver("grossesse")(e.target.value)} className={cx(champ, "h-9")}>
               <option value="">Non renseignée</option><option value="non">Non</option><option value="oui">Oui</option>
             </select>
           </Champ>
         )}
         <Champ libelle="Maladies connues, antécédents" htmlFor="antecedents" aide="Texte libre, par exemple : diabète, HTA, insuffisance rénale, opéré de l'appendicite.">
-          <textarea id="antecedents" rows={2} value={f.antecedents} onChange={(e) => maj("antecedents")(e.target.value)} className={cx(champ, "resize-y py-2")} />
+          <textarea id="antecedents" rows={2} value={f.antecedents} onChange={(e) => changer("antecedents")(e.target.value)} onBlur={quitter} className={cx(champ, "resize-y py-2")} />
         </Champ>
         <Champ libelle="Allergies" htmlFor="allergies">
-          <input id="allergies" value={f.allergies} onChange={(e) => maj("allergies")(e.target.value)} className={cx(champ, "h-9")} placeholder="ou « aucune »" />
+          <input id="allergies" value={f.allergies} onChange={(e) => changer("allergies")(e.target.value)} onBlur={quitter} className={cx(champ, "h-9")} placeholder="ou « aucune »" />
         </Champ>
         <Champ libelle="Traitements en cours" htmlFor="traitements">
-          <input id="traitements" value={f.traitements} onChange={(e) => maj("traitements")(e.target.value)} className={cx(champ, "h-9")} placeholder="ou « aucun »" />
+          <input id="traitements" value={f.traitements} onChange={(e) => changer("traitements")(e.target.value)} onBlur={quitter} className={cx(champ, "h-9")} placeholder="ou « aucun »" />
         </Champ>
         <Champ libelle="Autres informations" htmlFor="autres" aide="Tout ce qui peut aider : contexte, mode de vie, entourage…">
-          <textarea id="autres" rows={2} value={f.autres} onChange={(e) => maj("autres")(e.target.value)} className={cx(champ, "resize-y py-2")} />
+          <textarea id="autres" rows={2} value={f.autres} onChange={(e) => changer("autres")(e.target.value)} onBlur={quitter} className={cx(champ, "resize-y py-2")} />
         </Champ>
         {libres.map((l, i) => (
           <div key={i} className="flex gap-2">
             <input aria-label="Renseignement" value={l.cle} placeholder="Renseignement (ex. tabac)" className={cx(champ, "h-9 w-2/5")}
-              onChange={(e) => setLibres((x) => x.map((y, j) => (j === i ? { ...y, cle: e.target.value } : y)))} />
+              onChange={(e) => setLibres((x) => x.map((y, j) => (j === i ? { ...y, cle: e.target.value } : y)))} onBlur={quitter} />
             <input aria-label="Valeur" value={l.valeur} placeholder="Valeur" className={cx(champ, "h-9 flex-1")}
-              onChange={(e) => setLibres((x) => x.map((y, j) => (j === i ? { ...y, valeur: e.target.value } : y)))} />
+              onChange={(e) => setLibres((x) => x.map((y, j) => (j === i ? { ...y, valeur: e.target.value } : y)))} onBlur={quitter} />
             <button aria-label="Supprimer" onClick={() => setLibres((x) => x.filter((_, j) => j !== i))} className="px-1 text-ink-faint hover:text-danger"><X size={16} /></button>
           </div>
         ))}
         <button id="ajouterRenseignement" onClick={() => setLibres((x) => [...x, { cle: "", valeur: "" }])}
           className="self-start text-[13px] font-medium text-action hover:underline">+ Ajouter un renseignement</button>
         <div className="flex flex-col gap-2 pt-1">
-          <Case id="pictos" coche={f.pictos} onChange={maj("pictos")}>Communique en pictogrammes</Case>
-          <Case id="ia" coche={f.ia} onChange={maj("ia")}>Informé qu'une IA aide le médecin</Case>
+          <Case id="pictos" coche={f.pictos} onChange={majEtSauver("pictos")}>Communique en pictogrammes</Case>
+          <Case id="ia" coche={f.ia} onChange={majEtSauver("ia")}>Informé qu'une IA aide le médecin</Case>
+          <Case id="contagion" coche={f.contagion || etat.maladie_declarable_groupe?.valeur === "A"} onChange={majEtSauver("contagion")}>Maladie contagieuse à potentiel épidémique suspectée</Case>
+          {(f.contagion || etat.maladie_declarable_groupe?.valeur === "A") && (
+            <Case id="declare" coche={f.declare || etat.declaration_faite?.valeur === true} onChange={majEtSauver("declare")}>
+              Cas déclaré aux autorités sanitaires et isolement organisé
+            </Case>
+          )}
         </div>
-        <Bouton id="faits" variante="secondary" disabled={occupe} className="mt-1 w-full" onClick={enregistrer}>{tr('Enregistrer la fiche')}</Bouton>
+        <p id="etatFiche" role="status" className={cx("text-xs", etatSauve === "erreur" ? "text-danger" : etatSauve === "modifie" ? "text-warn" : "text-ink-muted")}>
+          {etatSauve === "en_cours" ? "Enregistrement…" : etatSauve === "ok" ? "✓ Enregistré automatiquement : les agents l'utilisent déjà"
+            : etatSauve === "modifie" ? "Modification en cours : enregistrée dès que vous quittez le champ"
+            : etatSauve === "erreur" ? "Non enregistré : réessayez avec le bouton" : "Enregistrement automatique à la sortie de chaque champ"}
+        </p>
+        <Bouton id="faits" variante="secondary" disabled={occupe} className="w-full" onClick={() => enregistrer(f, true)}>{tr('Enregistrer la fiche')}</Bouton>
       </div>
     </Panneau>
   );
@@ -572,7 +562,7 @@ function Conversation({ vue, occupe, poster, medecin, brouillon, onReformuler, o
   const [attente, setAttente] = useState<null | { texte: string; n: number }>(null);
   useEffect(() => { if (attente && vue.decisions.length > attente.n) setAttente(null); }, [vue.decisions.length, attente]);
   const nombre = elements.length + vue.decisions.filter((d) => d.statut === "attente_validation").length;
-  useEffect(() => {                       // nouvel élément : on descend en bas du fil, comme une messagerie
+  useEffect(() => {                       // new element: scroll to the bottom of the thread, like a messaging app
     const f = fil.current;
     if (f) f.scrollTo({ top: f.scrollHeight, behavior: "smooth" });
   }, [nombre]);
@@ -638,11 +628,18 @@ function ElementEchange({ e }: { e: Echange }) {
       <div className="flex max-w-[92%] gap-3 self-start">
         <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-canvas text-ink-soft ring-1 ring-line"><Hand size={15} /></div>
         <div className="min-w-0">
-          <p className="mb-1 text-xs text-ink-muted"><span className="font-medium text-ink-soft">{tr('Patient')}</span>{e.en_reponse_a ? ` répond à « ${e.en_reponse_a} »` : ""}</p>
+          <p className="mb-1 text-xs text-ink-muted"><span className="font-medium text-ink-soft">{tr('Patient')}</span>{e.en_reponse_a ? ` ${tr("répond à")} « ${e.en_reponse_a} »` : ""}</p>
           <div className="rounded-2xl rounded-tl-md border border-line bg-surface p-3 shadow-tile">
             <div className="flex flex-wrap gap-2">{e.pictogrammes.map((p, i) => <Picto key={i} id={p} taille={60} legende />)}</div>
+            {(e.phrase || e.interpretation) && (
+              <p className="mt-2.5 border-t border-line pt-2 text-[15px] font-medium leading-snug text-ink" id="phrasePatient">
+                « {e.phrase || e.interpretation} »</p>
+            )}
           </div>
-          {e.interpretation && <p className="mt-1.5 text-[13px] text-ink-soft">Compris comme <span className="font-medium text-ink">« {e.interpretation} »</span></p>}
+          {(e.phrase || e.interpretation) && (
+            <p className="mt-1 text-2xs text-ink-muted">
+              {e.phrase_par === "ia" ? tr("Phrase formulée par le modèle à partir de ces seuls pictogrammes") : tr("Phrase formée par les règles à partir de ces seuls pictogrammes")}</p>
+          )}
         </div>
       </div>
     );
@@ -696,7 +693,7 @@ function ElementDecision({ d, occupe, nomMedecin, parAssistant, onValider, onAnn
   return (
     <div className="flex max-w-[92%] flex-col items-end gap-1.5 self-end">
       <p className="text-xs text-ink-muted">{origine}</p>
-      {d.texte && <div className="rounded-2xl rounded-tr-md bg-brand px-3.5 py-2 text-sm text-white">{d.texte}</div>}
+      {d.texte && <div className="rounded-2xl rounded-tr-md bg-brand px-3.5 py-2 text-sm text-white" data-notr>{d.texte}</div>}
       <div className={cx("w-full rounded-2xl border bg-surface p-3", attente ? "border-action ring-4 ring-action/10" : "border-line shadow-tile")}>
         <div className="mb-2 flex items-center justify-between gap-2">
           <p className="flex items-center gap-1.5 text-xs text-ink-muted"><Languages size={13} />{tr('Traduction en pictogrammes')}</p>
@@ -726,7 +723,7 @@ function ElementDecision({ d, occupe, nomMedecin, parAssistant, onValider, onAnn
         )}
         {d.non_traduits && d.non_traduits.length > 0 && d.statut !== "BLOQUE" && (
           <p className="mt-2 flex items-start gap-1.5 rounded-lg bg-warn-50 px-2.5 py-1.5 text-xs text-warn">
-            <AlertTriangle size={13} className="mt-px shrink-0" />Sans pictogramme : {d.non_traduits.join(", ")}. Reformulez si ces mots comptent.
+            <AlertTriangle size={13} className="mt-px shrink-0" />{`Sans pictogramme : ${d.non_traduits.join(", ")}. Reformulez si ces mots comptent.`}
           </p>
         )}
         {attente ? (
@@ -784,10 +781,10 @@ function ElementDecision({ d, occupe, nomMedecin, parAssistant, onValider, onAnn
   );
 }
 
-// ------------------------------------------------------------------ dictée vocale (reconnaissance de la parole du navigateur)
-// Chrome et Edge la fournissent (Firefox non). Le texte dicté arrive dans la zone de saisie : le médecin le relit et le corrige
-// avant « Faire traduire » ; rien n'est envoyé au patient sans sa validation. Dans Chrome, l'audio est transcrit par les
-// serveurs de Google : patients fictifs uniquement pour la démonstration.
+// ------------------------------------------------------------------ voice dictation (browser speech recognition)
+// Chrome and Edge provide it (not Firefox). The dictated text lands in the input box: the doctor rereads and corrects it
+// before "Translate"; nothing is sent to the patient without their validation. In Chrome, the audio is transcribed by
+// Google's servers: fictitious patients only for the demonstration.
 type Reconnaissance = {
   lang: string; continuous: boolean; interimResults: boolean; start: () => void; stop: () => void;
   onresult: ((e: { resultIndex: number; results: ArrayLike<{ isFinal: boolean; 0: { transcript: string } }> }) => void) | null;
@@ -821,8 +818,8 @@ function useDictee(ajouter: (t: string) => void) {
   return { disponible: Boolean(Classe), actif, provisoire, erreur, demarrer, arreter };
 }
 
-// Dictée par la reconnaissance vocale de xAI (même clé que Grok) : le navigateur enregistre un fichier WAV, le serveur le
-// fait transcrire. Fonctionne dans tous les navigateurs récents (Chrome, Edge, Firefox) dès que le micro est autorisé.
+// Server-side dictation (Whisper at Groq, or xAI speech recognition): the browser records a WAV file, the server has it
+// transcribed. Works in every recent browser (Chrome, Edge, Firefox) once the microphone is allowed.
 function encoderWav(morceaux: Float32Array[], frequence: number, cible = 16000): Blob {
   const total = morceaux.reduce((n, m) => n + m.length, 0);
   const brut = new Float32Array(total);
@@ -895,7 +892,7 @@ function useEnregistreur(transcrire: (audio: string) => Promise<void>) {
 function Compositeur({ vue, occupe, poster, brouillon, onEnvoye }:
   { vue: VueMedecin; occupe: boolean; poster: Poster; brouillon: null | { texte: string; n: number }; onEnvoye: (t: string) => void }) {
   const [texte, setTexte] = useState("");
-  useEffect(() => {                         // « Reformuler » : le texte revient dans la zone de saisie, prêt à corriger
+  useEffect(() => {                         // "Rephrase": the text comes back to the input box, ready to correct
     if (!brouillon) return;
     setTexte(brouillon.texte);
     setEnvoye("");
@@ -903,7 +900,8 @@ function Compositeur({ vue, occupe, poster, brouillon, onEnvoye }:
     zone?.focus();
     zone?.setSelectionRange(brouillon.texte.length, brouillon.texte.length);
   }, [brouillon]);
-  const [langueDictee, setLangueDictee] = useState("fr-FR");
+  const [langueDictee, setLangueDictee] = useState(LANGUE_UI === "en" ? "en-US" : LANGUE_UI === "ar" ? "ar-SA" : "fr-FR");
+  useEffect(() => { setLangueDictee(vue.langue === "en" ? "en-US" : vue.langue === "ar" ? "ar-SA" : "fr-FR"); }, [vue.langue]);   // dictation follows the doctor's language
   const [envoye, setEnvoye] = useState("");
   const ajouter = useCallback((t: string) => setTexte((x) => (x.trim() ? `${x.trim()} ${t}` : t)), []);
   const navigateur = useDictee(ajouter);
@@ -912,7 +910,7 @@ function Compositeur({ vue, occupe, poster, brouillon, onEnvoye }:
     if (r?.texte) { ajouter(r.texte); document.getElementById("envoyerMessage")?.focus(); }
     else if (r) throw new Error("rien");
   }, [poster, langueDictee, ajouter]));
-  const parXai = vue.dictee === "xai";
+  const parXai = !!vue.dictee && vue.dictee !== "navigateur";   // server-side speech recognition: Whisper (Groq) or xAI
   const enregistre = parXai ? serveur.etat === "enregistre" : navigateur.actif;
   const [question, setQuestion] = useState(true);
   const [cle, setCle] = useState("");
@@ -940,7 +938,7 @@ function Compositeur({ vue, occupe, poster, brouillon, onEnvoye }:
         <label htmlFor="message" className="sr-only">Message au patient</label>
         <textarea id="message" rows={2} value={texte} onChange={(e) => setTexte(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) envoyerTexte(); }}
-          placeholder={LANGUE_UI === "en" ? "Write, or click the microphone and speak, e.g.: Do you have stomach pain?" : "Écrire, ou cliquer sur le micro et parler, par exemple : Avez-vous mal au ventre ?"}
+          placeholder={tr("Écrire, ou cliquer sur le micro et parler, par exemple : Avez-vous mal au ventre ?")}
           className="block w-full resize-none rounded-t-xl border-0 bg-transparent px-3.5 pt-3 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:ring-0" />
         {(navigateur.provisoire || erreur) && (
           <p className={cx("px-3.5 pb-1 text-xs", erreur ? "text-danger" : "italic text-ink-muted")}>{erreur || navigateur.provisoire}</p>
@@ -958,7 +956,7 @@ function Compositeur({ vue, occupe, poster, brouillon, onEnvoye }:
                 <option value="fr-FR">FR</option><option value="en-US">EN</option><option value="ar-SA">AR</option>
               </select>
             </div>
-          ) : <span className="text-xs text-ink-faint">Dictée : ajoutez la clé xAI ou utilisez Chrome</span>}
+          ) : <span className="text-xs text-ink-faint">Dictée : ajoutez une clé Groq (Whisper, open source) ou xAI, ou utilisez Chrome</span>}
           <Case id="estQuestion" coche={question} onChange={setQuestion}>{tr("C'est une question")}</Case>
           <label className="flex items-center gap-2 whitespace-nowrap text-[13px] text-ink-muted">
             Enregistrer la réponse comme
@@ -976,7 +974,7 @@ function Compositeur({ vue, occupe, poster, brouillon, onEnvoye }:
   );
 }
 
-// ------------------------------------------------------------------ inspecteur des agents
+// ------------------------------------------------------------------ agents inspector
 type Onglet = "agents" | "assistant" | "ordonnance" | "droit" | "crise";
 
 function Inspecteur({ vue, occupe, poster, medecin, onMaintenir }:
@@ -1012,9 +1010,9 @@ function Inspecteur({ vue, occupe, poster, medecin, onMaintenir }:
       <div className="flex-1 overflow-y-auto barre-fine xl:min-h-0">
         {onglet === "agents" && <OngletAgents vue={vue} occupe={occupe} poster={poster} />}
         {onglet === "assistant" && <OngletAssistant vue={vue} occupe={occupe} poster={poster} medecin={medecin}
-          onPreremplir={(p) => { setBrouillonRx((b) => ({ ...p, n: (b?.n ?? 0) + 1 })); setOnglet("ordonnance"); }} />}
+          onPreremplir={(p) => { setBrouillonRx((b) => ({ ...p, posologie: tr(p.posologie || ""), n: (b?.n ?? 0) + 1 })); setOnglet("ordonnance"); }} />}
         {onglet === "ordonnance" && <OngletOrdonnance vue={vue} occupe={occupe} poster={poster} medecin={medecin} onMaintenir={onMaintenir}
-          brouillon={brouillonRx} onPreremplir={(p) => setBrouillonRx((b) => ({ ...p, n: (b?.n ?? 0) + 1 }))} />}
+          brouillon={brouillonRx} onPreremplir={(p) => setBrouillonRx((b) => ({ ...p, posologie: tr(p.posologie || ""), n: (b?.n ?? 0) + 1 }))} />}
         {onglet === "droit" && <OngletDroit vue={vue} />}
         {onglet === "crise" && <OngletCrise vue={vue} />}
       </div>
@@ -1030,7 +1028,7 @@ const TYPE_MESSAGE: Record<string, { nom: string; ton: "danger" | "review" | "ac
   information: { nom: "Information", ton: "action", icone: <Info size={14} /> },
 };
 
-// L'essentiel d'abord (première phrase, en clair), le détail ensuite : replié s'il est long.
+// The essentials first (first sentence, plainly), the details next: collapsed if long.
 function TexteAgent({ texte }: { texte: string }) {
   const i = texte.search(/[.!?](\s|$)/);
   const essentiel = i > 0 && i < texte.length - 1 ? texte.slice(0, i + 1) : texte;
@@ -1112,7 +1110,7 @@ function ApercuPictos({ texte }: { texte: string }) {
   return (
     <div className="mt-2">
       <div className="flex flex-wrap gap-1.5">{r.pictogrammes.map((p, i) => <Picto key={i} id={p} taille={40} legende />)}</div>
-      {r.non_traduits.length > 0 && <p className="mt-1 text-2xs text-warn">Sans pictogramme : {r.non_traduits.join(", ")}</p>}
+      {r.non_traduits.length > 0 && <p className="mt-1 text-2xs text-warn">{`Sans pictogramme : ${r.non_traduits.join(", ")}`}</p>}
     </div>
   );
 }
@@ -1120,12 +1118,12 @@ function ApercuPictos({ texte }: { texte: string }) {
 function OngletAssistant({ vue, occupe, poster, medecin, onPreremplir }:
   { vue: VueMedecin; occupe: boolean; poster: Poster; medecin: string; onPreremplir: (p: { medicament: string; dose: string; posologie: string }) => void }) {
   const [caches, setCaches] = useState<Set<number>>(new Set());
-  // Alertes d'abord, puis les plus récentes
+  // Alerts first, then the most recent
   const RANG: Record<string, number> = { alerte_urgence: 0, traitement_alternatif: 1, traitement: 2, question_manquante: 3, reponse: 4 };
   const suggestions = vue.suggestions.filter((s) => s.statut === "proposee_au_medecin" && !caches.has(s.id))
     .sort((a, b) => (RANG[a.type] ?? 5) - (RANG[b.type] ?? 5) || b.id - a.id);
   const ignorer = (id: number) => { setCaches((c) => new Set(c).add(id)); poster("/api/medecin/ignorer", { suggestion_id: id }); };
-  // Questions que l'ASSISTANT propose : elles attendent ici, le médecin les envoie ou les refuse (la conversation reste lisible)
+  // Questions the ASSISTANT proposes: they wait here, the doctor sends or refuses them (the conversation stays readable)
   const [qCaches, setQCaches] = useState<Set<number>>(new Set());
   const aPoser = vue.questions.filter((q) => q.auteur !== "medecin" && q.statut === "en_attente" && !qCaches.has(q.id)).reverse();
   const faites = vue.questions.filter((q) => q.auteur !== "medecin" && ["posee", "repondue"].includes(q.statut)).reverse().slice(0, 6);
@@ -1211,7 +1209,7 @@ function DetailVerdict({ v }: { v?: Verdict }) {
   return (
     <details className="group mt-2.5">
       <summary className="flex cursor-pointer list-none items-center gap-1 text-xs font-medium text-action">
-        <ChevronDown size={14} className="transition-transform group-open:rotate-180" />Analyse du juriste ({lignes.length})
+        <ChevronDown size={14} className="transition-transform group-open:rotate-180" />{`Analyse du juriste (${lignes.length})`}
       </summary>
       <ul className="mt-2 flex flex-col gap-2">
         {lignes.map((c, i) => (
@@ -1232,7 +1230,7 @@ function OngletOrdonnance({ vue, occupe, poster, medecin, onMaintenir, brouillon
     brouillon: null | { medicament: string; dose: string; posologie: string; n: number };
     onPreremplir: (p: { medicament: string; dose: string; posologie: string }) => void }) {
   const [f, setF] = useState({ medicament: "", dose: "", posologie: "", mode: "presentiel", remplace: "", suggestion: false });
-  useEffect(() => {                         // « Préremplir l'ordonnance » depuis une proposition de l'assistant
+  useEffect(() => {                         // "Prefill the prescription" from an assistant proposal
     if (brouillon) setF((x) => ({ ...x, medicament: brouillon.medicament, dose: brouillon.dose, posologie: brouillon.posologie, suggestion: true }));
   }, [brouillon]);
   const propositions = vue.suggestions.filter((s) => s.statut === "proposee_au_medecin" && s.prescription);
@@ -1247,7 +1245,7 @@ function OngletOrdonnance({ vue, occupe, poster, medecin, onMaintenir, brouillon
           <p className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-action"><Sparkles size={13} />Proposition de l'assistant (contrôlée par le juriste pour ce patient)</p>
           {propositions.map((s) => s.prescription && (
             <div key={s.id} className="flex flex-wrap items-center justify-between gap-2 py-1 text-[13px]">
-              <span className="text-ink">{nomMedicament(s.prescription.medicament)} {s.prescription.dose}{s.prescription.posologie ? `, ${s.prescription.posologie}` : ""}</span>
+              <span className="text-ink">{nomMedicament(s.prescription.medicament)} {s.prescription.dose}{s.prescription.posologie ? `, ${tr(s.prescription.posologie)}` : ""}</span>
               <Bouton taille="sm" variante="secondary" data-preremplir={s.id} disabled={occupe} onClick={() => s.prescription && onPreremplir(s.prescription)}>Préremplir</Bouton>
             </div>
           ))}
@@ -1305,7 +1303,7 @@ function OngletOrdonnance({ vue, occupe, poster, medecin, onMaintenir, brouillon
                 </div>
                 <Statut statut={d.statut} />
               </div>
-              {d.maintien && <p className="mt-2 rounded-lg bg-held-50 px-2.5 py-1.5 text-xs text-held">Maintenue par {vue.prescripteurs[d.maintien.par] ?? d.maintien.par} : {d.maintien.justification}</p>}
+              {d.maintien && <p className="mt-2 rounded-lg bg-held-50 px-2.5 py-1.5 text-xs text-held">{`${tr("Maintenue par")} ${vue.prescripteurs[d.maintien.par] ?? d.maintien.par} : `}<span data-notr>{d.maintien.justification}</span></p>}
               {d.statut === "PREUVES_INSUFFISANTES" && (verdictDe(d.id)?.informations_manquantes ?? []).length > 0 && (
                 <div className="mt-2.5 rounded-lg bg-warn-50 p-2.5" data-manquants={d.id}>
                   <p className="text-xs font-semibold text-warn">Il manque, pour que le juriste puisse conclure :</p>
@@ -1370,7 +1368,7 @@ function OngletDroit({ vue }: { vue: VueMedecin }) {
             {verifs.map((v, i) => (
               <li key={i} className="px-3.5 py-2.5">
                 <div className="flex items-center justify-between gap-3">
-                  <p className="truncate text-[13px] text-ink">{OBJETS[v.objet] ?? v.objet}{v.decision_id ? ` n° ${v.decision_id}` : ""}</p>
+                  <p className="truncate text-[13px] text-ink">{`${OBJETS[v.objet] ?? v.objet}${v.decision_id ? ` n° ${v.decision_id}` : ""}`}</p>
                   <Statut statut={v.verdict} />
                 </div>
                 {v.constats[0] && <p className="mt-0.5 truncate text-xs text-ink-muted" title={v.constats.map((c) => c.reference_courte).join(" ; ")}>{v.constats[0].reference_courte}</p>}
@@ -1404,7 +1402,7 @@ function OngletCrise({ vue }: { vue: VueMedecin }) {
   );
 }
 
-// ------------------------------------------------------------------ états de la page
+// ------------------------------------------------------------------ page states
 function DialogueTexte({ ouvert, titre, description, libelle, defaut, action, variante, onFermer, onValider }:
   { ouvert: boolean; titre: string; description: string; libelle: string; defaut: string; action: string;
     variante: "danger" | "primary"; onFermer: () => void; onValider: (t: string) => void }) {
@@ -1449,16 +1447,16 @@ function Chargement({ erreur }: { erreur: boolean }) {
 
 
 
-// ------------------------------------------------------------------ éditeur de pictogrammes (médecin)
-// Le médecin corrige la traduction avant de valider : retirer, ajouter n'importe quel pictogramme de la base, combiner.
-// Le serveur refuse de retirer la négation, la limite, l'urgence, STOP, un chiffre, une dose ou un médicament.
+// ------------------------------------------------------------------ pictogram editor (doctor)
+// The doctor corrects the translation before validating: remove, add any pictogram of the base, combine.
+// The server refuses to remove the negation, the limit, the emergency, STOP, a number, a dose or a medicine.
 const sansAccentsM = (t: string) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 const debutDeMotM = (texte: string, q: string) => sansAccentsM(texte).split(/[\s'’+\-/]+/).some((m) => m.startsWith(q));
 
 function EditeurPictos({ initial, onFermer, onEnregistrer }: { initial: string[]; onFermer: () => void; onEnregistrer: (p: string[]) => void }) {
   const libelle = useLibelle();
   const [pictos, setPictos] = useState<string[]>(initial);
-  // Case sélectionnée : un clic dans la base la REMPLACE (ou s'insère après, en mode « insérer »). Sans sélection : ajout à la fin.
+  // Selected slot: a click in the base REPLACES it (or is inserted after it, in "insert" mode). No selection: added at the end.
   const [choisi, setChoisi] = useState<number | null>(null);
   const [inserer, setInserer] = useState(false);
   const [palette, setPalette] = useState<Record<string, string[]>>({});

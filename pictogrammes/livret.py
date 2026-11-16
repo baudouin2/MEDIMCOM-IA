@@ -1,11 +1,10 @@
-"""Prépare le matériel du test de compréhension des pictogrammes (voir docs/pictogrammes/PROTOCOLE_TESTS.md).
+"""Prepares the material of the pictogram comprehension test (see docs/pictogrammes/PROTOCOLE_TESTS.md).
 
-    python pictogrammes/livret.py               # -> pictogrammes/test/cle_livret.csv et reponses_modele.csv
+    python pictogrammes/livret.py               # -> pictogrammes/test/cle_livret.csv and reponses_modele.csv
     python pictogrammes/livret.py --pdf         # + docs/pictogrammes/Livret_test_pictogrammes.pdf (playwright + chromium)
 
-Le livret montre chaque pictogramme seul, sous un numéro d'item (jamais son nom), dans un ordre tiré au
-hasard mais fixe (graine), avec la situation à signer par l'animateur. La clé (item -> pictogramme)
-reste chez l'animateur.
+The booklet shows each pictogram alone, under an item number (never its name), in a random but fixed order
+(seed), with the situation to be signed by the facilitator. The key (item -> pictogram) stays with the facilitator.
 """
 import argparse
 import csv
@@ -21,7 +20,7 @@ from medimcom.bibliotheque import CATALOGUE, svg as _svg  # noqa: E402
 
 
 def svg(ident: str) -> str:
-    """Pictogramme SANS son nom (ni titre, ni étiquette d'accessibilité) : le livret ne doit pas souffler la réponse."""
+    """Pictogram WITHOUT its name (no title, no accessibility label): the booklet must not give the answer away."""
     return re.sub(r'<title>.*?</title>', "", re.sub(r' aria-label="[^"]*"', "", _svg(ident)))
 
 CONTEXTES = {
@@ -33,7 +32,7 @@ CONTEXTES = {
     "temps": "Le médecin explique quand prendre un médicament.",
     "nombre": "Le médecin explique combien de médicaments prendre.",
 }
-# Phrases complètes (séquences) à tester aussi : sens attendu -> pictogrammes
+# Complete sentences (sequences) to test as well: expected meaning -> pictograms
 SEQUENCES = [
     ("Êtes-vous enceinte ?", ["VOUS", "ENCEINTE", "QUESTION"]),
     ("Avez-vous mal au ventre ?", ["VOUS", "VENTRE", "DOULEUR", "QUESTION"]),

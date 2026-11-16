@@ -1,4 +1,5 @@
 {
+  "pays": ["AE"],
   "titre": "Crise : maladie transmissible, téléconsultation d'un patient sourd et coordination des institutions",
   "note": "Données fictives. Les informations arrivent par morceaux et chaque institution ne reçoit que sa part (messages « terrain »). Le juriste contrôle puis conseille ; l'autorité de santé, l'hôpital et la cellule de crise sont des agents autonomes sans accès au dossier du patient.",
   "evenements": [

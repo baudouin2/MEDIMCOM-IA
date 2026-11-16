@@ -1,8 +1,8 @@
-"""Fiche de présentation du projet (1 page A4, en français), générée à partir des chiffres réels du dépôt.
+"""One-page project sheet (A4, in French), generated from the real figures of the repository.
 
     python outils/generer_fiche.py          # -> docs/equipe/MEDIMCOM_IA_Fiche_projet.pdf
 
-Nécessite : pip install playwright pypdf && python -m playwright install chromium
+Requires: pip install playwright pypdf && python -m playwright install chromium
 """
 import json
 import sys
@@ -62,7 +62,7 @@ td { border-bottom: .4pt solid #D9E1E6; padding: .6mm 1.2mm; vertical-align: top
 
 
 def schema() -> str:
-    """Schéma de l'architecture : qui parle à qui."""
+    """Architecture diagram: who talks to whom."""
     N, F, A, T = "#12324A", "#FFFFFF", "#E8EFF5", "#33454F"
 
     def boite(x, y, w, h, titre, sous="", fond=A, epais=1):
@@ -98,14 +98,14 @@ def schema() -> str:
     s += fleche(200, 130, 200, 158) + fleche(200, 158, 200, 132)
     s += fleche(520, 130, 520, 158) + fleche(520, 158, 520, 132)
     s += fleche(292, 183, 428, 183, "messages directs", ty=177) + fleche(428, 189, 294, 189)
-    s += boite(626, 160, 86, 46, "Droit des EAU", "base vérifiée", F)
+    s += boite(626, 160, 86, 46, "Droit du Cameroun", "base vérifiée", F)
     s += fleche(612, 183, 624, 183)
     s += f'<path d="M110 183 H40 V56" fill="none" stroke="{N}" stroke-width="1.1" marker-end="url(#f)"/>'
     s += f'<text x="44" y="150" font-size="8.2" fill="{T}">suggestions :</text><text x="44" y="160" font-size="8.2" fill="{T}">valide ou ignore</text>'
     s += f'<path d="M520 92 V74 H120 V58" fill="none" stroke="{N}" stroke-width="1.1" stroke-dasharray="4 3" marker-end="url(#f)"/>'
     s += f'<text x="230" y="70" text-anchor="middle" font-size="8.2" fill="{T}">verdicts sourcés : conforme · à revoir · bloqué</text>'
     s += boite(8, 222, 300, 30, "Journal infalsifiable (empreintes SHA-256)", fond="#F2F5F7")
-    s += boite(380, 222, 332, 30, "Crise : autorité de santé · hôpital · cellule de crise", fond=F)
+    s += boite(380, 222, 332, 30, "Rapport de responsabilité et lacunes du droit", fond=F)
     s += fleche(520, 208, 520, 220, tirets=True)
     return s + "</svg>"
 
@@ -115,10 +115,10 @@ def html() -> str:
 <body><div class="page">
 <div class="entete">
   <div>
-    <div class="surtitre">ITU AI for Good Lab / Sandbox Hackathon – Émirats arabes unis · Fiche projet</div>
+    <div class="surtitre">ITU AI for Good Sandbox Hackathon · cas d'usage : Cameroun · Fiche projet</div>
     <h1>MEDIMCOM IA</h1>
     <div class="soustitre">Des agents d'IA autonomes pour des consultations médicales sûres, légales et accessibles aux patients sourds</div>
-    <div class="statut"><b>Statut :</b> prototype en cours de développement</div>
+    <div class="statut"><b>Statut :</b> prototype soumis le 10 novembre 2026 (patients fictifs)</div>
   </div>
   <div class="meta"><b>Équipe ShifaMiko</b><br>Baudouin Nkana Bilong (coordination)<br>Franck Ndonkou · Fotsing Engoulou<br>Faculté des sciences<br>Université de Yaoundé I</div>
 </div>
@@ -134,10 +134,9 @@ def html() -> str:
 <table>
 <tr><th style="width:15%">Agent</th><th style="width:29%">But</th><th style="width:30%">Ce qu'il décide seul</th><th>Limites (imposées dans ses outils)</th></tr>
 <tr><td><b>1 · Traducteur</b></td><td>Que le médecin et le patient se comprennent vraiment</td><td>Comment traduire, quand combiner des pictogrammes en une seule image, quand faire confirmer le patient</td><td>Aucun envoi sans validation du médecin et feu vert du juriste</td></tr>
-<tr><td><b>2 · Juriste</b></td><td>Que rien d'illégal ou de dangereux n'atteigne le patient</td><td>Quand revérifier une décision ; quelle obligation rappeler (consentement, déclaration) ; quelle lacune du droit signaler</td><td>Verdicts par règles fixes, toujours avec la source ; ne décide pas à la place du médecin</td></tr>
+<tr><td><b>2 · Juriste</b></td><td>Que rien d'illégal ou de dangereux n'atteigne le patient</td><td>Quand revérifier une décision ; quelle obligation rappeler (consentement, déclaration) ; quelle lacune du droit signaler</td><td>Verdicts issus d'un moteur de 68 règles, toujours sourcés ; ne décide pas à la place du médecin</td></tr>
 <tr><td><b>3 · Assistant</b></td><td>Un état du patient fiable et complet</td><td>Ce qui manque, quelle question faire poser, quoi suggérer, quand retirer une suggestion</td><td>Ne parle jamais au patient ; ne prescrit pas ; le médecin valide ou ignore</td></tr>
-<tr><td><b>Institutions</b> (crise)</td><td>Répondre à une crise sanitaire ; la cellule de crise coordonne l'autorité de santé et l'hôpital</td><td>Quelle mesure prendre dans leur mandat, quelle information demander</td><td>Pas d'accès au dossier du patient ; une mesure exige une base légale contraignante</td></tr>
-<tr><td><b>Coordinateur</b></td><td>Faire avancer la consultation ou la crise</td><td>Libère les événements un à un ; arrête quand plus aucun agent n'agit</td><td>Ne donne aucun ordre et ne décide rien : chaque agent choisit lui-même d'agir</td></tr>
+<tr><td><b>Coordinateur</b></td><td>Faire avancer la consultation</td><td>Libère les événements un à un ; arrête quand plus aucun agent n'agit</td><td>Ne donne aucun ordre et ne décide rien : chaque agent choisit lui-même d'agir</td></tr>
 </table>
 
 <div class="deux"><div>
@@ -153,7 +152,7 @@ def html() -> str:
 </div><div>
 <h2>5. Cadre légal, éthique et UIT</h2>
 <ul>
-<li>Base de connaissances vérifiée : droit des Émirats (responsabilité médicale, TIC en santé, données personnelles, personnes en situation de handicap, maladies transmissibles, normes IA du DoH et de la DHA) et exemples internationaux (ONU, OMS, UE, NHS, ISO).</li>
+<li>Base vérifiée : droit camerounais et instruments qui lient le Cameroun (CDPH de l'ONU, RSI de l'OMS) ; OMS, UNESCO, UA en références ; exemples mondiaux pour les lacunes.</li>
 <li><b>Textes juridiques officiels</b> ; <b>patients fictifs</b> pour les tests (aucune donnée de santé réelle) ; <b>pictogrammes issus de bases existantes</b>.</li>
 <li>Cas d'usage décrit selon le pipeline <b>UIT-T Y.3172</b> et relié au <b>cadre UIT de préparation à l'IA 2.0</b>, notamment la dimension <i>IA pour l'inclusion</i>.</li>
 <li>Lacunes du droit identifiées et illustrées par des exemples mondiaux.</li>
